@@ -71,6 +71,7 @@
 			align-items: center;
 			justify-content: space-between;
 			padding: 0.5em 1em;
+			padding-right: 0.5em;
 			font-weight: 700;
 			background-color: $border-color;
 			border-radius: $radius-small $radius-small 0 0;
@@ -85,8 +86,6 @@
 		}
 
 		.content {
-			display: flex;
-			flex-wrap: wrap;
 			gap: 0.5em;
 			padding: 0.5em;
 			border: $border;

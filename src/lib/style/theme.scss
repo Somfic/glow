@@ -17,7 +17,7 @@ $secondary-active: color.scale($secondary, $lightness: -20%);
 
 $tertiary: transparent;
 $tertiary-hover: color.mix($secondary, $bg-surface, 10%);
-$tertiary-active: color.scale($tertiary, $lightness: -20%);
+$tertiary-active: color.scale($tertiary-hover, $lightness: -30%);
 
 $border-color: #30313C;
 $border-width: 2px;

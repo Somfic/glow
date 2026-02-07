@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Banner from '$lib/banner/Banner.svelte';
 	import Button from '$lib/button/Button.svelte';
 	import ButtonGroup from '$lib/button/ButtonGroup.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -37,6 +38,13 @@
 			<Button icon="Volleyball" />
 			<Button label="Third" />
 		</ButtonGroup>
+	</Group>
+
+	<Group label="Banners">
+		<Banner variant="info" label="Info banner" />
+		<Banner variant="success" label="Success banner" />
+		<Banner variant="warning" label="Warning banner" />
+		<Banner variant="error" label="Error banner" />
 	</Group>
 
 	<h1>Icons</h1>

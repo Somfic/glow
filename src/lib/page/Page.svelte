@@ -12,6 +12,10 @@
 	let { title, navItems, size = 'normal', children }: Props = $props();
 </script>
 
+<svelte:head>
+	<title>{title}</title>
+</svelte:head>
+
 <div class={`page ${size}`}>
 	<div class="header">
 		<div class="navigation">

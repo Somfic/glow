@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import Icon, { type IconName } from '$lib/icon/Icon.svelte';
-	import type { MouseEventHandler } from 'svelte/elements';
 
 	type Variant = 'primary' | 'secondary' | 'ternary';
 
 	type BaseProps = {
 		variant?: Variant;
 		onclick?: () => void;
+		disabled?: boolean;
+		image?: string;
+		selected?: boolean;
 	};
 
 	type WithIcon = BaseProps & {
@@ -25,13 +27,18 @@
 	let {
 		label,
 		icon,
+		image,
 		variant = group?.defaultVariant ?? 'primary',
-		onclick
+		onclick,
+		disabled = false,
+		selected = false
 	}: WithIcon | WithLabel = $props();
 </script>
 
-<button class={variant} onclick={() => onclick?.()}>
-	{#if icon}
+<button class={variant} class:selected onclick={() => onclick?.()} {disabled}>
+	{#if image}
+		<img src={image} alt="" class="button-image" />
+	{:else if icon}
 		<Icon name={icon} size={16} />
 	{/if}
 	{label}
@@ -50,12 +57,12 @@
 		border: none;
 		border-radius: $radius;
 		font-weight: 700;
-		color: $fg;
 		cursor: pointer;
 		transition: background-color 150ms ease;
 
 		&.primary {
 			background-color: $primary;
+			color: $fg;
 
 			&:hover {
 				background-color: $primary-hover;
@@ -68,6 +75,7 @@
 
 		&.secondary {
 			background-color: $secondary;
+			color: $fg;
 
 			&:hover {
 				background-color: $secondary-hover;
@@ -79,15 +87,36 @@
 		}
 
 		&.ternary {
+			color: inherit;
 			background-color: $tertiary;
 
 			&:hover {
 				background-color: $tertiary-hover;
+				color: $fg;
 			}
 
 			&:active {
 				background-color: $tertiary-active;
+				color: $fg;
 			}
+		}
+
+		&:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+			pointer-events: none;
+		}
+
+		&.selected {
+			outline: 2px solid $primary;
+			outline-offset: 2px;
+		}
+
+		.button-image {
+			width: 1.5em;
+			height: 1.5em;
+			border-radius: 50%;
+			object-fit: cover;
 		}
 	}
 </style>
