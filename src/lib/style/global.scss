@@ -1,0 +1,36 @@
+@use "./theme.scss" as *;
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
+
+html, body, main {
+    font-family: 'Nunito', 'Zalando Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex !important;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 100vh;
+
+    background-color: $bg-base;
+    color: $fg;
+}
+
+h1 {
+    font-size: 2.5rem;
+    line-height: 2.5rem;
+    border-bottom: $border;
+    margin-bottom: 1rem;
+
+    &:not(:first-child) {
+        margin-top: 2rem;
+    }
+}
+
+h2 {
+    font-size: 1.75rem;
+    line-height: 1.75rem;
+    margin-bottom: 0.75rem;
+   
+    &:not(:first-child) {
+        margin-top: 1.5rem;
+    }
+}

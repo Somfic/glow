@@ -1,0 +1,27 @@
+@use 'sass:color' as color;
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
+
+$bg-base: #090A13;
+$bg-surface: #24242F;
+$bg-surface-element: #272833;
+
+$fg: #eee;
+
+$primary: #8B6DED;
+$primary-hover: color.scale($primary, $lightness: -10%);
+$primary-active: color.scale($primary, $lightness: -20%);
+
+$secondary: color.mix($primary, $bg-surface, 10%);
+$secondary-hover: color.scale($secondary, $lightness: -10%);
+$secondary-active: color.scale($secondary, $lightness: -20%);
+
+$tertiary: transparent;
+$tertiary-hover: color.mix($secondary, $bg-surface, 10%);
+$tertiary-active: color.scale($tertiary, $lightness: -20%);
+
+$border-color: #30313C;
+$border-width: 2px;
+$border: $border-width solid $border-color;
+
+$radius: 12px;
+$radius-small: 18px;
