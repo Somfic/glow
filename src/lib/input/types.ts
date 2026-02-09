@@ -1,4 +1,4 @@
-import type { IconName } from '$lib/icon/Icon.svelte';
+import type { IconName } from '../icon/Icon.svelte';
 
 export type SelectOption = {
 	value: string;

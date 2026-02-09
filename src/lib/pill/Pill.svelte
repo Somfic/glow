@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Icon, { type IconName } from '$lib/icon/Icon.svelte';
+	import Icon, { type IconName } from '../icon/Icon.svelte';
 
 	interface BaseProps {
 		size?: 'small' | 'medium' | 'large';
@@ -85,12 +85,7 @@
 	{/if}
 
 	{#if props.onRemove}
-		<button
-			type="button"
-			class="pill-remove"
-			onclick={handleRemove}
-			aria-label="Remove"
-		>
+		<button type="button" class="pill-remove" onclick={handleRemove} aria-label="Remove">
 			<Icon name="X" size={size === 'small' ? 10 : size === 'large' ? 14 : 12} />
 		</button>
 	{/if}

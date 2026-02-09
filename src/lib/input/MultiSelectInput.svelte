@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Icon from '$lib/icon/Icon.svelte';
+	import Icon from '../icon/Icon.svelte';
 	import type { SelectOption } from './types.js';
 
 	interface Props {

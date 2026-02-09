@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { IconName } from '$lib/icon/Icon.svelte';
+	import type { IconName } from '../icon/Icon.svelte';
 	import type { SelectOption, ComboboxOption } from './types.js';
 	import TextInput from './TextInput.svelte';
 	import NumberInput from './NumberInput.svelte';

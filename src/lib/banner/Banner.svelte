@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Button from '$lib/button/Button.svelte';
-	import type { IconName } from '$lib/icon/Icon.svelte';
-	import Icon from '$lib/icon/Icon.svelte';
+	import Button from '../button/Button.svelte';
+	import type { IconName } from '../icon/Icon.svelte';
+	import Icon from '../icon/Icon.svelte';
 
 	type Props = {
 		variant: 'info' | 'success' | 'warning' | 'error';
