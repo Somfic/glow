@@ -2,6 +2,7 @@
 	import Icon, { type IconName } from '../icon/Icon.svelte';
 
 	interface Props {
+		id?: string;
 		value?: string;
 		placeholder?: string;
 		icon?: IconName;
@@ -15,6 +16,7 @@
 	}
 
 	let {
+		id,
 		value = '',
 		placeholder,
 		icon,
@@ -52,6 +54,7 @@
 		<Icon name={icon} size={16} />
 	{/if}
 	<input
+		{id}
 		type="text"
 		bind:this={inputElement}
 		value={internalValue}

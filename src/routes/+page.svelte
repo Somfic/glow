@@ -5,6 +5,7 @@
 	import Group from '$lib/group/Group.svelte';
 	import Icon from '$lib/icon/Icon.svelte';
 	import Input from '$lib/input/Input.svelte';
+	import Card from '$lib/media/Card.svelte';
 	import Page from '$lib/page/Page.svelte';
 </script>
 
@@ -17,11 +18,22 @@
 		{ label: 'More', href: '/more' }
 	]}
 >
-	<h1>Buttons</h1>
+	<Group label="Card">
+		<Card
+			src="https://placekitten.com/400/300"
+			badge="#1"
+			badgeVariant="success"
+			title={'Card Title'}
+			tags={[{ label: 'person', color: '#ec4899' }]}
+			actions={[
+				{ icon: 'Heart', label: '5', onclick: () => alert('Liked!') },
+				{ icon: 'Trash', onclick: () => alert('Deleted!') }
+			]}
+		/>
+	</Group>
 
 	<Group
-		label="Regular"
-		icon="Regex"
+		label="Buttons"
 		actions={[
 			{ label: 'Action', onClick: () => alert('Action clicked!') },
 			{ icon: 'Volleyball', onClick: () => alert('Icon action clicked!') }
@@ -30,9 +42,6 @@
 		<Button label="Primary" variant="primary" />
 		<Button label="Secondary" variant="secondary" />
 		<Button label="Ternary" variant="ternary" />
-	</Group>
-
-	<Group label="Button group">
 		<ButtonGroup>
 			<Button label="First" />
 			<Button icon="Volleyball" />

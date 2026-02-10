@@ -2,13 +2,14 @@
 	import type { SelectOption } from './types.js';
 
 	interface Props {
+		id?: string;
 		options: SelectOption[];
 		value?: string;
 		disabled?: boolean;
 		onChange?: (value: string) => void;
 	}
 
-	let { options, value = '', disabled = false, onChange }: Props = $props();
+	let { id, options, value = '', disabled = false, onChange }: Props = $props();
 
 	let internalValue = $state(value);
 
@@ -23,7 +24,7 @@
 	}
 </script>
 
-<div class="segmented-input" class:disabled>
+<div {id} class="segmented-input" class:disabled>
 	{#each options as option}
 		<button
 			type="button"
@@ -45,8 +46,7 @@
 		border: $border;
 		border-radius: $radius;
 		background-color: $bg-surface-element;
-		padding: 3px;
-		gap: 2px;
+		gap: 1px;
 
 		&.disabled {
 			opacity: 0.5;
@@ -56,13 +56,14 @@
 
 	.segment {
 		flex: 1;
-		padding: 0.4em 0.8em;
+		padding: 0.5em 1em;
 		border: none;
-		border-radius: calc($radius - 2px);
+		border-radius: calc($radius - $border-width);
 		background: transparent;
 		color: rgba($fg, 0.7);
 		font: inherit;
-		font-size: 0.875rem;
+		font-size: 1rem;
+		font-weight: 700;
 		cursor: pointer;
 		transition: all 0.15s ease;
 		white-space: nowrap;

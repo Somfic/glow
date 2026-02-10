@@ -3,20 +3,24 @@
 	import type { ComboboxOption } from './types.js';
 
 	interface Props {
+		id?: string;
 		options: ComboboxOption[];
 		value?: string | string[];
 		placeholder?: string;
 		disabled?: boolean;
 		multiple?: boolean;
+		clearable?: boolean;
 		onChange?: (value: string | string[]) => void;
 	}
 
 	let {
+		id,
 		options,
 		value = '',
 		placeholder = 'Search...',
 		disabled = false,
 		multiple = false,
+		clearable = true,
 		onChange
 	}: Props = $props();
 
@@ -220,6 +224,7 @@
 				{/if}
 			{/if}
 			<input
+				{id}
 				type="text"
 				bind:this={inputElement}
 				value={inputValue}
@@ -234,7 +239,7 @@
 			/>
 		</div>
 		<div class="actions">
-			{#if selectedValues.length > 0}
+			{#if clearable && selectedValues.length > 0}
 				<button type="button" class="clear-btn" onclick={clearAll} tabindex="-1">
 					<Icon name="X" size={16} />
 				</button>

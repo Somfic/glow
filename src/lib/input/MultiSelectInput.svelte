@@ -3,6 +3,7 @@
 	import type { SelectOption } from './types.js';
 
 	interface Props {
+		id?: string;
 		options: SelectOption[];
 		value?: string[];
 		placeholder?: string;
@@ -10,7 +11,14 @@
 		onChange?: (value: string[]) => void;
 	}
 
-	let { options, value = [], placeholder = 'Select...', disabled = false, onChange }: Props = $props();
+	let {
+		id,
+		options,
+		value = [],
+		placeholder = 'Select...',
+		disabled = false,
+		onChange
+	}: Props = $props();
 
 	let internalValue = $state(value);
 	let isOpen = $state(false);
@@ -41,6 +49,7 @@
 
 <div class="input multiselect-input" class:disabled class:open={isOpen}>
 	<button
+		{id}
 		type="button"
 		class="multiselect-trigger"
 		{disabled}

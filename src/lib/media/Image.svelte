@@ -1,5 +1,7 @@
 <script lang="ts">
-	let { src }: { src: string } = $props();
+	import { onDestroy } from 'svelte';
+
+	let { src, fit }: { src: string; fit?: 'cover' | 'contain' } = $props();
 
 	let el: HTMLImageElement;
 	let imageLoaded = $state(false);
@@ -22,6 +24,14 @@
 			imageError = false;
 		}
 	});
+
+	// Cancel pending image load on component destroy
+	onDestroy(() => {
+		if (el && !imageLoaded) {
+			// Setting src to empty cancels the pending request
+			el.src = '';
+		}
+	});
 </script>
 
 <div class="image">
@@ -34,10 +44,13 @@
 		bind:this={el}
 		{src}
 		alt=""
+		loading="lazy"
 		onload={handleImageLoad}
 		onerror={handleImageError}
 		class:loaded={imageLoaded}
 		class:error={imageError}
+		class:cover={fit === 'cover'}
+		style="object-fit: {fit || 'contain'}"
 	/>
 </div>
 
@@ -79,6 +92,10 @@
 		display: block;
 		opacity: 0;
 		transition: opacity 0.3s ease;
+
+		&.cover {
+			height: 100%;
+		}
 
 		&.loaded {
 			opacity: 1;

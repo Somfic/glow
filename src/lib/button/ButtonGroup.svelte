@@ -20,6 +20,7 @@
 
 	.button-group {
 		display: inline-flex;
+		border-radius: $radius;
 
 		:global(button) {
 			border-radius: 0px;

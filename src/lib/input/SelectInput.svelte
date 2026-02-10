@@ -3,6 +3,7 @@
 	import type { SelectOption } from './types.js';
 
 	interface Props {
+		id?: string;
 		options: SelectOption[];
 		value?: string;
 		placeholder?: string;
@@ -10,7 +11,7 @@
 		onChange?: (value: string) => void;
 	}
 
-	let { options, value = '', placeholder, disabled = false, onChange }: Props = $props();
+	let { id, options, value = '', placeholder, disabled = false, onChange }: Props = $props();
 
 	let internalValue = $state(value);
 
@@ -27,6 +28,7 @@
 
 <div class="input select-input" class:disabled>
 	<select
+		{id}
 		value={internalValue}
 		{disabled}
 		onchange={handleChange}

@@ -60,7 +60,6 @@
 	class="pill size-{size}"
 	class:image-only={hasImage && !hasLabel}
 	class:removable={props.onRemove}
-	style:--pill-color={color}
 	title={props.label}
 >
 	{#if hasImage && !imageError}
@@ -95,31 +94,29 @@
 	@use '../style/theme.scss' as *;
 
 	.pill {
-		--pill-color: #{$primary};
-
 		display: inline-flex;
 		align-items: center;
 		gap: 0.25em;
-		background: var(--pill-color);
-		color: white;
-		border-radius: 9999px;
+		background: $secondary;
+		color: $fg;
+		border-radius: calc($radius - 2px);
 		font-weight: 500;
 		white-space: nowrap;
 	}
 
 	// Size variants
 	.size-small {
-		padding: 0.2em 0.5em;
+		padding: 0.2em 0.4em;
 		font-size: 0.75rem;
 	}
 
 	.size-medium {
-		padding: 0.25em 0.625em;
+		padding: 0.25em 0.5em;
 		font-size: 0.875rem;
 	}
 
 	.size-large {
-		padding: 0.35em 0.75em;
+		padding: 0.35em 0.625em;
 		font-size: 1rem;
 	}
 
@@ -173,18 +170,17 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(0, 0, 0, 0.2);
+		background: none;
 		border: none;
 		border-radius: 50%;
-		color: inherit;
+		color: rgba($fg, 0.6);
 		cursor: pointer;
-		padding: 0.15em;
-		margin-left: 0.125em;
-		margin-right: -0.25em;
-		transition: background 0.15s ease;
+		padding: 0;
+		transition: color 0.15s ease, background 0.15s ease;
 
 		&:hover {
-			background: rgba(0, 0, 0, 0.4);
+			color: $fg;
+			background: rgba($fg, 0.1);
 		}
 	}
 

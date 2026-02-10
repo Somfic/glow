@@ -81,7 +81,7 @@
 		gap: 0.4em;
 		padding: 0.5em 1em;
 		font-size: 1rem;
-		border: none;
+		border: $border;
 		border-radius: $radius;
 		font-weight: 700;
 		cursor: pointer;

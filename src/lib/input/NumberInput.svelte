@@ -1,5 +1,6 @@
 <script lang="ts">
 	interface Props {
+		id?: string;
 		value?: number;
 		placeholder?: string;
 		min?: number;
@@ -9,7 +10,7 @@
 		onChange?: (value: number) => void;
 	}
 
-	let { value, placeholder, min, max, step, disabled = false, onChange }: Props = $props();
+	let { id, value, placeholder, min, max, step, disabled = false, onChange }: Props = $props();
 
 	let internalValue = $state(value);
 
@@ -28,6 +29,7 @@
 
 <div class="input number-input" class:disabled>
 	<input
+		{id}
 		type="number"
 		value={internalValue ?? ''}
 		{placeholder}
