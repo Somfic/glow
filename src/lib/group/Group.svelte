@@ -30,10 +30,11 @@
 
 	type Props = {
 		actions?: ActionProp[];
+		headerExtra?: import('svelte').Snippet;
 		children?: () => any;
 	} & (IconProps | LabelProps);
 
-	let { label, icon, actions, children }: Props = $props();
+	let { label, icon, actions, headerExtra, children }: Props = $props();
 </script>
 
 <div class="group">
@@ -45,6 +46,9 @@
 			{label}
 		</div>
 		<div class="actions">
+			{#if headerExtra}
+				{@render headerExtra()}
+			{/if}
 			<ButtonGroup noborder>
 				{#each actions ?? [] as action}
 					<Button label={action.label!} icon={action.icon!} onclick={action.onClick} />
@@ -70,12 +74,11 @@
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			padding: 0.5em 1em;
+			padding: 0.25em 1em;
 			padding-right: 0.5em;
 			font-weight: 700;
 			background-color: $border-color;
 			border-radius: $radius-small $radius-small 0 0;
-			min-height: 3.5rem;
 
 			.label {
 				display: flex;
