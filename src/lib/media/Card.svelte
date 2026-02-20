@@ -22,6 +22,13 @@
 		image?: string;
 	};
 
+	type MediaContentProps = {
+		isHovering: boolean;
+		showOverlay: boolean;
+		fit: 'cover' | 'contain';
+		shouldLoad: boolean;
+	};
+
 	let {
 		// Media
 		src,
@@ -51,6 +58,9 @@
 
 		// Bottom overlay (custom snippet)
 		bottomContent,
+
+		// Media content (custom snippet - overrides default media rendering)
+		mediaContent,
 
 		// State
 		selected = false,
@@ -83,6 +93,8 @@
 		tags?: Tag[];
 
 		bottomContent?: Snippet;
+
+		mediaContent?: Snippet<[MediaContentProps]>;
 
 		selected?: boolean;
 		loading?: boolean;
@@ -241,7 +253,9 @@
 >
 	<!-- Media -->
 	<div class="card-media">
-		{#if src}
+		{#if mediaContent}
+			{@render mediaContent({ isHovering, showOverlay, fit, shouldLoad })}
+		{:else if src}
 			{#if isVideo}
 				<!-- Poster layer (always shown first, fades out when video ready) -->
 				{#if poster}
@@ -495,6 +509,7 @@
 		position: absolute;
 		top: 0.5rem;
 		left: 0.5rem;
+		z-index: 5;
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.375rem;
 		font-size: 0.75rem;
