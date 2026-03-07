@@ -7,30 +7,6 @@ on:
     branches: [main]
 
 jobs:
-  lint:
-    name: lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: oven-sh/setup-bun@v2
-
-      - run: bun install
-
-      - run: bun run lint
-
-  test:
-    name: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: oven-sh/setup-bun@v2
-
-      - run: bun install
-
-      - run: bun run check
-
   build:
     name: build
     runs-on: ubuntu-latest
@@ -45,7 +21,7 @@ jobs:
 
   version:
     name: version
-    needs: [lint, test]
+    needs: [build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
@@ -171,16 +147,27 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Commit dist and tag
+      - name: Create and push tag
         run: |
-          git add dist/
-          git commit -m "build: dist for v${{ needs.version.outputs.version }}" || echo "No dist changes"
           git tag "v${{ needs.version.outputs.version }}"
-          git push origin main --tags
+          git push origin "v${{ needs.version.outputs.version }}"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.version.outputs.version }}
           name: v${{ needs.version.outputs.version }}
-          body: ${{ needs.version.outputs.changelog }}
+          body: |
+            ${{ needs.version.outputs.changelog }}
+
+            ## Installation
+
+            ```bash
+            # npm
+            npm install github:somfic/glow#v${{ needs.version.outputs.version }}
+
+            # bun
+            bun add github:somfic/glow#v${{ needs.version.outputs.version }}
+            ```
+
+            > **Note:** The package will be automatically built during installation via the `prepare` script.

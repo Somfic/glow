@@ -32,19 +32,20 @@
 		actions?: ActionProp[];
 		headerExtra?: import('svelte').Snippet;
 		children?: () => any;
+		id?: string;
 	} & (IconProps | LabelProps);
 
-	let { label, icon, actions, headerExtra, children }: Props = $props();
+	let { label, icon, actions, headerExtra, children, id }: Props = $props();
 </script>
 
 <div class="group">
 	<div class="header">
-		<div class="label">
+		<h2 class="label" {id}>
 			{#if icon}
 				<Icon name={icon} size={16} />
 			{/if}
 			{label}
-		</div>
+		</h2>
 		<div class="actions">
 			{#if headerExtra}
 				{@render headerExtra()}
@@ -88,6 +89,8 @@
 				gap: 0.625em;
 				font-size: 0.9375rem;
 				color: rgba($fg, 0.9);
+				margin: 0;
+				font-weight: 600;
 			}
 		}
 

@@ -1,638 +1,178 @@
 <script lang="ts">
-	import Banner from '$lib/banner/Banner.svelte';
-	import Button from '$lib/button/Button.svelte';
-	import ButtonGroup from '$lib/button/ButtonGroup.svelte';
-	import Group from '$lib/group/Group.svelte';
-	import Icon from '$lib/icon/Icon.svelte';
-	import Input from '$lib/input/Input.svelte';
-	import Card from '$lib/media/Card.svelte';
-	import Modal from '$lib/modal/Modal.svelte';
 	import Page from '$lib/page/Page.svelte';
-	import { tooltip } from '$lib/tooltip/tooltip.svelte.js';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Code from '$lib/code/Code.svelte';
+	import Button from '$lib/button/Button.svelte';
+	import Group from '$lib/group/Group.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
-	import { cursor } from '$lib/cursor/cursor.svelte.js';
 	import GradientMesh from '$lib/gradient/GradientMesh.svelte';
-
-	let demoModal: any;
-	let confirmModal: any;
-	let largeModal: any;
-
-	// Async action for loading demo
-	async function simulateAsync() {
-		await new Promise((resolve) => setTimeout(resolve, 2000));
-		alert('Action completed!');
-	}
+	import Card from '$lib/card/Card.svelte';
 </script>
 
 <Page
 	title="Home"
 	navItems={[
 		{ label: 'Home', href: '/' },
-		{ label: 'About', href: '/about' },
-		{ label: 'Contact', href: '/contact' },
-		{ label: 'More', href: '/more' }
+		{ label: 'Components', href: '/components' }
 	]}
 >
-	<Group label="✨ Custom Cursor Demo">
-		<div style="display: flex; flex-direction: column; gap: 1.5rem;">
-			<Text>
-				Watch the white dot cursor transform as you move around! Hover over different elements to see
-				the morphing animations. <strong>Click anywhere to see the cursor shrink!</strong>
-			</Text>
-
-			<div style="padding: 1.5rem; border: 2px solid #30313c; border-radius: 12px;">
-				<Heading level={4}>🔵 Default Dot</Heading>
-				<Text variant="secondary">Move your cursor in this area - small white dot</Text>
-			</div>
-
-			<div style="padding: 1.5rem; border: 2px solid #8B6DED; border-radius: 12px;">
-				<Heading level={4}>👆 Pointer & Icon Mirroring</Heading>
-				<Text variant="secondary" size="sm">
-					All clickable elements are 32px - buttons with icons mirror them in cursor!
-				</Text>
-				<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem;">
-					<Button label="Regular button" />
-					<Button icon="Heart" label="With icon" variant="secondary" />
-					<Button icon="Trash" label="Delete" variant="ternary" />
-					<Button icon="Info" />
-					<Button icon="Volleyball" />
-					<a href="#demo">plain link</a>
-				</div>
-			</div>
-
-			<div style="padding: 1.5rem; border: 2px solid #f97316; border-radius: 12px;">
-				<Heading level={4}>⏳ Loading State</Heading>
-				<Text variant="secondary" size="sm">
-					Cursor shows spinner during async button actions
-				</Text>
-				<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem;">
-					<Button label="Click me (2s delay)" onclick={simulateAsync} />
-					<Button icon="Download" label="Download" variant="secondary" onclick={simulateAsync} />
-				</div>
-			</div>
-
-			<div style="padding: 1.5rem; border: 2px solid #8B6DED; border-radius: 12px;">
-				<Heading level={4}>🖍️ Text Selection Line</Heading>
-				<Text variant="secondary" size="sm">
-					Cursor becomes a vertical white line matching text height for precise selection
-				</Text>
-				<div style="margin-top: 0.75rem; padding: 1rem; background: rgba(139, 109, 237, 0.1); border-radius: 8px;">
-					<Text>
-						Try selecting this text! Click and drag to highlight, and watch the cursor transform
-						into a thin vertical line. The line automatically adjusts to match the height of the
-						text you're selecting, making it easier to see exactly where your selection boundary
-						is. This works anywhere on the page where text can be selected.
-					</Text>
-					<div style="margin-top: 1rem;">
-						<Text size="xl" weight="bold">Large text has a taller line!</Text>
-					</div>
-				</div>
-			</div>
-
-			<div style="padding: 1.5rem; border: 2px solid #22c55e; border-radius: 12px;">
-				<Heading level={4}>📋 Copy Icon</Heading>
-				<Text variant="secondary" size="sm">Hover shell commands to see copy icon in cursor</Text>
-				<div style="margin-top: 0.75rem;">
-					<CodeBlock
-						language="bash"
-						code={`npm install glow-ui
-bun run dev`}
-					/>
-				</div>
-			</div>
-
-			<div style="padding: 1.5rem; border: 2px solid #3b82f6; border-radius: 12px;">
-				<Heading level={4}>📝 Text Cursor</Heading>
-				<Input type="text" placeholder="Hover to see text I-beam icon" />
-			</div>
-
-			<div style="padding: 1.5rem; border: 2px solid #10b981; border-radius: 12px;">
-				<Heading level={4}>✅ Checkbox States</Heading>
-				<Text variant="secondary" size="sm">
-					Cursor shows checked/unchecked state dynamically
-				</Text>
-				<div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem;">
-					<Input type="checkbox" checkboxLabel="Unchecked - hover to see empty square" />
-					<Input
-						type="checkbox"
-						checked={true}
-						checkboxLabel="Checked - hover to see check mark"
-					/>
-					<Input
-						type="checkbox"
-						indeterminate={true}
-						checkboxLabel="Indeterminate - hover to see minus"
-					/>
-				</div>
-			</div>
-
-			<div style="padding: 1.5rem; border: 2px solid #8b5cf6; border-radius: 12px;">
-				<Heading level={4}>🔀 Toggle States</Heading>
-				<Text variant="secondary" size="sm">
-					Cursor shows toggle position (left/right)
-				</Text>
-				<div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem;">
-					<Input type="toggle" toggleLabel="Off - hover to see toggle left" />
-					<Input type="toggle" checked={true} toggleLabel="On - hover to see toggle right" />
-				</div>
-			</div>
-
-			<div style="padding: 1.5rem; border: 2px solid #f59e0b; border-radius: 12px;">
-				<Heading level={4}>💬 Tooltip in Cursor</Heading>
-				<div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
-					<button class="demo-btn" use:tooltip={'Tooltip shows inside cursor!'}>
-						Hover for tooltip
-					</button>
-					<button
-						class="demo-btn"
-						use:tooltip={'Cursor expands to show this message'}
-					>
-						Another tooltip
-					</button>
-					<button
-						class="demo-btn"
-						use:tooltip={'✨ Works with emojis too!'}
-					>
-						With emoji
-					</button>
-				</div>
-			</div>
-
-			<div
-				style="padding: 1.5rem; border: 2px solid #ec4899; border-radius: 12px;"
-				use:cursor={{ state: 'copy', content: 'Custom content!' }}
+	<div style="position: relative; margin-bottom: 4rem;">
+		<div
+			style="position: relative; height: 400px; border-radius: 12px; overflow: hidden; margin-bottom: 2rem;"
+		>
+			<GradientMesh
+				colors={['#8B6DED', '#FF006E', '#06FFA5', '#FFD60A']}
+				intensity={0.6}
+				speed={1.2}
 			>
-				<Heading level={4}>⚡ Custom Cursor Content</Heading>
-				<Text variant="secondary">
-					Using <Code>use:cursor</Code> action with custom content
-				</Text>
-			</div>
-		</div>
-	</Group>
-
-	<Group label="🌈 Gradient Mesh Background">
-		<div style="display: flex; flex-direction: column; gap: 1.5rem;">
-			<Text>
-				An animated gradient mesh background with smooth, organic flowing motion. The gradient
-				blobs move in gentle orbital patterns, creating a mesmerizing, lava-lamp-like effect.
-			</Text>
-
-			<div style="position: relative; height: 400px; border-radius: 12px; overflow: hidden;">
-				<GradientMesh
-					colors={['#8B6DED', '#FF006E', '#06FFA5', '#FFD60A']}
-					intensity={0.6}
-					speed={1.2}
+				<div
+					style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 2rem;"
 				>
 					<div
-						style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 2rem;"
+						style="background: rgba(30, 31, 41, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 3rem; max-width: 600px; text-align: center;"
 					>
-						<div
-							style="background: rgba(30, 31, 41, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 2rem; max-width: 500px;"
-						>
-							<Heading level={3}>Flowing Gradient Mesh</Heading>
-							<Text>
-								Watch the gradient blobs flow and pulse in smooth, organic patterns. Each blob
-								follows its own orbital path, creating a constantly-evolving ambient background.
-							</Text>
-							<div style="margin-top: 1rem;">
-								<Button label="Beautiful!" variant="primary" />
-							</div>
+						<Heading level={1} style="margin-bottom: 1rem;">Glow UI</Heading>
+						<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
+							A modern, accessible UI component library for Svelte 5 with custom cursor effects,
+							gradient animations, and beautiful components.
+						</Text>
+						<div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+							<Button
+								label="Browse Components"
+								variant="primary"
+								onclick={() => (window.location.href = '/components')}
+							/>
+							<Button
+								label="View on GitHub"
+								variant="secondary"
+								icon="Github"
+								onclick={() => window.open('https://github.com/Somfic/glow', '_blank')}
+							/>
 						</div>
 					</div>
-				</GradientMesh>
-			</div>
-
-			<div>
-				<Heading level={4}>Usage</Heading>
-				<CodeBlock
-					language="svelte"
-					code={`<GradientMesh
-  colors={['#8B6DED', '#FF006E', '#06FFA5', '#FFD60A']}
-  intensity={0.6}
-  speed={1.2}
->
-  <YourContent />
-</GradientMesh>`}
-				/>
-			</div>
-
-			<div>
-				<Heading level={4}>Features</Heading>
-				<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-					<li>
-						<Text>🎨 Customizable colors - pass any array of hex colors</Text>
-					</li>
-					<li>
-						<Text>⚡ Smooth 60fps animation using requestAnimationFrame</Text>
-					</li>
-					<li>
-						<Text>🌊 Organic flowing motion - blobs move in orbital patterns</Text>
-					</li>
-					<li>
-						<Text>💫 Gentle pulsing effect - blobs subtly grow and shrink</Text>
-					</li>
-					<li>
-						<Text>🎚️ Adjustable intensity (0-1) for blob opacity</Text>
-					</li>
-					<li>
-						<Text>🏃 Speed control (0-2) for animation speed</Text>
-					</li>
-					<li>
-						<Text>♿ Respects prefers-reduced-motion for accessibility</Text>
-					</li>
-					<li>
-						<Text>📱 Works on desktop and mobile</Text>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</Group>
-
-	<Group label="Code">
-		<div style="display: flex; flex-direction: column; gap: 1rem;">
-			<div>
-				<h3>Inline Code</h3>
-				<p>
-					You can use <Code>inline code</Code> within text, like <Code>const x = 42;</Code> or
-					<Code>npm install</Code>.
-				</p>
-			</div>
-
-			<div>
-				<h3>Code Block - JavaScript</h3>
-				<CodeBlock
-					language="javascript"
-					code={`function fibonacci(n) {
-  if (n <= 1) return n;
-  return fibonacci(n - 1) + fibonacci(n - 2);
-}
-
-console.log(fibonacci(10)); // 55`}
-				/>
-			</div>
-
-			<div>
-				<h3>Code Block with Line Numbers</h3>
-				<CodeBlock
-					language="typescript"
-					showLineNumbers
-					code={`interface User {
-  id: number;
-  name: string;
-  email: string;
-}
-
-const createUser = (data: Partial<User>): User => {
-  return {
-    id: Math.random(),
-    name: data.name ?? 'Anonymous',
-    email: data.email ?? 'no-email@example.com'
-  };
-};`}
-				/>
-			</div>
-
-			<div>
-				<h3>Auto-detected from Filename</h3>
-				<CodeBlock
-					filename="example.tsx"
-					code={`import { Button } from '@/components';
-
-export function Example() {
-  return (
-    <div>
-      <Button onClick={() => alert('Hello!')}>
-        Click me
-      </Button>
-    </div>
-  );
-}`}
-				/>
-			</div>
-
-			<div>
-				<h3>More Auto-detection Examples</h3>
-				<div style="display: flex; flex-direction: column; gap: 1rem;">
-					<CodeBlock
-						filename="config.json"
-						code={`{
-  "name": "my-app",
-  "version": "1.0.0"
-}`}
-					/>
-					<CodeBlock
-						filename="styles.css"
-						code={`.button {
-  background: #8B6DED;
-  border-radius: 8px;
-}`}
-					/>
-					<CodeBlock
-						filename="script.py"
-						code={`def fibonacci(n):
-    if n <= 1:
-        return n
-    return fibonacci(n-1) + fibonacci(n-2)`}
-					/>
 				</div>
-			</div>
-
-			<div>
-				<h3>Shell/Terminal Mode</h3>
-				<CodeBlock
-					language="bash"
-					code={`npm install glow-ui
-npm run dev
-bun test`}
-				/>
-			</div>
+			</GradientMesh>
 		</div>
-	</Group>
+	</div>
 
-	<Group label="Typography">
-		<div style="display: flex; flex-direction: column; gap: 1.5rem;">
-			<div>
-				<Heading level={1}>Heading 1 - Main Title</Heading>
-				<Heading level={2}>Heading 2 - Section Title</Heading>
-				<Heading level={3}>Heading 3 - Subsection</Heading>
-				<Heading level={4}>Heading 4 - Component Title</Heading>
-				<Heading level={5}>Heading 5 - Small Heading</Heading>
-				<Heading level={6}>Heading 6 - Minor Heading</Heading>
-			</div>
-
-			<div>
-				<Heading level={3}>Text Sizes</Heading>
-				<Text size="xl">Extra large text - For emphasis and introduction</Text>
-				<Text size="lg">Large text - For secondary emphasis</Text>
-				<Text size="base">Base text - Standard body text for most content</Text>
-				<Text size="sm">Small text - For captions and secondary information</Text>
-				<Text size="xs">Extra small text - For metadata and fine print</Text>
-			</div>
-
-			<div>
-				<Heading level={3}>Text Variants</Heading>
-				<Text variant="primary">Primary text - Standard readable text</Text>
-				<Text variant="secondary">Secondary text - Less prominent information</Text>
-				<Text variant="muted">Muted text - Subtle background information</Text>
-			</div>
-
-			<div>
-				<Heading level={3}>Text Weights</Heading>
-				<Text weight="normal">Normal weight - Regular text</Text>
-				<Text weight="medium">Medium weight - Slightly emphasized</Text>
-				<Text weight="semibold">Semibold weight - Emphasized text</Text>
-				<Text weight="bold">Bold weight - Strong emphasis</Text>
-			</div>
-
-			<div>
-				<Heading level={3}>Example Content</Heading>
-				<Text size="lg" weight="semibold">Introduction Paragraph</Text>
-				<Text>
-					This is a standard paragraph with normal text. It demonstrates how body text appears in
-					the design system with proper line height and spacing. The text should be easily readable
-					and comfortable to scan.
+	<Group label="Features">
+		<div
+			style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1rem;"
+		>
+			<Card icon="Sparkles" accentColor="rgba(139, 109, 237">
+				<Heading level={3}>Custom Cursor</Heading>
+				<Text variant="secondary" size="sm">
+					Context-aware cursor that morphs based on what you're hovering - buttons, text,
+					checkboxes, and more.
 				</Text>
-				<Text variant="secondary">
-					This is secondary text that provides additional context or supporting information. It's
-					less prominent but still readable.
+			</Card>
+
+			<Card icon="Palette" accentColor="rgba(34, 197, 94">
+				<Heading level={3}>Beautiful Design</Heading>
+				<Text variant="secondary" size="sm">
+					Modern, clean design with smooth animations, gradients, and thoughtful interactions.
 				</Text>
-			</div>
+			</Card>
+
+			<Card icon="Zap" accentColor="rgba(59, 130, 246">
+				<Heading level={3}>High Performance</Heading>
+				<Text variant="secondary" size="sm">
+					Virtual scrolling for large datasets, optimized animations, and efficient rendering.
+				</Text>
+			</Card>
+
+			<Card icon="Accessibility" accentColor="rgba(249, 115, 22">
+				<Heading level={3}>Accessible</Heading>
+				<Text variant="secondary" size="sm">
+					Built with WCAG 2.1 guidelines in mind. Keyboard navigation, screen reader support, and
+					semantic HTML.
+				</Text>
+			</Card>
+
+			<Card icon="Wrench" accentColor="rgba(236, 72, 153">
+				<Heading level={3}>TypeScript</Heading>
+				<Text variant="secondary" size="sm">
+					Fully typed with TypeScript for better developer experience and autocomplete.
+				</Text>
+			</Card>
+
+			<Card icon="Target" accentColor="rgba(168, 85, 247">
+				<Heading level={3}>Svelte 5</Heading>
+				<Text variant="secondary" size="sm">
+					Built for Svelte 5 with runes, snippets, and modern reactive patterns.
+				</Text>
+			</Card>
 		</div>
 	</Group>
 
-	<Group label="Card">
-		<Card
-			src="https://placekitten.com/400/300"
-			badge="#1"
-			badgeVariant="success"
-			title={'Card Title'}
-			tags={[{ label: 'person', color: '#ec4899' }]}
-			actions={[
-				{ icon: 'Heart', label: '5', onclick: () => alert('Liked!') },
-				{ icon: 'Trash', onclick: () => alert('Deleted!') }
-			]}
+	<Group label="Quick Start">
+		<Text variant="secondary" style="margin-bottom: 1rem;">
+			Get started with Glow UI in your Svelte project.
+		</Text>
+
+		<Heading level={3}>Installation</Heading>
+		<CodeBlock
+			language="bash"
+			code={`npm install glow-ui
+# or
+bun add glow-ui`}
+		/>
+
+		<Heading level={3} style="margin-top: 2rem;">Usage</Heading>
+		<CodeBlock
+			language="svelte"
+			code={`<script>
+  import { Button, Input, Table } from 'glow-ui';
+
+  let name = $state('');
+</script>
+
+<Input
+  type="text"
+  label="Name"
+  bind:value={name}
+  placeholder="Enter your name"
+/>
+
+<Button label="Submit" variant="primary" />`}
 		/>
 	</Group>
 
-	<Group label="Modal">
-		<Button label="Open Basic Modal" onclick={() => demoModal.open()} />
-		<Button label="Open Confirm Dialog" onclick={() => confirmModal.open()} />
-		<Button label="Open Large Modal" onclick={() => largeModal.open()} />
-
-		<Modal
-			bind:this={demoModal}
-			title="Example Modal"
-			size="medium"
-			actions={[
-				{ label: 'Close', onclick: () => demoModal.close() },
-				{ label: 'Save', variant: 'primary', onclick: () => demoModal.close() }
-			]}
+	<Group label="Component Categories">
+		<div
+			style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 1rem;"
 		>
-			<p>This is a modal dialog with default content.</p>
-			<p>
-				You can click outside the modal or press Escape to close it. The modal includes focus
-				management and keyboard navigation.
-			</p>
-		</Modal>
+			<Card
+				href="/components"
+				title="Form & Input"
+				description="Buttons, text inputs, selects, checkboxes, and more"
+			/>
 
-		<Modal
-			bind:this={confirmModal}
-			title="Confirm Delete"
-			icon="Trash"
-			size="small"
-			closeOnBackdropClick={false}
-			actions={[
-				{ label: 'Cancel', onclick: () => confirmModal.close() },
-				{
-					label: 'Delete',
-					variant: 'primary',
-					onclick: () => {
-						alert('Item deleted!');
-						confirmModal.close();
-					}
-				}
-			]}
-		>
-			<p>Are you sure you want to delete this item? This action cannot be undone.</p>
-		</Modal>
+			<Card
+				href="/components"
+				title="Data Display"
+				description="Tables, lists, cards with sorting and virtual scrolling"
+			/>
 
-		<Modal
-			bind:this={largeModal}
-			title="Large Modal with Subtitle"
-			subtitle="This demonstrates the subtitle feature"
-			icon="Info"
-			size="large"
-			actions={[{ label: 'Close', onclick: () => largeModal.close() }]}
-		>
-			<p>This modal uses title, subtitle, and icon props for a clean header.</p>
-			<p>
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
-				labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-				laboris.
-			</p>
-			<p>
-				Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-				pariatur.
-			</p>
-		</Modal>
-	</Group>
+			<Card
+				href="/components"
+				title="Navigation"
+				description="Tabs, table of contents, breadcrumbs"
+			/>
 
-	<Group label="Tooltip">
-		<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-			<button class="demo-btn" use:tooltip={'This is a tooltip on top'}>Hover me (top)</button>
-			<button
-				class="demo-btn"
-				use:tooltip={{ content: 'This is a tooltip on bottom', position: 'bottom' }}
-			>
-				Hover me (bottom)
-			</button>
-			<button
-				class="demo-btn"
-				use:tooltip={{ content: 'This is a tooltip on left', position: 'left' }}
-			>
-				Hover me (left)
-			</button>
-			<button
-				class="demo-btn"
-				use:tooltip={{ content: 'This is a tooltip on right', position: 'right' }}
-			>
-				Hover me (right)
-			</button>
-			<span
-				class="demo-icon"
-				use:tooltip={'Tooltips work on any element!'}
-				role="img"
-				aria-label="Info"
-			>
-				ℹ️
-			</span>
+			<Card
+				href="/components"
+				title="Feedback"
+				description="Modals, toasts, tooltips, banners"
+			/>
 		</div>
-	</Group>
 
-	<Group
-		label="Buttons"
-		actions={[
-			{ label: 'Action', onClick: () => alert('Action clicked!') },
-			{ icon: 'Volleyball', onClick: () => alert('Icon action clicked!') }
-		]}
-	>
-		<Button label="Primary" variant="primary" />
-		<Button label="Secondary" variant="secondary" />
-		<Button label="Ternary" variant="ternary" />
-		<ButtonGroup>
-			<Button label="First" />
-			<Button icon="Volleyball" />
-			<Button label="Third" />
-		</ButtonGroup>
-	</Group>
-
-	<Group label="Banners">
-		<Banner variant="info" label="Info banner" />
-		<Banner variant="success" label="Success banner" />
-		<Banner variant="warning" label="Warning banner" />
-		<Banner variant="error" label="Error banner" />
-	</Group>
-
-	<h1>Icons</h1>
-	<Icon name="Volleyball" />
-
-	<Group label="Inputs">
-		<Input
-			type="text"
-			label="Text Input"
-			placeholder="Enter text..."
-			icon="Volleyball"
-			clearable={true}
-			required={true}
-		/>
-
-		<Input
-			type="number"
-			label="Number Input"
-			placeholder="Enter number..."
-			min={0}
-			max={100}
-			step={5}
-			clearable={true}
-		/>
-
-		<Input
-			type="textarea"
-			label="Textarea Input"
-			placeholder="Enter multiple lines..."
-			rows={3}
-			clearable={true}
-		/>
-
-		<Input type="checkbox" label="Checkbox Input" checkboxLabel="I agree to the terms" />
-
-		<Input type="toggle" label="Toggle Input" toggleLabel="Enable notifications" />
-
-		<Input type="range" label="Range Input" min={0} max={100} step={5} showValue={true} />
-
-		<Input type="color" label="Color Input (OKLAB)" value="#3b82f6" />
-
-		<Input
-			type="multiselect"
-			label="Multi-Select Input"
-			placeholder="Choose multiple options..."
-			clearable={true}
-			options={[
-				{ label: 'Red', value: 'red' },
-				{ label: 'Green', value: 'green' },
-				{ label: 'Blue', value: 'blue' },
-				{ label: 'Yellow', value: 'yellow' }
-			]}
-		/>
-
-		<Input
-			type="radio"
-			label="Radio Input"
-			clearable={true}
-			options={[
-				{ label: 'Daily', value: 'daily' },
-				{ label: 'Weekly', value: 'weekly' },
-				{ label: 'Monthly', value: 'monthly' }
-			]}
-		/>
-
-		<Input
-			type="select"
-			label="Select Input"
-			placeholder="Search and select..."
-			clearable={true}
-			options={[
-				{ label: 'Apple', value: 'apple' },
-				{ label: 'Banana', value: 'banana' },
-				{ label: 'Cherry', value: 'cherry' },
-				{ label: 'Date', value: 'date' }
-			]}
-		/>
+		<div style="text-align: center; margin-top: 2rem;">
+			<Button
+				label="View All Components"
+				variant="primary"
+				onclick={() => (window.location.href = '/components')}
+			/>
+		</div>
 	</Group>
 </Page>
-
-<style>
-	.demo-btn {
-		padding: 0.5rem 1rem;
-		border: 1px solid #30313c;
-		border-radius: 8px;
-		background: #1e1f29;
-		color: #eee;
-		cursor: pointer;
-		font-size: 0.875rem;
-		transition: background 0.15s;
-	}
-
-	.demo-btn:hover {
-		background: #2a2b37;
-	}
-
-	.demo-icon {
-		font-size: 1.25rem;
-		cursor: pointer;
-		padding: 0.25rem;
-	}
-</style>

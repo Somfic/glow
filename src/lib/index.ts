@@ -15,7 +15,8 @@ export { default as Pill } from "./pill/Pill.svelte";
 export type { NavItem } from "./page/Navigation.svelte";
 export { default as Image } from "./media/Image.svelte";
 export { default as Media } from "./media/Media.svelte";
-export { default as Card } from "./media/Card.svelte";
+export { default as MediaCard } from "./media/MediaCard.svelte";
+export { default as Card } from "./card/Card.svelte";
 export { default as Lightbox, type RelatedMedia } from "./media/Lightbox.svelte";
 export { default as Modal } from "./modal/Modal.svelte";
 export { default as Toast } from "./toast/Toast.svelte";
@@ -32,3 +33,20 @@ export { cursor } from "./cursor/cursor.svelte.js";
 export type { CursorConfig, CursorState } from "./cursor/cursor.svelte.js";
 export { default as CursorProvider } from "./cursor/CursorProvider.svelte";
 export { default as GradientMesh } from "./gradient/GradientMesh.svelte";
+
+// Data display components
+export { default as Table } from "./data/Table.svelte";
+export { default as VirtualList } from "./data/VirtualList.svelte";
+export { default as List } from "./data/List.svelte";
+export { default as ListItem } from "./data/ListItem.svelte";
+export type {
+	TableProps,
+	TableColumn,
+	TableSort,
+	TableRowAction,
+	VirtualListProps,
+	ListProps,
+	ListItem as ListItemType
+} from "./data/types.js";
+export { default as TableOfContents } from "./navigation/TableOfContents.svelte";
+export { default as Tabs } from "./tabs/Tabs.svelte";

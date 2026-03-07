@@ -19,15 +19,30 @@
 </script>
 
 {#if as === 'p'}
-	<p class="text size-{size} variant-{variant} weight-{weight}" class:align-left={align === 'left'} class:align-center={align === 'center'} class:align-right={align === 'right'}>
+	<p
+		class="text size-{size} variant-{variant} weight-{weight}"
+		class:align-left={align === 'left'}
+		class:align-center={align === 'center'}
+		class:align-right={align === 'right'}
+	>
 		{@render children()}
 	</p>
 {:else if as === 'span'}
-	<span class="text size-{size} variant-{variant} weight-{weight}" class:align-left={align === 'left'} class:align-center={align === 'center'} class:align-right={align === 'right'}>
+	<span
+		class="text size-{size} variant-{variant} weight-{weight}"
+		class:align-left={align === 'left'}
+		class:align-center={align === 'center'}
+		class:align-right={align === 'right'}
+	>
 		{@render children()}
 	</span>
 {:else}
-	<div class="text size-{size} variant-{variant} weight-{weight}" class:align-left={align === 'left'} class:align-center={align === 'center'} class:align-right={align === 'right'}>
+	<div
+		class="text size-{size} variant-{variant} weight-{weight}"
+		class:align-left={align === 'left'}
+		class:align-center={align === 'center'}
+		class:align-right={align === 'right'}
+	>
 		{@render children()}
 	</div>
 {/if}
