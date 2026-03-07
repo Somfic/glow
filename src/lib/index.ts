@@ -24,3 +24,5 @@ export { toast, showToast, dismissToast, toasts } from "./toast/toast.svelte.js"
 export type { Toast as ToastType, ToastVariant, ToastOptions } from "./toast/toast.svelte.js";
 export { tooltip } from "./tooltip/tooltip.svelte.js";
 export type { TooltipOptions, TooltipParams, TooltipPosition } from "./tooltip/tooltip.svelte.js";
+export { default as Heading } from "./typography/Heading.svelte";
+export { default as Text } from "./typography/Text.svelte";

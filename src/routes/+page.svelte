@@ -9,6 +9,8 @@
 	import Modal from '$lib/modal/Modal.svelte';
 	import Page from '$lib/page/Page.svelte';
 	import { tooltip } from '$lib/tooltip/tooltip.svelte.js';
+	import Heading from '$lib/typography/Heading.svelte';
+	import Text from '$lib/typography/Text.svelte';
 
 	let demoModal: any;
 	let confirmModal: any;
@@ -24,6 +26,57 @@
 		{ label: 'More', href: '/more' }
 	]}
 >
+	<Group label="Typography">
+		<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+			<div>
+				<Heading level={1}>Heading 1 - Main Title</Heading>
+				<Heading level={2}>Heading 2 - Section Title</Heading>
+				<Heading level={3}>Heading 3 - Subsection</Heading>
+				<Heading level={4}>Heading 4 - Component Title</Heading>
+				<Heading level={5}>Heading 5 - Small Heading</Heading>
+				<Heading level={6}>Heading 6 - Minor Heading</Heading>
+			</div>
+
+			<div>
+				<Heading level={3}>Text Sizes</Heading>
+				<Text size="xl">Extra large text - For emphasis and introduction</Text>
+				<Text size="lg">Large text - For secondary emphasis</Text>
+				<Text size="base">Base text - Standard body text for most content</Text>
+				<Text size="sm">Small text - For captions and secondary information</Text>
+				<Text size="xs">Extra small text - For metadata and fine print</Text>
+			</div>
+
+			<div>
+				<Heading level={3}>Text Variants</Heading>
+				<Text variant="primary">Primary text - Standard readable text</Text>
+				<Text variant="secondary">Secondary text - Less prominent information</Text>
+				<Text variant="muted">Muted text - Subtle background information</Text>
+			</div>
+
+			<div>
+				<Heading level={3}>Text Weights</Heading>
+				<Text weight="normal">Normal weight - Regular text</Text>
+				<Text weight="medium">Medium weight - Slightly emphasized</Text>
+				<Text weight="semibold">Semibold weight - Emphasized text</Text>
+				<Text weight="bold">Bold weight - Strong emphasis</Text>
+			</div>
+
+			<div>
+				<Heading level={3}>Example Content</Heading>
+				<Text size="lg" weight="semibold">Introduction Paragraph</Text>
+				<Text>
+					This is a standard paragraph with normal text. It demonstrates how body text appears in
+					the design system with proper line height and spacing. The text should be easily readable
+					and comfortable to scan.
+				</Text>
+				<Text variant="secondary">
+					This is secondary text that provides additional context or supporting information. It's
+					less prominent but still readable.
+				</Text>
+			</div>
+		</div>
+	</Group>
+
 	<Group label="Card">
 		<Card
 			src="https://placekitten.com/400/300"
