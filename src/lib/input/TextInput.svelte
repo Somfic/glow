@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Icon, { type IconName } from '../icon/Icon.svelte';
+	import { cursor } from '../cursor/cursor.svelte.js';
 
 	interface Props {
 		id?: string;
@@ -57,7 +58,11 @@
 	}
 </script>
 
-<div class="input text-input" class:disabled>
+<div
+	class="input text-input"
+	class:disabled
+	use:cursor={icon ? { state: 'text', iconName: icon } : { state: 'text' }}
+>
 	{#if icon}
 		<Icon name={icon} size={16} />
 	{/if}

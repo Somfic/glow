@@ -82,15 +82,12 @@
 </script>
 
 <div class="code-block" class:shell-mode={isShellMode}>
-	<div class="code-header">
-		<div class="code-info">
-			{#if label}
-				<span class="language">{label}</span>
-			{/if}
-		</div>
-		<Button icon="Copy" variant="ternary" onclick={copyCode} />
-	</div>
 	<div class="code-content" style:max-height={maxHeight}>
+		{#if !isShellMode}
+			<div class="copy-button">
+				<Button icon="Copy" variant="ternary" onclick={copyCode} />
+			</div>
+		{/if}
 		{#if isShellMode}
 			<div class="shell-content">
 				{#each shellCommands as command}
@@ -149,45 +146,21 @@
 			'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Dank Mono', 'Source Code Pro', monospace;
 	}
 
-	.code-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 0.5rem 0.75rem;
-		border-bottom: $border;
-		background: rgba($bg-surface-element, 0.5);
-		min-height: 2.5rem;
-	}
+	.copy-button {
+		position: absolute;
+		top: 0.75rem;
+		right: 0.75rem;
+		opacity: 0;
+		transition: opacity 0.2s;
+		z-index: 10;
 
-	.code-info {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		flex: 1;
-		min-width: 0;
-	}
-
-	.filename {
-		font-size: $text-sm;
-		color: $text-primary;
-		font-weight: 600;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.language {
-		font-size: $text-xs;
-		color: $text-secondary;
-		text-transform: uppercase;
-		font-weight: 600;
-		letter-spacing: 0.05em;
-		padding: 0.125rem 0.5rem;
-		background: rgba($primary, 0.2);
-		border-radius: 4px;
+		.code-block:hover & {
+			opacity: 1;
+		}
 	}
 
 	.code-content {
+		position: relative;
 		overflow: auto;
 
 		&::-webkit-scrollbar {

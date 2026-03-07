@@ -22,6 +22,9 @@ type CursorStore = {
 	loading: boolean; // Loading state from buttons
 	selecting: boolean; // User is selecting text
 	selectionHeight: number; // Height for selection line
+	variant: string | null; // Button variant (primary/secondary/ternary)
+	isLink: boolean; // Is hovering a link (for horizontal line style)
+	linkWidth: number; // Width of link text for horizontal line
 };
 
 // Global cursor state using Svelte 5 runes
@@ -36,7 +39,10 @@ let cursorState = $state<CursorStore>({
 	pressed: false,
 	loading: false,
 	selecting: false,
-	selectionHeight: 20
+	selectionHeight: 20,
+	variant: null,
+	isLink: false,
+	linkWidth: 0
 });
 
 // Cursor action configuration
@@ -45,49 +51,50 @@ export type CursorConfig = {
 	content?: string;
 	icon?: string;
 	iconName?: string; // Icon component name
+	variant?: string; // Button variant (primary/secondary/ternary)
 	onHover?: () => void;
 	onClick?: () => void;
 };
 
 export function cursor(node: HTMLElement, config: CursorConfig = {}) {
-	const { state = 'pointer', content, icon, iconName, onHover, onClick } = config;
+	const { state = 'pointer', content, icon, iconName, variant, onHover, onClick } = config;
 
-	// Mark element as having explicit cursor control
+	// Mark element as having explicit cursor control and store config in data attributes
+	// CursorProvider will read these attributes and handle the cursor state
 	node.setAttribute('data-cursor-controlled', 'true');
+	if (state) node.setAttribute('data-cursor-state', state);
+	if (iconName) node.setAttribute('data-cursor-icon', iconName);
+	if (content) node.setAttribute('data-cursor-content', content);
+	if (variant) node.setAttribute('data-cursor-variant', variant);
 
-	function handleMouseEnter() {
-		cursorState.state = state;
-		cursorState.content = content || null;
-		cursorState.icon = icon || null;
-		cursorState.iconName = iconName || null;
-		onHover?.();
+	// Store callbacks in a map for CursorProvider to access
+	if (onHover || onClick) {
+		const callbacks = { onHover, onClick };
+		(node as any).__cursorCallbacks = callbacks;
 	}
-
-	function handleMouseLeave() {
-		cursorState.state = 'default';
-		cursorState.content = null;
-		cursorState.icon = null;
-		cursorState.iconName = null;
-	}
-
-	function handleClick() {
-		onClick?.();
-	}
-
-	node.addEventListener('mouseenter', handleMouseEnter);
-	node.addEventListener('mouseleave', handleMouseLeave);
-	if (onClick) node.addEventListener('click', handleClick);
 
 	return {
 		update(newConfig: CursorConfig) {
-			const { state: newState = 'pointer', onHover: newOnHover, onClick: newOnClick } = newConfig;
-			// Update handlers if needed
+			const { state: newState = 'pointer', content: newContent, icon: newIcon, iconName: newIconName, variant: newVariant, onHover: newOnHover, onClick: newOnClick } = newConfig;
+			if (newState) node.setAttribute('data-cursor-state', newState);
+			if (newIconName) node.setAttribute('data-cursor-icon', newIconName);
+			else node.removeAttribute('data-cursor-icon');
+			if (newContent) node.setAttribute('data-cursor-content', newContent);
+			else node.removeAttribute('data-cursor-content');
+			if (newVariant) node.setAttribute('data-cursor-variant', newVariant);
+			else node.removeAttribute('data-cursor-variant');
+
+			if (newOnHover || newOnClick) {
+				(node as any).__cursorCallbacks = { onHover: newOnHover, onClick: newOnClick };
+			}
 		},
 		destroy() {
-			node.removeEventListener('mouseenter', handleMouseEnter);
-			node.removeEventListener('mouseleave', handleMouseLeave);
-			if (onClick) node.removeEventListener('click', handleClick);
 			node.removeAttribute('data-cursor-controlled');
+			node.removeAttribute('data-cursor-state');
+			node.removeAttribute('data-cursor-icon');
+			node.removeAttribute('data-cursor-content');
+			node.removeAttribute('data-cursor-variant');
+			delete (node as any).__cursorCallbacks;
 		}
 	};
 }
@@ -106,12 +113,18 @@ export function setCursorState(
 	state: CursorState,
 	content?: string | null,
 	icon?: string | null,
-	iconName?: string | null
+	iconName?: string | null,
+	variant?: string | null,
+	isLink?: boolean,
+	linkWidth?: number
 ) {
 	cursorState.state = state;
 	cursorState.content = content || null;
 	cursorState.icon = icon || null;
 	cursorState.iconName = iconName || null;
+	cursorState.variant = variant || null;
+	cursorState.isLink = isLink || false;
+	cursorState.linkWidth = linkWidth || 0;
 }
 
 export function setCursorVisible(visible: boolean) {

@@ -82,8 +82,8 @@
 	use:cursor={disabled || loading
 		? { state: 'default' }
 		: icon
-			? { state: 'pointer', iconName: icon }
-			: { state: 'pointer' }}
+			? { state: 'pointer', iconName: icon, variant }
+			: { state: 'pointer', content: label, variant }}
 >
 	{#if loading}<span class="spinner"></span>{/if}
 	<span class="content" class:hidden={loading}>
@@ -131,7 +131,8 @@
 			background-color: $primary;
 			color: $fg;
 
-			&:hover {
+			&:hover,
+			&.cursor-hover {
 				background-color: $primary-hover;
 			}
 
@@ -144,7 +145,8 @@
 			background-color: $secondary;
 			color: $fg;
 
-			&:hover {
+			&:hover,
+			&.cursor-hover {
 				background-color: $secondary-hover;
 			}
 
@@ -157,7 +159,8 @@
 			color: inherit;
 			background-color: $tertiary;
 
-			&:hover {
+			&:hover,
+			&.cursor-hover {
 				background-color: $tertiary-hover;
 				color: $fg;
 			}

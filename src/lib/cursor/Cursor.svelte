@@ -26,17 +26,22 @@
 	class:expanded={isExpanded}
 	class:pressed={cursorState.pressed}
 	class:selecting={cursorState.selecting}
+	class:is-link={cursorState.isLink}
 	class:state-default={cursorState.state === 'default'}
 	class:state-pointer={cursorState.state === 'pointer'}
 	class:state-copy={cursorState.state === 'copy'}
 	class:state-text={cursorState.state === 'text'}
 	class:state-tooltip={cursorState.state === 'tooltip'}
+	class:variant-primary={cursorState.variant === 'primary'}
+	class:variant-secondary={cursorState.variant === 'secondary'}
+	class:variant-ternary={cursorState.variant === 'ternary'}
 	style:left="{cursorState.x}px"
 	style:top="{cursorState.y}px"
 >
 	<div
 		class="cursor-dot"
 		style:height={cursorState.selecting ? `${cursorState.selectionHeight}px` : undefined}
+		style:width={cursorState.isLink ? `${cursorState.linkWidth}px` : undefined}
 	>
 		{#if cursorState.loading}
 			<div class="cursor-spinner"></div>
@@ -99,7 +104,32 @@
 			height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
 			border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
 			padding 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-			transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+			transform 0.1s cubic-bezier(0.4, 0, 0.2, 1),
+			background-color 0.2s ease;
+
+		// Button variant styling - outline style with colored text
+		.variant-primary &,
+		.variant-secondary &,
+		.variant-ternary & {
+			background: rgba(255, 255, 255, 0.1); // Subtle transparent background
+			border: 2px solid rgba(255, 255, 255, 0.9); // White outline
+			// Override with smoother transitions (no bounce)
+			transition:
+				width 0.25s ease-out,
+				height 0.25s ease-out,
+				border-radius 0.25s ease-out,
+				padding 0.25s ease-out,
+				transform 0.1s cubic-bezier(0.4, 0, 0.2, 1),
+				background-color 0.2s ease;
+		}
+
+		// Add padding for button variants with text content
+		.variant-primary.expanded &,
+		.variant-secondary.expanded &,
+		.variant-ternary.expanded & {
+			padding-left: 1.5rem;
+			padding-right: 1.5rem;
+		}
 
 		// Default: small dot
 		width: 8px;
@@ -144,6 +174,18 @@
 				0 0 4px rgba(255, 255, 255, 0.8) !important;
 			padding: 0 !important;
 		}
+
+		// Horizontal line for links
+		.is-link & {
+			// width set via inline style
+			height: 3px !important;
+			border-radius: 2px !important;
+			background: rgba(255, 255, 255, 0.95) !important;
+			box-shadow:
+				0 0 8px rgba($primary, 0.6),
+				0 0 4px rgba(255, 255, 255, 0.8) !important;
+			padding: 0 !important;
+		}
 	}
 
 	.cursor-icon {
@@ -153,9 +195,18 @@
 		color: #1e1f29;
 		opacity: 0;
 		animation: fadeIn 0.2s ease forwards;
+		transition: color 0.2s ease;
 
 		&.selecting {
 			color: #eab308; // Yellow for highlight
+		}
+
+		// Button variants and links - hide content but keep for sizing
+		.variant-primary &,
+		.variant-secondary &,
+		.variant-ternary &,
+		.is-link & {
+			opacity: 0 !important; // Invisible but still calculated for size
 		}
 
 		:global(svg) {
@@ -171,6 +222,22 @@
 		opacity: 0;
 		animation: fadeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s forwards;
 		line-height: 1.2;
+		transition: color 0.2s ease;
+
+		// Less bounce for button variants
+		.variant-primary &,
+		.variant-secondary &,
+		.variant-ternary & {
+			animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards; // Smoother, less bounce
+		}
+
+		// Button variants and links - hide content but keep for sizing
+		.variant-primary &,
+		.variant-secondary &,
+		.variant-ternary &,
+		.is-link & {
+			opacity: 0 !important; // Invisible but still calculated for size
+		}
 	}
 
 	.cursor-spinner {
