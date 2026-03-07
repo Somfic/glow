@@ -68,32 +68,34 @@
 		display: flex;
 		flex-direction: column;
 		border-radius: $radius;
-		margin: 1em 0;
+		margin: 1.5em 0;
+		background-color: $bg-surface;
+		border: 1px solid rgba($fg, 0.06);
 
 		.header {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			padding: 0.25em 1em;
-			padding-right: 0.5em;
-			font-weight: 700;
-			background-color: $border-color;
-			border-radius: $radius-small $radius-small 0 0;
+			padding: 1em 1.25em;
+			font-weight: 600;
+			background: linear-gradient(to bottom, rgba($fg, 0.02), transparent);
+			border-bottom: 1px solid rgba($fg, 0.06);
+			border-radius: $radius $radius 0 0;
 
 			.label {
 				display: flex;
 				align-items: center;
-				justify-content: center;
-				gap: 0.5em;
+				gap: 0.625em;
+				font-size: 0.9375rem;
+				color: rgba($fg, 0.9);
 			}
 		}
 
 		.content {
-			gap: 0.5em;
-			padding: 0.5em;
-			border: $border;
-			border-top: none;
-			border-radius: 0 0 $radius-small $radius-small;
+			padding: 1.25em;
+			gap: 1em;
+			display: flex;
+			flex-direction: column;
 		}
 	}
 </style>

@@ -2,8 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
 
 $bg-base: #090A13;
-$bg-surface: #24242F;
-$bg-surface-element: #272833;
+$bg-surface: hsl(240, 11%, 9%);
+$bg-surface-element: #1e1f29;
 
 $fg: #eee;
 
@@ -20,7 +20,7 @@ $tertiary-hover: color.mix($secondary, $bg-surface, 10%);
 $tertiary-active: color.scale($tertiary-hover, $lightness: -30%);
 
 $border-color: #30313C;
-$border-width: 2px;
+$border-width: 1px;
 $border: $border-width solid $border-color;
 
 $radius: 12px;

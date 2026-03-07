@@ -8,6 +8,7 @@
 		variant?: Variant;
 		onclick?: () => void | Promise<void>;
 		disabled?: boolean;
+		loading?: boolean;
 		image?: string;
 		selected?: boolean;
 	};
@@ -31,21 +32,23 @@
 		variant = group?.defaultVariant ?? 'primary',
 		onclick,
 		disabled = false,
+		loading: manualLoading = false,
 		selected = false
 	}: WithIcon | WithLabel = $props();
 
-	let loading = $state(false);
+	let promiseLoading = $state(false);
+	let loading = $derived(promiseLoading || manualLoading);
 
 	async function handleClick() {
-		if (!onclick || loading) return;
+		if (!onclick || promiseLoading) return;
 
 		const result = onclick();
 		if (result instanceof Promise) {
-			loading = true;
+			promiseLoading = true;
 			try {
 				await result;
 			} finally {
-				loading = false;
+				promiseLoading = false;
 			}
 		}
 	}

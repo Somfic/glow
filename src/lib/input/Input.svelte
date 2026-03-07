@@ -1,16 +1,22 @@
 <script lang="ts">
 	import type { IconName } from '../icon/Icon.svelte';
 	import type { SelectOption, ComboboxOption } from './types.js';
+	import Icon from '../icon/Icon.svelte';
 	import TextInput from './TextInput.svelte';
 	import NumberInput from './NumberInput.svelte';
-	import SelectInput from './SelectInput.svelte';
+	import TextareaInput from './TextareaInput.svelte';
 	import MultiSelectInput from './MultiSelectInput.svelte';
-	import SegmentedInput from './SegmentedInput.svelte';
+	import RadioInput from './RadioInput.svelte';
 	import ComboboxInput from './ComboboxInput.svelte';
+	import CheckboxInput from './CheckboxInput.svelte';
+	import ToggleInput from './ToggleInput.svelte';
+	import RangeInput from './RangeInput.svelte';
+	import ColorInput from './ColorInput.svelte';
 
 	type BaseProps = {
 		disabled?: boolean;
 		label?: string;
+		required?: boolean;
 	};
 
 	type TextProps = BaseProps & {
@@ -18,6 +24,7 @@
 		value?: string;
 		placeholder?: string;
 		icon?: IconName;
+		clearable?: boolean;
 		autocomplete?: AutoFill;
 		onChange?: (value: string) => void;
 		onFocus?: () => void;
@@ -33,15 +40,19 @@
 		min?: number;
 		max?: number;
 		step?: number;
+		clearable?: boolean;
 		onChange?: (value: number) => void;
 	};
 
-	type SelectProps = BaseProps & {
-		type: 'select';
-		options: SelectOption[];
+	type TextareaProps = BaseProps & {
+		type: 'textarea';
 		value?: string;
 		placeholder?: string;
+		rows?: number;
+		clearable?: boolean;
 		onChange?: (value: string) => void;
+		onFocus?: () => void;
+		onBlur?: () => void;
 	};
 
 	type MultiSelectProps = BaseProps & {
@@ -49,55 +60,95 @@
 		options: SelectOption[];
 		value?: string[];
 		placeholder?: string;
+		clearable?: boolean;
 		onChange?: (value: string[]) => void;
 	};
 
-	type SegmentedProps = BaseProps & {
-		type: 'segmented';
+	type RadioProps = BaseProps & {
+		type: 'radio';
 		options: SelectOption[];
 		value?: string;
+		clearable?: boolean;
 		onChange?: (value: string) => void;
 	};
 
-	type ComboboxSingleProps = BaseProps & {
-		type: 'combobox';
+	type SelectProps = BaseProps & {
+		type: 'select';
 		options: ComboboxOption[];
 		value?: string;
 		placeholder?: string;
 		clearable?: boolean;
 		onChange?: (value: string) => void;
-		multiple?: false;
 	};
 
-	type ComboboxMultiProps = BaseProps & {
-		type: 'combobox';
-		options: ComboboxOption[];
-		value?: string[];
-		placeholder?: string;
-		clearable?: boolean;
-		onChange?: (value: string[]) => void;
-		multiple: true;
+	type CheckboxProps = BaseProps & {
+		type: 'checkbox';
+		checked?: boolean;
+		indeterminate?: boolean;
+		checkboxLabel?: string; // Separate from wrapper label
+		onChange?: (checked: boolean) => void;
 	};
 
-	type ComboboxProps = ComboboxSingleProps | ComboboxMultiProps;
+	type ToggleProps = BaseProps & {
+		type: 'toggle';
+		checked?: boolean;
+		toggleLabel?: string; // Separate from wrapper label
+		onChange?: (checked: boolean) => void;
+	};
+
+	type RangeProps = BaseProps & {
+		type: 'range';
+		value?: number;
+		min?: number;
+		max?: number;
+		step?: number;
+		showValue?: boolean;
+		onChange?: (value: number) => void;
+	};
+
+	type ColorProps = BaseProps & {
+		type: 'color';
+		value?: string; // hex color
+		onChange?: (value: string) => void;
+	};
 
 	type Props =
 		| TextProps
 		| NumberProps
-		| SelectProps
+		| TextareaProps
 		| MultiSelectProps
-		| SegmentedProps
-		| ComboboxSingleProps
-		| ComboboxMultiProps;
+		| RadioProps
+		| SelectProps
+		| CheckboxProps
+		| ToggleProps
+		| RangeProps
+		| ColorProps;
 
 	let props: Props = $props();
 
 	let inputId = `input-${Math.random().toString(36).substr(2, 9)}`;
+
+	function handleLabelClick() {
+		// For non-native form controls (multiselect, radio, select), trigger a click
+		if (props.type === 'multiselect' || props.type === 'radio' || props.type === 'select') {
+			const element = document.getElementById(inputId);
+			element?.click();
+		}
+	}
 </script>
 
 <div class="input">
 	{#if props.label}
-		<label class="input-label" for={inputId}>{props.label}</label>
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<label class="input-label" for={inputId} onclick={handleLabelClick}>
+			{props.label}
+			{#if props.required}
+				<span class="required">
+					<Icon name="Asterisk" size={10} />
+				</span>
+			{/if}
+		</label>
 	{/if}
 
 	{#if props.type === 'text'}
@@ -108,6 +159,7 @@
 			placeholder={p.placeholder}
 			icon={p.icon}
 			disabled={p.disabled}
+			clearable={p.clearable}
 			autocomplete={p.autocomplete}
 			onChange={p.onChange}
 			onFocus={p.onFocus}
@@ -125,16 +177,7 @@
 			max={p.max}
 			step={p.step}
 			disabled={p.disabled}
-			onChange={p.onChange}
-		/>
-	{:else if props.type === 'select'}
-		{@const p = props as SelectProps}
-		<SelectInput
-			id={inputId}
-			options={p.options}
-			value={p.value}
-			placeholder={p.placeholder}
-			disabled={p.disabled}
+			clearable={p.clearable}
 			onChange={p.onChange}
 		/>
 	{:else if props.type === 'multiselect'}
@@ -145,34 +188,82 @@
 			value={p.value}
 			placeholder={p.placeholder}
 			disabled={p.disabled}
+			clearable={p.clearable}
 			onChange={p.onChange}
 		/>
-	{:else if props.type === 'segmented'}
-		{@const p = props as SegmentedProps}
-		<SegmentedInput
+	{:else if props.type === 'radio'}
+		{@const p = props as RadioProps}
+		<RadioInput
 			id={inputId}
 			options={p.options}
 			value={p.value}
 			disabled={p.disabled}
+			clearable={p.clearable}
 			onChange={p.onChange}
 		/>
-	{:else if props.type === 'combobox'}
-		{@const p = props as ComboboxProps}
+	{:else if props.type === 'select'}
+		{@const p = props as SelectProps}
 		<ComboboxInput
 			id={inputId}
 			options={p.options}
 			value={p.value}
 			placeholder={p.placeholder}
 			disabled={p.disabled}
-			multiple={p.multiple}
 			clearable={p.clearable}
-			onChange={(v) => {
-				if (p.multiple) {
-					(p.onChange as ((value: string[]) => void) | undefined)?.(v as string[]);
-				} else {
-					(p.onChange as ((value: string) => void) | undefined)?.(v as string);
-				}
-			}}
+			multiple={false}
+			onChange={(v) => p.onChange?.(v as string)}
+		/>
+	{:else if props.type === 'textarea'}
+		{@const p = props as TextareaProps}
+		<TextareaInput
+			id={inputId}
+			value={p.value}
+			placeholder={p.placeholder}
+			rows={p.rows}
+			disabled={p.disabled}
+			clearable={p.clearable}
+			onChange={p.onChange}
+			onFocus={p.onFocus}
+			onBlur={p.onBlur}
+		/>
+	{:else if props.type === 'checkbox'}
+		{@const p = props as CheckboxProps}
+		<CheckboxInput
+			id={inputId}
+			checked={p.checked}
+			disabled={p.disabled}
+			indeterminate={p.indeterminate}
+			label={p.checkboxLabel}
+			onChange={p.onChange}
+		/>
+	{:else if props.type === 'toggle'}
+		{@const p = props as ToggleProps}
+		<ToggleInput
+			id={inputId}
+			checked={p.checked}
+			disabled={p.disabled}
+			label={p.toggleLabel}
+			onChange={p.onChange}
+		/>
+	{:else if props.type === 'range'}
+		{@const p = props as RangeProps}
+		<RangeInput
+			id={inputId}
+			value={p.value}
+			min={p.min}
+			max={p.max}
+			step={p.step}
+			disabled={p.disabled}
+			showValue={p.showValue}
+			onChange={p.onChange}
+		/>
+	{:else if props.type === 'color'}
+		{@const p = props as ColorProps}
+		<ColorInput
+			id={inputId}
+			value={p.value}
+			disabled={p.disabled}
+			onChange={p.onChange}
 		/>
 	{/if}
 </div>
@@ -185,17 +276,23 @@
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
-
-		&.disabled {
-			opacity: 0.6;
-			pointer-events: none;
-		}
 	}
 
 	.input-label {
+		display: inline-flex;
+		align-items: center;
 		font-weight: 500;
-		margin-left: 0.75rem;
+		margin-left: calc(1rem + $border-width);
 		font-size: 0.75rem;
 		color: color.mix($fg, $bg-surface-element, 50%);
+		user-select: none;
+		cursor: pointer;
+
+		.required {
+			display: inline-flex;
+			align-items: center;
+			color: $primary;
+			margin-left: 0.25rem;
+		}
 	}
 </style>

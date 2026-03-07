@@ -109,9 +109,17 @@
 
 	// Lazy loading state
 	let cardEl: HTMLDivElement;
-	let isInViewport = $state(!lazy); // If not lazy, always "in viewport"
-	let shouldLoad = $state(!lazy);
+	let isInViewport = $state(false);
+	let shouldLoad = $state(false);
 	let intersectionObserver: IntersectionObserver | null = null;
+
+	// Initialize viewport state based on lazy prop
+	$effect(() => {
+		if (!lazy) {
+			isInViewport = true;
+			shouldLoad = true;
+		}
+	});
 
 	// Video element reference for time sync
 	let videoEl: HTMLVideoElement | null = null;

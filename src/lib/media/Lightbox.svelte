@@ -21,7 +21,8 @@
 		related = [],
 		startPosition = 0,
 		preloadedVideo,
-		onClose
+		onClose,
+		children
 	}: {
 		open: boolean;
 		src: string;
@@ -32,10 +33,11 @@
 		startPosition?: number; // 0-1 ratio for video start position
 		preloadedVideo?: HTMLVideoElement; // Pre-loaded video element to use instead of creating new
 		onClose: () => void;
+		children?: import('svelte').Snippet;
 	} = $props();
 
-	let videoElement: HTMLVideoElement | null = null;
-	let videoContainer: HTMLDivElement | null = null;
+	let videoElement = $state<HTMLVideoElement | null>(null);
+	let videoContainer = $state<HTMLDivElement | null>(null);
 	let hls: Hls | null = null;
 	let currentVideoSrc: string | null = null;
 	let usingPreloaded = $state(false);
@@ -199,7 +201,7 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
 		class="lightbox-overlay"
-		on:click={handleOverlayClick}
+		onclick={handleOverlayClick}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
@@ -232,7 +234,7 @@
 		</div>
 
 		<div class="lightbox-info">
-			<slot />
+			{@render children?.()}
 		</div>
 
 		{#if related.length > 0}
@@ -241,7 +243,7 @@
 					<button
 						class="related-item"
 						class:active={item.active}
-						on:click={item.onClick}
+						onclick={item.onClick}
 					>
 						<img src={item.src} alt={item.alt || ''} />
 					</button>

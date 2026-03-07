@@ -1,51 +1,39 @@
 <script lang="ts">
-	import Icon, { type IconName } from '../icon/Icon.svelte';
+	import Icon from '../icon/Icon.svelte';
 
 	interface Props {
 		id?: string;
 		value?: string;
 		placeholder?: string;
-		icon?: IconName;
 		disabled?: boolean;
+		rows?: number;
 		clearable?: boolean;
-		autocomplete?: AutoFill;
 		onChange?: (value: string) => void;
 		onFocus?: () => void;
 		onBlur?: () => void;
-		onKeydown?: (e: KeyboardEvent) => void;
-		inputRef?: (el: HTMLInputElement) => void;
 	}
 
 	let {
 		id,
 		value = '',
 		placeholder,
-		icon,
 		disabled = false,
+		rows = 4,
 		clearable = false,
-		autocomplete,
 		onChange,
 		onFocus,
-		onBlur,
-		onKeydown,
-		inputRef
+		onBlur
 	}: Props = $props();
 
 	let internalValue = $state('');
-	let inputElement: HTMLInputElement;
+	let textareaElement: HTMLTextAreaElement;
 
 	$effect(() => {
 		internalValue = value ?? '';
 	});
 
-	$effect(() => {
-		if (inputElement && inputRef) {
-			inputRef(inputElement);
-		}
-	});
-
 	function handleInput(e: Event) {
-		const newValue = (e.target as HTMLInputElement).value;
+		const newValue = (e.target as HTMLTextAreaElement).value;
 		internalValue = newValue;
 		onChange?.(newValue);
 	}
@@ -53,27 +41,22 @@
 	function clearValue() {
 		internalValue = '';
 		onChange?.('');
-		inputElement?.focus();
+		textareaElement?.focus();
 	}
 </script>
 
-<div class="input text-input" class:disabled>
-	{#if icon}
-		<Icon name={icon} size={16} />
-	{/if}
-	<input
+<div class="input textarea-input" class:disabled>
+	<textarea
 		{id}
-		type="text"
-		bind:this={inputElement}
+		bind:this={textareaElement}
 		value={internalValue}
 		{placeholder}
 		{disabled}
-		autocomplete={autocomplete}
+		{rows}
 		oninput={handleInput}
 		onfocus={onFocus}
 		onblur={onBlur}
-		onkeydown={onKeydown}
-	/>
+	></textarea>
 	{#if clearable && internalValue}
 		<button type="button" class="clear-btn" onclick={clearValue} tabindex="-1">
 			<Icon name="X" size={16} />
@@ -91,6 +74,7 @@
 		background-color: $bg-surface-element;
 		padding: 0.5em 1em;
 		color: $fg;
+		position: relative;
 
 		&:focus-within {
 			outline: none;
@@ -103,12 +87,14 @@
 			cursor: not-allowed;
 		}
 
-		input {
+		textarea {
 			border: none;
 			background: transparent;
 			color: inherit;
 			font: inherit;
 			width: 100%;
+			resize: vertical;
+			min-height: 3em;
 
 			&:focus {
 				outline: none;
@@ -124,20 +110,14 @@
 		}
 	}
 
-	.text-input {
-		display: inline-flex;
-		align-items: center;
+	.textarea-input {
+		display: flex;
 		gap: 0.4em;
-
-		> :global(svg) {
-			color: $fg;
-			flex-shrink: 0;
-		}
 	}
 
 	.clear-btn {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: center;
 		background: none;
 		border: none;
@@ -145,6 +125,7 @@
 		cursor: pointer;
 		color: rgba($fg, 0.5);
 		border-radius: $radius;
+		flex-shrink: 0;
 
 		&:hover {
 			color: $fg;

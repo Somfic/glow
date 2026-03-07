@@ -59,7 +59,77 @@
 	<h1>Icons</h1>
 	<Icon name="Volleyball" />
 
-	<h1>Inputs</h1>
-	<h2>Text</h2>
-	<Input type="text" placeholder="Placeholder" icon="Volleyball" />
+	<Group label="Inputs">
+		<Input
+			type="text"
+			label="Text Input"
+			placeholder="Enter text..."
+			icon="Volleyball"
+			clearable={true}
+			required={true}
+		/>
+
+		<Input
+			type="number"
+			label="Number Input"
+			placeholder="Enter number..."
+			min={0}
+			max={100}
+			step={5}
+			clearable={true}
+		/>
+
+		<Input
+			type="textarea"
+			label="Textarea Input"
+			placeholder="Enter multiple lines..."
+			rows={3}
+			clearable={true}
+		/>
+
+		<Input type="checkbox" label="Checkbox Input" checkboxLabel="I agree to the terms" />
+
+		<Input type="toggle" label="Toggle Input" toggleLabel="Enable notifications" />
+
+		<Input type="range" label="Range Input" min={0} max={100} step={5} showValue={true} />
+
+		<Input type="color" label="Color Input (OKLAB)" value="#3b82f6" />
+
+		<Input
+			type="multiselect"
+			label="Multi-Select Input"
+			placeholder="Choose multiple options..."
+			clearable={true}
+			options={[
+				{ label: 'Red', value: 'red' },
+				{ label: 'Green', value: 'green' },
+				{ label: 'Blue', value: 'blue' },
+				{ label: 'Yellow', value: 'yellow' }
+			]}
+		/>
+
+		<Input
+			type="radio"
+			label="Radio Input"
+			clearable={true}
+			options={[
+				{ label: 'Daily', value: 'daily' },
+				{ label: 'Weekly', value: 'weekly' },
+				{ label: 'Monthly', value: 'monthly' }
+			]}
+		/>
+
+		<Input
+			type="select"
+			label="Select Input"
+			placeholder="Search and select..."
+			clearable={true}
+			options={[
+				{ label: 'Apple', value: 'apple' },
+				{ label: 'Banana', value: 'banana' },
+				{ label: 'Cherry', value: 'cherry' },
+				{ label: 'Date', value: 'date' }
+			]}
+		/>
+	</Group>
 </Page>

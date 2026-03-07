@@ -40,8 +40,8 @@
 		onVideoPlaying?: (video: HTMLVideoElement) => void;
 	} = $props();
 
-	let imageEl: HTMLImageElement;
-	let videoEl: HTMLVideoElement;
+	let imageEl = $state<HTMLImageElement | undefined>(undefined);
+	let videoEl = $state<HTMLVideoElement | undefined>(undefined);
 	let hls: Hls | null = null;
 	let loaded = $state(false);
 	let error = $state(false);

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
 	import Icon from '../icon/Icon.svelte';
 	import type { ComboboxOption } from './types.js';
 
@@ -30,9 +31,7 @@
 	let inputElement: HTMLInputElement;
 
 	// For single mode, value is string; for multiple, it's string[]
-	let selectedValues = $state<string[]>(
-		multiple ? (Array.isArray(value) ? value : []) : value ? [value as string] : []
-	);
+	let selectedValues = $state<string[]>([]);
 
 	$effect(() => {
 		if (multiple) {
@@ -147,6 +146,13 @@
 		isOpen = true;
 	}
 
+	function handleWrapperClick() {
+		if (!multiple && selectedValues.length > 0 && !isOpen) {
+			isOpen = true;
+			inputElement?.focus();
+		}
+	}
+
 	function handleBlur() {
 		setTimeout(() => {
 			isOpen = false;
@@ -209,7 +215,18 @@
 				{/each}
 			</div>
 		{/if}
-		<div class="input-wrapper">
+		<div
+			class="input-wrapper"
+			role="button"
+			tabindex="-1"
+			onclick={handleWrapperClick}
+			onkeydown={(e) => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					handleWrapperClick();
+				}
+			}}
+		>
 			{#if !multiple && selectedValues.length > 0 && !isOpen}
 				{@const selected = options.find((o) => o.value === selectedValues[0])}
 				{#if selected}
@@ -251,7 +268,7 @@
 	</div>
 
 	{#if isOpen && filteredOptions.length > 0}
-		<div class="dropdown">
+		<div class="dropdown" transition:fly={{ duration: 150, y: -8 }}>
 			{#each filteredOptions as option, index}
 				<button
 					type="button"
@@ -295,7 +312,7 @@
 		border: $border;
 		border-radius: $radius;
 		background-color: $bg-surface-element;
-		padding: 0.5em;
+		padding: 0.5em 1em;
 		color: $fg;
 		min-height: 2.5em;
 		flex-wrap: wrap;
@@ -367,7 +384,6 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5em;
-		padding: 0 0.5em;
 		color: $fg;
 	}
 
@@ -384,7 +400,7 @@
 		background: transparent;
 		color: $fg;
 		font: inherit;
-		padding: 0 0.5em;
+		padding: 0;
 		outline: none;
 
 		&::placeholder {
@@ -432,6 +448,14 @@
 		align-items: center;
 		color: rgba($fg, 0.5);
 		transition: transform 0.2s ease;
+		padding: 0.25em;
+		border-radius: $radius;
+		cursor: pointer;
+
+		&:hover {
+			color: $fg;
+			background: rgba($fg, 0.1);
+		}
 	}
 
 	.combobox.open .chevron {

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Icon from '../icon/Icon.svelte';
+
 	interface Props {
 		id?: string;
 		value?: number;
@@ -7,12 +9,24 @@
 		max?: number;
 		step?: number;
 		disabled?: boolean;
+		clearable?: boolean;
 		onChange?: (value: number) => void;
 	}
 
-	let { id, value, placeholder, min, max, step, disabled = false, onChange }: Props = $props();
+	let {
+		id,
+		value,
+		placeholder,
+		min,
+		max,
+		step,
+		disabled = false,
+		clearable = false,
+		onChange
+	}: Props = $props();
 
-	let internalValue = $state(value);
+	let internalValue = $state<number | undefined>(undefined);
+	let inputElement: HTMLInputElement;
 
 	$effect(() => {
 		internalValue = value;
@@ -25,12 +39,19 @@
 			onChange?.(val);
 		}
 	}
+
+	function clearValue() {
+		internalValue = undefined;
+		onChange?.(undefined as any);
+		inputElement?.focus();
+	}
 </script>
 
 <div class="input number-input" class:disabled>
 	<input
 		{id}
 		type="number"
+		bind:this={inputElement}
 		value={internalValue ?? ''}
 		{placeholder}
 		{min}
@@ -39,6 +60,11 @@
 		{disabled}
 		oninput={handleInput}
 	/>
+	{#if clearable && internalValue !== undefined}
+		<button type="button" class="clear-btn" onclick={clearValue} tabindex="-1">
+			<Icon name="X" size={16} />
+		</button>
+	{/if}
 </div>
 
 <style lang="scss">
@@ -99,6 +125,23 @@
 				-webkit-appearance: none;
 				margin: 0;
 			}
+		}
+	}
+
+	.clear-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: none;
+		border: none;
+		padding: 0.25em;
+		cursor: pointer;
+		color: rgba($fg, 0.5);
+		border-radius: $radius;
+
+		&:hover {
+			color: $fg;
+			background: rgba($fg, 0.1);
 		}
 	}
 </style>
