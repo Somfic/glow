@@ -1,10 +1,12 @@
-import type { TooltipPosition } from './tooltip.svelte.js';
-type $$ComponentProps = {
+export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
+export type TooltipOptions = {
     content: string;
-    x?: number;
-    y?: number;
     position?: TooltipPosition;
+    delay?: number;
+    useCursor?: boolean;
 };
-declare const Tooltip: import("svelte").Component<$$ComponentProps, {}, "">;
-type Tooltip = ReturnType<typeof Tooltip>;
-export default Tooltip;
+export type TooltipParams = string | TooltipOptions;
+export declare function tooltip(node: HTMLElement, params: TooltipParams): {
+    update(newParams: TooltipParams): void;
+    destroy(): void;
+} | undefined;
