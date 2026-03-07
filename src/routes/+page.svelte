@@ -14,6 +14,7 @@
 	import Code from '$lib/code/Code.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import { cursor } from '$lib/cursor/cursor.svelte.js';
+	import GradientMesh from '$lib/gradient/GradientMesh.svelte';
 
 	let demoModal: any;
 	let confirmModal: any;
@@ -168,6 +169,84 @@ bun run dev`}
 				<Text variant="secondary">
 					Using <Code>use:cursor</Code> action with custom content
 				</Text>
+			</div>
+		</div>
+	</Group>
+
+	<Group label="🌈 Gradient Mesh Background">
+		<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+			<Text>
+				An animated gradient mesh background with smooth, organic flowing motion. The gradient
+				blobs move in gentle orbital patterns, creating a mesmerizing, lava-lamp-like effect.
+			</Text>
+
+			<div style="position: relative; height: 400px; border-radius: 12px; overflow: hidden;">
+				<GradientMesh
+					colors={['#8B6DED', '#FF006E', '#06FFA5', '#FFD60A']}
+					intensity={0.6}
+					speed={1.2}
+				>
+					<div
+						style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 2rem;"
+					>
+						<div
+							style="background: rgba(30, 31, 41, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 2rem; max-width: 500px;"
+						>
+							<Heading level={3}>Flowing Gradient Mesh</Heading>
+							<Text>
+								Watch the gradient blobs flow and pulse in smooth, organic patterns. Each blob
+								follows its own orbital path, creating a constantly-evolving ambient background.
+							</Text>
+							<div style="margin-top: 1rem;">
+								<Button label="Beautiful!" variant="primary" />
+							</div>
+						</div>
+					</div>
+				</GradientMesh>
+			</div>
+
+			<div>
+				<Heading level={4}>Usage</Heading>
+				<CodeBlock
+					language="svelte"
+					code={`<GradientMesh
+  colors={['#8B6DED', '#FF006E', '#06FFA5', '#FFD60A']}
+  intensity={0.6}
+  speed={1.2}
+>
+  <YourContent />
+</GradientMesh>`}
+				/>
+			</div>
+
+			<div>
+				<Heading level={4}>Features</Heading>
+				<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+					<li>
+						<Text>🎨 Customizable colors - pass any array of hex colors</Text>
+					</li>
+					<li>
+						<Text>⚡ Smooth 60fps animation using requestAnimationFrame</Text>
+					</li>
+					<li>
+						<Text>🌊 Organic flowing motion - blobs move in orbital patterns</Text>
+					</li>
+					<li>
+						<Text>💫 Gentle pulsing effect - blobs subtly grow and shrink</Text>
+					</li>
+					<li>
+						<Text>🎚️ Adjustable intensity (0-1) for blob opacity</Text>
+					</li>
+					<li>
+						<Text>🏃 Speed control (0-2) for animation speed</Text>
+					</li>
+					<li>
+						<Text>♿ Respects prefers-reduced-motion for accessibility</Text>
+					</li>
+					<li>
+						<Text>📱 Works on desktop and mobile</Text>
+					</li>
+				</ul>
 			</div>
 		</div>
 	</Group>
