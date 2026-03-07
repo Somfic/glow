@@ -50,11 +50,9 @@
 		align-items: center;
 		gap: 0.625em;
 		padding-left: 1em;
-		cursor: pointer;
 		user-select: none;
 
 		&.disabled {
-			cursor: not-allowed;
 			opacity: 0.5;
 		}
 	}
@@ -66,13 +64,8 @@
 		background-color: rgba($fg, 0.2);
 		border: none;
 		border-radius: 12px;
-		cursor: pointer;
 		transition: background-color 0.2s ease;
 		padding: 0;
-
-		&:disabled {
-			cursor: not-allowed;
-		}
 
 		&.checked {
 			background-color: $primary;

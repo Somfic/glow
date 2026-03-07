@@ -65,11 +65,9 @@
 		align-items: center;
 		gap: 0.625em;
 		padding-left: 1em;
-		cursor: pointer;
 		user-select: none;
 
 		&.disabled {
-			cursor: not-allowed;
 			opacity: 0.5;
 		}
 	}
@@ -81,12 +79,7 @@
 		background: none;
 		border: none;
 		padding: 0;
-		cursor: pointer;
 		font: inherit;
-
-		&:disabled {
-			cursor: not-allowed;
-		}
 	}
 
 	.checkbox-label {

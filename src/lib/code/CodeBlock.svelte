@@ -2,10 +2,12 @@
 	import { Button } from '../index.js';
 	import { showToast } from '../toast/toast.svelte.js';
 	import { highlightCode, inferLanguageFromFilename } from './highlighter.js';
+	import { cursor } from '../cursor/cursor.svelte.js';
 
 	let {
 		code,
 		language,
+		label,
 		filename,
 		showLineNumbers = false,
 		shell = false,
@@ -14,6 +16,7 @@
 		code: string;
 		language?: string;
 		filename?: string;
+		label?: string;
 		showLineNumbers?: boolean;
 		shell?: boolean;
 		maxHeight?: string;
@@ -29,7 +32,10 @@
 
 	// Auto-detect shell mode from language
 	let isShellMode = $derived(
-		shell || inferredLanguage === 'bash' || inferredLanguage === 'sh' || inferredLanguage === 'shell'
+		shell ||
+			inferredLanguage === 'bash' ||
+			inferredLanguage === 'sh' ||
+			inferredLanguage === 'shell'
 	);
 
 	// Get shell commands (split by lines)
@@ -78,12 +84,8 @@
 <div class="code-block" class:shell-mode={isShellMode}>
 	<div class="code-header">
 		<div class="code-info">
-			{#if isShellMode}
-				<span class="language">Terminal</span>
-			{:else if filename}
-				<span class="filename">{filename}</span>
-			{:else if inferredLanguage}
-				<span class="language">{inferredLanguage}</span>
+			{#if label}
+				<span class="language">{label}</span>
 			{/if}
 		</div>
 		<Button icon="Copy" variant="ternary" onclick={copyCode} />
@@ -94,7 +96,11 @@
 				{#each shellCommands as command}
 					<!-- svelte-ignore a11y_click_events_have_key_events -->
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<div class="shell-line" onclick={() => copyLine(command)}>
+					<div
+						class="shell-line"
+						use:cursor={{ state: 'copy' }}
+						onclick={() => copyLine(command)}
+					>
 						<span class="shell-prompt">$</span>
 						<span class="shell-command">{command}</span>
 						<button
@@ -139,13 +145,8 @@
 		border: $border;
 		border-radius: $radius;
 		overflow: hidden;
-		font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Dank Mono', 'Source Code Pro',
-			monospace;
-
-		&.shell-mode {
-			background: #000;
-			border-color: rgba($fg, 0.2);
-		}
+		font-family:
+			'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Dank Mono', 'Source Code Pro', monospace;
 	}
 
 	.code-header {
@@ -224,8 +225,8 @@
 		}
 
 		:global(code) {
-			font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Dank Mono',
-				'Source Code Pro', monospace !important;
+			font-family:
+				'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Dank Mono', 'Source Code Pro', monospace !important;
 			font-size: $text-sm !important;
 			line-height: 1.6 !important;
 			tab-size: 2;
@@ -251,7 +252,6 @@
 		margin-bottom: 0.25rem;
 		padding: 0.25rem 0;
 		position: relative;
-		cursor: pointer;
 		transition: background 0.15s;
 
 		&:last-child {
@@ -298,7 +298,9 @@
 		align-items: center;
 		justify-content: center;
 		opacity: 0;
-		transition: opacity 0.15s, color 0.15s;
+		transition:
+			opacity 0.15s,
+			color 0.15s;
 		flex-shrink: 0;
 
 		&:hover {

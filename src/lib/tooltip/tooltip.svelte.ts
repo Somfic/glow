@@ -1,5 +1,6 @@
 import { mount, unmount } from 'svelte';
 import TooltipComponent from './Tooltip.svelte';
+import { setCursorState } from '../cursor/cursor.svelte.js';
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 
@@ -7,6 +8,7 @@ export type TooltipOptions = {
 	content: string;
 	position?: TooltipPosition;
 	delay?: number;
+	useCursor?: boolean; // If true, show in cursor instead of separate tooltip
 };
 
 export type TooltipParams = string | TooltipOptions;
@@ -17,11 +19,16 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 	let isShowing = false;
 
 	const options: TooltipOptions =
-		typeof params === 'string' ? { content: params } : params;
+		typeof params === 'string' ? { content: params, useCursor: true } : { useCursor: true, ...params };
 
-	const { content, position = 'top', delay = 200 } = options;
+	const { content, position = 'top', delay = 200, useCursor = true } = options;
 
 	if (!content) return;
+
+	// Mark element as having tooltip for cursor detection
+	if (useCursor) {
+		node.setAttribute('data-cursor-controlled', 'true');
+	}
 
 	function getPosition(
 		triggerRect: DOMRect,
@@ -79,24 +86,33 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 	}
 
 	function show() {
-		if (isShowing || tooltipInstance) return;
+		if (isShowing) return;
 
 		showTimeout = setTimeout(() => {
-			const rect = node.getBoundingClientRect();
-			const { x, y, finalPosition } = getPosition(rect, position);
+			if (useCursor) {
+				// Show tooltip in cursor
+				setCursorState('tooltip', content);
+				isShowing = true;
+			} else {
+				// Show traditional tooltip
+				if (tooltipInstance) return;
 
-			// Mount tooltip to document body
-			tooltipInstance = mount(TooltipComponent, {
-				target: document.body,
-				props: {
-					content,
-					x,
-					y,
-					position: finalPosition
-				}
-			});
+				const rect = node.getBoundingClientRect();
+				const { x, y, finalPosition } = getPosition(rect, position);
 
-			isShowing = true;
+				// Mount tooltip to document body
+				tooltipInstance = mount(TooltipComponent, {
+					target: document.body,
+					props: {
+						content,
+						x,
+						y,
+						position: finalPosition
+					}
+				});
+
+				isShowing = true;
+			}
 		}, delay);
 	}
 
@@ -106,10 +122,17 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 			showTimeout = null;
 		}
 
-		if (tooltipInstance) {
-			unmount(tooltipInstance);
-			tooltipInstance = null;
+		if (useCursor) {
+			// Reset cursor to default
+			setCursorState('default');
 			isShowing = false;
+		} else {
+			// Hide traditional tooltip
+			if (tooltipInstance) {
+				unmount(tooltipInstance);
+				tooltipInstance = null;
+				isShowing = false;
+			}
 		}
 	}
 
@@ -133,6 +156,9 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 			node.removeEventListener('mouseleave', hide);
 			node.removeEventListener('focus', show);
 			node.removeEventListener('blur', hide);
+			if (useCursor) {
+				node.removeAttribute('data-cursor-controlled');
+			}
 		}
 	};
 }

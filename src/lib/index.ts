@@ -28,3 +28,6 @@ export { default as Heading } from "./typography/Heading.svelte";
 export { default as Text } from "./typography/Text.svelte";
 export { default as Code } from "./code/Code.svelte";
 export { default as CodeBlock } from "./code/CodeBlock.svelte";
+export { cursor } from "./cursor/cursor.svelte.js";
+export type { CursorConfig, CursorState } from "./cursor/cursor.svelte.js";
+export { default as CursorProvider } from "./cursor/CursorProvider.svelte";

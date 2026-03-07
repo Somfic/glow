@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import Icon, { type IconName } from '../icon/Icon.svelte';
+	import { cursor, setCursorLoading } from '../cursor/cursor.svelte.js';
 
 	type Variant = 'primary' | 'secondary' | 'ternary';
 
@@ -38,18 +39,36 @@
 
 	let promiseLoading = $state(false);
 	let loading = $derived(promiseLoading || manualLoading);
+	let isActiveCursorButton = $state(false);
+
+	// Only update cursor loading if this button is the active one
+	$effect(() => {
+		if (isActiveCursorButton) {
+			setCursorLoading(loading);
+		}
+	});
 
 	async function handleClick() {
 		if (!onclick || promiseLoading) return;
 
+		// Mark this button as the active cursor button
+		isActiveCursorButton = true;
+
 		const result = onclick();
 		if (result instanceof Promise) {
 			promiseLoading = true;
+			setCursorLoading(true);
 			try {
 				await result;
 			} finally {
 				promiseLoading = false;
+				setCursorLoading(false);
+				// Clear active state after loading completes
+				isActiveCursorButton = false;
 			}
+		} else {
+			// Non-async click, immediately clear active state
+			isActiveCursorButton = false;
 		}
 	}
 </script>
@@ -60,6 +79,11 @@
 	class:loading
 	onclick={handleClick}
 	disabled={disabled || loading}
+	use:cursor={disabled || loading
+		? { state: 'default' }
+		: icon
+			? { state: 'pointer', iconName: icon }
+			: { state: 'pointer' }}
 >
 	{#if loading}<span class="spinner"></span>{/if}
 	<span class="content" class:hidden={loading}>
@@ -87,7 +111,6 @@
 		border: $border;
 		border-radius: $radius;
 		font-weight: 700;
-		cursor: pointer;
 		transition: background-color 150ms ease;
 
 		.content {
@@ -147,7 +170,6 @@
 
 		&:disabled {
 			opacity: 0.5;
-			cursor: not-allowed;
 			pointer-events: none;
 		}
 

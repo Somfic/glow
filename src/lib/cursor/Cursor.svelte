@@ -1,0 +1,211 @@
+<script lang="ts">
+	import { getCursorState } from './cursor.svelte.js';
+	import Icon from '../icon/Icon.svelte';
+
+	let cursorState = getCursorState();
+
+	// Check if we have an icon to show
+	let hasIcon = $derived(
+		cursorState.iconName !== null ||
+			cursorState.state === 'copy' ||
+			cursorState.state === 'text' ||
+			cursorState.state === 'checkbox' ||
+			cursorState.state === 'checkbox-checked' ||
+			cursorState.state === 'toggle' ||
+			cursorState.state === 'toggle-checked' ||
+			cursorState.selecting
+	);
+
+	// Only expand for content when there's no icon
+	let isExpanded = $derived(cursorState.content !== null && !hasIcon);
+</script>
+
+<div
+	class="cursor-container"
+	class:visible={cursorState.visible}
+	class:expanded={isExpanded}
+	class:pressed={cursorState.pressed}
+	class:selecting={cursorState.selecting}
+	class:state-default={cursorState.state === 'default'}
+	class:state-pointer={cursorState.state === 'pointer'}
+	class:state-copy={cursorState.state === 'copy'}
+	class:state-text={cursorState.state === 'text'}
+	class:state-tooltip={cursorState.state === 'tooltip'}
+	style:left="{cursorState.x}px"
+	style:top="{cursorState.y}px"
+>
+	<div
+		class="cursor-dot"
+		style:height={cursorState.selecting ? `${cursorState.selectionHeight}px` : undefined}
+	>
+		{#if cursorState.loading}
+			<div class="cursor-spinner"></div>
+		{:else if cursorState.selecting}
+			<!-- Vertical line, styled by CSS -->
+		{:else if hasIcon}
+			<div class="cursor-icon">
+				{#if cursorState.iconName}
+					<Icon name={cursorState.iconName} size={14} />
+				{:else if cursorState.state === 'copy'}
+					<Icon name="Copy" size={14} />
+				{:else if cursorState.state === 'text'}
+					<Icon name="Type" size={14} />
+				{:else if cursorState.state === 'checkbox'}
+					<Icon name="Square" size={14} />
+				{:else if cursorState.state === 'checkbox-checked'}
+					<Icon name="CheckSquare" size={14} />
+				{:else if cursorState.state === 'toggle'}
+					<Icon name="ToggleLeft" size={14} />
+				{:else if cursorState.state === 'toggle-checked'}
+					<Icon name="ToggleRight" size={14} />
+				{/if}
+			</div>
+		{:else if cursorState.content}
+			<div class="cursor-content">
+				{cursorState.content}
+			</div>
+		{/if}
+	</div>
+</div>
+
+<style lang="scss">
+	@use '../style/theme.scss' as *;
+
+	.cursor-container {
+		position: fixed;
+		pointer-events: none;
+		z-index: 10001;
+		will-change: left, top, transform;
+		transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1);
+
+		&:not(.visible) {
+			opacity: 0;
+		}
+	}
+
+	.cursor-dot {
+		position: relative;
+		background: rgba(255, 255, 255, 0.95);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow:
+			0 2px 8px rgba(0, 0, 0, 0.2),
+			0 0 0 1px rgba(255, 255, 255, 0.1);
+		transform: translate(-50%, -50%);
+		transition:
+			width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+			height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+			border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+			padding 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+			transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+
+		// Default: small dot
+		width: 8px;
+		height: 8px;
+
+		.state-pointer & {
+			width: 32px;
+			height: 32px;
+		}
+
+		.state-copy &,
+		.state-text &,
+		.cursor-container:has(.cursor-icon) &,
+		.cursor-container:has(.cursor-spinner) & {
+			width: 32px;
+			height: 32px;
+		}
+
+		.expanded & {
+			width: auto;
+			min-width: 60px;
+			max-width: 200px;
+			height: auto;
+			min-height: 32px;
+			padding: 0.5rem 0.75rem;
+			border-radius: 12px;
+		}
+
+		// Scale down when pressed
+		.pressed & {
+			transform: translate(-50%, -50%) scale(0.85);
+		}
+
+		// Vertical line for text selection
+		.selecting & {
+			width: 3px !important;
+			height: 20px; // Default, overridden by inline style
+			border-radius: 2px !important;
+			background: rgba(255, 255, 255, 0.95) !important;
+			box-shadow:
+				0 0 8px rgba($primary, 0.6),
+				0 0 4px rgba(255, 255, 255, 0.8) !important;
+			padding: 0 !important;
+		}
+	}
+
+	.cursor-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #1e1f29;
+		opacity: 0;
+		animation: fadeIn 0.2s ease forwards;
+
+		&.selecting {
+			color: #eab308; // Yellow for highlight
+		}
+
+		:global(svg) {
+			display: block;
+		}
+	}
+
+	.cursor-content {
+		color: #1e1f29;
+		font-size: 0.75rem;
+		font-weight: 600;
+		white-space: nowrap;
+		opacity: 0;
+		animation: fadeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s forwards;
+		line-height: 1.2;
+	}
+
+	.cursor-spinner {
+		width: 14px;
+		height: 14px;
+		border: 2px solid #1e1f29;
+		border-top-color: transparent;
+		border-radius: 50%;
+		animation: spin 0.6s linear infinite;
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: scale(0.8) translateY(2px);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1) translateY(0);
+		}
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.cursor-container,
+		.cursor-dot,
+		.cursor-icon,
+		.cursor-content {
+			transition: none !important;
+			animation: none !important;
+		}
+	}
+</style>

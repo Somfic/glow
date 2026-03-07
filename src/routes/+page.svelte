@@ -13,10 +13,17 @@
 	import Text from '$lib/typography/Text.svelte';
 	import Code from '$lib/code/Code.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
+	import { cursor } from '$lib/cursor/cursor.svelte.js';
 
 	let demoModal: any;
 	let confirmModal: any;
 	let largeModal: any;
+
+	// Async action for loading demo
+	async function simulateAsync() {
+		await new Promise((resolve) => setTimeout(resolve, 2000));
+		alert('Action completed!');
+	}
 </script>
 
 <Page
@@ -28,6 +35,143 @@
 		{ label: 'More', href: '/more' }
 	]}
 >
+	<Group label="✨ Custom Cursor Demo">
+		<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+			<Text>
+				Watch the white dot cursor transform as you move around! Hover over different elements to see
+				the morphing animations. <strong>Click anywhere to see the cursor shrink!</strong>
+			</Text>
+
+			<div style="padding: 1.5rem; border: 2px solid #30313c; border-radius: 12px;">
+				<Heading level={4}>🔵 Default Dot</Heading>
+				<Text variant="secondary">Move your cursor in this area - small white dot</Text>
+			</div>
+
+			<div style="padding: 1.5rem; border: 2px solid #8B6DED; border-radius: 12px;">
+				<Heading level={4}>👆 Pointer & Icon Mirroring</Heading>
+				<Text variant="secondary" size="sm">
+					All clickable elements are 32px - buttons with icons mirror them in cursor!
+				</Text>
+				<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem;">
+					<Button label="Regular button" />
+					<Button icon="Heart" label="With icon" variant="secondary" />
+					<Button icon="Trash" label="Delete" variant="ternary" />
+					<Button icon="Info" />
+					<Button icon="Volleyball" />
+					<a href="#demo">plain link</a>
+				</div>
+			</div>
+
+			<div style="padding: 1.5rem; border: 2px solid #f97316; border-radius: 12px;">
+				<Heading level={4}>⏳ Loading State</Heading>
+				<Text variant="secondary" size="sm">
+					Cursor shows spinner during async button actions
+				</Text>
+				<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem;">
+					<Button label="Click me (2s delay)" onclick={simulateAsync} />
+					<Button icon="Download" label="Download" variant="secondary" onclick={simulateAsync} />
+				</div>
+			</div>
+
+			<div style="padding: 1.5rem; border: 2px solid #8B6DED; border-radius: 12px;">
+				<Heading level={4}>🖍️ Text Selection Line</Heading>
+				<Text variant="secondary" size="sm">
+					Cursor becomes a vertical white line matching text height for precise selection
+				</Text>
+				<div style="margin-top: 0.75rem; padding: 1rem; background: rgba(139, 109, 237, 0.1); border-radius: 8px;">
+					<Text>
+						Try selecting this text! Click and drag to highlight, and watch the cursor transform
+						into a thin vertical line. The line automatically adjusts to match the height of the
+						text you're selecting, making it easier to see exactly where your selection boundary
+						is. This works anywhere on the page where text can be selected.
+					</Text>
+					<div style="margin-top: 1rem;">
+						<Text size="xl" weight="bold">Large text has a taller line!</Text>
+					</div>
+				</div>
+			</div>
+
+			<div style="padding: 1.5rem; border: 2px solid #22c55e; border-radius: 12px;">
+				<Heading level={4}>📋 Copy Icon</Heading>
+				<Text variant="secondary" size="sm">Hover shell commands to see copy icon in cursor</Text>
+				<div style="margin-top: 0.75rem;">
+					<CodeBlock
+						language="bash"
+						code={`npm install glow-ui
+bun run dev`}
+					/>
+				</div>
+			</div>
+
+			<div style="padding: 1.5rem; border: 2px solid #3b82f6; border-radius: 12px;">
+				<Heading level={4}>📝 Text Cursor</Heading>
+				<Input type="text" placeholder="Hover to see text I-beam icon" />
+			</div>
+
+			<div style="padding: 1.5rem; border: 2px solid #10b981; border-radius: 12px;">
+				<Heading level={4}>✅ Checkbox States</Heading>
+				<Text variant="secondary" size="sm">
+					Cursor shows checked/unchecked state dynamically
+				</Text>
+				<div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem;">
+					<Input type="checkbox" checkboxLabel="Unchecked - hover to see empty square" />
+					<Input
+						type="checkbox"
+						checked={true}
+						checkboxLabel="Checked - hover to see check mark"
+					/>
+					<Input
+						type="checkbox"
+						indeterminate={true}
+						checkboxLabel="Indeterminate - hover to see minus"
+					/>
+				</div>
+			</div>
+
+			<div style="padding: 1.5rem; border: 2px solid #8b5cf6; border-radius: 12px;">
+				<Heading level={4}>🔀 Toggle States</Heading>
+				<Text variant="secondary" size="sm">
+					Cursor shows toggle position (left/right)
+				</Text>
+				<div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem;">
+					<Input type="toggle" toggleLabel="Off - hover to see toggle left" />
+					<Input type="toggle" checked={true} toggleLabel="On - hover to see toggle right" />
+				</div>
+			</div>
+
+			<div style="padding: 1.5rem; border: 2px solid #f59e0b; border-radius: 12px;">
+				<Heading level={4}>💬 Tooltip in Cursor</Heading>
+				<div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
+					<button class="demo-btn" use:tooltip={'Tooltip shows inside cursor!'}>
+						Hover for tooltip
+					</button>
+					<button
+						class="demo-btn"
+						use:tooltip={'Cursor expands to show this message'}
+					>
+						Another tooltip
+					</button>
+					<button
+						class="demo-btn"
+						use:tooltip={'✨ Works with emojis too!'}
+					>
+						With emoji
+					</button>
+				</div>
+			</div>
+
+			<div
+				style="padding: 1.5rem; border: 2px solid #ec4899; border-radius: 12px;"
+				use:cursor={{ state: 'copy', content: 'Custom content!' }}
+			>
+				<Heading level={4}>⚡ Custom Cursor Content</Heading>
+				<Text variant="secondary">
+					Using <Code>use:cursor</Code> action with custom content
+				</Text>
+			</div>
+		</div>
+	</Group>
+
 	<Group label="Code">
 		<div style="display: flex; flex-direction: column; gap: 1rem;">
 			<div>
