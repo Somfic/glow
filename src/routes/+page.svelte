@@ -11,6 +11,8 @@
 	import { tooltip } from '$lib/tooltip/tooltip.svelte.js';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
+	import Code from '$lib/code/Code.svelte';
+	import CodeBlock from '$lib/code/CodeBlock.svelte';
 
 	let demoModal: any;
 	let confirmModal: any;
@@ -26,6 +28,107 @@
 		{ label: 'More', href: '/more' }
 	]}
 >
+	<Group label="Code">
+		<div style="display: flex; flex-direction: column; gap: 1rem;">
+			<div>
+				<h3>Inline Code</h3>
+				<p>
+					You can use <Code>inline code</Code> within text, like <Code>const x = 42;</Code> or
+					<Code>npm install</Code>.
+				</p>
+			</div>
+
+			<div>
+				<h3>Code Block - JavaScript</h3>
+				<CodeBlock
+					language="javascript"
+					code={`function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log(fibonacci(10)); // 55`}
+				/>
+			</div>
+
+			<div>
+				<h3>Code Block with Line Numbers</h3>
+				<CodeBlock
+					language="typescript"
+					showLineNumbers
+					code={`interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+const createUser = (data: Partial<User>): User => {
+  return {
+    id: Math.random(),
+    name: data.name ?? 'Anonymous',
+    email: data.email ?? 'no-email@example.com'
+  };
+};`}
+				/>
+			</div>
+
+			<div>
+				<h3>Auto-detected from Filename</h3>
+				<CodeBlock
+					filename="example.tsx"
+					code={`import { Button } from '@/components';
+
+export function Example() {
+  return (
+    <div>
+      <Button onClick={() => alert('Hello!')}>
+        Click me
+      </Button>
+    </div>
+  );
+}`}
+				/>
+			</div>
+
+			<div>
+				<h3>More Auto-detection Examples</h3>
+				<div style="display: flex; flex-direction: column; gap: 1rem;">
+					<CodeBlock
+						filename="config.json"
+						code={`{
+  "name": "my-app",
+  "version": "1.0.0"
+}`}
+					/>
+					<CodeBlock
+						filename="styles.css"
+						code={`.button {
+  background: #8B6DED;
+  border-radius: 8px;
+}`}
+					/>
+					<CodeBlock
+						filename="script.py"
+						code={`def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)`}
+					/>
+				</div>
+			</div>
+
+			<div>
+				<h3>Shell/Terminal Mode</h3>
+				<CodeBlock
+					language="bash"
+					code={`npm install glow-ui
+npm run dev
+bun test`}
+				/>
+			</div>
+		</div>
+	</Group>
+
 	<Group label="Typography">
 		<div style="display: flex; flex-direction: column; gap: 1.5rem;">
 			<div>
