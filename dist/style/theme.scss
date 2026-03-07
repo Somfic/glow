@@ -1,0 +1,50 @@
+@use 'sass:color' as color;
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
+
+$bg-base: #090A13;
+$bg-surface: hsl(240, 11%, 9%);
+$bg-surface-element: #1e1f29;
+
+$fg: #eee;
+
+$primary: #8B6DED;
+$primary-hover: color.scale($primary, $lightness: -10%);
+$primary-active: color.scale($primary, $lightness: -20%);
+
+$secondary: color.mix($primary, $bg-surface, 10%);
+$secondary-hover: color.scale($secondary, $lightness: -10%);
+$secondary-active: color.scale($secondary, $lightness: -20%);
+
+$tertiary: transparent;
+$tertiary-hover: color.mix($secondary, $bg-surface, 10%);
+$tertiary-active: color.scale($tertiary-hover, $lightness: -30%);
+
+$border-color: #30313C;
+$border-width: 1px;
+$border: $border-width solid $border-color;
+
+$radius: 12px;
+$radius-small: 18px;
+
+// Typography
+$font-family: 'Nunito', 'Zalando Sans', sans-serif;
+
+// Font sizes
+$text-xs: 0.75rem;      // 12px
+$text-sm: 0.875rem;     // 14px
+$text-base: 1rem;       // 16px
+$text-lg: 1.125rem;     // 18px
+$text-xl: 1.25rem;      // 20px
+
+// Heading sizes
+$h1: 2.5rem;            // 40px
+$h2: 2rem;              // 32px
+$h3: 1.75rem;           // 28px
+$h4: 1.5rem;            // 24px
+$h5: 1.25rem;           // 20px
+$h6: 1.125rem;          // 18px
+
+// Text colors
+$text-primary: $fg;
+$text-secondary: rgba($fg, 0.7);
+$text-muted: rgba($fg, 0.5);

@@ -31,3 +31,4 @@ export { default as CodeBlock } from "./code/CodeBlock.svelte";
 export { cursor } from "./cursor/cursor.svelte.js";
 export type { CursorConfig, CursorState } from "./cursor/cursor.svelte.js";
 export { default as CursorProvider } from "./cursor/CursorProvider.svelte";
+export { default as GradientMesh } from "./gradient/GradientMesh.svelte";
