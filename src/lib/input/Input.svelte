@@ -21,7 +21,7 @@
 
 	type TextProps = BaseProps & {
 		type: 'text';
-		value?: string;
+		value: string;
 		placeholder?: string;
 		icon?: IconName;
 		clearable?: boolean;
@@ -124,7 +124,7 @@
 		| RangeProps
 		| ColorProps;
 
-	let props: Props = $props();
+	let props = $props<Props>();
 
 	let inputId = `input-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -155,7 +155,7 @@
 		{@const p = props as TextProps}
 		<TextInput
 			id={inputId}
-			value={p.value}
+			bind:value={p.value}
 			placeholder={p.placeholder}
 			icon={p.icon}
 			disabled={p.disabled}
