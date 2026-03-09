@@ -155,7 +155,7 @@
 		{@const p = props as TextProps}
 		<TextInput
 			id={inputId}
-			bind:value={p.value}
+			value={p.value}
 			placeholder={p.placeholder}
 			icon={p.icon}
 			disabled={p.disabled}
