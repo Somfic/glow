@@ -12,6 +12,7 @@
 		loading?: boolean;
 		image?: string;
 		selected?: boolean;
+		fullWidth?: boolean;
 	};
 
 	type WithIcon = BaseProps & {
@@ -34,7 +35,8 @@
 		onclick,
 		disabled = false,
 		loading: manualLoading = false,
-		selected = false
+		selected = false,
+		fullWidth = false
 	}: WithIcon | WithLabel = $props();
 
 	let promiseLoading = $state(false);
@@ -77,6 +79,7 @@
 	class={variant}
 	class:selected
 	class:loading
+	class:full-width={fullWidth}
 	onclick={handleClick}
 	disabled={disabled || loading}
 	use:cursor={disabled || loading
@@ -179,6 +182,10 @@
 		&.selected {
 			outline: 2px solid $primary;
 			outline-offset: 2px;
+		}
+
+		&.full-width {
+			width: 100%;
 		}
 
 		.button-image {

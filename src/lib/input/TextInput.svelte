@@ -19,7 +19,7 @@
 
 	let {
 		id,
-		value = '',
+		value = $bindable(''),
 		placeholder,
 		icon,
 		disabled = false,
@@ -32,12 +32,7 @@
 		inputRef
 	}: Props = $props();
 
-	let internalValue = $state('');
 	let inputElement: HTMLInputElement;
-
-	$effect(() => {
-		internalValue = value ?? '';
-	});
 
 	$effect(() => {
 		if (inputElement && inputRef) {
@@ -47,12 +42,12 @@
 
 	function handleInput(e: Event) {
 		const newValue = (e.target as HTMLInputElement).value;
-		internalValue = newValue;
+		value = newValue;
 		onChange?.(newValue);
 	}
 
 	function clearValue() {
-		internalValue = '';
+		value = '';
 		onChange?.('');
 		inputElement?.focus();
 	}
@@ -70,7 +65,7 @@
 		{id}
 		type="text"
 		bind:this={inputElement}
-		value={internalValue}
+		{value}
 		{placeholder}
 		{disabled}
 		autocomplete={autocomplete}
@@ -79,7 +74,7 @@
 		onblur={onBlur}
 		onkeydown={onKeydown}
 	/>
-	{#if clearable && internalValue}
+	{#if clearable && value}
 		<button type="button" class="clear-btn" onclick={clearValue} tabindex="-1">
 			<Icon name="X" size={16} />
 		</button>
