@@ -62,6 +62,10 @@
 		placeholder?: string;
 		clearable?: boolean;
 		onChange?: (value: string[]) => void;
+		onSearch?: (query: string) => Promise<SelectOption[]> | SelectOption[];
+		searchDebounce?: number;
+		maxResults?: number;
+		minSearchLength?: number;
 	};
 
 	type RadioProps = BaseProps & {
@@ -79,6 +83,10 @@
 		placeholder?: string;
 		clearable?: boolean;
 		onChange?: (value: string) => void;
+		onSearch?: (query: string) => Promise<ComboboxOption[]> | ComboboxOption[];
+		searchDebounce?: number;
+		maxResults?: number;
+		minSearchLength?: number;
 	};
 
 	type CheckboxProps = BaseProps & {
@@ -190,6 +198,10 @@
 			disabled={p.disabled}
 			clearable={p.clearable}
 			onChange={p.onChange}
+			onSearch={p.onSearch}
+			searchDebounce={p.searchDebounce}
+			maxResults={p.maxResults}
+			minSearchLength={p.minSearchLength}
 		/>
 	{:else if props.type === 'radio'}
 		{@const p = props as RadioProps}
@@ -212,6 +224,10 @@
 			clearable={p.clearable}
 			multiple={false}
 			onChange={(v) => p.onChange?.(v as string)}
+			onSearch={p.onSearch}
+			searchDebounce={p.searchDebounce}
+			maxResults={p.maxResults}
+			minSearchLength={p.minSearchLength}
 		/>
 	{:else if props.type === 'textarea'}
 		{@const p = props as TextareaProps}

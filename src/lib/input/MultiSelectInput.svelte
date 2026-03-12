@@ -2,6 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import Icon from '../icon/Icon.svelte';
 	import type { SelectOption } from './types.js';
+	import { fuzzyFilter, debounce } from './search-utils.js';
 
 	interface Props {
 		id?: string;
@@ -11,6 +12,10 @@
 		disabled?: boolean;
 		clearable?: boolean;
 		onChange?: (value: string[]) => void;
+		onSearch?: (query: string) => Promise<SelectOption[]> | SelectOption[];
+		searchDebounce?: number;
+		maxResults?: number;
+		minSearchLength?: number;
 	}
 
 	let {
@@ -20,14 +25,68 @@
 		placeholder = 'Select...',
 		disabled = false,
 		clearable = false,
-		onChange
+		onChange,
+		onSearch,
+		searchDebounce = 300,
+		maxResults = 0,
+		minSearchLength = 0
 	}: Props = $props();
 
 	let internalValue = $state<string[]>([]);
 	let isOpen = $state(false);
+	let searchQuery = $state('');
+	let isLoading = $state(false);
+	let searchResults = $state<SelectOption[]>([]);
+	let searchInputElement: HTMLInputElement;
+
+	// Determine if we're in server-side search mode
+	const isServerSide = $derived(!!onSearch);
+
+	// Show search when there are many options or explicitly enabled
+	const shouldShowSearch = $derived(options.length > 5 || isServerSide);
 
 	$effect(() => {
 		internalValue = value ?? [];
+	});
+
+	// Server-side search handler with debouncing
+	const debouncedSearch = onSearch
+		? debounce(async (query: string) => {
+				if (query.length < minSearchLength) {
+					searchResults = [];
+					isLoading = false;
+					return;
+				}
+
+				isLoading = true;
+				try {
+					const results = await Promise.resolve(onSearch(query));
+					searchResults = results;
+				} catch (error) {
+					console.error('Search error:', error);
+					searchResults = [];
+				} finally {
+					isLoading = false;
+				}
+		  }, searchDebounce)
+		: null;
+
+	// Trigger search when query changes (server-side mode)
+	$effect(() => {
+		if (isServerSide && debouncedSearch) {
+			debouncedSearch(searchQuery);
+		}
+	});
+
+	// Filter options based on search
+	let filteredOptions = $derived.by(() => {
+		// Server-side mode: use search results
+		if (isServerSide) {
+			return searchResults;
+		}
+
+		// Client-side mode: use fuzzy filtering
+		return fuzzyFilter(options, searchQuery, maxResults);
 	});
 
 	function toggleOption(optionValue: string, e: MouseEvent) {
@@ -62,6 +121,20 @@
 		internalValue = [];
 		onChange?.([]);
 	}
+
+	function handleSearchInput(e: Event) {
+		searchQuery = (e.target as HTMLInputElement).value;
+	}
+
+	function handleDropdownOpen() {
+		if (!disabled) {
+			isOpen = !isOpen;
+			// Focus search input when dropdown opens
+			if (isOpen && shouldShowSearch) {
+				setTimeout(() => searchInputElement?.focus(), 50);
+			}
+		}
+	}
 </script>
 
 <div class="input multiselect-input" class:disabled class:open={isOpen}>
@@ -70,12 +143,12 @@
 		class="multiselect-trigger"
 		role="button"
 		tabindex={disabled ? -1 : 0}
-		onclick={() => !disabled && (isOpen = !isOpen)}
-		onblur={() => setTimeout(() => (isOpen = false), 150)}
+		onclick={handleDropdownOpen}
+		onblur={() => setTimeout(() => (isOpen = false), 200)}
 		onkeydown={(e) => {
 			if (e.key === 'Enter' || e.key === ' ') {
 				e.preventDefault();
-				!disabled && (isOpen = !isOpen);
+				handleDropdownOpen();
 			}
 		}}
 	>
@@ -114,22 +187,47 @@
 
 	{#if isOpen}
 		<div class="multiselect-dropdown" transition:fly={{ duration: 150, y: -8 }}>
-			{#each options as option}
-				{@const isSelected = internalValue.includes(option.value)}
-				<button
-					type="button"
-					class="multiselect-option"
-					class:selected={isSelected}
-					onmousedown={(e) => toggleOption(option.value, e)}
-				>
-					<span class="checkbox" class:checked={isSelected}>
-						{#if isSelected}
-							<Icon name="Check" size={12} />
-						{/if}
-					</span>
-					<span>{option.label}</span>
-				</button>
-			{/each}
+			{#if shouldShowSearch}
+				<div class="search-input-wrapper">
+					<Icon name="Search" size={14} />
+					<input
+						type="text"
+						class="search-input"
+						placeholder="Search..."
+						bind:this={searchInputElement}
+						value={searchQuery}
+						oninput={handleSearchInput}
+						onclick={(e) => e.stopPropagation()}
+						onmousedown={(e) => e.stopPropagation()}
+					/>
+				</div>
+			{/if}
+
+			{#if isLoading}
+				<div class="loading-indicator">
+					<span class="loading-spinner"></span>
+					<span>Searching...</span>
+				</div>
+			{:else if filteredOptions.length > 0}
+				{#each filteredOptions as option}
+					{@const isSelected = internalValue.includes(option.value)}
+					<button
+						type="button"
+						class="multiselect-option"
+						class:selected={isSelected}
+						onmousedown={(e) => toggleOption(option.value, e)}
+					>
+						<span class="checkbox" class:checked={isSelected}>
+							{#if isSelected}
+								<Icon name="Check" size={12} />
+							{/if}
+						</span>
+						<span>{option.label}</span>
+					</button>
+				{/each}
+			{:else}
+				<div class="no-results">No results found</div>
+			{/if}
 		</div>
 	{/if}
 </div>
@@ -332,5 +430,63 @@
 		:global(svg) {
 			color: white;
 		}
+	}
+
+	.search-input-wrapper {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+		padding: 0.5em 1em;
+		border-bottom: $border;
+		background-color: $bg-surface-element;
+		position: sticky;
+		top: 0;
+		z-index: 1;
+	}
+
+	.search-input {
+		flex: 1;
+		border: none;
+		background: transparent;
+		color: $fg;
+		font: inherit;
+		font-size: 0.875rem;
+		outline: none;
+
+		&::placeholder {
+			color: rgba($fg, 0.5);
+		}
+	}
+
+	.loading-indicator {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5em;
+		padding: 1em;
+		color: rgba($fg, 0.6);
+		font-size: 0.875rem;
+	}
+
+	.loading-spinner {
+		width: 14px;
+		height: 14px;
+		border: 2px solid rgba($fg, 0.2);
+		border-top-color: $primary;
+		border-radius: 50%;
+		animation: spin 0.6s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.no-results {
+		padding: 1em;
+		text-align: center;
+		color: rgba($fg, 0.5);
+		font-size: 0.875rem;
 	}
 </style>

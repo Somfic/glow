@@ -2,6 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import Icon from '../icon/Icon.svelte';
 	import type { ComboboxOption } from './types.js';
+	import { fuzzyScore, fuzzyFilter, debounce } from './search-utils.js';
 
 	interface Props {
 		id?: string;
@@ -12,6 +13,10 @@
 		multiple?: boolean;
 		clearable?: boolean;
 		onChange?: (value: string | string[]) => void;
+		onSearch?: (query: string) => Promise<ComboboxOption[]> | ComboboxOption[];
+		searchDebounce?: number;
+		maxResults?: number;
+		minSearchLength?: number;
 	}
 
 	let {
@@ -22,16 +27,25 @@
 		disabled = false,
 		multiple = false,
 		clearable = true,
-		onChange
+		onChange,
+		onSearch,
+		searchDebounce = 300,
+		maxResults = 10,
+		minSearchLength = 0
 	}: Props = $props();
 
 	let inputValue = $state('');
 	let isOpen = $state(false);
 	let selectedIndex = $state(-1);
 	let inputElement: HTMLInputElement;
+	let isLoading = $state(false);
+	let searchResults = $state<ComboboxOption[]>([]);
 
 	// For single mode, value is string; for multiple, it's string[]
 	let selectedValues = $state<string[]>([]);
+
+	// Determine if we're in server-side search mode
+	const isServerSide = $derived(!!onSearch);
 
 	$effect(() => {
 		if (multiple) {
@@ -41,70 +55,46 @@
 		}
 	});
 
-	// Fuzzy search scoring
-	function fuzzyScore(query: string, target: string): number {
-		const q = query.toLowerCase();
-		const t = target.toLowerCase();
+	// Server-side search handler with debouncing
+	const debouncedSearch = onSearch
+		? debounce(async (query: string) => {
+				if (query.length < minSearchLength) {
+					searchResults = [];
+					isLoading = false;
+					return;
+				}
 
-		if (t === q) return 1000;
-		if (t.startsWith(q)) return 500 + (q.length / t.length) * 100;
-		if (t.includes(q)) return 300 + (q.length / t.length) * 100;
+				isLoading = true;
+				try {
+					const results = await Promise.resolve(onSearch(query));
+					searchResults = results;
+				} catch (error) {
+					console.error('Search error:', error);
+					searchResults = [];
+				} finally {
+					isLoading = false;
+				}
+		  }, searchDebounce)
+		: null;
 
-		let score = 0;
-		let targetIndex = 0;
-		let consecutiveBonus = 0;
-		let lastMatchIndex = -1;
-
-		for (let i = 0; i < q.length; i++) {
-			const char = q[i];
-			const foundIndex = t.indexOf(char, targetIndex);
-
-			if (foundIndex === -1) return 0;
-
-			if (foundIndex === lastMatchIndex + 1) {
-				consecutiveBonus += 10;
-			} else {
-				consecutiveBonus = 0;
-			}
-
-			if (
-				foundIndex === 0 ||
-				t[foundIndex - 1] === ' ' ||
-				t[foundIndex - 1] === '_' ||
-				t[foundIndex - 1] === '-'
-			) {
-				score += 20;
-			}
-
-			score += 10 + consecutiveBonus;
-			lastMatchIndex = foundIndex;
-			targetIndex = foundIndex + 1;
+	// Trigger search when input value changes (server-side mode)
+	$effect(() => {
+		if (isServerSide && debouncedSearch) {
+			debouncedSearch(inputValue);
 		}
-
-		score -= (t.length - q.length) * 2;
-		return Math.max(score, 1);
-	}
+	});
 
 	// Filter and sort options based on search
 	let filteredOptions = $derived.by(() => {
-		const available = options.filter((opt) => !selectedValues.includes(opt.value));
-
-		if (!inputValue) {
-			return available.slice(0, 10);
+		// Server-side mode: use search results
+		if (isServerSide) {
+			const available = searchResults.filter((opt) => !selectedValues.includes(opt.value));
+			return available;
 		}
 
-		return available
-			.map((opt) => ({
-				option: opt,
-				score: Math.max(
-					fuzzyScore(inputValue, opt.label),
-					opt.description ? fuzzyScore(inputValue, opt.description) * 0.5 : 0
-				)
-			}))
-			.filter((item) => item.score > 0)
-			.sort((a, b) => b.score - a.score)
-			.slice(0, 10)
-			.map((item) => item.option);
+		// Client-side mode: use fuzzy filtering
+		const available = options.filter((opt) => !selectedValues.includes(opt.value));
+		return fuzzyFilter(available, inputValue, maxResults);
 	});
 
 	function getSelectedOptions(): ComboboxOption[] {
@@ -267,32 +257,41 @@
 		</div>
 	</div>
 
-	{#if isOpen && filteredOptions.length > 0}
+	{#if isOpen}
 		<div class="dropdown" transition:fly={{ duration: 150, y: -8 }}>
-			{#each filteredOptions as option, index}
-				<button
-					type="button"
-					class="option"
-					class:selected={index === selectedIndex}
-					onmousedown={() => selectOption(option)}
-				>
-					{#if option.image}
-						<img src={option.image} alt="" class="option-image" />
-					{:else if option.icon}
-						<span class="option-icon">
-							<Icon name={option.icon} size={16} />
-						</span>
-					{:else if option.groupType}
-						<span class="option-icon group-{option.groupType}">
-							{#if option.groupType === 'person'}👤{:else if option.groupType === 'model'}🤖{:else if option.groupType === 'style'}🎨{:else if option.groupType === 'scene'}🏞️{:else}🏷️{/if}
-						</span>
-					{/if}
-					<span class="option-label">{option.label}</span>
-					{#if option.description}
-						<span class="option-description">{option.description}</span>
-					{/if}
-				</button>
-			{/each}
+			{#if isLoading}
+				<div class="loading-indicator">
+					<span class="loading-spinner"></span>
+					<span>Searching...</span>
+				</div>
+			{:else if filteredOptions.length > 0}
+				{#each filteredOptions as option, index}
+					<button
+						type="button"
+						class="option"
+						class:selected={index === selectedIndex}
+						onmousedown={() => selectOption(option)}
+					>
+						{#if option.image}
+							<img src={option.image} alt="" class="option-image" />
+						{:else if option.icon}
+							<span class="option-icon">
+								<Icon name={option.icon} size={16} />
+							</span>
+						{:else if option.groupType}
+							<span class="option-icon group-{option.groupType}">
+								{#if option.groupType === 'person'}👤{:else if option.groupType === 'model'}🤖{:else if option.groupType === 'style'}🎨{:else if option.groupType === 'scene'}🏞️{:else}🏷️{/if}
+							</span>
+						{/if}
+						<span class="option-label">{option.label}</span>
+						{#if option.description}
+							<span class="option-description">{option.description}</span>
+						{/if}
+					</button>
+				{/each}
+			{:else if inputValue.length > 0}
+				<div class="no-results">No results found</div>
+			{/if}
 		</div>
 	{/if}
 </div>
@@ -542,5 +541,37 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+
+	.loading-indicator {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5em;
+		padding: 1em;
+		color: rgba($fg, 0.6);
+		font-size: 0.875rem;
+	}
+
+	.loading-spinner {
+		width: 14px;
+		height: 14px;
+		border: 2px solid rgba($fg, 0.2);
+		border-top-color: $primary;
+		border-radius: 50%;
+		animation: spin 0.6s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.no-results {
+		padding: 1em;
+		text-align: center;
+		color: rgba($fg, 0.5);
+		font-size: 0.875rem;
 	}
 </style>

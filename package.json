@@ -29,7 +29,11 @@
     ".": {
       "types": "./dist/index.d.ts",
       "svelte": "./dist/index.js"
-    }
+    },
+    "./styles": "./dist/style/glow.scss",
+    "./styles/reset": "./dist/style/reset.scss",
+    "./styles/global": "./dist/style/global.scss",
+    "./styles/theme": "./dist/style/theme.scss"
   },
   "peerDependencies": {
     "svelte": "^5.0.0"
