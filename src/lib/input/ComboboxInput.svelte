@@ -38,6 +38,7 @@
 	let isOpen = $state(false);
 	let selectedIndex = $state(-1);
 	let inputElement: HTMLInputElement;
+	let containerElement: HTMLDivElement;
 	let isLoading = $state(false);
 	let searchResults = $state<ComboboxOption[]>([]);
 
@@ -143,11 +144,15 @@
 		}
 	}
 
-	function handleBlur() {
-		setTimeout(() => {
-			isOpen = false;
-			selectedIndex = -1;
-		}, 150);
+	function handleBlur(e: FocusEvent) {
+		// Only close if focus moved outside the entire component
+		const relatedTarget = e.relatedTarget as Node;
+		if (!containerElement?.contains(relatedTarget)) {
+			setTimeout(() => {
+				isOpen = false;
+				selectedIndex = -1;
+			}, 150);
+		}
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
@@ -186,7 +191,7 @@
 	}
 </script>
 
-<div class="combobox" class:disabled class:open={isOpen} class:multiple>
+<div class="combobox" class:disabled class:open={isOpen} class:multiple bind:this={containerElement}>
 	<div class="combobox-input-area">
 		{#if multiple && selectedValues.length > 0}
 			<div class="chips">

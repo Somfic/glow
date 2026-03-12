@@ -38,6 +38,7 @@
 	let isLoading = $state(false);
 	let searchResults = $state<SelectOption[]>([]);
 	let searchInputElement: HTMLInputElement;
+	let containerElement: HTMLDivElement;
 
 	// Determine if we're in server-side search mode
 	const isServerSide = $derived(!!onSearch);
@@ -135,16 +136,24 @@
 			}
 		}
 	}
+
+	function handleBlur(e: FocusEvent) {
+		// Only close if focus moved outside the entire component
+		const relatedTarget = e.relatedTarget as Node;
+		if (!containerElement?.contains(relatedTarget)) {
+			setTimeout(() => (isOpen = false), 150);
+		}
+	}
 </script>
 
-<div class="input multiselect-input" class:disabled class:open={isOpen}>
+<div class="input multiselect-input" class:disabled class:open={isOpen} bind:this={containerElement}>
 	<div
 		{id}
 		class="multiselect-trigger"
 		role="button"
 		tabindex={disabled ? -1 : 0}
 		onclick={handleDropdownOpen}
-		onblur={() => setTimeout(() => (isOpen = false), 200)}
+		onblur={handleBlur}
 		onkeydown={(e) => {
 			if (e.key === 'Enter' || e.key === ' ') {
 				e.preventDefault();
