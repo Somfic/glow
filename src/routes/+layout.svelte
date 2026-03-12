@@ -1,7 +1,7 @@
 <script>
 	import '$lib/style/glow.scss';
-	import { CursorProvider } from '$lib';
+	// import { CursorProvider } from '$lib';
 </script>
 
-<CursorProvider />
+<!-- <CursorProvider /> -->
 <slot />

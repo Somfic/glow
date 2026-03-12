@@ -1,12 +1,9 @@
 @use "./theme.scss" as *;
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
 
-// Hide default cursor globally for custom cursor
-* {
-    cursor: none !important;
-}
-
-html, body, main {
+html,
+body,
+main {
     font-family: $font-family;
     font-size: $text-base;
     font-weight: 600;
@@ -20,7 +17,12 @@ html, body, main {
 }
 
 // Headings
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-weight: 700;
     line-height: 1.2;
     margin: 0;
@@ -88,11 +90,13 @@ a {
 }
 
 // Strong and emphasis
-strong, b {
+strong,
+b {
     font-weight: 700;
 }
 
-em, i {
+em,
+i {
     font-style: italic;
 }
 

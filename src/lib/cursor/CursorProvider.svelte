@@ -237,8 +237,7 @@
 			if (rect.width === 0 || rect.height === 0) return;
 
 			// Check if cursor is within the button's bounds (including padding)
-			const isInsideButton =
-				x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+			const isInsideButton = x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 
 			// Check if button has an icon - if so, snap to the icon position
 			const icon = el.querySelector('svg');
@@ -297,7 +296,7 @@
 				} else {
 					// Actual mouse left: unsnap immediately
 					const magnetStrength = 1.5;
-					const pullFactor = Math.pow(1 - (magnetTarget.distance / 100), 2);
+					const pullFactor = Math.pow(1 - magnetTarget.distance / 100, 2);
 
 					const pullX = (magnetTarget.x - targetX) * magnetStrength * pullFactor;
 					const pullY = (magnetTarget.y - targetY) * magnetStrength * pullFactor;
@@ -320,7 +319,7 @@
 				} else {
 					// Apply gradual magnetic pull
 					const magnetStrength = 1.5;
-					const pullFactor = Math.pow(1 - (magnetTarget.distance / 100), 2);
+					const pullFactor = Math.pow(1 - magnetTarget.distance / 100, 2);
 
 					const pullX = (magnetTarget.x - targetX) * magnetStrength * pullFactor;
 					const pullY = (magnetTarget.y - targetY) * magnetStrength * pullFactor;
@@ -406,12 +405,17 @@
 		setCursorState(state, content, null, iconName, variant);
 	}
 
-
 	onMount(() => {
 		// Don't enable custom cursor on touch devices
 		if (hasTouch) return;
 
 		mounted = true;
+
+		// Hide default cursor by injecting global style
+		const style = document.createElement('style');
+		style.id = 'cursor-provider-hide';
+		style.textContent = '* { cursor: none !important; }';
+		document.head.appendChild(style);
 
 		// Start animation loop
 		rafId = requestAnimationFrame(animateCursor);
@@ -429,6 +433,10 @@
 		return () => {
 			// Stop animation loop
 			if (rafId) cancelAnimationFrame(rafId);
+
+			// Remove cursor hiding style
+			const style = document.getElementById('cursor-provider-hide');
+			if (style) style.remove();
 
 			window.removeEventListener('mousemove', handleMouseMove);
 			window.removeEventListener('mouseleave', handleMouseLeave);
