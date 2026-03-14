@@ -123,7 +123,11 @@
 				{ label: 'Red', value: 'red' },
 				{ label: 'Green', value: 'green' },
 				{ label: 'Blue', value: 'blue' },
-				{ label: 'Yellow', value: 'yellow' }
+				{ label: 'Yellow', value: 'yellow' },
+				{ label: 'Purple', value: 'purple' },
+				{ label: 'Orange', value: 'orange' },
+				{ label: 'Pink', value: 'pink' },
+				{ label: 'Cyan', value: 'cyan' }
 			]}
 		/>
 	</Group>

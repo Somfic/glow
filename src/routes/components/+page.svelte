@@ -18,7 +18,8 @@
 			items: [
 				{ name: 'Table', href: '/components/table', description: 'Data tables with sorting and selection' },
 				{ name: 'List', href: '/components/list', description: 'Lists and virtual scrolling' },
-				{ name: 'Card', href: '/components/card', description: 'Content cards' }
+				{ name: 'Card', href: '/components/card', description: 'Content cards' },
+				{ name: 'Pill', href: '/components/pill', description: 'Tags, labels, and status indicators' }
 			]
 		},
 		{

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
 	import Icon from '../icon/Icon.svelte';
+	import Popover from '../popover/Popover.svelte';
 
 	interface Props {
 		id?: string;
@@ -205,14 +205,6 @@
 		return 50 + normalizedChroma * 50 * Math.sin(screenAngle);
 	});
 
-	let containerElement: HTMLDivElement;
-
-	function handleClickOutside(e: MouseEvent) {
-		if (isOpen && containerElement && !containerElement.contains(e.target as Node)) {
-			isOpen = false;
-		}
-	}
-
 	// Render the HC plane for the current lightness (circular: angle = H, distance = C)
 	function renderHCPlane() {
 		if (!lcCanvasElement) return;
@@ -307,83 +299,66 @@
 <svelte:window
 	onmousemove={handleMouseMove}
 	onmouseup={handleMouseUp}
-	onclick={handleClickOutside}
 />
 
-<div bind:this={containerElement} class="color-input" class:disabled class:open={isOpen}>
-	<button
-		{id}
-		type="button"
-		class="color-trigger"
-		onclick={() => !disabled && (isOpen = !isOpen)}
-		{disabled}
-	>
-		<div class="color-swatch" style="background-color: {hexValue}"></div>
-		<span class="hex-value">{hexValue}</span>
-		<Icon name="ChevronDown" size={16} />
-	</button>
-
-	{#if isOpen}
-		<div
-			class="color-popover"
-			transition:fly={{ duration: 150, y: -8 }}
-			onmousedown={(e) => e.stopPropagation()}
+<Popover bind:open={isOpen} {disabled} align="left">
+	{#snippet trigger()}
+		<button
+			{id}
+			type="button"
+			class="color-trigger"
+			class:open={isOpen}
+			{disabled}
 		>
-			<div class="picker-container">
-				<!-- Hue-Chroma Circular Picker -->
-				<div class="picker-wrapper">
-					<div
-						bind:this={lcPlaneElement}
-						class="hc-plane"
-						onmousedown={handleHCMouseDown}
-						role="button"
-						aria-label="Hue and chroma picker"
-						tabindex="0"
-					>
-						<canvas bind:this={lcCanvasElement} class="hc-canvas"></canvas>
-						<div class="chroma-rings">
-							<div class="chroma-ring" style="width: 25%; height: 25%;"></div>
-							<div class="chroma-ring" style="width: 50%; height: 50%;"></div>
-							<div class="chroma-ring" style="width: 75%; height: 75%;"></div>
-						</div>
-						<div class="hc-cursor" style="left: {hcCursorX}%; top: {hcCursorY}%"></div>
-					</div>
-				</div>
+			<div class="color-swatch" style="background-color: {hexValue}"></div>
+			<span class="hex-value">{hexValue}</span>
+			<Icon name="ChevronDown" size={16} />
+		</button>
+	{/snippet}
 
-				<!-- Lightness Slider -->
-				<div class="lightness-slider">
-					<label class="slider-label">Lightness</label>
-					<input
-						type="range"
-						min="0"
-						max="1"
-						step="0.01"
-						value={L}
-						oninput={(e) => handleLChange(Number((e.target as HTMLInputElement).value))}
-					/>
+	<div
+		class="color-popover-content"
+		onmousedown={(e) => e.stopPropagation()}
+	>
+		<div class="picker-container">
+			<!-- Hue-Chroma Circular Picker -->
+			<div class="picker-wrapper">
+				<div
+					bind:this={lcPlaneElement}
+					class="hc-plane"
+					onmousedown={handleHCMouseDown}
+					role="button"
+					aria-label="Hue and chroma picker"
+					tabindex="0"
+				>
+					<canvas bind:this={lcCanvasElement} class="hc-canvas"></canvas>
+					<div class="chroma-rings">
+						<div class="chroma-ring" style="width: 25%; height: 25%;"></div>
+						<div class="chroma-ring" style="width: 50%; height: 50%;"></div>
+						<div class="chroma-ring" style="width: 75%; height: 75%;"></div>
+					</div>
+					<div class="hc-cursor" style="left: {hcCursorX}%; top: {hcCursorY}%"></div>
 				</div>
 			</div>
+
+			<!-- Lightness Slider -->
+			<div class="lightness-slider">
+				<label class="slider-label">Lightness</label>
+				<input
+					type="range"
+					min="0"
+					max="1"
+					step="0.01"
+					value={L}
+					oninput={(e) => handleLChange(Number((e.target as HTMLInputElement).value))}
+				/>
+			</div>
 		</div>
-	{/if}
-</div>
+	</div>
+</Popover>
 
 <style lang="scss">
 	@use '../style/theme.scss' as *;
-
-	.color-input {
-		position: relative;
-		font-size: 1rem;
-
-		&.disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
-		}
-
-		&.open .color-trigger {
-			border-color: $primary;
-			box-shadow: 0 0 0 2px rgba($primary, 0.3);
-		}
-	}
 
 	.color-trigger {
 		display: flex;
@@ -398,6 +373,11 @@
 		font: inherit;
 		cursor: pointer;
 		transition: all 0.15s ease;
+
+		&.open {
+			border-color: $primary;
+			box-shadow: 0 0 0 2px rgba($primary, 0.3);
+		}
 
 		&:hover:not(:disabled) {
 			background-color: rgba($fg, 0.05);
@@ -424,16 +404,8 @@
 		text-align: left;
 	}
 
-	.color-popover {
-		position: absolute;
-		top: calc(100% + 4px);
-		left: -$border-width;
-		background-color: $bg-surface-element;
-		border: $border;
-		border-radius: $radius;
+	.color-popover-content {
 		padding: 1em;
-		z-index: 100;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 	}
 
 	.picker-container {

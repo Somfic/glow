@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
 	import Icon from '../icon/Icon.svelte';
+	import Pill from '../pill/Pill.svelte';
+	import Popover from '../popover/Popover.svelte';
 	import type { SelectOption } from './types.js';
 	import { fuzzyFilter, debounce } from './search-utils.js';
 
@@ -38,7 +39,6 @@
 	let isLoading = $state(false);
 	let searchResults = $state<SelectOption[]>([]);
 	let searchInputElement: HTMLInputElement;
-	let containerElement: HTMLDivElement;
 
 	// Determine if we're in server-side search mode
 	const isServerSide = $derived(!!onSearch);
@@ -48,6 +48,16 @@
 
 	$effect(() => {
 		internalValue = value ?? [];
+	});
+
+	// Focus search input when dropdown opens
+	$effect(() => {
+		if (isOpen && shouldShowSearch) {
+			setTimeout(() => searchInputElement?.focus(), 50);
+		}
+		if (!isOpen) {
+			searchQuery = '';
+		}
 	});
 
 	// Server-side search handler with debouncing
@@ -79,25 +89,24 @@
 		}
 	});
 
-	// Filter options based on search
+	// Filter options based on search, excluding already selected
 	let filteredOptions = $derived.by(() => {
-		// Server-side mode: use search results
+		let source: SelectOption[];
+
 		if (isServerSide) {
-			return searchResults;
+			source = searchResults;
+		} else {
+			source = fuzzyFilter(options, searchQuery, maxResults);
 		}
 
-		// Client-side mode: use fuzzy filtering
-		return fuzzyFilter(options, searchQuery, maxResults);
+		return source.filter((opt) => !internalValue.includes(opt.value));
 	});
 
-	function toggleOption(optionValue: string, e: MouseEvent) {
+	function selectOption(optionValue: string, e: MouseEvent) {
 		e.preventDefault();
 		e.stopPropagation();
 
-		const newValue = internalValue.includes(optionValue)
-			? internalValue.filter((v) => v !== optionValue)
-			: [...internalValue, optionValue];
-
+		const newValue = [...internalValue, optionValue];
 		internalValue = newValue;
 		onChange?.(newValue);
 
@@ -127,145 +136,99 @@
 		searchQuery = (e.target as HTMLInputElement).value;
 	}
 
-	function handleDropdownOpen() {
-		if (!disabled) {
-			isOpen = !isOpen;
-			// Focus search input when dropdown opens
-			if (isOpen && shouldShowSearch) {
-				setTimeout(() => searchInputElement?.focus(), 50);
+	function handleSearchKeydown(e: KeyboardEvent) {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			if (searchQuery && filteredOptions.length > 0) {
+				const first = filteredOptions[0];
+				internalValue = [...internalValue, first.value];
+				onChange?.(internalValue);
+				searchQuery = '';
+			} else {
+				isOpen = false;
 			}
-		}
-	}
-
-	function handleBlur(e: FocusEvent) {
-		// Only close if focus moved outside the entire component
-		const relatedTarget = e.relatedTarget as Node;
-		if (!containerElement?.contains(relatedTarget)) {
-			setTimeout(() => (isOpen = false), 150);
 		}
 	}
 </script>
 
-<div class="input multiselect-input" class:disabled class:open={isOpen} bind:this={containerElement}>
-	<div
-		{id}
-		class="multiselect-trigger"
-		role="button"
-		tabindex={disabled ? -1 : 0}
-		onclick={handleDropdownOpen}
-		onblur={handleBlur}
-		onkeydown={(e) => {
-			if (e.key === 'Enter' || e.key === ' ') {
-				e.preventDefault();
-				handleDropdownOpen();
-			}
-		}}
-	>
-		{#if internalValue.length > 0}
-			<div class="chips">
-				{#each getSelectedOptions() as opt}
-					<span class="chip">
-						<span class="chip-label">{opt.label}</span>
-						<button
-							type="button"
-							class="chip-remove"
-							onclick={(e) => {
-								e.stopPropagation();
-								removeValue(opt.value);
-							}}
-						>
-							<Icon name="X" size={12} />
-						</button>
-					</span>
-				{/each}
-			</div>
-		{:else}
-			<span class="multiselect-value placeholder">{placeholder}</span>
-		{/if}
-		<div class="actions">
-			{#if clearable && internalValue.length > 0}
-				<button type="button" class="clear-btn" onclick={clearAll}>
-					<Icon name="X" size={16} />
-				</button>
-			{/if}
-			<span class="chevron">
-				<Icon name="ChevronDown" size={16} />
-			</span>
-		</div>
-	</div>
-
-	{#if isOpen}
-		<div class="multiselect-dropdown" transition:fly={{ duration: 150, y: -8 }}>
-			{#if shouldShowSearch}
-				<div class="search-input-wrapper">
-					<Icon name="Search" size={14} />
-					<input
-						type="text"
-						class="search-input"
-						placeholder="Search..."
-						bind:this={searchInputElement}
-						value={searchQuery}
-						oninput={handleSearchInput}
-						onclick={(e) => e.stopPropagation()}
-						onmousedown={(e) => e.stopPropagation()}
-					/>
+<Popover bind:open={isOpen} {disabled}>
+	{#snippet trigger()}
+		<div
+			{id}
+			class="multiselect-trigger"
+			class:open={isOpen}
+			role="button"
+			tabindex={disabled ? -1 : 0}
+			onkeydown={(e) => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					isOpen = !isOpen;
+				}
+			}}
+		>
+			{#if internalValue.length > 0}
+				<div class="chips">
+					{#each getSelectedOptions() as opt}
+						<Pill label={opt.label} onRemove={() => removeValue(opt.value)} />
+					{/each}
 				</div>
-			{/if}
-
-			{#if isLoading}
-				<div class="loading-indicator">
-					<span class="loading-spinner"></span>
-					<span>Searching...</span>
-				</div>
-			{:else if filteredOptions.length > 0}
-				{#each filteredOptions as option}
-					{@const isSelected = internalValue.includes(option.value)}
-					<button
-						type="button"
-						class="multiselect-option"
-						class:selected={isSelected}
-						onmousedown={(e) => toggleOption(option.value, e)}
-					>
-						<span class="checkbox" class:checked={isSelected}>
-							{#if isSelected}
-								<Icon name="Check" size={12} />
-							{/if}
-						</span>
-						<span>{option.label}</span>
-					</button>
-				{/each}
 			{:else}
-				<div class="no-results">No results found</div>
+				<span class="multiselect-value placeholder">{placeholder}</span>
 			{/if}
+			<div class="actions">
+				{#if clearable && internalValue.length > 0}
+					<button type="button" class="clear-btn" onclick={clearAll}>
+						<Icon name="X" size={16} />
+					</button>
+				{/if}
+				<span class="chevron">
+					<Icon name="ChevronDown" size={16} />
+				</span>
+			</div>
 		</div>
-	{/if}
-</div>
+	{/snippet}
+
+	<div class="multiselect-dropdown">
+		{#if shouldShowSearch}
+			<div class="search-input-wrapper">
+				<Icon name="Search" size={14} />
+				<input
+					type="text"
+					class="search-input"
+					placeholder="Search..."
+					bind:this={searchInputElement}
+					value={searchQuery}
+					oninput={handleSearchInput}
+					onkeydown={handleSearchKeydown}
+					onclick={(e) => e.stopPropagation()}
+					onmousedown={(e) => e.stopPropagation()}
+				/>
+			</div>
+		{/if}
+
+		{#if isLoading}
+			<div class="loading-indicator">
+				<span class="loading-spinner"></span>
+				<span>Searching...</span>
+			</div>
+		{:else if filteredOptions.length > 0}
+			{#each filteredOptions as option}
+				<button
+					type="button"
+					class="multiselect-option"
+					onmousedown={(e) => selectOption(option.value, e)}
+				>
+					<span>{option.label}</span>
+				</button>
+			{/each}
+		{:else}
+			<div class="no-results">No results found</div>
+		{/if}
+	</div>
+</Popover>
 
 <style lang="scss">
 	@use '../style/theme.scss' as *;
-
-	.input {
-		font-size: 1rem;
-		border: $border;
-		border-radius: $radius;
-		background-color: $bg-surface-element;
-		color: $fg;
-
-		&.disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
-		}
-	}
-
-	.multiselect-input {
-		position: relative;
-		padding: 0;
-
-		&.open {
-			border-color: $primary;
-			box-shadow: 0 0 0 2px rgba($primary, 0.3);
-		}
-	}
 
 	.multiselect-trigger {
 		display: flex;
@@ -274,13 +237,20 @@
 		gap: 0.5em;
 		width: 100%;
 		padding: 0.5em 1em;
-		border: none;
-		background: transparent;
+		border: $border;
+		border-radius: $radius;
+		background-color: $bg-surface-element;
 		color: $fg;
 		font: inherit;
 		cursor: pointer;
 		text-align: left;
 		height: 2.5em;
+		font-size: 1rem;
+
+		&.open {
+			border-color: $primary;
+			box-shadow: 0 0 0 2px rgba($primary, 0.3);
+		}
 
 		&:disabled {
 			cursor: not-allowed;
@@ -335,39 +305,7 @@
 		align-items: center;
 	}
 
-	.chip {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.25em;
-		background: $secondary;
-		border-radius: calc($radius - 2px);
-		padding: 0.2em 0.4em;
-		font-size: 0.875em;
-		user-select: none;
-	}
-
-	.chip-label {
-		color: $fg;
-	}
-
-	.chip-remove {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: none;
-		border: none;
-		padding: 0;
-		cursor: pointer;
-		color: rgba($fg, 0.6);
-		border-radius: 50%;
-
-		&:hover {
-			color: $fg;
-			background: rgba($fg, 0.1);
-		}
-	}
-
-	.multiselect-input.open .chevron {
+	.multiselect-trigger.open .chevron {
 		transform: rotate(180deg);
 	}
 
@@ -383,17 +321,8 @@
 	}
 
 	.multiselect-dropdown {
-		position: absolute;
-		top: calc(100% + 4px);
-		left: -$border-width;
-		right: -$border-width;
 		max-height: 200px;
 		overflow-y: auto;
-		background-color: $bg-surface-element;
-		border: $border;
-		border-radius: $radius;
-		z-index: 100;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 	}
 
 	.multiselect-option {
@@ -412,32 +341,6 @@
 
 		&:hover {
 			background-color: $secondary;
-		}
-
-		&.selected {
-			background-color: rgba($primary, 0.15);
-		}
-	}
-
-	.checkbox {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 18px;
-		height: 18px;
-		border: $border;
-		border-radius: 4px;
-		background-color: transparent;
-		flex-shrink: 0;
-		transition: all 0.15s ease;
-
-		&.checked {
-			background-color: $primary;
-			border-color: $primary;
-		}
-
-		:global(svg) {
-			color: white;
 		}
 	}
 

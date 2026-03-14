@@ -51,9 +51,11 @@
 		gap: 0.625em;
 		padding-left: 1em;
 		user-select: none;
+		cursor: pointer;
 
 		&.disabled {
 			opacity: 0.5;
+			cursor: not-allowed;
 		}
 	}
 

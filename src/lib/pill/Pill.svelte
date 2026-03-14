@@ -2,7 +2,6 @@
 	import Icon, { type IconName } from '../icon/Icon.svelte';
 
 	interface BaseProps {
-		size?: 'small' | 'medium' | 'large';
 		onRemove?: () => void;
 	}
 
@@ -31,7 +30,6 @@
 
 	let props: Props = $props();
 
-	let size = $derived(props.size ?? 'medium');
 	let hasImage = $derived('image' in props && props.image);
 	let hasIcon = $derived('icon' in props && props.icon);
 	let hasLabel = $derived('label' in props && props.label);
@@ -57,10 +55,13 @@
 </script>
 
 <span
-	class="pill size-{size}"
+	class="pill"
 	class:image-only={hasImage && !hasLabel}
+	class:has-image={hasImage}
 	class:removable={props.onRemove}
+	class:has-color={!!color}
 	title={props.label}
+	style:--pill-color={color}
 >
 	{#if hasImage && !imageError}
 		<img
@@ -75,17 +76,17 @@
 
 	{#if hasIcon && props.icon}
 		<span class="pill-icon">
-			<Icon name={props.icon} size={size === 'small' ? 12 : size === 'large' ? 18 : 14} />
+			<Icon name={props.icon} size={14} />
 		</span>
 	{/if}
 
-	{#if hasLabel && (!hasImage || imageError)}
+	{#if hasLabel}
 		<span class="pill-label">{props.label}</span>
 	{/if}
 
 	{#if props.onRemove}
 		<button type="button" class="pill-remove" onclick={handleRemove} aria-label="Remove">
-			<Icon name="X" size={size === 'small' ? 10 : size === 'large' ? 14 : 12} />
+			<Icon name="X" size={12} />
 		</button>
 	{/if}
 </span>
@@ -96,28 +97,23 @@
 	.pill {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.25em;
-		background: $secondary;
-		color: $fg;
-		border-radius: calc($radius - 2px);
+		gap: 0.375em;
+		padding: 0.3em 0.75em;
+		font-size: 0.8rem;
+		background: rgba($fg, 0.06);
+		color: rgba($fg, 0.85);
+		border: 1px solid rgba($fg, 0.1);
+		border-radius: 999px;
 		font-weight: 500;
 		white-space: nowrap;
-	}
+		transition: all 0.15s ease;
+		letter-spacing: 0.01em;
 
-	// Size variants
-	.size-small {
-		padding: 0.2em 0.4em;
-		font-size: 0.75rem;
-	}
-
-	.size-medium {
-		padding: 0.25em 0.5em;
-		font-size: 0.875rem;
-	}
-
-	.size-large {
-		padding: 0.35em 0.625em;
-		font-size: 1rem;
+		&.has-color {
+			background: color-mix(in oklch, var(--pill-color) 15%, transparent);
+			border-color: color-mix(in oklch, var(--pill-color) 25%, transparent);
+			color: color-mix(in oklch, var(--pill-color) 70%, $fg);
+		}
 	}
 
 	// Image-only pills (circular)
@@ -125,21 +121,9 @@
 		padding: 0;
 		overflow: hidden;
 		background: transparent;
-	}
-
-	.image-only.size-small {
-		width: 1.5rem;
-		height: 1.5rem;
-	}
-
-	.image-only.size-medium {
-		width: 2rem;
-		height: 2rem;
-	}
-
-	.image-only.size-large {
-		width: 2.5rem;
-		height: 2.5rem;
+		border: 2px solid rgba($fg, 0.1);
+		width: 2.75rem;
+		height: 2.75rem;
 	}
 
 	.pill-image {
@@ -151,15 +135,24 @@
 
 	// For pills with image + label
 	.pill:not(.image-only) .pill-image {
-		width: 1.25em;
-		height: 1.25em;
-		margin-left: -0.125em;
+		width: 1.5em;
+		height: 1.5em;
+		flex-shrink: 0;
+	}
+
+	.pill.has-image:not(.image-only) {
+		padding-left: 0.2em;
 	}
 
 	.pill-icon {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		opacity: 0.7;
+
+		.has-color & {
+			opacity: 1;
+		}
 	}
 
 	.pill-label {
@@ -173,10 +166,11 @@
 		background: none;
 		border: none;
 		border-radius: 50%;
-		color: rgba($fg, 0.6);
+		color: rgba($fg, 0.4);
 		cursor: pointer;
-		padding: 0;
-		transition: color 0.15s ease, background 0.15s ease;
+		padding: 0.1em;
+		margin-right: -0.2em;
+		transition: all 0.15s ease;
 
 		&:hover {
 			color: $fg;
@@ -197,6 +191,7 @@
 			background: rgba(0, 0, 0, 0.7);
 			border-radius: 0 50% 0 50%;
 			padding: 0.2em;
+			color: white;
 		}
 
 		&:hover .pill-remove {
@@ -205,6 +200,6 @@
 	}
 
 	.removable:hover {
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+		border-color: rgba($fg, 0.2);
 	}
 </style>

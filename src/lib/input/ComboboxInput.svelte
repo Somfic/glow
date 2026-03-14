@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
 	import Icon from '../icon/Icon.svelte';
+	import Pill from '../pill/Pill.svelte';
+	import Popover from '../popover/Popover.svelte';
 	import type { ComboboxOption } from './types.js';
 	import { fuzzyScore, fuzzyFilter, debounce } from './search-utils.js';
 
@@ -38,7 +39,6 @@
 	let isOpen = $state(false);
 	let selectedIndex = $state(-1);
 	let inputElement: HTMLInputElement;
-	let containerElement: HTMLDivElement;
 	let isLoading = $state(false);
 	let searchResults = $state<ComboboxOption[]>([]);
 
@@ -137,21 +137,12 @@
 		isOpen = true;
 	}
 
-	function handleWrapperClick() {
+	function handleWrapperClick(e: MouseEvent) {
+		// Ignore synthetic clicks from Enter key (detail === 0)
+		if (e.detail === 0) return;
 		if (!multiple && selectedValues.length > 0 && !isOpen) {
 			isOpen = true;
 			inputElement?.focus();
-		}
-	}
-
-	function handleBlur(e: FocusEvent) {
-		// Only close if focus moved outside the entire component
-		const relatedTarget = e.relatedTarget as Node;
-		if (!containerElement?.contains(relatedTarget)) {
-			setTimeout(() => {
-				isOpen = false;
-				selectedIndex = -1;
-			}, 150);
 		}
 	}
 
@@ -191,123 +182,116 @@
 	}
 </script>
 
-<div class="combobox" class:disabled class:open={isOpen} class:multiple bind:this={containerElement}>
-	<div class="combobox-input-area">
-		{#if multiple && selectedValues.length > 0}
-			<div class="chips">
-				{#each getSelectedOptions() as opt}
-					<span class="chip">
-						{#if opt.image}
-							<img src={opt.image} alt="" class="chip-image" />
-						{:else if opt.icon}
-							<Icon name={opt.icon} size={12} />
-						{/if}
-						<span class="chip-label">{opt.label}</span>
-						<button type="button" class="chip-remove" onclick={() => removeValue(opt.value)}>
-							<Icon name="X" size={12} />
-						</button>
-					</span>
-				{/each}
-			</div>
-		{/if}
-		<div
-			class="input-wrapper"
-			role="button"
-			tabindex="-1"
-			onclick={handleWrapperClick}
-			onkeydown={(e) => {
-				if (e.key === 'Enter' || e.key === ' ') {
-					e.preventDefault();
-					handleWrapperClick();
-				}
-			}}
-		>
-			{#if !multiple && selectedValues.length > 0 && !isOpen}
-				{@const selected = options.find((o) => o.value === selectedValues[0])}
-				{#if selected}
-					<div class="selected-display">
-						{#if selected.image}
-							<img src={selected.image} alt="" class="selected-image" />
-						{:else if selected.icon}
-							<Icon name={selected.icon} size={16} />
-						{/if}
-						<span>{selected.label}</span>
-					</div>
-				{/if}
-			{/if}
-			<input
-				{id}
-				type="text"
-				bind:this={inputElement}
-				value={inputValue}
-				{placeholder}
-				{disabled}
-				class:hidden={!multiple && selectedValues.length > 0 && !isOpen}
-				oninput={handleInputChange}
-				onfocus={handleFocus}
-				onblur={handleBlur}
-				onkeydown={handleKeydown}
-				autocomplete="off"
-			/>
-		</div>
-		<div class="actions">
-			{#if clearable && selectedValues.length > 0}
-				<button type="button" class="clear-btn" onclick={clearAll} tabindex="-1">
-					<Icon name="X" size={16} />
-				</button>
-			{/if}
-			<span class="chevron">
-				<Icon name="ChevronDown" size={16} />
-			</span>
-		</div>
-	</div>
-
-	{#if isOpen}
-		<div class="dropdown" transition:fly={{ duration: 150, y: -8 }}>
-			{#if isLoading}
-				<div class="loading-indicator">
-					<span class="loading-spinner"></span>
-					<span>Searching...</span>
+<Popover bind:open={isOpen} {disabled} manual>
+	{#snippet trigger()}
+		<div class="combobox-input-area" class:open={isOpen}>
+			{#if multiple && selectedValues.length > 0}
+				<div class="chips">
+					{#each getSelectedOptions() as opt}
+						<Pill
+							label={opt.label}
+							icon={opt.icon}
+							image={opt.image}
+							onRemove={() => removeValue(opt.value)}
+						/>
+					{/each}
 				</div>
-			{:else if filteredOptions.length > 0}
-				{#each filteredOptions as option, index}
-					<button
-						type="button"
-						class="option"
-						class:selected={index === selectedIndex}
-						onmousedown={() => selectOption(option)}
-					>
-						{#if option.image}
-							<img src={option.image} alt="" class="option-image" />
-						{:else if option.icon}
-							<span class="option-icon">
-								<Icon name={option.icon} size={16} />
-							</span>
-						{:else if option.groupType}
-							<span class="option-icon group-{option.groupType}">
-								{#if option.groupType === 'person'}👤{:else if option.groupType === 'model'}🤖{:else if option.groupType === 'style'}🎨{:else if option.groupType === 'scene'}🏞️{:else}🏷️{/if}
-							</span>
-						{/if}
-						<span class="option-label">{option.label}</span>
-						{#if option.description}
-							<span class="option-description">{option.description}</span>
-						{/if}
-					</button>
-				{/each}
-			{:else if inputValue.length > 0}
-				<div class="no-results">No results found</div>
 			{/if}
+			<div
+				class="input-wrapper"
+				role="button"
+				tabindex="-1"
+				onclick={(e) => {
+					e.stopPropagation();
+					handleWrapperClick(e);
+				}}
+				onkeydown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						handleWrapperClick(new MouseEvent('click', { detail: 1 }));
+					}
+				}}
+			>
+				{#if !multiple && selectedValues.length > 0 && !isOpen}
+					{@const selected = options.find((o) => o.value === selectedValues[0])}
+					{#if selected}
+						<div class="selected-display">
+							{#if selected.image}
+								<img src={selected.image} alt="" class="selected-image" />
+							{:else if selected.icon}
+								<Icon name={selected.icon} size={16} />
+							{/if}
+							<span>{selected.label}</span>
+						</div>
+					{/if}
+				{/if}
+				<input
+					{id}
+					type="text"
+					bind:this={inputElement}
+					value={inputValue}
+					{placeholder}
+					{disabled}
+					class:hidden={!multiple && selectedValues.length > 0 && !isOpen}
+					oninput={handleInputChange}
+					onfocus={handleFocus}
+					onkeydown={handleKeydown}
+					onclick={(e) => e.stopPropagation()}
+					autocomplete="off"
+				/>
+			</div>
+			<div class="actions">
+				{#if clearable && selectedValues.length > 0}
+					<button type="button" class="clear-btn" onclick={(e) => { e.stopPropagation(); clearAll(); }} tabindex="-1">
+						<Icon name="X" size={16} />
+					</button>
+				{/if}
+				<span class="chevron">
+					<Icon name="ChevronDown" size={16} />
+				</span>
+			</div>
 		</div>
-	{/if}
-</div>
+	{/snippet}
+
+	<div class="dropdown">
+		{#if isLoading}
+			<div class="loading-indicator">
+				<span class="loading-spinner"></span>
+				<span>Searching...</span>
+			</div>
+		{:else if filteredOptions.length > 0}
+			{#each filteredOptions as option, index}
+				<button
+					type="button"
+					class="option"
+					class:selected={index === selectedIndex}
+					onmousedown={() => selectOption(option)}
+				>
+					{#if option.image}
+						<img src={option.image} alt="" class="option-image" />
+					{:else if option.icon}
+						<span class="option-icon">
+							<Icon name={option.icon} size={16} />
+						</span>
+					{:else if option.groupType}
+						<span class="option-icon group-{option.groupType}">
+							{#if option.groupType === 'person'}👤{:else if option.groupType === 'model'}🤖{:else if option.groupType === 'style'}🎨{:else if option.groupType === 'scene'}🏞️{:else}🏷️{/if}
+						</span>
+					{/if}
+					<span class="option-label">{option.label}</span>
+					{#if option.description}
+						<span class="option-description">{option.description}</span>
+					{/if}
+				</button>
+			{/each}
+		{:else if inputValue.length > 0}
+			<div class="no-results">No results found</div>
+		{/if}
+	</div>
+</Popover>
 
 <style lang="scss">
 	@use '../style/theme.scss' as *;
-
-	.combobox {
-		position: relative;
-		font-size: 1rem;
-	}
 
 	.combobox-input-area {
 		display: flex;
@@ -320,60 +304,18 @@
 		color: $fg;
 		min-height: 2.5em;
 		flex-wrap: wrap;
+		font-size: 1rem;
 
-		&:focus-within {
+		&.open {
 			border-color: $primary;
 			box-shadow: 0 0 0 2px rgba($primary, 0.3);
 		}
-	}
-
-	.combobox.disabled .combobox-input-area {
-		opacity: 0.5;
-		cursor: not-allowed;
 	}
 
 	.chips {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.25em;
-	}
-
-	.chip {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.25em;
-		background: $secondary;
-		border-radius: calc($radius - 2px);
-		padding: 0.2em 0.4em;
-		font-size: 0.875em;
-	}
-
-	.chip-image {
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-		object-fit: cover;
-	}
-
-	.chip-label {
-		color: $fg;
-	}
-
-	.chip-remove {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: none;
-		border: none;
-		padding: 0;
-		cursor: pointer;
-		color: rgba($fg, 0.6);
-		border-radius: 50%;
-
-		&:hover {
-			color: $fg;
-			background: rgba($fg, 0.1);
-		}
 	}
 
 	.input-wrapper {
@@ -462,22 +404,13 @@
 		}
 	}
 
-	.combobox.open .chevron {
+	.combobox-input-area.open .chevron {
 		transform: rotate(180deg);
 	}
 
 	.dropdown {
-		position: absolute;
-		top: calc(100% + 4px);
-		left: 0;
-		right: 0;
 		max-height: 300px;
 		overflow-y: auto;
-		background-color: $bg-surface-element;
-		border: $border;
-		border-radius: $radius;
-		z-index: 100;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 	}
 
 	.option {
