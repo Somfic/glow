@@ -19,14 +19,16 @@
 				{ name: 'Table', href: '/components/table', description: 'Data tables with sorting and selection' },
 				{ name: 'List', href: '/components/list', description: 'Lists and virtual scrolling' },
 				{ name: 'Card', href: '/components/card', description: 'Content cards' },
-				{ name: 'Pill', href: '/components/pill', description: 'Tags, labels, and status indicators' }
+				{ name: 'Pill', href: '/components/pill', description: 'Tags, labels, and status indicators' },
+				{ name: 'Avatar', href: '/components/avatar', description: 'User avatars with initials and status' }
 			]
 		},
 		{
 			category: 'Navigation',
 			items: [
 				{ name: 'Tabs', href: '/components/tabs', description: 'Tab navigation' },
-				{ name: 'Table of Contents', href: '/components/toc', description: 'Sticky navigation for long content' }
+				{ name: 'Table of Contents', href: '/components/toc', description: 'Sticky navigation for long content' },
+				{ name: 'Dropdown Menu', href: '/components/dropdown', description: 'Contextual action menus' }
 			]
 		},
 		{

@@ -34,6 +34,10 @@ export type { CursorConfig, CursorState } from "./cursor/cursor.svelte.js";
 export { default as CursorProvider } from "./cursor/CursorProvider.svelte";
 export { default as GradientMesh } from "./gradient/GradientMesh.svelte";
 export { default as Popover } from "./popover/Popover.svelte";
+export { default as DropdownMenu } from "./menu/DropdownMenu.svelte";
+export type { DropdownMenuItem, DropdownMenuEntry } from "./menu/DropdownMenu.svelte";
+export { default as Avatar } from "./avatar/Avatar.svelte";
+export { default as AvatarGroup } from "./avatar/AvatarGroup.svelte";
 
 // Data display components
 export { default as Table } from "./data/Table.svelte";
