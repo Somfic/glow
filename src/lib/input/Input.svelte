@@ -11,6 +11,7 @@
 	import CheckboxInput from './CheckboxInput.svelte';
 	import ToggleInput from './ToggleInput.svelte';
 	import RangeInput from './RangeInput.svelte';
+	import PasswordInput from './PasswordInput.svelte';
 	import ColorInput from './ColorInput.svelte';
 
 	type BaseProps = {
@@ -24,6 +25,19 @@
 		value: string;
 		placeholder?: string;
 		icon?: IconName;
+		clearable?: boolean;
+		autocomplete?: AutoFill;
+		onChange?: (value: string) => void;
+		onFocus?: () => void;
+		onBlur?: () => void;
+		onKeydown?: (e: KeyboardEvent) => void;
+		inputRef?: (el: HTMLInputElement) => void;
+	};
+
+	type PasswordProps = BaseProps & {
+		type: 'password';
+		value: string;
+		placeholder?: string;
 		clearable?: boolean;
 		autocomplete?: AutoFill;
 		onChange?: (value: string) => void;
@@ -122,6 +136,7 @@
 
 	type Props =
 		| TextProps
+		| PasswordProps
 		| NumberProps
 		| TextareaProps
 		| MultiSelectProps
@@ -166,6 +181,21 @@
 			value={p.value}
 			placeholder={p.placeholder}
 			icon={p.icon}
+			disabled={p.disabled}
+			clearable={p.clearable}
+			autocomplete={p.autocomplete}
+			onChange={p.onChange}
+			onFocus={p.onFocus}
+			onBlur={p.onBlur}
+			onKeydown={p.onKeydown}
+			inputRef={p.inputRef}
+		/>
+	{:else if props.type === 'password'}
+		{@const p = props as PasswordProps}
+		<PasswordInput
+			id={inputId}
+			value={p.value}
+			placeholder={p.placeholder}
 			disabled={p.disabled}
 			clearable={p.clearable}
 			autocomplete={p.autocomplete}
