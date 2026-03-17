@@ -208,7 +208,7 @@
 		transition:fade={{ duration: 200 }}
 	>
 		<div class="lightbox-close">
-			<Button icon="X" onclick={onClose} variant="ternary" />
+			<Button icon="X" onclick={onClose} variant="ghost" />
 		</div>
 
 		<div class="lightbox-content">

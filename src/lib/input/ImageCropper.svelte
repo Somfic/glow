@@ -100,7 +100,7 @@
 	<div class="cropper-container">
 		<div class="cropper-header">
 			<span class="cropper-title">Crop Image</span>
-			<Button icon="X" onclick={onCancel} variant="ternary" />
+			<Button icon="X" onclick={onCancel} variant="ghost" />
 		</div>
 
 		<div class="cropper-content">

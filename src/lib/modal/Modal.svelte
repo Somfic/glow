@@ -8,7 +8,7 @@
 
 	type Action = {
 		label: string;
-		variant?: 'primary' | 'secondary' | 'ternary';
+		variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
 		onclick: () => void;
 	};
 
@@ -186,7 +186,7 @@
 						{/if}
 					</div>
 					{#if showCloseButton}
-						<Button icon="X" variant="ternary" onclick={close} />
+						<Button icon="X" variant="ghost" onclick={close} />
 					{/if}
 				</div>
 			{/if}

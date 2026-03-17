@@ -34,7 +34,8 @@
 	class:state-tooltip={cursorState.state === 'tooltip'}
 	class:variant-primary={cursorState.variant === 'primary'}
 	class:variant-secondary={cursorState.variant === 'secondary'}
-	class:variant-ternary={cursorState.variant === 'ternary'}
+	class:variant-ghost={cursorState.variant === 'ghost'}
+	class:variant-danger={cursorState.variant === 'danger'}
 	style:left="{cursorState.x}px"
 	style:top="{cursorState.y}px"
 >
@@ -110,7 +111,8 @@
 		// Button variant styling - outline style with colored text
 		.variant-primary &,
 		.variant-secondary &,
-		.variant-ternary & {
+		.variant-ghost &,
+		.variant-danger & {
 			background: rgba(255, 255, 255, 0.1); // Subtle transparent background
 			border: 2px solid rgba(255, 255, 255, 0.9); // White outline
 			// Override with smoother transitions (no bounce)
@@ -126,7 +128,8 @@
 		// Add padding for button variants with text content
 		.variant-primary.expanded &,
 		.variant-secondary.expanded &,
-		.variant-ternary.expanded & {
+		.variant-ghost.expanded &,
+		.variant-danger.expanded & {
 			padding-left: 1.5rem;
 			padding-right: 1.5rem;
 		}
@@ -204,7 +207,8 @@
 		// Button variants and links - hide content but keep for sizing
 		.variant-primary &,
 		.variant-secondary &,
-		.variant-ternary &,
+		.variant-ghost &,
+		.variant-danger &,
 		.is-link & {
 			opacity: 0 !important; // Invisible but still calculated for size
 		}
@@ -227,14 +231,16 @@
 		// Less bounce for button variants
 		.variant-primary &,
 		.variant-secondary &,
-		.variant-ternary & {
+		.variant-ghost &,
+		.variant-danger & {
 			animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards; // Smoother, less bounce
 		}
 
 		// Button variants and links - hide content but keep for sizing
 		.variant-primary &,
 		.variant-secondary &,
-		.variant-ternary &,
+		.variant-ghost &,
+		.variant-danger &,
 		.is-link & {
 			opacity: 0 !important; // Invisible but still calculated for size
 		}

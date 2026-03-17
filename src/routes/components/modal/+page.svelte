@@ -33,7 +33,7 @@
 		<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
 			<Button label="Open Basic Modal" onclick={() => demoModal.open()} />
 			<Button label="Open Small Modal" onclick={() => smallModal.open()} variant="secondary" />
-			<Button label="Open Confirm Dialog" onclick={() => confirmModal.open()} variant="ternary" />
+			<Button label="Open Confirm Dialog" onclick={() => confirmModal.open()} variant="ghost" />
 			<Button label="Open Large Modal" onclick={() => largeModal.open()} />
 		</div>
 	</Group>
@@ -218,7 +218,7 @@
 			language="typescript"
 			code={`interface ModalAction {
   label: string;
-  variant?: 'primary' | 'secondary' | 'ternary';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   onclick: () => void;
 }`}
 		/>

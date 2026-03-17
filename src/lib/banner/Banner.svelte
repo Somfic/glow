@@ -25,7 +25,7 @@
 	<span class="label">
 		{label}
 	</span>
-	<Button icon="X" variant="ternary" />
+	<Button icon="X" variant="ghost" />
 </div>
 
 <style lang="scss">

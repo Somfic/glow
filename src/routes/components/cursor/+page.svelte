@@ -45,7 +45,7 @@
 				<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem;">
 					<Button label="Regular button" />
 					<Button icon="Heart" label="With icon" variant="secondary" />
-					<Button icon="Trash" label="Delete" variant="ternary" />
+					<Button icon="Trash" label="Delete" variant="ghost" />
 					<Button icon="Info" />
 					<Button icon="Volleyball" />
 					<a href="#demo">plain link</a>

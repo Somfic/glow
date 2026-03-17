@@ -22,7 +22,7 @@ type CursorStore = {
 	loading: boolean; // Loading state from buttons
 	selecting: boolean; // User is selecting text
 	selectionHeight: number; // Height for selection line
-	variant: string | null; // Button variant (primary/secondary/ternary)
+	variant: string | null; // Button variant (primary/secondary/ghost/danger)
 	isLink: boolean; // Is hovering a link (for horizontal line style)
 	linkWidth: number; // Width of link text for horizontal line
 };
@@ -51,7 +51,7 @@ export type CursorConfig = {
 	content?: string;
 	icon?: string;
 	iconName?: string; // Icon component name
-	variant?: string; // Button variant (primary/secondary/ternary)
+	variant?: string; // Button variant (primary/secondary/ghost/danger)
 	onHover?: () => void;
 	onClick?: () => void;
 };

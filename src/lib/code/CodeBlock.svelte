@@ -85,7 +85,7 @@
 	<div class="code-content" style:max-height={maxHeight}>
 		{#if !isShellMode}
 			<div class="copy-button">
-				<Button icon="Copy" variant="ternary" onclick={copyCode} />
+				<Button icon="Copy" variant="ghost" onclick={copyCode} />
 			</div>
 		{/if}
 		{#if isShellMode}

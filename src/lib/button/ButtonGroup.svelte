@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { setContext } from 'svelte';
 
-	setContext('button-group', { defaultVariant: 'ternary' });
+	setContext('button-group', { defaultVariant: 'ghost' });
 
 	type Props = {
 		noborder?: boolean;

@@ -28,7 +28,7 @@
 		{label}
 	</span>
 	{#if onDismiss}
-		<Button icon="X" variant="ternary" onclick={onDismiss} />
+		<Button icon="X" variant="ghost" onclick={onDismiss} />
 	{/if}
 </div>
 

@@ -412,7 +412,7 @@
 			outline-offset: 2px;
 		}
 
-		:global(button.ternary) {
+		:global(button.ghost) {
 			backdrop-filter: blur(6px);
 		}
 	}

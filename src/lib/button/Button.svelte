@@ -3,7 +3,7 @@
 	import Icon, { type IconName } from '../icon/Icon.svelte';
 	import { cursor, setCursorLoading } from '../cursor/cursor.svelte.js';
 
-	type Variant = 'primary' | 'secondary' | 'ternary';
+	type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
 	type BaseProps = {
 		variant?: Variant;
@@ -114,6 +114,7 @@
 		border: $border;
 		border-radius: $radius;
 		font-weight: 700;
+		cursor: pointer;
 		transition: background-color 150ms ease;
 
 		.content {
@@ -158,7 +159,7 @@
 			}
 		}
 
-		&.ternary {
+		&.ghost {
 			color: inherit;
 			background-color: $tertiary;
 
@@ -171,6 +172,21 @@
 			&:active {
 				background-color: $tertiary-active;
 				color: $fg;
+			}
+		}
+
+		&.danger {
+			background-color: rgba(#ef4444, 0.1);
+			color: #ef4444;
+			border-color: rgba(#ef4444, 0.2);
+
+			&:hover,
+			&.cursor-hover {
+				background-color: rgba(#ef4444, 0.2);
+			}
+
+			&:active {
+				background-color: rgba(#ef4444, 0.3);
 			}
 		}
 

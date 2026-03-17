@@ -28,12 +28,13 @@
 
 	<Group label="Button Variants" id="button-variants">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-			Three visual variants for different levels of emphasis
+			Four visual variants for different levels of emphasis
 		</Text>
 		<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
 			<Button label="Primary" variant="primary" />
 			<Button label="Secondary" variant="secondary" />
-			<Button label="Ternary" variant="ternary" />
+			<Button label="Ghost" variant="ghost" />
+			<Button icon="Trash" label="Delete" variant="danger" />
 		</div>
 	</Group>
 
@@ -44,7 +45,7 @@
 		<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
 			<Button label="Regular button" />
 			<Button icon="Heart" label="With icon" variant="secondary" />
-			<Button icon="Trash" label="Delete" variant="ternary" />
+			<Button icon="Trash" label="Delete" variant="danger" />
 		</div>
 	</Group>
 
@@ -56,7 +57,7 @@
 			<Button icon="Info" />
 			<Button icon="Volleyball" />
 			<Button icon="Heart" variant="secondary" />
-			<Button icon="Trash" variant="ternary" />
+			<Button icon="Trash" variant="ghost" />
 		</div>
 	</Group>
 
@@ -92,7 +93,7 @@
 
 <Button label="Click me" variant="primary" />
 <Button icon="Heart" label="Like" variant="secondary" />
-<Button icon="Trash" variant="ternary" />`}
+<Button icon="Trash" variant="ghost" />`}
 		/>
 
 		<Heading level={3} id="async-button">Async Button</Heading>
@@ -135,7 +136,7 @@
 			data={[
 				{ prop: 'label', type: 'string', default: '-', description: 'Button text label' },
 				{ prop: 'icon', type: 'IconName', default: '-', description: 'Icon to display' },
-				{ prop: 'variant', type: "'primary' | 'secondary' | 'ternary'", default: "'primary'", description: 'Visual style variant' },
+				{ prop: 'variant', type: "'primary' | 'secondary' | 'ghost' | 'danger'", default: "'primary'", description: 'Visual style variant' },
 				{ prop: 'onclick', type: '() => void | Promise&lt;void&gt;', default: '-', description: 'Click handler (supports async)' },
 				{ prop: 'disabled', type: 'boolean', default: 'false', description: 'Disable button interactions' }
 			]}
@@ -144,7 +145,7 @@
 
 	<Group label="Features" id="features">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-			<li><Text>🎨 Three visual variants (primary, secondary, ternary)</Text></li>
+			<li><Text>🎨 Four visual variants (primary, secondary, ghost, danger)</Text></li>
 			<li><Text>🎯 Icon support with automatic cursor mirroring</Text></li>
 			<li><Text>⏳ Automatic loading state for async operations</Text></li>
 			<li><Text>📐 Consistent 32px size across all buttons</Text></li>
