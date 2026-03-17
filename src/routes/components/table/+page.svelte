@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -85,15 +84,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Table"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Table', href: '/components/table' }
-	]}
->
-	<Heading level={1}>Data Table</Heading>
+<svelte:head><title>Table | Glow UI</title></svelte:head>
+
+<Heading level={1}>Data Table</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		A powerful data table component with sorting, selection, row actions, and virtual scrolling
 		for large datasets.
@@ -282,4 +275,3 @@
 			<li><Text>♿ Fully accessible with ARIA attributes</Text></li>
 		</ul>
 	</Group>
-</Page>

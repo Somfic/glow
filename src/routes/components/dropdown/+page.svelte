@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -39,15 +38,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Dropdown Menu"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Dropdown Menu', href: '/components/dropdown' }
-	]}
->
-	<Heading level={1}>Dropdown Menu</Heading>
+<svelte:head><title>Dropdown Menu | Glow UI</title></svelte:head>
+
+<Heading level={1}>Dropdown Menu</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		Contextual menus for actions, triggered by any element.
 	</Text>
@@ -139,4 +132,3 @@
 			]}
 		/>
 	</Group>
-</Page>

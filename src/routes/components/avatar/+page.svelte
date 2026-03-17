@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -24,15 +23,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Avatar"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Avatar', href: '/components/avatar' }
-	]}
->
-	<Heading level={1}>Avatar</Heading>
+<svelte:head><title>Avatar | Glow UI</title></svelte:head>
+
+<Heading level={1}>Avatar</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		User avatars with image and initials fallback. Hover to see names.
 	</Text>
@@ -146,4 +139,3 @@
 			]}
 		/>
 	</Group>
-</Page>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -20,15 +19,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Buttons"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Buttons', href: '/components/buttons' }
-	]}
->
-	<Heading level={1}>Buttons</Heading>
+<svelte:head><title>Buttons | Glow UI</title></svelte:head>
+
+<Heading level={1}>Buttons</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		Versatile button components with multiple variants, icons, and loading states.
 	</Text>
@@ -160,4 +153,3 @@
 			<li><Text>♿ Fully accessible with proper ARIA attributes</Text></li>
 		</ul>
 	</Group>
-</Page>

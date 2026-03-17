@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -12,15 +11,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Typography"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Typography', href: '/components/typography' }
-	]}
->
-	<Heading level={1}>Typography</Heading>
+<svelte:head><title>Typography | Glow UI</title></svelte:head>
+
+<Heading level={1}>Typography</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		A comprehensive typography system with headings and text components for consistent,
 		accessible, and beautiful content.
@@ -215,4 +208,3 @@
 			<li><Text>📱 Responsive and mobile-optimized</Text></li>
 		</ul>
 	</Group>
-</Page>

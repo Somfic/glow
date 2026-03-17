@@ -1,7 +1,67 @@
 <script>
 	import '$lib/style/glow.scss';
-	// import { CursorProvider } from '$lib';
+	import Page from '$lib/page/Page.svelte';
+
+	const sidebarConfig = {
+		title: 'Glow UI',
+		topItems: [
+			{ label: 'Home', href: '/', icon: 'Home' },
+			{ label: 'Components', href: '/components', icon: 'Layout' }
+		],
+		groups: [
+			{
+				label: 'Form & Input',
+				items: [
+					{ label: 'Button', href: '/components/buttons', icon: 'MousePointerClick' },
+					{ label: 'Input', href: '/components/inputs', icon: 'TextCursorInput' }
+				]
+			},
+			{
+				label: 'Data Display',
+				items: [
+					{ label: 'Table', href: '/components/table', icon: 'Table' },
+					{ label: 'List', href: '/components/list', icon: 'List' },
+					{ label: 'Property List', href: '/components/property-list', icon: 'ClipboardList' },
+					{ label: 'Card', href: '/components/card', icon: 'Square' },
+					{ label: 'Pill', href: '/components/pill', icon: 'Tag' },
+					{ label: 'Avatar', href: '/components/avatar', icon: 'CircleUser' }
+				]
+			},
+			{
+				label: 'Navigation',
+				items: [
+					{ label: 'Tabs', href: '/components/tabs', icon: 'PanelTop' },
+					{ label: 'Table of Contents', href: '/components/toc', icon: 'BookOpen' },
+					{ label: 'Dropdown Menu', href: '/components/dropdown', icon: 'ChevronDown' }
+				]
+			},
+			{
+				label: 'Feedback',
+				items: [
+					{ label: 'Modal', href: '/components/modal', icon: 'MessageSquare' },
+					{ label: 'Toast', href: '/components/toast', icon: 'Bell' },
+					{ label: 'Tooltip', href: '/components/tooltip', icon: 'Info' },
+					{ label: 'Banner', href: '/components/banner', icon: 'Flag' }
+				]
+			},
+			{
+				label: 'Typography & Code',
+				items: [
+					{ label: 'Typography', href: '/components/typography', icon: 'Type' },
+					{ label: 'Code', href: '/components/code', icon: 'Code' }
+				]
+			},
+			{
+				label: 'Visual Effects',
+				items: [
+					{ label: 'Cursor', href: '/components/cursor', icon: 'MousePointer' },
+					{ label: 'Gradient Mesh', href: '/components/gradient', icon: 'Sparkles' }
+				]
+			}
+		]
+	};
 </script>
 
-<!-- <CursorProvider /> -->
-<slot />
+<Page title="Glow UI" {sidebarConfig}>
+	<slot />
+</Page>

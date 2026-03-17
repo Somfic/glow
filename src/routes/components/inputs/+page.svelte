@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -13,15 +12,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Inputs"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Inputs', href: '/components/inputs' }
-	]}
->
-	<Heading level={1}>Inputs</Heading>
+<svelte:head><title>Inputs | Glow UI</title></svelte:head>
+
+<Heading level={1}>Inputs</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		Comprehensive input components for all form types with built-in validation and custom cursor
 		states.
@@ -278,4 +271,3 @@
 			<li><Text>♿ Fully accessible with proper labels and ARIA</Text></li>
 		</ul>
 	</Group>
-</Page>

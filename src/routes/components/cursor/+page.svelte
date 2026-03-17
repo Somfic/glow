@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -18,15 +17,9 @@
 	}
 </script>
 
-<Page
-	title="Custom Cursor"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Cursor', href: '/components/cursor' }
-	]}
->
-	<Heading level={1}>Custom Cursor</Heading>
+<svelte:head><title>Custom Cursor | Glow UI</title></svelte:head>
+
+<Heading level={1}>Custom Cursor</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		An innovative custom cursor system that morphs based on context, showing icons, tooltips, and
 		loading states directly in the cursor itself.
@@ -265,7 +258,6 @@ bun run dev`}
 			</li>
 		</ul>
 	</Group>
-</Page>
 
 <style>
 	.demo-btn {

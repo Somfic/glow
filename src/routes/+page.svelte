@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Button from '$lib/button/Button.svelte';
@@ -9,14 +8,9 @@
 	import Card from '$lib/card/Card.svelte';
 </script>
 
-<Page
-	title="Home"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' }
-	]}
->
-	<div style="position: relative; margin-bottom: 4rem;">
+<svelte:head><title>Home | Glow UI</title></svelte:head>
+
+<div style="position: relative; margin-bottom: 4rem;">
 		<div
 			style="position: relative; height: 400px; border-radius: 12px; overflow: hidden; margin-bottom: 2rem;"
 		>
@@ -175,4 +169,3 @@ bun add glow-ui`}
 			/>
 		</div>
 	</Group>
-</Page>

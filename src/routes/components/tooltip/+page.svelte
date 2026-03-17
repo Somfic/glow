@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -13,15 +12,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Tooltip"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Tooltip', href: '/components/tooltip' }
-	]}
->
-	<Heading level={1}>Tooltip</Heading>
+<svelte:head><title>Tooltip | Glow UI</title></svelte:head>
+
+<Heading level={1}>Tooltip</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		A unique tooltip implementation that displays inside the custom cursor, creating a seamless
 		and elegant user experience.
@@ -175,7 +168,6 @@
 			<li><Text>♿ Accessible with proper ARIA attributes</Text></li>
 		</ul>
 	</Group>
-</Page>
 
 <style>
 	.demo-btn {

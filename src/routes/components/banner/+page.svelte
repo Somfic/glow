@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -13,15 +12,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Banner"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Banner', href: '/components/banner' }
-	]}
->
-	<Heading level={1}>Banners</Heading>
+<svelte:head><title>Banner | Glow UI</title></svelte:head>
+
+<Heading level={1}>Banners</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		Simple banner component for displaying notifications and alerts with different severity levels.
 	</Text>
@@ -129,4 +122,3 @@
 			<li><Text>🎭 Consistent styling across variants</Text></li>
 		</ul>
 	</Group>
-</Page>

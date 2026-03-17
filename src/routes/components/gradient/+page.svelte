@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -14,15 +13,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Gradient Mesh"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Gradient Mesh', href: '/components/gradient' }
-	]}
->
-	<Heading level={1}>Gradient Mesh Background</Heading>
+<svelte:head><title>Gradient Mesh | Glow UI</title></svelte:head>
+
+<Heading level={1}>Gradient Mesh Background</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		An animated gradient mesh background with smooth, organic flowing motion. Perfect for creating
 		engaging, dynamic backgrounds.
@@ -232,4 +225,3 @@
 			instead of the animated version.
 		</Text>
 	</Group>
-</Page>

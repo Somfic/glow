@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -12,15 +11,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Code"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Code', href: '/components/code' }
-	]}
->
-	<Heading level={1}>Code</Heading>
+<svelte:head><title>Code | Glow UI</title></svelte:head>
+
+<Heading level={1}>Code</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		Components for displaying code with syntax highlighting, line numbers, and copy functionality.
 	</Text>
@@ -280,4 +273,3 @@ bun test`}
 			<li><Text>♿ Accessible with proper ARIA attributes</Text></li>
 		</ul>
 	</Group>
-</Page>

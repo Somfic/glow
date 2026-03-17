@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -61,15 +60,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="List"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'List', href: '/components/list' }
-	]}
->
-	<Heading level={1}>List Components</Heading>
+<svelte:head><title>List | Glow UI</title></svelte:head>
+
+<Heading level={1}>List Components</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		Simple list component with icons and badges, plus high-performance virtual scrolling for long
 		lists.
@@ -267,4 +260,3 @@
 			<li><Text>⌨️ Keyboard navigation support</Text></li>
 		</ul>
 	</Group>
-</Page>

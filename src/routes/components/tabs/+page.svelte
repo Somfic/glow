@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -15,15 +14,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Tabs"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Tabs', href: '/components/tabs' }
-	]}
->
-	<Heading level={1}>Tabs</Heading>
+<svelte:head><title>Tabs | Glow UI</title></svelte:head>
+
+<Heading level={1}>Tabs</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		A tabs component with visual connection between the active tab and content area.
 	</Text>
@@ -192,10 +185,6 @@
 		/>
 	</Group>
 
-	{#snippet codeCell(value)}
-		<Code>{value}</Code>
-	{/snippet}
-
 	<Group label="Props" id="props">
 		<Table
 			variant="simple"
@@ -246,4 +235,3 @@
 			<li><Text>🎯 Bindable active state</Text></li>
 		</ul>
 	</Group>
-</Page>

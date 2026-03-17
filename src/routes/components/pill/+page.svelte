@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -13,15 +12,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Pill"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Pill', href: '/components/pill' }
-	]}
->
-	<Heading level={1}>Pill</Heading>
+<svelte:head><title>Pill | Glow UI</title></svelte:head>
+
+<Heading level={1}>Pill</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		Compact labels for tags, categories, and status indicators. Supports text, icons, and images.
 	</Text>
@@ -132,4 +125,3 @@
 			]}
 		/>
 	</Group>
-</Page>

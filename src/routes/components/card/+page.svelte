@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -13,15 +12,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Card"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Card', href: '/components/card' }
-	]}
->
-	<Heading level={1}>Card</Heading>
+<svelte:head><title>Card | Glow UI</title></svelte:head>
+
+<Heading level={1}>Card</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		A versatile card component for displaying media content with badges, tags, and actions.
 	</Text>
@@ -198,4 +191,3 @@ type BadgeVariant = 'success' | 'info' | 'warning' | 'error';`}
 			<li><Text>♿ Accessible with proper ARIA attributes</Text></li>
 		</ul>
 	</Group>
-</Page>

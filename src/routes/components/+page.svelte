@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import MediaCard from '$lib/media/MediaCard.svelte';
@@ -18,6 +17,7 @@
 			items: [
 				{ name: 'Table', href: '/components/table', description: 'Data tables with sorting and selection' },
 				{ name: 'List', href: '/components/list', description: 'Lists and virtual scrolling' },
+				{ name: 'Property List', href: '/components/property-list', description: 'Key-value pairs for detail panels' },
 				{ name: 'Card', href: '/components/card', description: 'Content cards' },
 				{ name: 'Pill', href: '/components/pill', description: 'Tags, labels, and status indicators' },
 				{ name: 'Avatar', href: '/components/avatar', description: 'User avatars with initials and status' }
@@ -57,14 +57,9 @@
 	];
 </script>
 
-<Page
-	title="Components"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' }
-	]}
->
-	<Heading level={1}>Components</Heading>
+<svelte:head><title>Components | Glow UI</title></svelte:head>
+
+<Heading level={1}>Components</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		Explore all the components available in the Glow UI library.
 	</Text>
@@ -98,4 +93,3 @@
 			</div>
 		</Group>
 	{/each}
-</Page>

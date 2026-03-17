@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -19,15 +18,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Modal"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Modal', href: '/components/modal' }
-	]}
->
-	<Heading level={1}>Modal</Heading>
+<svelte:head><title>Modal | Glow UI</title></svelte:head>
+
+<Heading level={1}>Modal</Heading>
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		Accessible modal dialog component with focus management, keyboard navigation, and customizable
 		actions.
@@ -243,4 +236,3 @@
 			<li><Text>♿ Fully accessible with ARIA attributes</Text></li>
 		</ul>
 	</Group>
-</Page>

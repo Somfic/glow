@@ -91,6 +91,35 @@ export interface TableProps<T = any> {
 	onRowClick?: (row: T, index: number) => void;
 }
 
+// Property List Types
+export interface PropertyItem {
+	label: string;
+	icon?: IconName;
+	value?: string | number | boolean;
+	href?: string;
+	pill?: {
+		label: string;
+		color?: string;
+		icon?: IconName;
+	};
+	render?: Snippet;
+	muted?: boolean;
+}
+
+export interface PropertyGroup {
+	label?: string;
+	icon?: IconName;
+	properties: PropertyItem[];
+}
+
+export interface PropertyListProps {
+	properties?: PropertyItem[];
+	groups?: PropertyGroup[];
+	variant?: 'inline' | 'stacked';
+	divided?: boolean;
+	labelWidth?: string;
+}
+
 // List Types
 export interface ListItem {
 	id: string;

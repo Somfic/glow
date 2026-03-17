@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Page from '$lib/page/Page.svelte';
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
@@ -13,15 +12,9 @@
 	<Code>{value}</Code>
 {/snippet}
 
-<Page
-	title="Table of Contents"
-	navItems={[
-		{ label: 'Home', href: '/' },
-		{ label: 'Components', href: '/components' },
-		{ label: 'Table of Contents', href: '/components/toc' }
-	]}
->
-	<div style="display: flex; gap: 2rem;">
+<svelte:head><title>Table of Contents | Glow UI</title></svelte:head>
+
+<div style="display: flex; gap: 2rem;">
 		<div style="flex: 1; min-width: 0;">
 			<Heading level={1}>Table of Contents</Heading>
 			<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
@@ -253,7 +246,6 @@
 			<TableOfContents />
 		</aside>
 	</div>
-</Page>
 
 <style>
 	.toc-sidebar {
