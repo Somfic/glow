@@ -65,6 +65,7 @@
 		// State
 		selected = false,
 		loading = false,
+		disabled = false,
 
 		// Interaction
 		onclick,
@@ -98,6 +99,7 @@
 
 		selected?: boolean;
 		loading?: boolean;
+		disabled?: boolean;
 
 		onclick?: () => void;
 		onclickWithProgress?: (progress: number, videoEl?: HTMLVideoElement) => void;
@@ -251,13 +253,14 @@
 	bind:this={cardEl}
 	use:setupIntersectionObserver
 	class="card"
-	class:clickable={!!onclick || !!onclickWithProgress}
+	class:clickable={!disabled && (!!onclick || !!onclickWithProgress)}
 	class:selected
 	class:loading
+	class:disabled
 	style:aspect-ratio={aspectRatio}
-	onclick={handleClick}
-	onmouseenter={handleMouseEnter}
-	onmouseleave={handleMouseLeave}
+	onclick={disabled ? undefined : handleClick}
+	onmouseenter={disabled ? undefined : handleMouseEnter}
+	onmouseleave={disabled ? undefined : handleMouseLeave}
 >
 	<!-- Media -->
 	<div class="card-media">
@@ -405,6 +408,18 @@
 
 		&.clickable {
 			cursor: pointer;
+		}
+
+		&.disabled {
+			cursor: not-allowed;
+
+			.card-media {
+				opacity: 0.4;
+			}
+
+			&:hover {
+				box-shadow: none;
+			}
 		}
 
 		&.selected {
