@@ -16,6 +16,7 @@
 		title,
 		subtitle,
 		icon,
+		iconFilled = false,
 		actions = [],
 		size = 'medium',
 		showCloseButton = true,
@@ -28,6 +29,7 @@
 		title?: string;
 		subtitle?: string;
 		icon?: IconName;
+		iconFilled?: boolean;
 		actions?: Action[];
 		size?: 'small' | 'medium' | 'large' | 'full';
 		showCloseButton?: boolean;
@@ -172,7 +174,7 @@
 				<div class="modal-header">
 					<div class="modal-header-content">
 						{#if icon}
-							<Icon name={icon} size={24} />
+							<Icon name={icon} size={24} fill={iconFilled} />
 						{/if}
 						{#if title || subtitle}
 							<div class="modal-header-text">

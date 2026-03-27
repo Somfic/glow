@@ -2,25 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import { onDestroy } from 'svelte';
 	import { type Snippet } from 'svelte';
-	import { type IconName } from '../icon/Icon.svelte';
 	import Media from './Media.svelte';
-	import Button from '../button/Button.svelte';
-	import ButtonGroup from '../button/ButtonGroup.svelte';
-	import Pill from '../pill/Pill.svelte';
-
-	type BadgeVariant = 'default' | 'success' | 'warning';
-
-	type Action = {
-		icon: IconName;
-		label?: string;
-		onclick: () => void;
-	};
-
-	type Tag = {
-		label: string;
-		color?: string;
-		image?: string;
-	};
 
 	type MediaContentProps = {
 		isHovering: boolean;
@@ -43,24 +25,17 @@
 		loop = true,
 		lazy = false,
 
-		// Badge (top-left)
-		badge,
-		badgeVariant = 'default',
-		badgeContent,
-
-		// Actions (top-right, hover)
-		actions = [],
-
-		// Bottom overlay (default)
-		title,
-		subtitle,
-		tags = [],
-
-		// Bottom overlay (custom snippet)
-		bottomContent,
+		// Corner slots
+		topLeft,
+		topRight,
+		bottomLeft,
+		bottomRight,
 
 		// Media content (custom snippet - overrides default media rendering)
 		mediaContent,
+
+		// Progress
+		progress,
 
 		// State
 		selected = false,
@@ -83,19 +58,14 @@
 		loop?: boolean;
 		lazy?: boolean;
 
-		badge?: string;
-		badgeVariant?: BadgeVariant;
-		badgeContent?: Snippet;
-
-		actions?: Action[];
-
-		title?: string;
-		subtitle?: string;
-		tags?: Tag[];
-
-		bottomContent?: Snippet;
+		topLeft?: Snippet;
+		topRight?: Snippet;
+		bottomLeft?: Snippet;
+		bottomRight?: Snippet;
 
 		mediaContent?: Snippet<[MediaContentProps]>;
+
+		progress?: number;
 
 		selected?: boolean;
 		loading?: boolean;
@@ -106,8 +76,6 @@
 	} = $props();
 
 	let showOverlay = $state(false);
-	let hasDefaultBottomContent = $derived(title || subtitle || tags.length > 0);
-	let hasBottomContent = $derived(bottomContent || hasDefaultBottomContent);
 
 	// Lazy loading state
 	let cardEl: HTMLDivElement;
@@ -173,20 +141,15 @@
 	}
 
 	function handleClick() {
-		const progress = isVideo ? getVideoProgress() : 0;
-		// Pass the hover video element if it's showing (already loaded), otherwise the preview video
+		const prog = isVideo ? getVideoProgress() : 0;
 		const activeVideoEl = showHoverVideo ? hoverVideoEl : (previewVideoReady ? videoEl : null);
 		onclick?.();
-		onclickWithProgress?.(progress, activeVideoEl ?? undefined);
+		onclickWithProgress?.(prog, activeVideoEl ?? undefined);
 	}
 
 	function handleMouseEnter() {
 		showOverlay = true;
 		isHovering = true;
-		// Reset hover video state when starting to hover
-		if (hoverSrc && !hoverVideoReady) {
-			// Video will start loading via the template
-		}
 	}
 
 	function handleMouseLeave() {
@@ -194,7 +157,6 @@
 		isHovering = false;
 		showHoverVideo = false;
 		hoverVideoLoading = false;
-		// Keep hoverVideoReady true so we don't reload on next hover
 	}
 
 	// Detect if this is a video
@@ -268,11 +230,9 @@
 			{@render mediaContent({ isHovering, showOverlay, fit, shouldLoad })}
 		{:else if src}
 			{#if isVideo}
-				<!-- Poster layer (always shown first, fades out when video ready) -->
 				{#if poster}
 					<div class="media-layer poster-layer" class:hidden={previewVideoReady || showHoverVideo}>
 						<img src={poster} alt="" class="poster" style="object-fit: {fit}" />
-						<!-- Loading indicator on poster -->
 						{#if previewVideoLoading && !previewVideoReady}
 							<div class="poster-loading">
 								<div class="spinner"></div>
@@ -282,9 +242,7 @@
 				{:else if !shouldLoad || !isInViewport}
 					<div class="placeholder video-placeholder">▶</div>
 				{/if}
-				<!-- For videos: only render when in viewport (lazy loading) -->
 				{#if shouldLoad && isInViewport}
-					<!-- Preview video (fades in when ready) -->
 					<div class="media-layer video-layer" class:visible={previewVideoReady} class:hidden={showHoverVideo}>
 						<Media
 							{src}
@@ -297,14 +255,12 @@
 							onVideoReady={handleVideoReady}
 							onVideoPlaying={handleVideoPlaying}
 						/>
-						<!-- Loading indicator for hover video (subtle, corner position) -->
 						{#if hoverVideoLoading && !showHoverVideo}
 							<div class="video-loading-indicator">
 								<div class="spinner-small"></div>
 							</div>
 						{/if}
 					</div>
-					<!-- Hover video (loaded on hover, shown when ready) -->
 					{#if hoverSrc && isHovering}
 						<div class="media-layer hover-layer" class:visible={showHoverVideo}>
 							<Media
@@ -322,7 +278,6 @@
 					{/if}
 				{/if}
 			{:else}
-				<!-- For images: always render, browser handles lazy loading -->
 				<Media {src} {type} {fit} {poster} {autoplay} {muted} {loop} controls={false} />
 			{/if}
 		{:else if placeholder}
@@ -330,55 +285,39 @@
 		{/if}
 	</div>
 
-	<!-- Badge (top-left) -->
-	{#if badgeContent && showOverlay}
-		<div class="badge-container" transition:fly={{ y: -8, duration: 150 }}>
-			{@render badgeContent()}
-		</div>
-	{:else if badge}
-		<div class="badge {badgeVariant}">{badge}</div>
-	{/if}
-
-	<!-- Actions (top-right, hover) -->
-	{#if actions.length > 0 && showOverlay}
+	<!-- Corner slots -->
+	{#if topLeft && showOverlay}
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-		<div
-			class="actions"
-			onclick={(e) => e.stopPropagation()}
-			transition:fly={{ y: -8, duration: 150 }}
-		>
-			<ButtonGroup>
-				{#each actions as action}
-					<Button icon={action.icon} label={action.label} onclick={action.onclick} />
-				{/each}
-			</ButtonGroup>
+		<div class="slot top-left" onclick={(e) => e.stopPropagation()} transition:fly={{ y: -8, duration: 150 }}>
+			{@render topLeft()}
 		</div>
 	{/if}
 
-	<!-- Bottom overlay -->
-	{#if hasBottomContent && showOverlay}
-		<div class="bottom-overlay" transition:fly={{ y: 8, duration: 150 }}>
-			{#if bottomContent}
-				{@render bottomContent()}
-			{:else}
-				{#if title || subtitle}
-					<div class="text-content">
-						{#if title}<span class="title">{title}</span>{/if}
-						{#if subtitle}<span class="subtitle">{subtitle}</span>{/if}
-					</div>
-				{/if}
-				{#if tags.length > 0}
-					<div class="tags">
-						{#each tags as tag}
-							{#if tag.image}
-								<Pill image={tag.image} label={tag.label} size="small" />
-							{:else}
-								<Pill label={tag.label} color={tag.color} size="small" />
-							{/if}
-						{/each}
-					</div>
-				{/if}
-			{/if}
+	{#if topRight && showOverlay}
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+		<div class="slot top-right" onclick={(e) => e.stopPropagation()} transition:fly={{ y: -8, duration: 150 }}>
+			{@render topRight()}
+		</div>
+	{/if}
+
+	{#if bottomLeft && showOverlay}
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+		<div class="slot bottom-left" onclick={(e) => e.stopPropagation()} transition:fly={{ y: 8, duration: 150 }}>
+			{@render bottomLeft()}
+		</div>
+	{/if}
+
+	{#if bottomRight && showOverlay}
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+		<div class="slot bottom-right" onclick={(e) => e.stopPropagation()} transition:fly={{ y: 8, duration: 150 }}>
+			{@render bottomRight()}
+		</div>
+	{/if}
+
+	<!-- Progress bar -->
+	{#if progress != null && progress > 0}
+		<div class="progress-bar">
+			<div class="progress-fill" style:width="{Math.min(progress, 1) * 100}%"></div>
 		</div>
 	{/if}
 
@@ -517,85 +456,46 @@
 		animation: spin 0.8s linear infinite;
 	}
 
-	.badge-container {
+	.slot {
 		position: absolute;
-		top: 0.5rem;
-		left: 0.5rem;
 		z-index: 5;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.25rem;
-		max-width: calc(100% - 1rem);
-	}
 
-	.badge {
-		position: absolute;
-		top: 0.5rem;
-		left: 0.5rem;
-		z-index: 5;
-		padding: 0.25rem 0.5rem;
-		border-radius: 0.375rem;
-		font-size: 0.75rem;
-		font-weight: 600;
-		background: rgba(0, 0, 0, 0.75);
-		color: white;
-		backdrop-filter: blur(4px);
-
-		&.success {
-			background: rgba(16, 185, 129, 0.9);
+		&.top-left {
+			top: 0.5rem;
+			left: 0.5rem;
 		}
 
-		&.warning {
-			background: rgba(245, 158, 11, 0.9);
+		&.top-right {
+			top: 0.5rem;
+			right: 0.5rem;
+		}
+
+		&.bottom-left {
+			bottom: 0.5rem;
+			left: 0.5rem;
+		}
+
+		&.bottom-right {
+			bottom: 0.5rem;
+			right: 0.5rem;
 		}
 	}
 
-	.actions {
-		position: absolute;
-		top: 0.5rem;
-		right: 0.5rem;
-		z-index: 10;
-	}
-
-	.bottom-overlay {
+	.progress-bar {
 		position: absolute;
 		bottom: 0;
 		left: 0;
 		right: 0;
-		padding: 0.75rem;
-		background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
+		height: 3px;
+		background: rgba(0, 0, 0, 0.3);
+		z-index: 6;
 	}
 
-	.text-content {
-		display: flex;
-		flex-direction: column;
-		gap: 0.125rem;
-	}
-
-	.title {
-		font-weight: 600;
-		font-size: 0.875rem;
-		color: white;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.subtitle {
-		font-size: 0.75rem;
-		color: rgba(255, 255, 255, 0.7);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.375rem;
+	.progress-fill {
+		height: 100%;
+		background: $primary;
+		border-radius: 0 1.5px 1.5px 0;
+		transition: width 0.3s ease;
 	}
 
 	.loading-overlay {

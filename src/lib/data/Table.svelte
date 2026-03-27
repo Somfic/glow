@@ -175,7 +175,7 @@
 										}}
 										title={action.label}
 									>
-										<Icon name={action.icon} size={16} />
+										<Icon name={action.icon} size={16} fill={action.iconFilled} />
 									</button>
 								{/each}
 							</div>
@@ -323,7 +323,7 @@
 											}}
 											title={action.label}
 										>
-											<Icon name={action.icon} size={16} />
+											<Icon name={action.icon} size={16} fill={action.iconFilled} />
 										</button>
 									{/each}
 								</div>

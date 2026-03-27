@@ -27,7 +27,7 @@
 			{#if group.label}
 				<div class="group-header">
 					{#if group.icon}
-						<Icon name={group.icon} size={14} />
+						<Icon name={group.icon} size={14} fill={group.iconFilled} />
 					{/if}
 					<span>{group.label}</span>
 				</div>
@@ -37,7 +37,7 @@
 					<div class="property-row">
 						<dt>
 							{#if prop.icon}
-								<Icon name={prop.icon} size={14} />
+								<Icon name={prop.icon} size={14} fill={prop.iconFilled} />
 							{/if}
 							<span>{prop.label}</span>
 						</dt>
@@ -45,7 +45,7 @@
 							{#if prop.render}
 								{@render prop.render()}
 							{:else if prop.pill}
-								<Pill label={prop.pill.label} color={prop.pill.color} icon={prop.pill.icon} />
+								<Pill label={prop.pill.label} color={prop.pill.color} icon={prop.pill.icon} iconFilled={prop.pill.iconFilled} />
 							{:else if prop.href && prop.value != null}
 								<a href={prop.href}>{prop.value}</a>
 							{:else if prop.value != null}

@@ -49,6 +49,7 @@ export interface TableSort {
 
 export interface TableRowAction {
 	icon: IconName;
+	iconFilled?: boolean;
 	label: string;
 	onClick: (row: any, index: number) => void;
 	variant?: 'default' | 'danger';
@@ -95,12 +96,14 @@ export interface TableProps<T = any> {
 export interface PropertyItem {
 	label: string;
 	icon?: IconName;
+	iconFilled?: boolean;
 	value?: string | number | boolean;
 	href?: string;
 	pill?: {
 		label: string;
 		color?: string;
 		icon?: IconName;
+		iconFilled?: boolean;
 	};
 	render?: Snippet;
 	muted?: boolean;
@@ -109,6 +112,7 @@ export interface PropertyItem {
 export interface PropertyGroup {
 	label?: string;
 	icon?: IconName;
+	iconFilled?: boolean;
 	properties: PropertyItem[];
 }
 
@@ -126,6 +130,7 @@ export interface ListItem {
 	label: string;
 	description?: string;
 	icon?: IconName;
+	iconFilled?: boolean;
 	avatar?: string;
 	badge?: string | number;
 	disabled?: boolean;

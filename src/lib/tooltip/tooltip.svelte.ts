@@ -8,15 +8,17 @@ export type TooltipOptions = {
 	content: string;
 	position?: TooltipPosition;
 	delay?: number;
-	useCursor?: boolean; // If true, show in cursor instead of separate tooltip
+	useCursor?: boolean;
 };
 
 export type TooltipParams = string | TooltipOptions;
 
 export function tooltip(node: HTMLElement, params: TooltipParams) {
 	let tooltipInstance: any = null;
+	let tooltipTarget: HTMLDivElement | null = null;
 	let showTimeout: ReturnType<typeof setTimeout> | null = null;
 	let isShowing = false;
+	let isHiding = false;
 
 	const options: TooltipOptions =
 		typeof params === 'string' ? { content: params, useCursor: true } : { useCursor: true, ...params };
@@ -25,21 +27,18 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 
 	if (!content) return;
 
-	// Mark element as having tooltip for cursor detection
 	if (useCursor) {
 		node.setAttribute('data-cursor-controlled', 'true');
 	}
 
 	function getPosition(
 		triggerRect: DOMRect,
-		pos: 'top' | 'bottom' | 'left' | 'right'
-	): { x: number; y: number; finalPosition: 'top' | 'bottom' | 'left' | 'right' } {
-		const margin = 8;
+		pos: TooltipPosition
+	): { x: number; y: number; finalPosition: TooltipPosition } {
 		let x = 0;
 		let y = 0;
 		let finalPosition = pos;
 
-		// Calculate initial position
 		switch (pos) {
 			case 'top':
 				x = triggerRect.left + triggerRect.width / 2;
@@ -59,25 +58,20 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 				break;
 		}
 
-		// Basic viewport boundary checking
-		const tooltipEstimatedWidth = 250; // max-width
-		const tooltipEstimatedHeight = 50; // estimated
+		const tooltipEstimatedWidth = 250;
+		const tooltipEstimatedHeight = 50;
+		const margin = 8;
 
-		// Check if tooltip would go off screen and flip if needed
 		if (pos === 'top' && y - tooltipEstimatedHeight - margin < 0) {
-			// Flip to bottom
 			finalPosition = 'bottom';
 			y = triggerRect.bottom;
 		} else if (pos === 'bottom' && y + tooltipEstimatedHeight + margin > window.innerHeight) {
-			// Flip to top
 			finalPosition = 'top';
 			y = triggerRect.top;
 		} else if (pos === 'left' && x - tooltipEstimatedWidth - margin < 0) {
-			// Flip to right
 			finalPosition = 'right';
 			x = triggerRect.right;
 		} else if (pos === 'right' && x + tooltipEstimatedWidth + margin > window.innerWidth) {
-			// Flip to left
 			finalPosition = 'left';
 			x = triggerRect.left;
 		}
@@ -88,21 +82,27 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 	function show() {
 		if (isShowing) return;
 
+		// Cancel any in-progress hide
+		if (isHiding) {
+			isHiding = false;
+		}
+
 		showTimeout = setTimeout(() => {
 			if (useCursor) {
-				// Show tooltip in cursor
 				setCursorState('tooltip', content);
 				isShowing = true;
 			} else {
-				// Show traditional tooltip
 				if (tooltipInstance) return;
 
 				const rect = node.getBoundingClientRect();
 				const { x, y, finalPosition } = getPosition(rect, position);
 
-				// Mount tooltip to document body
+				tooltipTarget = document.createElement('div');
+				document.body.appendChild(tooltipTarget);
+
 				tooltipInstance = mount(TooltipComponent, {
-					target: document.body,
+					target: tooltipTarget,
+					intro: true,
 					props: {
 						content,
 						x,
@@ -116,27 +116,36 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 		}, delay);
 	}
 
-	function hide() {
+	async function hide() {
 		if (showTimeout) {
 			clearTimeout(showTimeout);
 			showTimeout = null;
 		}
 
 		if (useCursor) {
-			// Reset cursor to default
 			setCursorState('default');
 			isShowing = false;
 		} else {
-			// Hide traditional tooltip
-			if (tooltipInstance) {
-				unmount(tooltipInstance);
-				tooltipInstance = null;
-				isShowing = false;
+			if (tooltipInstance && !isHiding) {
+				isHiding = true;
+				const instance = tooltipInstance;
+				const target = tooltipTarget;
+
+				// unmount with outro: true plays the Svelte transition before removing
+				await unmount(instance, { outro: true });
+
+				// Only clean up if this hide wasn't cancelled by a new show
+				if (isHiding) {
+					tooltipInstance = null;
+					tooltipTarget = null;
+					target?.remove();
+					isShowing = false;
+					isHiding = false;
+				}
 			}
 		}
 	}
 
-	// Event listeners
 	node.addEventListener('mouseenter', show);
 	node.addEventListener('mouseleave', hide);
 	node.addEventListener('focus', show);
@@ -144,7 +153,6 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 
 	return {
 		update(newParams: TooltipParams) {
-			// If params change, hide current and prepare for new
 			hide();
 			const newOptions: TooltipOptions =
 				typeof newParams === 'string' ? { content: newParams } : newParams;

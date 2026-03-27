@@ -12,6 +12,7 @@ export type ComboboxOption = {
 	value: string;
 	label: string;
 	icon?: IconName;
+	iconFilled?: boolean;
 	image?: string;
 	description?: string;
 	groupType?: string;

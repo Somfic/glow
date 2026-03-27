@@ -37,7 +37,8 @@
 				{ name: 'Modal', href: '/components/modal', description: 'Dialogs and modals' },
 				{ name: 'Toast', href: '/components/toast', description: 'Toast notifications' },
 				{ name: 'Tooltip', href: '/components/tooltip', description: 'Hover tooltips' },
-				{ name: 'Banner', href: '/components/banner', description: 'Alert banners' }
+				{ name: 'Banner', href: '/components/banner', description: 'Alert banners' },
+				{ name: 'Spinner', href: '/components/spinner', description: 'Loading spinners' }
 			]
 		},
 		{

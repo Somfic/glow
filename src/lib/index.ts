@@ -38,6 +38,7 @@ export { default as DropdownMenu } from "./menu/DropdownMenu.svelte";
 export type { DropdownMenuItem, DropdownMenuEntry } from "./menu/DropdownMenu.svelte";
 export { default as Avatar } from "./avatar/Avatar.svelte";
 export { default as AvatarGroup } from "./avatar/AvatarGroup.svelte";
+export { default as Spinner } from "./spinner/Spinner.svelte";
 
 // Data display components
 export { default as Table } from "./data/Table.svelte";

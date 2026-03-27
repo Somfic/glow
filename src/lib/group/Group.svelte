@@ -7,10 +7,12 @@
 	type ActionLabelProp = {
 		label: string;
 		icon?: IconName;
+		iconFilled?: boolean;
 	};
 
 	type ActionIconProp = {
 		icon: IconName;
+		iconFilled?: boolean;
 		label?: string;
 	};
 
@@ -20,12 +22,14 @@
 
 	type IconProps = {
 		icon: IconName;
+		iconFilled?: boolean;
 		label?: string;
 	};
 
 	type LabelProps = {
 		label: string;
 		icon?: IconName;
+		iconFilled?: boolean;
 	};
 
 	type Props = {
@@ -35,14 +39,14 @@
 		id?: string;
 	} & (IconProps | LabelProps);
 
-	let { label, icon, actions, headerExtra, children, id }: Props = $props();
+	let { label, icon, iconFilled = false, actions, headerExtra, children, id }: Props = $props();
 </script>
 
 <div class="group">
 	<div class="header">
 		<h2 class="label" {id}>
 			{#if icon}
-				<Icon name={icon} size={16} />
+				<Icon name={icon} size={16} fill={iconFilled} />
 			{/if}
 			{label}
 		</h2>
@@ -52,7 +56,7 @@
 			{/if}
 			<ButtonGroup noborder>
 				{#each actions ?? [] as action}
-					<Button label={action.label!} icon={action.icon!} onclick={action.onClick} />
+					<Button label={action.label!} icon={action.icon!} iconFilled={action.iconFilled} onclick={action.onClick} />
 				{/each}
 			</ButtonGroup>
 		</div>

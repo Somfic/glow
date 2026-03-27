@@ -25,6 +25,8 @@
 		value: string;
 		placeholder?: string;
 		icon?: IconName;
+		iconFilled?: boolean;
+		loading?: boolean;
 		clearable?: boolean;
 		autocomplete?: AutoFill;
 		onChange?: (value: string) => void;
@@ -181,6 +183,8 @@
 			value={p.value}
 			placeholder={p.placeholder}
 			icon={p.icon}
+			iconFilled={p.iconFilled}
+			loading={p.loading}
 			disabled={p.disabled}
 			clearable={p.clearable}
 			autocomplete={p.autocomplete}

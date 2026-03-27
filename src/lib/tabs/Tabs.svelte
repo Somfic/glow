@@ -7,6 +7,7 @@
 		id: string;
 		label: string;
 		icon?: IconName;
+		iconFilled?: boolean;
 		content: Snippet;
 		disabled?: boolean;
 	}
@@ -92,7 +93,7 @@
 				onkeydown={(e) => handleKeyDown(e, index)}
 			>
 				{#if tab.icon}
-					<Icon name={tab.icon} size={18} />
+					<Icon name={tab.icon} size={18} fill={tab.iconFilled} />
 				{/if}
 				<span>{tab.label}</span>
 			</button>

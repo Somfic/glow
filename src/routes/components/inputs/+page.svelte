@@ -34,6 +34,20 @@
 		/>
 	</Group>
 
+	<Group label="Loading Input" id="loading-input">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Text input with loading state, replaces the icon with a spinner
+		</Text>
+		<Input
+			type="text"
+			label="Search"
+			placeholder="Searching..."
+			icon="Search"
+			loading={true}
+			clearable={true}
+		/>
+	</Group>
+
 	<Group label="Number Input" id="number-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Numeric input with min/max validation and step increments

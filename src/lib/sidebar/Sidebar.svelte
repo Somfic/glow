@@ -5,6 +5,7 @@
 		label: string;
 		href: string;
 		icon?: IconName;
+		iconFilled?: boolean;
 	};
 
 	export type SidebarGroup = {
@@ -106,7 +107,7 @@
 		{#key collapsed}
 			{#each topItems as item}
 				<a href={item.href} class="sidebar-item" class:is-active={isActive(item.href)} onclick={() => handleItemClick(item.href)} use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}>
-					{#if item.icon}<Icon name={item.icon} size={16} />{/if}
+					{#if item.icon}<Icon name={item.icon} size={16} fill={item.iconFilled} />{/if}
 					{#if !collapsed}<span class="sidebar-item-label">{item.label}</span>{/if}
 				</a>
 			{/each}
@@ -120,7 +121,7 @@
 					{/if}
 					{#each group.items as item}
 						<a href={item.href} class="sidebar-item" class:is-active={isActive(item.href)} onclick={() => handleItemClick(item.href)} use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}>
-							{#if item.icon}<Icon name={item.icon} size={16} />{/if}
+							{#if item.icon}<Icon name={item.icon} size={16} fill={item.iconFilled} />{/if}
 							{#if !collapsed}<span class="sidebar-item-label">{item.label}</span>{/if}
 						</a>
 					{/each}
