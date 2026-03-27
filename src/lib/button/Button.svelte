@@ -78,7 +78,7 @@
 <button
 	class={variant}
 	class:selected
-	class:loading
+	class:loading={loading && !icon}
 	class:full-width={fullWidth}
 	onclick={handleClick}
 	disabled={disabled || loading}
@@ -88,15 +88,24 @@
 			? { state: 'pointer', iconName: icon, variant }
 			: { state: 'pointer', content: label, variant }}
 >
-	{#if loading}<span class="spinner"></span>{/if}
-	<span class="content" class:hidden={loading}>
-		{#if image}
+	{#if icon}
+		{#if loading}
+			<span class="spinner"></span>
+		{:else if image}
 			<img src={image} alt="" class="button-image" />
-		{:else if icon}
+		{:else}
 			<Icon name={icon} size={16} />
 		{/if}
-		{label}
-	</span>
+		{#if label}{label}{/if}
+	{:else}
+		{#if loading}<span class="spinner"></span>{/if}
+		<span class="content" class:hidden={loading}>
+			{#if image}
+				<img src={image} alt="" class="button-image" />
+			{/if}
+			{label}
+		</span>
+	{/if}
 </button>
 
 <style lang="scss">
