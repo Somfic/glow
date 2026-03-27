@@ -219,7 +219,7 @@
 							{#if selected.image}
 								<img src={selected.image} alt="" class="selected-image" />
 							{:else if selected.icon}
-								<Icon name={selected.icon} size={16} />
+								<Icon name={selected.icon} size={16} fill={selected.iconFilled} />
 							{/if}
 							<span>{selected.label}</span>
 						</div>
@@ -271,7 +271,7 @@
 						<img src={option.image} alt="" class="option-image" />
 					{:else if option.icon}
 						<span class="option-icon">
-							<Icon name={option.icon} size={16} />
+							<Icon name={option.icon} size={16} fill={option.iconFilled} />
 						</span>
 					{:else if option.groupType}
 						<span class="option-icon group-{option.groupType}">

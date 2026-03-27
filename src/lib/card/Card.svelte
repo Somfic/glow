@@ -10,6 +10,7 @@
 		variant?: 'default' | 'primary' | 'secondary';
 		disabled?: boolean;
 		icon?: IconName;
+		iconFilled?: boolean;
 		iconSize?: number;
 		accentColor?: string;
 		children?: Snippet;
@@ -22,6 +23,7 @@
 		variant = 'default',
 		disabled = false,
 		icon,
+		iconFilled = false,
 		iconSize = 24,
 		accentColor,
 		children
@@ -45,7 +47,7 @@
 		style={accentStyle}
 	>
 		{#if icon}
-			<div class="icon"><Icon name={icon} size={iconSize} /></div>
+			<div class="icon"><Icon name={icon} size={iconSize} fill={iconFilled} /></div>
 		{/if}
 		{#if children}
 			{@render children()}
@@ -67,7 +69,7 @@
 		style={accentStyle}
 	>
 		{#if icon}
-			<div class="icon"><Icon name={icon} size={iconSize} /></div>
+			<div class="icon"><Icon name={icon} size={iconSize} fill={iconFilled} /></div>
 		{/if}
 		{#if children}
 			{@render children()}

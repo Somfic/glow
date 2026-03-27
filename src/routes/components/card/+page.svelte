@@ -3,6 +3,9 @@
 	import Text from '$lib/typography/Text.svelte';
 	import Group from '$lib/group/Group.svelte';
 	import MediaCard from '$lib/media/MediaCard.svelte';
+	import Button from '$lib/button/Button.svelte';
+	import ButtonGroup from '$lib/button/ButtonGroup.svelte';
+	import Pill from '$lib/pill/Pill.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
 	import Code from '$lib/code/Code.svelte';
@@ -14,180 +17,200 @@
 
 <svelte:head><title>Card | Glow UI</title></svelte:head>
 
-<Heading level={1}>Card</Heading>
-	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
-		A versatile card component for displaying media content with badges, tags, and actions.
+<Heading level={1}>Media Card</Heading>
+<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
+	A versatile card component for displaying media content with corner slots and a progress
+	indicator.
+</Text>
+
+<Group label="Basic Card with Slots" id="basic-card">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		Use corner slots to place any content at the four corners of the card
 	</Text>
+	<MediaCard
+		src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=300&fit=crop"
+	>
+		{#snippet topLeft()}
+			<Pill label="#1" color="#22c55e" />
+		{/snippet}
+		{#snippet topRight()}
+			<ButtonGroup>
+				<Button icon="Heart" variant="ghost" onclick={() => alert('Liked!')} />
+				<Button icon="Trash" variant="ghost" onclick={() => alert('Deleted!')} />
+			</ButtonGroup>
+		{/snippet}
+		{#snippet bottomLeft()}
+			<span
+				style="color: white; font-weight: 600; font-size: 0.875rem; text-shadow: 0 1px 3px rgba(0,0,0,0.5);"
+				>Card Title</span
+			>
+		{/snippet}
+		{#snippet bottomRight()}
+			<Pill label="nature" color="#22c55e" />
+		{/snippet}
+	</MediaCard>
+</Group>
 
-	<Group label="Basic Card" id="basic-card">
-		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-			Card with image, badge, title, tags, and action buttons
-		</Text>
+<Group label="Progress Indicator" id="progress">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		Show progress with a primary-colored bar at the bottom of the card
+	</Text>
+	<div
+		style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;"
+	>
 		<MediaCard
-			src="https://placekitten.com/400/300"
-			badge="#1"
-			badgeVariant="success"
-			title={'Card Title'}
-			tags={[{ label: 'person', color: '#ec4899' }]}
-			actions={[
-				{ icon: 'Heart', label: '5', onclick: () => alert('Liked!') },
-				{ icon: 'Trash', onclick: () => alert('Deleted!') }
-			]}
-		/>
-	</Group>
-
-	<Group label="Card Variants" id="card-variants">
-		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-			Different badge variants for different states
-		</Text>
-		<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-			<MediaCard
-				src="https://placekitten.com/400/300"
-				badge="New"
-				badgeVariant="success"
-				title="Success Badge"
-				tags={[{ label: 'new', color: '#22c55e' }]}
-			/>
-			<MediaCard
-				src="https://placekitten.com/401/300"
-				badge="Featured"
-				badgeVariant="info"
-				title="Info Badge"
-				tags={[{ label: 'featured', color: '#3b82f6' }]}
-			/>
-			<MediaCard
-				src="https://placekitten.com/402/300"
-				badge="Sale"
-				badgeVariant="warning"
-				title="Warning Badge"
-				tags={[{ label: 'sale', color: '#f59e0b' }]}
-			/>
-			<MediaCard
-				src="https://placekitten.com/403/300"
-				badge="Sold Out"
-				badgeVariant="error"
-				title="Error Badge"
-				tags={[{ label: 'unavailable', color: '#ef4444' }]}
-			/>
-		</div>
-	</Group>
-
-	<Group label="Card with Multiple Actions" id="card-with-actions">
-		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-			Cards can have multiple action buttons with icons and labels
-		</Text>
+			src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&h=300&fit=crop"
+			progress={0.25}
+		>
+			{#snippet bottomLeft()}
+				<span
+					style="color: white; font-weight: 600; font-size: 0.875rem; text-shadow: 0 1px 3px rgba(0,0,0,0.5);"
+					>25% Complete</span
+				>
+			{/snippet}
+		</MediaCard>
 		<MediaCard
-			src="https://placekitten.com/404/300"
-			title="Action-Rich Card"
-			tags={[
-				{ label: 'photos', color: '#8b5cf6' },
-				{ label: 'animals', color: '#06b6d4' }
-			]}
-			actions={[
-				{ icon: 'Heart', label: '42', onclick: () => alert('42 likes!') },
-				{ icon: 'MessageCircle', label: '12', onclick: () => alert('12 comments!') },
-				{ icon: 'Share', onclick: () => alert('Shared!') },
-				{ icon: 'Trash', onclick: () => alert('Deleted!') }
-			]}
-		/>
-	</Group>
-
-	<Group label="Card with Multiple Tags" id="card-with-tags">
-		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-			Use colorful tags to categorize or highlight card attributes
-		</Text>
+			src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=300&fit=crop"
+			progress={0.6}
+		>
+			{#snippet bottomLeft()}
+				<span
+					style="color: white; font-weight: 600; font-size: 0.875rem; text-shadow: 0 1px 3px rgba(0,0,0,0.5);"
+					>60% Complete</span
+				>
+			{/snippet}
+		</MediaCard>
 		<MediaCard
-			src="https://placekitten.com/405/300"
-			title="Multi-Tagged Card"
-			tags={[
-				{ label: 'nature', color: '#22c55e' },
-				{ label: 'photography', color: '#8b5cf6' },
-				{ label: 'professional', color: '#f59e0b' },
-				{ label: 'featured', color: '#3b82f6' }
-			]}
-			actions={[{ icon: 'Heart', label: '128', onclick: () => alert('Liked!') }]}
-		/>
-	</Group>
+			src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop"
+			progress={1}
+		>
+			{#snippet bottomLeft()}
+				<span
+					style="color: white; font-weight: 600; font-size: 0.875rem; text-shadow: 0 1px 3px rgba(0,0,0,0.5);"
+					>Done</span
+				>
+			{/snippet}
+		</MediaCard>
+	</div>
+</Group>
 
-	<Group label="Usage" id="usage">
-		<Heading level={3} id="basic-usage">Basic Card</Heading>
-		<CodeBlock
-			language="svelte"
-			code={`<script>
-  import { MediaCard } from 'glow-ui';
+<Group label="Card Grid" id="card-grid">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		Cards in a responsive grid layout
+	</Text>
+	<div
+		style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;"
+	>
+		<MediaCard
+			src="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=400&h=300&fit=crop"
+			progress={0.3}
+		>
+			{#snippet topLeft()}
+				<Pill label="New" color="#22c55e" />
+			{/snippet}
+			{#snippet topRight()}
+				<Button icon="Heart" variant="ghost" onclick={() => alert('Liked!')} />
+			{/snippet}
+		</MediaCard>
+		<MediaCard
+			src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=400&h=300&fit=crop"
+		>
+			{#snippet topLeft()}
+				<Pill label="Featured" color="#3b82f6" />
+			{/snippet}
+		</MediaCard>
+		<MediaCard
+			src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400&h=300&fit=crop"
+			progress={0.8}
+		>
+			{#snippet bottomRight()}
+				<Pill label="80%" color="#8b5cf6" />
+			{/snippet}
+		</MediaCard>
+	</div>
+</Group>
+
+<Group label="Usage" id="usage">
+	<Heading level={3} id="basic-usage">Slot-Based Card</Heading>
+	<CodeBlock
+		language="svelte"
+		code={`<script>
+  import { MediaCard, Button, Pill } from 'glow-ui';
 </script>
 
-<MediaCard
-  src="https://example.com/image.jpg"
-  badge="#1"
-  badgeVariant="success"
-  title="Card Title"
-  tags={[
-    { label: 'category', color: '#ec4899' }
-  ]}
-  actions={[
-    { icon: 'Heart', label: '5', onclick: () => console.log('Liked!') },
-    { icon: 'Trash', onclick: () => console.log('Deleted!') }
-  ]}
-/>`}
-		/>
+<MediaCard src="image.jpg" progress={0.5}>
+  {#snippet topLeft()}
+    <Pill label="Badge" color="#22c55e" />
+  {/snippet}
+  {#snippet topRight()}
+    <Button icon="Heart" variant="ghost" onclick={() => {}} />
+  {/snippet}
+  {#snippet bottomLeft()}
+    <span>Title</span>
+  {/snippet}
+  {#snippet bottomRight()}
+    <Pill label="tag" color="#8b5cf6" />
+  {/snippet}
+</MediaCard>`}
+	/>
+</Group>
 
-		<Heading level={3} id="minimal-card">Minimal Card</Heading>
-		<CodeBlock
-			language="svelte"
-			code={`<MediaCard
-  src="https://example.com/image.jpg"
-  title="Simple Card"
-/>`}
-		/>
-	</Group>
-
-	<Group label="Props" id="props">
-		<Table
-			variant="simple"
-			columns={[
-				{ key: 'prop', label: 'Prop', render: codeCell },
-				{ key: 'type', label: 'Type', render: codeCell },
-				{ key: 'default', label: 'Default' },
-				{ key: 'description', label: 'Description' }
-			]}
-			data={[
-				{ prop: 'src', type: 'string', default: 'required', description: 'Image source URL' },
-				{ prop: 'title', type: 'string', default: '-', description: 'Card title' },
-				{ prop: 'badge', type: 'string', default: '-', description: 'Badge text (top-left corner)' },
-				{ prop: 'badgeVariant', type: "'success' | 'info' | 'warning' | 'error'", default: "'info'", description: 'Badge color variant' },
-				{ prop: 'tags', type: 'Tag[]', default: '[]', description: 'Array of tags with label and color' },
-				{ prop: 'actions', type: 'CardAction[]', default: '[]', description: 'Action buttons with icon, label, and onclick' }
-			]}
-		/>
-	</Group>
-
-	<Group label="Type Definitions" id="types">
-		<CodeBlock
-			language="typescript"
-			code={`interface Tag {
-  label: string;
-  color: string; // Hex color code
-}
-
-interface CardAction {
-  icon: IconName;
-  label?: string;
-  onclick: () => void;
-}
-
-type BadgeVariant = 'success' | 'info' | 'warning' | 'error';`}
-		/>
-	</Group>
-
-	<Group label="Features" id="features">
-		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-			<li><Text>🖼️ Image display with aspect ratio preservation</Text></li>
-			<li><Text>🏷️ Top-left badge with multiple color variants</Text></li>
-			<li><Text>🎨 Customizable color tags</Text></li>
-			<li><Text>⚡ Action buttons with icons and labels</Text></li>
-			<li><Text>📱 Responsive design</Text></li>
-			<li><Text>🎯 Hover effects and transitions</Text></li>
-			<li><Text>♿ Accessible with proper ARIA attributes</Text></li>
-		</ul>
-	</Group>
+<Group label="Props" id="props">
+	<Table
+		variant="simple"
+		columns={[
+			{ key: 'prop', label: 'Prop', render: codeCell },
+			{ key: 'type', label: 'Type', render: codeCell },
+			{ key: 'default', label: 'Default' },
+			{ key: 'description', label: 'Description' }
+		]}
+		data={[
+			{ prop: 'src', type: 'string', default: '-', description: 'Media source URL' },
+			{
+				prop: 'progress',
+				type: 'number',
+				default: '-',
+				description: 'Progress value (0-1), shows a primary-colored bar at the bottom'
+			},
+			{
+				prop: 'topLeft',
+				type: 'Snippet',
+				default: '-',
+				description: 'Content for the top-left corner (shown on hover)'
+			},
+			{
+				prop: 'topRight',
+				type: 'Snippet',
+				default: '-',
+				description: 'Content for the top-right corner (shown on hover)'
+			},
+			{
+				prop: 'bottomLeft',
+				type: 'Snippet',
+				default: '-',
+				description: 'Content for the bottom-left corner (shown on hover)'
+			},
+			{
+				prop: 'bottomRight',
+				type: 'Snippet',
+				default: '-',
+				description: 'Content for the bottom-right corner (shown on hover)'
+			},
+			{ prop: 'aspectRatio', type: 'string', default: "'1'", description: 'CSS aspect ratio' },
+			{
+				prop: 'fit',
+				type: "'cover' | 'contain'",
+				default: "'cover'",
+				description: 'Object-fit for the media'
+			},
+			{
+				prop: 'selected',
+				type: 'boolean',
+				default: 'false',
+				description: 'Show selection outline'
+			},
+			{ prop: 'disabled', type: 'boolean', default: 'false', description: 'Disable interactions' },
+			{ prop: 'onclick', type: '() => void', default: '-', description: 'Click handler' }
+		]}
+	/>
+</Group>

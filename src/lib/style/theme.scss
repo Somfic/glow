@@ -8,16 +8,16 @@ $bg-surface-element: #1e1f29;
 $fg: #eee;
 
 $primary: #8B6DED;
-$primary-hover: color.scale($primary, $lightness: -10%);
-$primary-active: color.scale($primary, $lightness: -20%);
+$primary-hover: color.scale($primary, $lightness: 15%);
+$primary-active: color.scale($primary, $lightness: -10%);
 
 $secondary: color.mix($primary, $bg-surface, 10%);
-$secondary-hover: color.scale($secondary, $lightness: -10%);
-$secondary-active: color.scale($secondary, $lightness: -20%);
+$secondary-hover: color.scale($secondary, $lightness: 15%);
+$secondary-active: color.scale($secondary, $lightness: -10%);
 
 $tertiary: transparent;
-$tertiary-hover: color.mix($secondary, $bg-surface, 10%);
-$tertiary-active: color.scale($tertiary-hover, $lightness: -30%);
+$tertiary-hover: rgba($fg, 0.08);
+$tertiary-active: rgba($fg, 0.03);
 
 $border-color: #30313C;
 $border-width: 1px;

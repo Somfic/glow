@@ -6,6 +6,7 @@
 	export type DropdownMenuItem = {
 		label: string;
 		icon?: IconName;
+		iconFilled?: boolean;
 		shortcut?: string;
 		disabled?: boolean;
 		danger?: boolean;
@@ -97,7 +98,7 @@
 					>
 						{#if entry.icon}
 							<span class="item-icon">
-								<Icon name={entry.icon} size={16} />
+								<Icon name={entry.icon} size={16} fill={entry.iconFilled} />
 							</span>
 						{/if}
 						<span class="item-label">{entry.label}</span>

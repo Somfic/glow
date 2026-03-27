@@ -43,7 +43,7 @@
 		<div class="list-item-content">
 			{#if item.icon}
 				<div class="list-item-icon">
-					<Icon name={item.icon} size={variant === 'compact' ? 16 : 20} />
+					<Icon name={item.icon} size={variant === 'compact' ? 16 : 20} fill={item.iconFilled} />
 				</div>
 			{:else if item.avatar}
 				<div class="list-item-avatar">
@@ -85,7 +85,7 @@
 		<div class="list-item-content">
 			{#if item.icon}
 				<div class="list-item-icon">
-					<Icon name={item.icon} size={variant === 'compact' ? 16 : 20} />
+					<Icon name={item.icon} size={variant === 'compact' ? 16 : 20} fill={item.iconFilled} />
 				</div>
 			{:else if item.avatar}
 				<div class="list-item-avatar">

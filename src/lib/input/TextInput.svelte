@@ -7,6 +7,8 @@
 		value?: string;
 		placeholder?: string;
 		icon?: IconName;
+		iconFilled?: boolean;
+		loading?: boolean;
 		disabled?: boolean;
 		clearable?: boolean;
 		autocomplete?: AutoFill;
@@ -22,6 +24,8 @@
 		value = $bindable(''),
 		placeholder,
 		icon,
+		iconFilled = false,
+		loading = false,
 		disabled = false,
 		clearable = false,
 		autocomplete,
@@ -58,8 +62,10 @@
 	class:disabled
 	use:cursor={icon ? { state: 'text', iconName: icon } : { state: 'text' }}
 >
-	{#if icon}
-		<Icon name={icon} size={16} />
+	{#if loading}
+		<span class="spinner"></span>
+	{:else if icon}
+		<Icon name={icon} size={16} fill={iconFilled} />
 	{/if}
 	<input
 		{id}
@@ -133,6 +139,20 @@
 			color: $fg;
 			flex-shrink: 0;
 		}
+	}
+
+	.spinner {
+		width: 1em;
+		height: 1em;
+		border: 2px solid rgba($fg, 0.2);
+		border-top-color: $primary;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+		flex-shrink: 0;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
 	}
 
 	.clear-btn {

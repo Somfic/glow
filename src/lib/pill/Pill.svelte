@@ -21,6 +21,7 @@
 
 	interface IconProps extends BaseProps {
 		icon: IconName;
+		iconFilled?: boolean;
 		label?: string;
 		color?: string;
 		image?: never;
@@ -76,7 +77,7 @@
 
 	{#if hasIcon && props.icon}
 		<span class="pill-icon">
-			<Icon name={props.icon} size={14} />
+			<Icon name={props.icon} size={14} fill={'iconFilled' in props && props.iconFilled} />
 		</span>
 	{/if}
 

@@ -2,8 +2,9 @@
 	import { getContext } from 'svelte';
 	import Icon, { type IconName } from '../icon/Icon.svelte';
 	import { cursor, setCursorLoading } from '../cursor/cursor.svelte.js';
+	import { tooltip } from '../tooltip/tooltip.svelte.js';
 
-	type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
+	type Variant = 'primary' | 'secondary' | 'ghost' | 'outlined' | 'danger';
 
 	type BaseProps = {
 		variant?: Variant;
@@ -13,16 +14,19 @@
 		image?: string;
 		selected?: boolean;
 		fullWidth?: boolean;
+		tooltip?: string;
 	};
 
 	type WithIcon = BaseProps & {
 		icon: IconName;
+		iconFilled?: boolean;
 		label?: string;
 	};
 
 	type WithLabel = BaseProps & {
 		label: string;
 		icon?: IconName;
+		iconFilled?: boolean;
 	};
 
 	const group = getContext<{ defaultVariant: Variant } | undefined>('button-group');
@@ -30,13 +34,15 @@
 	let {
 		label,
 		icon,
+		iconFilled = false,
 		image,
 		variant = group?.defaultVariant ?? 'primary',
 		onclick,
 		disabled = false,
 		loading: manualLoading = false,
 		selected = false,
-		fullWidth = false
+		fullWidth = false,
+		tooltip: tooltipText
 	}: WithIcon | WithLabel = $props();
 
 	let promiseLoading = $state(false);
@@ -80,6 +86,7 @@
 	class:selected
 	class:loading={loading && !icon}
 	class:full-width={fullWidth}
+	class:icon-only={icon && !label}
 	onclick={handleClick}
 	disabled={disabled || loading}
 	use:cursor={disabled || loading
@@ -87,6 +94,7 @@
 		: icon
 			? { state: 'pointer', iconName: icon, variant }
 			: { state: 'pointer', content: label, variant }}
+	use:tooltip={{ content: tooltipText ?? '', useCursor: false, position: 'top' }}
 >
 	{#if icon}
 		{#if loading}
@@ -94,16 +102,16 @@
 		{:else if image}
 			<img src={image} alt="" class="button-image" />
 		{:else}
-			<Icon name={icon} size={16} />
+			<Icon name={icon} size={16} fill={iconFilled} />
 		{/if}
-		{#if label}{label}{/if}
+		{#if label}<span class="label">{label}</span>{/if}
 	{:else}
 		{#if loading}<span class="spinner"></span>{/if}
 		<span class="content" class:hidden={loading}>
 			{#if image}
 				<img src={image} alt="" class="button-image" />
 			{/if}
-			{label}
+			{#if label}<span class="label">{label}</span>{/if}
 		</span>
 	{/if}
 </button>
@@ -123,6 +131,7 @@
 		border: $border;
 		border-radius: $radius;
 		font-weight: 700;
+		line-height: 1;
 		cursor: pointer;
 		transition: background-color 150ms ease;
 
@@ -134,6 +143,10 @@
 			&.hidden {
 				visibility: hidden;
 			}
+		}
+
+		.label {
+			transform: translateY(0.03em);
 		}
 
 		&.loading .spinner {
@@ -171,6 +184,23 @@
 		&.ghost {
 			color: inherit;
 			background-color: $tertiary;
+			border-color: transparent;
+
+			&:hover,
+			&.cursor-hover {
+				background-color: $tertiary-hover;
+				color: $fg;
+			}
+
+			&:active {
+				background-color: $tertiary-active;
+				color: $fg;
+			}
+		}
+
+		&.outlined {
+			color: inherit;
+			background-color: $tertiary;
 
 			&:hover,
 			&.cursor-hover {
@@ -185,17 +215,18 @@
 		}
 
 		&.danger {
-			background-color: rgba(#ef4444, 0.1);
-			color: #ef4444;
-			border-color: rgba(#ef4444, 0.2);
+			$danger: #ef4444;
+			background-color: rgba($danger, 0.1);
+			color: $danger;
+			border-color: rgba($danger, 0.2);
 
 			&:hover,
 			&.cursor-hover {
-				background-color: rgba(#ef4444, 0.2);
+				background-color: rgba($danger, 0.18);
 			}
 
 			&:active {
-				background-color: rgba(#ef4444, 0.3);
+				background-color: rgba($danger, 0.07);
 			}
 		}
 
@@ -207,6 +238,12 @@
 		&.selected {
 			outline: 2px solid $primary;
 			outline-offset: 2px;
+		}
+
+		&.icon-only {
+			padding: 0.5em;
+			min-width: calc(1lh + 1em);
+			min-height: calc(1lh + 1em);
 		}
 
 		&.full-width {
