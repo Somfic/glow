@@ -25,6 +25,22 @@
 	}: Props = $props();
 
 	let containerElement: HTMLDivElement;
+	let contentElement: HTMLDivElement;
+	let placement: 'below' | 'above' = $state('below');
+
+	function updatePlacement() {
+		if (!containerElement) return;
+		const triggerRect = containerElement.getBoundingClientRect();
+		const spaceBelow = window.innerHeight - triggerRect.bottom;
+		const spaceAbove = triggerRect.top;
+		// Estimate content height, refine after mount
+		const contentHeight = contentElement?.offsetHeight ?? 200;
+		if (spaceBelow < contentHeight + offset && spaceAbove > spaceBelow) {
+			placement = 'above';
+		} else {
+			placement = 'below';
+		}
+	}
 
 	function handleClickOutside(e: MouseEvent) {
 		if (open && containerElement && !containerElement.contains(e.target as Node)) {
@@ -40,6 +56,9 @@
 
 	$effect(() => {
 		if (open) {
+			updatePlacement();
+			// Refine after content renders
+			requestAnimationFrame(() => updatePlacement());
 			document.addEventListener('mousedown', handleClickOutside);
 			document.addEventListener('keydown', handleKeydown);
 			return () => {
@@ -62,9 +81,10 @@
 
 	{#if open}
 		<div
+			bind:this={contentElement}
 			class="popover-content align-{align}"
-			style="top: calc(100% + {offset}px)"
-			transition:fly={{ duration: 150, y: -8 }}
+			style={placement === 'below' ? `top: calc(100% + ${offset}px)` : `bottom: calc(100% + ${offset}px)`}
+			transition:fly={{ duration: 150, y: placement === 'below' ? -8 : 8 }}
 		>
 			{@render children()}
 		</div>
