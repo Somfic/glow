@@ -19,6 +19,7 @@ export { default as MediaCard } from "./media/MediaCard.svelte";
 export { default as Card } from "./card/Card.svelte";
 export { default as Lightbox, type RelatedMedia } from "./media/Lightbox.svelte";
 export { default as Modal } from "./modal/Modal.svelte";
+export { default as Drawer } from "./drawer/Drawer.svelte";
 export { default as Toast } from "./toast/Toast.svelte";
 export { default as ToastContainer } from "./toast/ToastContainer.svelte";
 export { toast, showToast, dismissToast, toasts } from "./toast/toast.svelte.js";
@@ -43,17 +44,18 @@ export { default as Spinner } from "./spinner/Spinner.svelte";
 // Data display components
 export { default as Table } from "./data/Table.svelte";
 export { default as VirtualList } from "./data/VirtualList.svelte";
-export { default as List } from "./data/List.svelte";
-export { default as ListItem } from "./data/ListItem.svelte";
-export { default as PropertyList } from "./data/PropertyList.svelte";
+export { default as Data } from "./data/Data.svelte";
+/** @deprecated Use Data instead */
+export { default as PropertyList } from "./data/Data.svelte";
 export type {
 	TableProps,
 	TableColumn,
 	TableSort,
 	TableRowAction,
 	VirtualListProps,
-	ListProps,
-	ListItem as ListItemType,
+	DataProps,
+	DataItem,
+	DataGroup,
 	PropertyListProps,
 	PropertyItem,
 	PropertyGroup

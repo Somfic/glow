@@ -77,6 +77,29 @@
 
 	let showOverlay = $state(false);
 
+	// Slot element refs for gradient sizing
+	let topLeftEl: HTMLDivElement;
+	let topRightEl: HTMLDivElement;
+	let bottomLeftEl: HTMLDivElement;
+	let bottomRightEl: HTMLDivElement;
+
+	let topGradientHeight = $state(0);
+	let bottomGradientHeight = $state(0);
+
+	function updateGradientSizes() {
+		const topH = Math.max(topLeftEl?.offsetHeight ?? 0, topRightEl?.offsetHeight ?? 0);
+		const bottomH = Math.max(bottomLeftEl?.offsetHeight ?? 0, bottomRightEl?.offsetHeight ?? 0);
+		// Slot offset (0.5rem ≈ 8px) + content height + generous fade
+		topGradientHeight = topH > 0 ? topH + 48 : 0;
+		bottomGradientHeight = bottomH > 0 ? bottomH + 48 : 0;
+	}
+
+	$effect(() => {
+		if (showOverlay) {
+			requestAnimationFrame(updateGradientSizes);
+		}
+	});
+
 	// Lazy loading state
 	let cardEl: HTMLDivElement;
 	let isInViewport = $state(false);
@@ -285,31 +308,39 @@
 		{/if}
 	</div>
 
+	<!-- Hover gradients -->
+	{#if (topLeft || topRight) && showOverlay}
+		<div class="gradient top-gradient" style:height="{topGradientHeight}px" transition:fly={{ y: -8, duration: 150 }}></div>
+	{/if}
+	{#if (bottomLeft || bottomRight) && showOverlay}
+		<div class="gradient bottom-gradient" style:height="{bottomGradientHeight}px" transition:fly={{ y: 8, duration: 150 }}></div>
+	{/if}
+
 	<!-- Corner slots -->
 	{#if topLeft && showOverlay}
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-		<div class="slot top-left" onclick={(e) => e.stopPropagation()} transition:fly={{ y: -8, duration: 150 }}>
+		<div bind:this={topLeftEl} class="slot top-left" onclick={(e) => e.stopPropagation()} transition:fly={{ y: -8, duration: 150 }}>
 			{@render topLeft()}
 		</div>
 	{/if}
 
 	{#if topRight && showOverlay}
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-		<div class="slot top-right" onclick={(e) => e.stopPropagation()} transition:fly={{ y: -8, duration: 150 }}>
+		<div bind:this={topRightEl} class="slot top-right" onclick={(e) => e.stopPropagation()} transition:fly={{ y: -8, duration: 150 }}>
 			{@render topRight()}
 		</div>
 	{/if}
 
 	{#if bottomLeft && showOverlay}
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-		<div class="slot bottom-left" onclick={(e) => e.stopPropagation()} transition:fly={{ y: 8, duration: 150 }}>
+		<div bind:this={bottomLeftEl} class="slot bottom-left" onclick={(e) => e.stopPropagation()} transition:fly={{ y: 8, duration: 150 }}>
 			{@render bottomLeft()}
 		</div>
 	{/if}
 
 	{#if bottomRight && showOverlay}
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-		<div class="slot bottom-right" onclick={(e) => e.stopPropagation()} transition:fly={{ y: 8, duration: 150 }}>
+		<div bind:this={bottomRightEl} class="slot bottom-right" onclick={(e) => e.stopPropagation()} transition:fly={{ y: 8, duration: 150 }}>
 			{@render bottomRight()}
 		</div>
 	{/if}
@@ -454,6 +485,24 @@
 		border-top-color: white;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
+	}
+
+	.gradient {
+		position: absolute;
+		left: 0;
+		right: 0;
+		z-index: 4;
+		pointer-events: none;
+
+		&.top-gradient {
+			top: 0;
+			background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%);
+		}
+
+		&.bottom-gradient {
+			bottom: 0;
+			background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%);
+		}
 	}
 
 	.slot {

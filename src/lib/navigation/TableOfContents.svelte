@@ -183,23 +183,6 @@
 		border: $border;
 		border-radius: $radius;
 		width: 250px;
-
-		&::-webkit-scrollbar {
-			width: 4px;
-		}
-
-		&::-webkit-scrollbar-track {
-			background: transparent;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background: rgba($fg, 0.2);
-			border-radius: 2px;
-
-			&:hover {
-				background: rgba($fg, 0.3);
-			}
-		}
 	}
 
 	.toc-title {

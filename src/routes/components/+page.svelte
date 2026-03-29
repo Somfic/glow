@@ -16,11 +16,11 @@
 			category: 'Data Display',
 			items: [
 				{ name: 'Table', href: '/components/table', description: 'Data tables with sorting and selection' },
-				{ name: 'List', href: '/components/list', description: 'Lists and virtual scrolling' },
-				{ name: 'Property List', href: '/components/property-list', description: 'Key-value pairs for detail panels' },
+{ name: 'Data', href: '/components/data', description: 'Key-value pairs for detail panels' },
 				{ name: 'Card', href: '/components/card', description: 'Content cards' },
 				{ name: 'Pill', href: '/components/pill', description: 'Tags, labels, and status indicators' },
-				{ name: 'Avatar', href: '/components/avatar', description: 'User avatars with initials and status' }
+				{ name: 'Avatar', href: '/components/avatar', description: 'User avatars with initials and status' },
+				{ name: 'Image', href: '/components/image', description: 'Smooth crossfade image transitions' }
 			]
 		},
 		{
@@ -35,6 +35,7 @@
 			category: 'Feedback',
 			items: [
 				{ name: 'Modal', href: '/components/modal', description: 'Dialogs and modals' },
+				{ name: 'Drawer', href: '/components/drawer', description: 'Slide-in side panels' },
 				{ name: 'Toast', href: '/components/toast', description: 'Toast notifications' },
 				{ name: 'Tooltip', href: '/components/tooltip', description: 'Hover tooltips' },
 				{ name: 'Banner', href: '/components/banner', description: 'Alert banners' },

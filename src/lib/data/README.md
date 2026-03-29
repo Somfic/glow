@@ -133,56 +133,6 @@ High-performance virtual scrolling for long lists with infinite scroll support.
 
 ---
 
-### 📋 List
-
-Simple list component with icons, badges, and selection.
-
-**Features:**
-- 🎨 Multiple variants (default, compact, detailed)
-- 🔘 Icons and badges
-- ✅ Selectable items
-- 🎯 Hover states
-- ➗ Dividers between items
-
-**Basic Usage:**
-```svelte
-<script>
-  import { List } from 'glow-ui';
-
-  const items = [
-    { id: '1', label: 'Dashboard', icon: 'Home', badge: '5' },
-    { id: '2', label: 'Messages', icon: 'Mail', badge: '12' },
-    { id: '3', label: 'Settings', icon: 'Settings' }
-  ];
-
-  let selectedId = $state('1');
-</script>
-
-<List
-  {items}
-  selectable
-  divided
-  hoverable
-  bind:selectedId
-/>
-```
-
-**Variants:**
-```svelte
-<!-- Compact -->
-<List {items} variant="compact" />
-
-<!-- Detailed (with descriptions) -->
-<List
-  items={[
-    { id: '1', label: 'Item', description: 'Details about this item' }
-  ]}
-  variant="detailed"
-/>
-```
-
----
-
 ## Props Reference
 
 ### Table Props
@@ -216,17 +166,6 @@ Simple list component with icons, badges, and selection.
 | `threshold` | `number` | `200` | Load trigger distance (px) |
 | `overscan` | `number` | `3` | Buffer items to render |
 | `height` | `string \| number` | `'100%'` | Container height |
-
-### List Props
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `items` | `ListItem[]` | required | List items |
-| `variant` | `'default' \| 'compact' \| 'detailed'` | `'default'` | Item size |
-| `divided` | `boolean` | `false` | Show dividers |
-| `hoverable` | `boolean` | `true` | Hover effects |
-| `selectable` | `boolean` | `false` | Enable selection |
-| `selectedId` | `string` | - | Selected item (bindable) |
 
 ---
 

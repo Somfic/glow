@@ -32,6 +32,14 @@
 		'divider',
 		{ label: 'Export', icon: 'Download', onclick: () => {} }
 	];
+
+	let selectedLang = $state('en');
+	let langItems: DropdownMenuEntry[] = $derived([
+		{ label: 'English', icon: 'Languages', selected: selectedLang === 'en', onclick: () => (selectedLang = 'en') },
+		{ label: 'Dutch', icon: 'Languages', selected: selectedLang === 'nl', onclick: () => (selectedLang = 'nl') },
+		{ label: 'German', icon: 'Languages', selected: selectedLang === 'de', onclick: () => (selectedLang = 'de') },
+		{ label: 'French', icon: 'Languages', selected: selectedLang === 'fr', onclick: () => (selectedLang = 'fr') }
+	]);
 </script>
 
 {#snippet codeCell(value)}
@@ -74,6 +82,17 @@
 		<DropdownMenu items={disabledItems}>
 			{#snippet trigger()}
 				<Button variant="secondary">Options</Button>
+			{/snippet}
+		</DropdownMenu>
+	</Group>
+
+	<Group label="Selection" id="selection">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Use the selected property to indicate the active item with a check mark.
+		</Text>
+		<DropdownMenu items={langItems}>
+			{#snippet trigger()}
+				<Button variant="secondary" icon="Languages">{selectedLang.toUpperCase()}</Button>
 			{/snippet}
 		</DropdownMenu>
 	</Group>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
 	import type { Snippet } from 'svelte';
+	import { portal } from '../util/portal.js';
 
 	interface Props {
 		open?: boolean;
@@ -27,23 +28,49 @@
 	let containerElement: HTMLDivElement;
 	let contentElement: HTMLDivElement;
 	let placement: 'below' | 'above' = $state('below');
+	let popoverStyle = $state('');
 
-	function updatePlacement() {
+	function updatePosition() {
 		if (!containerElement) return;
-		const triggerRect = containerElement.getBoundingClientRect();
-		const spaceBelow = window.innerHeight - triggerRect.bottom;
-		const spaceAbove = triggerRect.top;
-		// Estimate content height, refine after mount
+		const rect = containerElement.getBoundingClientRect();
 		const contentHeight = contentElement?.offsetHeight ?? 200;
+		const spaceBelow = window.innerHeight - rect.bottom;
+		const spaceAbove = rect.top;
+
 		if (spaceBelow < contentHeight + offset && spaceAbove > spaceBelow) {
 			placement = 'above';
 		} else {
 			placement = 'below';
 		}
+
+		let top: number;
+		if (placement === 'below') {
+			top = rect.bottom + offset;
+		} else {
+			top = rect.top - offset - (contentElement?.offsetHeight ?? 0);
+		}
+
+		let style = `position: fixed; top: ${top}px; z-index: 10000;`;
+
+		if (align === 'stretch') {
+			style += ` left: ${rect.left}px; width: ${rect.width}px;`;
+		} else if (align === 'left') {
+			style += ` left: ${rect.left}px;`;
+		} else if (align === 'right') {
+			style += ` left: ${rect.right}px; transform: translateX(-100%);`;
+		}
+
+		popoverStyle = style;
 	}
 
 	function handleClickOutside(e: MouseEvent) {
-		if (open && containerElement && !containerElement.contains(e.target as Node)) {
+		const target = e.target as Node;
+		if (
+			open &&
+			containerElement &&
+			!containerElement.contains(target) &&
+			(!contentElement || !contentElement.contains(target))
+		) {
 			open = false;
 		}
 	}
@@ -56,12 +83,17 @@
 
 	$effect(() => {
 		if (open) {
-			updatePlacement();
-			// Refine after content renders
-			requestAnimationFrame(() => updatePlacement());
+			updatePosition();
+			requestAnimationFrame(() => updatePosition());
+
+			window.addEventListener('scroll', updatePosition, true);
+			window.addEventListener('resize', updatePosition);
 			document.addEventListener('mousedown', handleClickOutside);
 			document.addEventListener('keydown', handleKeydown);
+
 			return () => {
+				window.removeEventListener('scroll', updatePosition, true);
+				window.removeEventListener('resize', updatePosition);
 				document.removeEventListener('mousedown', handleClickOutside);
 				document.removeEventListener('keydown', handleKeydown);
 			};
@@ -82,8 +114,9 @@
 	{#if open}
 		<div
 			bind:this={contentElement}
-			class="popover-content align-{align}"
-			style={placement === 'below' ? `top: calc(100% + ${offset}px)` : `bottom: calc(100% + ${offset}px)`}
+			class="popover-content"
+			style={popoverStyle}
+			use:portal
 			transition:fly={{ duration: 150, y: placement === 'below' ? -8 : 8 }}
 		>
 			{@render children()}
@@ -95,8 +128,6 @@
 	@use '../style/theme.scss' as *;
 
 	.popover {
-		position: relative;
-
 		&.disabled {
 			opacity: 0.5;
 			cursor: not-allowed;
@@ -108,25 +139,10 @@
 		cursor: pointer;
 	}
 
-	.popover-content {
-		position: absolute;
+	:global(.popover-content) {
 		background-color: $bg-surface-element;
 		border: $border;
 		border-radius: $radius;
-		z-index: 100;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
-		&.align-stretch {
-			left: -$border-width;
-			right: -$border-width;
-		}
-
-		&.align-left {
-			left: -$border-width;
-		}
-
-		&.align-right {
-			right: -$border-width;
-		}
 	}
 </style>

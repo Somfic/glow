@@ -346,23 +346,6 @@
 		overflow-x: auto;
 		border-radius: $radius;
 		border: $border;
-
-		&::-webkit-scrollbar {
-			height: 8px;
-		}
-
-		&::-webkit-scrollbar-track {
-			background: transparent;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background: rgba($fg, 0.2);
-			border-radius: 4px;
-
-			&:hover {
-				background: rgba($fg, 0.3);
-			}
-		}
 	}
 
 	.table {

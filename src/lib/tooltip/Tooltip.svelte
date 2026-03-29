@@ -37,7 +37,7 @@
 		font-size: 0.875rem;
 		line-height: 1.4;
 		max-width: 250px;
-		word-wrap: break-word;
+		white-space: nowrap;
 		pointer-events: none;
 		backdrop-filter: blur(8px);
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);

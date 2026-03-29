@@ -2,6 +2,7 @@
 	import { onDestroy } from 'svelte';
 	import Hls from 'hls.js';
 	import Icon from '../icon/Icon.svelte';
+	import Image from './Image.svelte';
 
 	type MediaType = 'image' | 'video' | 'auto';
 	type Fit = 'cover' | 'contain';
@@ -164,31 +165,20 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="media" class:clickable={!!onclick} {onclick}>
-	{#if !loaded && !error}
-		<div class="placeholder">
-			<div class="spinner"></div>
-		</div>
-	{/if}
-
-	{#if error}
-		<div class="error">
-			<Icon name="MessageCircleWarning" size={24} />
-		</div>
-	{/if}
-
 	{#if resolvedType === 'image'}
-		<img
-			bind:this={imageEl}
-			{src}
-			{alt}
-			loading={lazy ? 'lazy' : 'eager'}
-			onload={handleLoad}
-			onerror={handleError}
-			class:loaded
-			class:error
-			style="object-fit: {fit}"
-		/>
+		<Image {src} {fit} />
 	{:else}
+		{#if !loaded && !error}
+			<div class="placeholder">
+				<div class="spinner"></div>
+			</div>
+		{/if}
+
+		{#if error}
+			<div class="error">
+				<Icon name="MessageCircleWarning" size={24} />
+			</div>
+		{/if}
 		<video
 			bind:this={videoEl}
 			{muted}

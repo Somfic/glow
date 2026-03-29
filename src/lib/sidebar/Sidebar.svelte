@@ -165,23 +165,6 @@
 			width: 56px;
 		}
 
-		&::-webkit-scrollbar {
-			width: 4px;
-		}
-
-		&::-webkit-scrollbar-track {
-			background: transparent;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background: rgba($fg, 0.2);
-			border-radius: 2px;
-
-			&:hover {
-				background: rgba($fg, 0.3);
-			}
-		}
-
 		@media (max-width: 768px) {
 			transform: translateX(-100%);
 			transition: transform 0.2s ease, width 0.2s ease;
@@ -270,7 +253,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		margin: 1px 0.5rem;
+		margin: 0 0.5rem;
 		border-radius: 8px;
 		font-size: $text-sm;
 		color: $text-secondary;
@@ -282,7 +265,7 @@
 		.collapsed & {
 			justify-content: center;
 			padding: 0.5rem;
-			margin: 1px 0.25rem;
+			margin: 0 0.25rem;
 		}
 
 		&:hover {

@@ -185,6 +185,7 @@
 			color: inherit;
 			background-color: $tertiary;
 			border-color: transparent;
+			backdrop-filter: blur(8px);
 
 			&:hover,
 			&.cursor-hover {

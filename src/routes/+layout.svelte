@@ -20,11 +20,11 @@
 				label: 'Data Display',
 				items: [
 					{ label: 'Table', href: '/components/table', icon: 'Table' },
-					{ label: 'List', href: '/components/list', icon: 'List' },
-					{ label: 'Property List', href: '/components/property-list', icon: 'ClipboardList' },
+					{ label: 'Data', href: '/components/data', icon: 'ClipboardList' },
 					{ label: 'Card', href: '/components/card', icon: 'Square' },
 					{ label: 'Pill', href: '/components/pill', icon: 'Tag' },
-					{ label: 'Avatar', href: '/components/avatar', icon: 'CircleUser' }
+					{ label: 'Avatar', href: '/components/avatar', icon: 'CircleUser' },
+					{ label: 'Image', href: '/components/image', icon: 'Image' }
 				]
 			},
 			{
@@ -39,6 +39,7 @@
 				label: 'Feedback',
 				items: [
 					{ label: 'Modal', href: '/components/modal', icon: 'MessageSquare' },
+					{ label: 'Drawer', href: '/components/drawer', icon: 'PanelRight' },
 					{ label: 'Toast', href: '/components/toast', icon: 'Bell' },
 					{ label: 'Tooltip', href: '/components/tooltip', icon: 'Info' },
 					{ label: 'Banner', href: '/components/banner', icon: 'Flag' }

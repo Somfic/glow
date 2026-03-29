@@ -162,24 +162,6 @@
 	.code-content {
 		position: relative;
 		overflow: auto;
-
-		&::-webkit-scrollbar {
-			width: 8px;
-			height: 8px;
-		}
-
-		&::-webkit-scrollbar-track {
-			background: transparent;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background: rgba($fg, 0.2);
-			border-radius: 4px;
-
-			&:hover {
-				background: rgba($fg, 0.3);
-			}
-		}
 	}
 
 	.code-loading {

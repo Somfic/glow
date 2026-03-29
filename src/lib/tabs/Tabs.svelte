@@ -22,6 +22,8 @@
 		onChange?: (tabId: string) => void;
 	} = $props();
 
+	let headerElement: HTMLDivElement;
+
 	function selectTab(tabId: string) {
 		const tab = tabs.find((t) => t.id === tabId);
 		if (tab?.disabled) return;
@@ -69,16 +71,24 @@
 
 		selectTab(tabs[newIndex].id);
 
-		// Focus the new tab
-		const tabElements = document.querySelectorAll('[role="tab"]');
-		(tabElements[newIndex] as HTMLElement)?.focus();
+		const tabElements = headerElement?.querySelectorAll('[role="tab"]');
+		const el = tabElements?.[newIndex] as HTMLElement;
+		el?.focus();
+		el?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+	}
+
+	function scrollToActive(node: HTMLButtonElement) {
+		if (node.getAttribute('aria-selected') === 'true') {
+			node.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+		}
 	}
 
 	const activeTabContent = $derived(tabs.find((tab) => tab.id === activeTab)?.content);
+	const isFirstTabActive = $derived(activeTab === tabs[0]?.id);
 </script>
 
 <div class="tabs">
-	<div class="tabs-header" role="tablist">
+	<div class="tabs-header" role="tablist" bind:this={headerElement}>
 		{#each tabs as tab, index (tab.id)}
 			<button
 				class="tab"
@@ -91,16 +101,17 @@
 				disabled={tab.disabled}
 				onclick={() => selectTab(tab.id)}
 				onkeydown={(e) => handleKeyDown(e, index)}
+				use:scrollToActive
 			>
 				{#if tab.icon}
-					<Icon name={tab.icon} size={18} fill={tab.iconFilled} />
+					<Icon name={tab.icon} size={16} fill={tab.iconFilled} />
 				{/if}
 				<span>{tab.label}</span>
 			</button>
 		{/each}
 	</div>
 
-	<div class="tabs-content" role="tabpanel" id="tab-panel-{activeTab}" aria-labelledby="tab-{activeTab}">
+	<div class="tabs-content" class:first-active={isFirstTabActive} role="tabpanel" id="tab-panel-{activeTab}" aria-labelledby="tab-{activeTab}">
 		{#if activeTabContent}
 			{@render activeTabContent()}
 		{/if}
@@ -109,7 +120,6 @@
 
 <style lang="scss">
 	@use '../style/theme.scss' as *;
-	@use 'sass:color';
 
 	.tabs {
 		display: flex;
@@ -119,19 +129,14 @@
 
 	.tabs-header {
 		display: flex;
-		gap: 0.25rem;
+		overflow-x: auto;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+		padding: 0 8px 0 0;
 		position: relative;
 
-		// Bottom border that goes under inactive tabs
-		&::after {
-			content: '';
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			height: 1px;
-			background: $border-color;
-			z-index: 0;
+		&::-webkit-scrollbar {
+			display: none;
 		}
 	}
 
@@ -139,45 +144,59 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.75rem 1.25rem;
+		padding: 0.625rem 1.25rem;
 		background: transparent;
-		border: $border;
-		border-bottom: none;
+		border: none;
 		border-radius: $radius $radius 0 0;
 		color: $text-secondary;
 		font-size: $text-sm;
 		font-weight: 500;
+		font-family: $font-family;
 		cursor: pointer;
-		position: relative;
-		z-index: 1;
-		transition: all 0.15s;
+		transition: color 0.15s, background 0.15s;
 		white-space: nowrap;
+		flex-shrink: 0;
+		position: relative;
 
 		&:hover:not(.disabled):not(.active) {
-			background: rgba($fg, 0.03);
 			color: $fg;
 		}
 
 		&.active {
 			background: $bg-surface-element;
 			color: $primary;
-			border-color: $border-color;
-			z-index: 2;
+			z-index: 1;
 
-			// Hide the bottom border to connect with content
+			// Inverse border radius - right
 			&::after {
 				content: '';
 				position: absolute;
-				bottom: -1px;
-				left: 0;
-				right: 0;
-				height: 2px;
-				background: $bg-surface-element;
+				bottom: 0;
+				right: -8px;
+				width: 8px;
+				height: 8px;
+				background: radial-gradient(circle at 100% 0, transparent 8px, $bg-surface-element 8px);
+			}
+
+			// First tab: no left curve, straight bottom-left matching content
+			&:first-child {
+				border-radius: $radius $radius 0 0;
+			}
+
+			// Non-first tabs: inverse border radius on left
+			&:not(:first-child)::before {
+				content: '';
+				position: absolute;
+				bottom: 0;
+				left: -8px;
+				width: 8px;
+				height: 8px;
+				background: radial-gradient(circle at 0 0, transparent 8px, $bg-surface-element 8px);
 			}
 		}
 
 		&.disabled {
-			opacity: 0.5;
+			opacity: 0.4;
 			cursor: not-allowed;
 		}
 
@@ -189,10 +208,12 @@
 
 	.tabs-content {
 		background: $bg-surface-element;
-		border: $border;
-		border-radius: 0 $radius $radius $radius;
+		border-radius: $radius;
 		padding: 1.5rem;
-		position: relative;
-		z-index: 1;
+		transition: border-radius 0.2s ease;
+
+		&.first-active {
+			border-radius: 0 $radius $radius $radius;
+		}
 	}
 </style>

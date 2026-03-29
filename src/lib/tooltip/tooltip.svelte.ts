@@ -21,9 +21,9 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 	let isHiding = false;
 
 	const options: TooltipOptions =
-		typeof params === 'string' ? { content: params, useCursor: true } : { useCursor: true, ...params };
+		typeof params === 'string' ? { content: params } : params;
 
-	const { content, position = 'top', delay = 200, useCursor = true } = options;
+	const { content, position = 'top', delay = 200, useCursor = false } = options;
 
 	if (!content) return;
 

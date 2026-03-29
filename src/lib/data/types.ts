@@ -92,8 +92,8 @@ export interface TableProps<T = any> {
 	onRowClick?: (row: T, index: number) => void;
 }
 
-// Property List Types
-export interface PropertyItem {
+// Data Types
+export interface DataItem {
 	label: string;
 	icon?: IconName;
 	iconFilled?: boolean;
@@ -109,41 +109,24 @@ export interface PropertyItem {
 	muted?: boolean;
 }
 
-export interface PropertyGroup {
+export interface DataGroup {
 	label?: string;
 	icon?: IconName;
 	iconFilled?: boolean;
-	properties: PropertyItem[];
+	properties: DataItem[];
 }
 
-export interface PropertyListProps {
-	properties?: PropertyItem[];
-	groups?: PropertyGroup[];
+export interface DataProps {
+	properties?: DataItem[];
+	groups?: DataGroup[];
 	variant?: 'inline' | 'stacked';
 	divided?: boolean;
 	labelWidth?: string;
 }
 
-// List Types
-export interface ListItem {
-	id: string;
-	label: string;
-	description?: string;
-	icon?: IconName;
-	iconFilled?: boolean;
-	avatar?: string;
-	badge?: string | number;
-	disabled?: boolean;
-	href?: string;
-	onClick?: () => void;
-}
-
-export interface ListProps {
-	items: ListItem[];
-	variant?: 'default' | 'compact' | 'detailed';
-	divided?: boolean; // Dividers between items
-	hoverable?: boolean; // Hover background
-	selectable?: boolean;
-	selectedId?: string;
-	onSelect?: (id: string) => void;
-}
+/** @deprecated Use DataItem instead */
+export type PropertyItem = DataItem;
+/** @deprecated Use DataGroup instead */
+export type PropertyGroup = DataGroup;
+/** @deprecated Use DataProps instead */
+export type PropertyListProps = DataProps;

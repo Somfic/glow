@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PropertyListProps, PropertyGroup } from './types.js';
+	import type { DataProps, DataGroup } from './types.js';
 	import Icon from '../icon/Icon.svelte';
 	import Pill from '../pill/Pill.svelte';
 
@@ -9,9 +9,9 @@
 		variant = 'inline',
 		divided = true,
 		labelWidth = '40%'
-	}: PropertyListProps = $props();
+	}: DataProps = $props();
 
-	let normalizedGroups: PropertyGroup[] = $derived(
+	let normalizedGroups: DataGroup[] = $derived(
 		groups ?? (properties ? [{ properties }] : [])
 	);
 </script>

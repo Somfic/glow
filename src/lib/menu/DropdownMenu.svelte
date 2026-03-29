@@ -10,6 +10,7 @@
 		shortcut?: string;
 		disabled?: boolean;
 		danger?: boolean;
+		selected?: boolean;
 		onclick: () => void;
 	};
 	export type DropdownMenuEntry = DropdownMenuItem | 'divider';
@@ -91,7 +92,9 @@
 						class:danger={entry.danger}
 						class:active={i === activeIndex}
 						class:disabled={entry.disabled}
-						role="menuitem"
+						class:selected={entry.selected}
+						role="menuitemradio"
+						aria-checked={entry.selected ?? false}
 						disabled={entry.disabled}
 						onclick={() => handleItemClick(entry)}
 						onmouseenter={() => (activeIndex = i)}
@@ -147,6 +150,11 @@
 			background: rgba($fg, 0.06);
 		}
 
+		&.selected {
+			background: $secondary;
+			color: $primary;
+		}
+
 		&.disabled {
 			opacity: 0.4;
 			cursor: not-allowed;
@@ -186,4 +194,5 @@
 		color: $text-muted;
 		margin-left: auto;
 	}
+
 </style>

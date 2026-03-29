@@ -183,23 +183,6 @@
 		overflow-x: hidden;
 		position: relative;
 		width: 100%;
-
-		&::-webkit-scrollbar {
-			width: 8px;
-		}
-
-		&::-webkit-scrollbar-track {
-			background: transparent;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background: rgba($fg, 0.2);
-			border-radius: 4px;
-
-			&:hover {
-				background: rgba($fg, 0.3);
-			}
-		}
 	}
 
 	.virtual-list-content {

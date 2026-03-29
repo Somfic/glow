@@ -336,15 +336,6 @@
 		background: rgba(0, 0, 0, 0.5);
 		border-radius: 8px;
 		backdrop-filter: blur(10px);
-
-		&::-webkit-scrollbar {
-			height: 4px;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background: rgba(255, 255, 255, 0.3);
-			border-radius: 2px;
-		}
 	}
 
 	.related-item {

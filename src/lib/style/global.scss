@@ -105,3 +105,37 @@ small {
     font-size: $text-sm;
     color: $text-secondary;
 }
+
+// Scrollbars — overlay, macOS-style
+* {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+
+    &:hover {
+        scrollbar-color: rgba($fg, 0.2) transparent;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background: transparent;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 3px;
+    transition: background 0.2s;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+    background: rgba($fg, 0.15);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba($fg, 0.3);
+}

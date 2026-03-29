@@ -1,57 +1,87 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, untrack } from 'svelte';
 
 	let { src, fit }: { src: string; fit?: 'cover' | 'contain' } = $props();
 
-	let el: HTMLImageElement;
-	let imageLoaded = $state(false);
+	let activeLayer = $state<0 | 1>(0);
+	let layerSrc: [string, string] = $state(['', '']);
+	let layerLoaded: [boolean, boolean] = $state([false, false]);
+	let initialLoad = $state(true);
 	let imageError = $state(false);
+	let preloader: HTMLImageElement | null = null;
 
-	function handleImageLoad() {
-		imageLoaded = true;
-		imageError = false;
-	}
-
-	function handleImageError() {
-		imageError = true;
-		imageLoaded = false;
-	}
-
-	// Reset loading state when src changes
-	$effect(() => {
-		if (src) {
-			imageLoaded = false;
-			imageError = false;
+	function preloadImage(url: string): Promise<void> {
+		if (preloader) {
+			preloader.onload = null;
+			preloader.onerror = null;
+			preloader.src = '';
 		}
+		return new Promise((resolve, reject) => {
+			preloader = new Image();
+			preloader.onload = () => resolve();
+			preloader.onerror = () => reject();
+			preloader.src = url;
+		});
+	}
+
+	$effect(() => {
+		const currentSrc = src;
+		if (!currentSrc) return;
+
+		untrack(() => {
+			imageError = false;
+
+			if (initialLoad) {
+				layerSrc[0] = currentSrc;
+				preloadImage(currentSrc)
+					.then(() => {
+						layerLoaded[0] = true;
+						initialLoad = false;
+						activeLayer = 0;
+					})
+					.catch(() => {
+						imageError = true;
+					});
+			} else {
+				const next = (activeLayer === 0 ? 1 : 0) as 0 | 1;
+				preloadImage(currentSrc)
+					.then(() => {
+						layerSrc[next] = currentSrc;
+						layerLoaded[next] = true;
+						activeLayer = next;
+					})
+					.catch(() => {
+						imageError = true;
+					});
+			}
+		});
 	});
 
-	// Cancel pending image load on component destroy
 	onDestroy(() => {
-		if (el && !imageLoaded) {
-			// Setting src to empty cancels the pending request
-			el.src = '';
+		if (preloader) {
+			preloader.onload = null;
+			preloader.onerror = null;
+			preloader.src = '';
+			preloader = null;
 		}
 	});
 </script>
 
 <div class="image">
-	{#if !imageLoaded && !imageError}
+	{#if initialLoad && !imageError}
 		<div class="image-placeholder">
 			<div class="loading-spinner"></div>
 		</div>
 	{/if}
-	<img
-		bind:this={el}
-		{src}
-		alt=""
-		loading="lazy"
-		onload={handleImageLoad}
-		onerror={handleImageError}
-		class:loaded={imageLoaded}
-		class:error={imageError}
-		class:cover={fit === 'cover'}
-		style="object-fit: {fit || 'contain'}"
-	/>
+
+	{#each [0, 1] as i}
+		<img
+			src={layerSrc[i] || undefined}
+			alt=""
+			class:active={activeLayer === i && layerLoaded[i]}
+			style="object-fit: {fit || 'contain'}"
+		/>
+	{/each}
 </div>
 
 <style lang="scss">
@@ -69,6 +99,7 @@
 		justify-content: center;
 		background-color: #f3f4f6;
 		min-height: 150px;
+		z-index: 2;
 	}
 
 	.loading-spinner {
@@ -87,22 +118,16 @@
 	}
 
 	img {
+		position: absolute;
+		inset: 0;
 		width: 100%;
-		height: auto;
+		height: 100%;
 		display: block;
 		opacity: 0;
-		transition: opacity 0.3s ease;
+		transition: opacity 0.4s ease;
 
-		&.cover {
-			height: 100%;
-		}
-
-		&.loaded {
+		&.active {
 			opacity: 1;
-		}
-
-		&.error {
-			display: none;
 		}
 	}
 </style>
