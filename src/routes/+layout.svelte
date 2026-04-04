@@ -24,7 +24,7 @@
 					{ label: 'Card', href: '/components/card', icon: 'Square' },
 					{ label: 'Pill', href: '/components/pill', icon: 'Tag' },
 					{ label: 'Avatar', href: '/components/avatar', icon: 'CircleUser' },
-					{ label: 'Image', href: '/components/image', icon: 'Image' }
+					{ label: 'Media', href: '/components/media', icon: 'Image' }
 				]
 			},
 			{

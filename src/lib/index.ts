@@ -13,7 +13,6 @@ export { default as Group } from "./group/Group.svelte";
 export { default as Page } from "./page/Page.svelte";
 export { default as Pill } from "./pill/Pill.svelte";
 export type { NavItem } from "./page/Navigation.svelte";
-export { default as Image } from "./media/Image.svelte";
 export { default as Media } from "./media/Media.svelte";
 export { default as MediaCard } from "./media/MediaCard.svelte";
 export { default as Card } from "./card/Card.svelte";

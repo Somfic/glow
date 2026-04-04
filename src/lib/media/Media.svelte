@@ -1,11 +1,17 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, tick, untrack } from 'svelte';
 	import Hls from 'hls.js';
 	import Icon from '../icon/Icon.svelte';
-	import Image from './Image.svelte';
+	import Spinner from '../spinner/Spinner.svelte';
 
 	type MediaType = 'image' | 'video' | 'auto';
 	type Fit = 'cover' | 'contain';
+
+	type Layer = {
+		src: string;
+		type: 'image' | 'video';
+		loaded: boolean;
+	};
 
 	let {
 		src,
@@ -41,35 +47,101 @@
 		onVideoPlaying?: (video: HTMLVideoElement) => void;
 	} = $props();
 
-	let imageEl = $state<HTMLImageElement | undefined>(undefined);
-	let videoEl = $state<HTMLVideoElement | undefined>(undefined);
-	let hls: Hls | null = null;
-	let loaded = $state(false);
-	let error = $state(false);
+	let layers: [Layer, Layer] = $state([
+		{ src: '', type: 'image', loaded: false },
+		{ src: '', type: 'image', loaded: false }
+	]);
+	let activeLayer = $state<0 | 1>(0);
+	let initialLoad = $state(true);
+	let mediaError = $state(false);
+	let videoEls: [HTMLVideoElement | undefined, HTMLVideoElement | undefined] = $state([
+		undefined,
+		undefined
+	]);
+	let hlsInstances: [Hls | null, Hls | null] = [null, null];
+	let preloader: HTMLImageElement | null = null;
 
-	// Auto-detect media type from src
-	const resolvedType = $derived.by(() => {
+	function resolveType(url: string): 'image' | 'video' {
 		if (type !== 'auto') return type;
-		if (!src) return 'image';
-		const lower = src.toLowerCase();
+		if (!url) return 'image';
+		const lower = url.toLowerCase();
 		if (lower.match(/\.(mp4|webm|mov|m3u8|ogg)(\?|$)/) || lower.includes('playlist')) {
 			return 'video';
 		}
 		return 'image';
-	});
-
-	const isHls = $derived(src && (src.includes('.m3u8') || src.includes('playlist')));
-
-	function handleLoad() {
-		loaded = true;
-		error = false;
 	}
 
-	function handleVideoReady() {
-		loaded = true;
-		error = false;
+	function isHlsSource(url: string): boolean {
+		return url.includes('.m3u8') || url.includes('playlist');
+	}
+
+	function preloadImage(url: string): Promise<void> {
+		if (preloader) {
+			preloader.onload = null;
+			preloader.onerror = null;
+			preloader.src = '';
+		}
+		return new Promise((resolve, reject) => {
+			preloader = new Image();
+			preloader.onload = () => resolve();
+			preloader.onerror = () => reject();
+			preloader.src = url;
+		});
+	}
+
+	function cleanupHls(layerIndex: 0 | 1) {
+		if (hlsInstances[layerIndex]) {
+			hlsInstances[layerIndex]!.destroy();
+			hlsInstances[layerIndex] = null;
+		}
+	}
+
+	function initializeVideo(layerIndex: 0 | 1) {
+		const videoEl = videoEls[layerIndex];
+		const layerSrc = layers[layerIndex].src;
+		if (!videoEl || !layerSrc) return;
+
+		cleanupHls(layerIndex);
+
+		if (isHlsSource(layerSrc)) {
+			if (Hls.isSupported()) {
+				const hls = new Hls({
+					debug: false,
+					enableWorker: true,
+					lowLatencyMode: false
+				});
+				hlsInstances[layerIndex] = hls;
+				hls.loadSource(layerSrc);
+				hls.attachMedia(videoEl);
+				hls.on(Hls.Events.MANIFEST_PARSED, () => {
+					if (autoplay) {
+						videoEl.play().catch(() => {});
+					}
+				});
+				hls.on(Hls.Events.ERROR, (_event, data) => {
+					if (data.fatal) {
+						mediaError = true;
+						cleanupHls(layerIndex);
+					}
+				});
+			} else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
+				videoEl.src = layerSrc;
+			}
+		} else {
+			videoEl.src = layerSrc;
+			if (autoplay) {
+				videoEl.play().catch(() => {});
+			}
+		}
+	}
+
+	function handleVideoLoaded(layerIndex: 0 | 1) {
+		layers[layerIndex].loaded = true;
+		activeLayer = layerIndex;
+		initialLoad = false;
+
+		const videoEl = videoEls[layerIndex];
 		if (videoEl) {
-			// Seek to start time if specified
 			if (startTime > 0 && videoEl.duration) {
 				videoEl.currentTime = startTime * videoEl.duration;
 			}
@@ -77,87 +149,87 @@
 		}
 	}
 
-	function handleVideoPlaying() {
+	function handleVideoPlaying(layerIndex: 0 | 1) {
+		const videoEl = videoEls[layerIndex];
 		if (videoEl) {
 			onVideoPlaying?.(videoEl);
 		}
 	}
 
-	function handleError() {
-		error = true;
-		loaded = false;
-	}
-
-	function initializeHls() {
-		if (!videoEl || !src || !isHls) return;
-
-		if (Hls.isSupported()) {
-			if (hls) hls.destroy();
-			hls = new Hls({
-				debug: false,
-				enableWorker: true,
-				lowLatencyMode: false
-			});
-			hls.loadSource(src);
-			hls.attachMedia(videoEl);
-			hls.on(Hls.Events.MANIFEST_PARSED, () => {
-				loaded = true;
-				if (autoplay) {
-					videoEl?.play().catch(() => {});
-				}
-			});
-			hls.on(Hls.Events.ERROR, (_event, data) => {
-				if (data.fatal) {
-					error = true;
-					if (hls) {
-						hls.destroy();
-						hls = null;
-					}
-				}
-			});
-		} else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
-			// Native HLS support (Safari)
-			videoEl.src = src;
+	function handleVideoError(layerIndex: 0 | 1) {
+		if (layerIndex === activeLayer || initialLoad) {
+			mediaError = true;
 		}
 	}
 
-	function initializeVideo() {
-		if (!videoEl || !src) return;
+	$effect(() => {
+		const currentSrc = src;
+		if (!currentSrc) return;
 
-		if (isHls) {
-			initializeHls();
-		} else {
-			videoEl.src = src;
-			if (autoplay) {
-				videoEl.play().catch(() => {});
+		untrack(() => {
+			mediaError = false;
+			const resolvedType = resolveType(currentSrc);
+
+			if (initialLoad) {
+				layers[0] = { src: currentSrc, type: resolvedType, loaded: false };
+
+				if (resolvedType === 'image') {
+					preloadImage(currentSrc)
+						.then(async () => {
+							// Wait for the img element to render in the DOM before activating
+							await tick();
+							await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+							layers[0].loaded = true;
+							initialLoad = false;
+							activeLayer = 0;
+						})
+						.catch(() => {
+							mediaError = true;
+						});
+				}
+				// Video: handled by loadeddata event via handleVideoLoaded
+			} else {
+				const next = (activeLayer === 0 ? 1 : 0) as 0 | 1;
+
+				if (resolvedType === 'image') {
+					preloadImage(currentSrc)
+						.then(async () => {
+							// Set src first so the element renders at opacity 0
+							layers[next] = { src: currentSrc, type: 'image', loaded: false };
+							// Wait for the DOM to update, then activate to trigger the transition
+							await tick();
+							await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+							layers[next].loaded = true;
+							activeLayer = next;
+						})
+						.catch(() => {
+							mediaError = true;
+						});
+				} else {
+					layers[next] = { src: currentSrc, type: 'video', loaded: false };
+					// Video: will be initialized when the video element binds, then loadeddata fires
+				}
+			}
+		});
+	});
+
+	// Initialize video elements when they bind
+	$effect(() => {
+		for (const i of [0, 1] as const) {
+			if (videoEls[i] && layers[i].type === 'video' && layers[i].src && !layers[i].loaded) {
+				initializeVideo(i);
 			}
 		}
-	}
-
-	// Reset state when src changes
-	$effect(() => {
-		if (src) {
-			loaded = false;
-			error = false;
-		}
 	});
 
-	// Initialize video when element is ready
-	$effect(() => {
-		if (resolvedType === 'video' && videoEl && src) {
-			initializeVideo();
-		}
-	});
-
-	// Cleanup
 	onDestroy(() => {
-		if (hls) {
-			hls.destroy();
-			hls = null;
-		}
-		// Cancel pending image load
-		if (imageEl && !loaded) {
-			imageEl.src = '';
+		cleanupHls(0);
+		cleanupHls(1);
+		if (preloader) {
+			preloader.onload = null;
+			preloader.onerror = null;
+			preloader.src = '';
+			preloader = null;
 		}
 	});
 </script>
@@ -165,37 +237,46 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="media" class:clickable={!!onclick} {onclick}>
-	{#if resolvedType === 'image'}
-		<Image {src} {fit} />
-	{:else}
-		{#if !loaded && !error}
-			<div class="placeholder">
-				<div class="spinner"></div>
-			</div>
-		{/if}
-
-		{#if error}
-			<div class="error">
-				<Icon name="MessageCircleWarning" size={24} />
-			</div>
-		{/if}
-		<video
-			bind:this={videoEl}
-			{muted}
-			{loop}
-			{controls}
-			{playsinline}
-			{poster}
-			onloadeddata={handleVideoReady}
-			onplaying={handleVideoPlaying}
-			onerror={handleError}
-			class:loaded
-			class:error
-			style="object-fit: {fit}"
-		>
-			<track kind="captions" />
-		</video>
+	{#if initialLoad && !mediaError}
+		<div class="placeholder">
+			<Spinner size={24} />
+		</div>
 	{/if}
+
+	{#if mediaError}
+		<div class="error">
+			<Icon name="MessageCircleWarning" size={24} />
+		</div>
+	{/if}
+
+	{#each [0, 1] as i}
+		{#if layers[i].type === 'image' && layers[i].src}
+			<img
+				src={layers[i].src}
+				{alt}
+				class="layer"
+				class:active={activeLayer === i && layers[i].loaded}
+				style="object-fit: {fit}"
+			/>
+		{:else if layers[i].type === 'video' && layers[i].src}
+			<video
+				bind:this={videoEls[i]}
+				{muted}
+				{loop}
+				{controls}
+				{playsinline}
+				{poster}
+				onloadeddata={() => handleVideoLoaded(i as 0 | 1)}
+				onplaying={() => handleVideoPlaying(i as 0 | 1)}
+				onerror={() => handleVideoError(i as 0 | 1)}
+				class="layer"
+				class:active={activeLayer === i && layers[i].loaded}
+				style="object-fit: {fit}"
+			>
+				<track kind="captions" />
+			</video>
+		{/if}
+	{/each}
 </div>
 
 <style lang="scss">
@@ -218,42 +299,24 @@
 		align-items: center;
 		justify-content: center;
 		background: rgba(0, 0, 0, 0.1);
+		z-index: 2;
 	}
 
 	.error {
 		color: rgba(255, 255, 255, 0.5);
 	}
 
-	.spinner {
-		width: 24px;
-		height: 24px;
-		border: 2px solid rgba(255, 255, 255, 0.2);
-		border-top-color: rgba(255, 255, 255, 0.8);
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	img,
-	video {
+	.layer {
+		position: absolute;
+		inset: 0;
 		width: 100%;
 		height: 100%;
 		display: block;
 		opacity: 0;
-		transition: opacity 0.2s ease;
+		transition: opacity 0.4s ease;
 
-		&.loaded {
+		&.active {
 			opacity: 1;
 		}
-
-		&.error {
-			display: none;
-		}
 	}
-
 </style>
