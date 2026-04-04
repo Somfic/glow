@@ -25,13 +25,13 @@
 		:global(button) {
 			border-radius: 0px;
 
-			&:not(.no-border) {
+			&:not(.ghost) {
 				border: $border;
-			}
 
-			// negative margin to collapse borders between buttons
-			&:not(:first-child) {
-				margin-left: -$border-width;
+				// negative margin to collapse borders between buttons
+				&:not(:first-child) {
+					margin-left: -$border-width;
+				}
 			}
 		}
 

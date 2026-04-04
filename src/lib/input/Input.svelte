@@ -1,7 +1,6 @@
 <script lang="ts">
-	import type { IconName } from '../icon/Icon.svelte';
 	import type { SelectOption, ComboboxOption } from './types.js';
-	import Icon from '../icon/Icon.svelte';
+	import Icon, { type IconProp } from '../icon/Icon.svelte';
 	import TextInput from './TextInput.svelte';
 	import NumberInput from './NumberInput.svelte';
 	import TextareaInput from './TextareaInput.svelte';
@@ -24,8 +23,7 @@
 		type: 'text';
 		value: string;
 		placeholder?: string;
-		icon?: IconName;
-		iconFilled?: boolean;
+		icon?: IconProp;
 		loading?: boolean;
 		clearable?: boolean;
 		autocomplete?: AutoFill;
@@ -149,7 +147,7 @@
 		| RangeProps
 		| ColorProps;
 
-	let props = $props<Props>();
+	let props: Props = $props();
 
 	let inputId = `input-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -183,7 +181,6 @@
 			value={p.value}
 			placeholder={p.placeholder}
 			icon={p.icon}
-			iconFilled={p.iconFilled}
 			loading={p.loading}
 			disabled={p.disabled}
 			clearable={p.clearable}

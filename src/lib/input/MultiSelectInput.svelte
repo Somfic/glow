@@ -22,7 +22,7 @@
 	let {
 		id,
 		options,
-		value = [],
+		value = $bindable<string[]>([]),
 		placeholder = 'Select...',
 		disabled = false,
 		clearable = false,
@@ -32,23 +32,17 @@
 		maxResults = 0,
 		minSearchLength = 0
 	}: Props = $props();
-
-	let internalValue = $state<string[]>([]);
 	let isOpen = $state(false);
 	let searchQuery = $state('');
 	let isLoading = $state(false);
 	let searchResults = $state<SelectOption[]>([]);
-	let searchInputElement: HTMLInputElement;
+	let searchInputElement = $state<HTMLInputElement>(undefined!);
 
 	// Determine if we're in server-side search mode
 	const isServerSide = $derived(!!onSearch);
 
 	// Show search when there are many options or explicitly enabled
 	const shouldShowSearch = $derived(options.length > 5 || isServerSide);
-
-	$effect(() => {
-		internalValue = value ?? [];
-	});
 
 	// Focus search input when dropdown opens
 	$effect(() => {
@@ -61,7 +55,7 @@
 	});
 
 	// Server-side search handler with debouncing
-	const debouncedSearch = onSearch
+	const debouncedSearch = $derived(onSearch
 		? debounce(async (query: string) => {
 				if (query.length < minSearchLength) {
 					searchResults = [];
@@ -80,7 +74,7 @@
 					isLoading = false;
 				}
 		  }, searchDebounce)
-		: null;
+		: null);
 
 	// Trigger search when query changes (server-side mode)
 	$effect(() => {
@@ -99,36 +93,34 @@
 			source = fuzzyFilter(options, searchQuery, maxResults);
 		}
 
-		return source.filter((opt) => !internalValue.includes(opt.value));
+		return source.filter((opt) => !value.includes(opt.value));
 	});
 
 	function selectOption(optionValue: string, e: MouseEvent) {
 		e.preventDefault();
 		e.stopPropagation();
 
-		const newValue = [...internalValue, optionValue];
-		internalValue = newValue;
-		onChange?.(newValue);
+		value = [...value, optionValue];
+		onChange?.(value);
 
 		// Keep dropdown open for multiselect
 		isOpen = true;
 	}
 
 	function getSelectedOptions(): SelectOption[] {
-		return internalValue
+		return value
 			.map((v) => options.find((opt) => opt.value === v))
 			.filter((opt): opt is SelectOption => opt !== undefined);
 	}
 
 	function removeValue(valueToRemove: string) {
-		const newValue = internalValue.filter((v) => v !== valueToRemove);
-		internalValue = newValue;
-		onChange?.(newValue);
+		value = value.filter((v) => v !== valueToRemove);
+		onChange?.(value);
 	}
 
 	function clearAll(e: MouseEvent) {
 		e.stopPropagation();
-		internalValue = [];
+		value = [];
 		onChange?.([]);
 	}
 
@@ -141,8 +133,8 @@
 			e.preventDefault();
 			if (searchQuery && filteredOptions.length > 0) {
 				const first = filteredOptions[0];
-				internalValue = [...internalValue, first.value];
-				onChange?.(internalValue);
+				value = [...value, first.value];
+				onChange?.(value);
 				searchQuery = '';
 			} else {
 				isOpen = false;
@@ -166,7 +158,7 @@
 				}
 			}}
 		>
-			{#if internalValue.length > 0}
+			{#if value.length > 0}
 				<div class="chips">
 					{#each getSelectedOptions() as opt}
 						<Pill label={opt.label} onRemove={() => removeValue(opt.value)} />
@@ -176,7 +168,7 @@
 				<span class="multiselect-value placeholder">{placeholder}</span>
 			{/if}
 			<div class="actions">
-				{#if clearable && internalValue.length > 0}
+				{#if clearable && value.length > 0}
 					<button type="button" class="clear-btn" onclick={clearAll}>
 						<Icon name="X" size={16} />
 					</button>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Icon, { type IconName } from '../icon/Icon.svelte';
+	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
 
 	interface BaseProps {
 		onRemove?: () => void;
@@ -19,15 +19,14 @@
 		icon?: never;
 	}
 
-	interface IconProps extends BaseProps {
-		icon: IconName;
-		iconFilled?: boolean;
+	interface PillIconProps extends BaseProps {
+		icon: IconProp;
 		label?: string;
 		color?: string;
 		image?: never;
 	}
 
-	type Props = TextProps | ImageProps | IconProps;
+	type Props = TextProps | ImageProps | PillIconProps;
 
 	let props: Props = $props();
 
@@ -77,7 +76,7 @@
 
 	{#if hasIcon && props.icon}
 		<span class="pill-icon">
-			<Icon name={props.icon} size={14} fill={'iconFilled' in props && props.iconFilled} />
+			<Icon {...resolveIcon(props.icon)} size={resolveIcon(props.icon).size ?? 14} />
 		</span>
 	{/if}
 

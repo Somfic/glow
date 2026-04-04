@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { IconName } from '../icon/Icon.svelte';
-	import Icon from '../icon/Icon.svelte';
+	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
 
 	type Props = {
 		title?: string;
@@ -9,9 +8,7 @@
 		href?: string;
 		variant?: 'default' | 'primary' | 'secondary';
 		disabled?: boolean;
-		icon?: IconName;
-		iconFilled?: boolean;
-		iconSize?: number;
+		icon?: IconProp;
 		accentColor?: string;
 		children?: Snippet;
 	};
@@ -23,16 +20,14 @@
 		variant = 'default',
 		disabled = false,
 		icon,
-		iconFilled = false,
-		iconSize = 24,
 		accentColor,
 		children
 	}: Props = $props();
 
 	// Convert accent color to CSS custom properties
-	const accentStyle = accentColor
+	const accentStyle = $derived(accentColor
 		? `--accent-bg: ${accentColor}1a; --accent-border: ${accentColor}4d;`
-		: '';
+		: '');
 </script>
 
 {#if href}
@@ -47,7 +42,7 @@
 		style={accentStyle}
 	>
 		{#if icon}
-			<div class="icon"><Icon name={icon} size={iconSize} fill={iconFilled} /></div>
+			<div class="icon"><Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? 24} /></div>
 		{/if}
 		{#if children}
 			{@render children()}
@@ -69,7 +64,7 @@
 		style={accentStyle}
 	>
 		{#if icon}
-			<div class="icon"><Icon name={icon} size={iconSize} fill={iconFilled} /></div>
+			<div class="icon"><Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? 24} /></div>
 		{/if}
 		{#if children}
 			{@render children()}

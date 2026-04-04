@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Icon from '../icon/Icon.svelte';
+	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import Pill from '../pill/Pill.svelte';
 	import Popover from '../popover/Popover.svelte';
 	import type { ComboboxOption } from './types.js';
@@ -23,7 +23,7 @@
 	let {
 		id,
 		options,
-		value = '',
+		value = $bindable<string | string[]>(''),
 		placeholder = 'Search...',
 		disabled = false,
 		multiple = false,
@@ -57,7 +57,7 @@
 	});
 
 	// Server-side search handler with debouncing
-	const debouncedSearch = onSearch
+	const debouncedSearch = $derived(onSearch
 		? debounce(async (query: string) => {
 				if (query.length < minSearchLength) {
 					searchResults = [];
@@ -76,7 +76,7 @@
 					isLoading = false;
 				}
 		  }, searchDebounce)
-		: null;
+		: null);
 
 	// Trigger search when input value changes (server-side mode)
 	$effect(() => {
@@ -108,12 +108,14 @@
 		if (multiple) {
 			if (!selectedValues.includes(option.value)) {
 				selectedValues = [...selectedValues, option.value];
+				value = selectedValues;
 				onChange?.(selectedValues);
 			}
 			inputValue = '';
 			inputElement?.focus();
 		} else {
 			selectedValues = [option.value];
+			value = option.value;
 			onChange?.(option.value);
 			inputValue = '';
 			isOpen = false;
@@ -123,6 +125,7 @@
 
 	function removeValue(valueToRemove: string) {
 		selectedValues = selectedValues.filter((v) => v !== valueToRemove);
+		value = multiple ? selectedValues : '';
 		onChange?.(multiple ? selectedValues : '');
 		inputElement?.focus();
 	}
@@ -177,6 +180,7 @@
 	function clearAll() {
 		selectedValues = [];
 		inputValue = '';
+		value = multiple ? [] : '';
 		onChange?.(multiple ? [] : '');
 		inputElement?.focus();
 	}
@@ -188,12 +192,24 @@
 			{#if multiple && selectedValues.length > 0}
 				<div class="chips">
 					{#each getSelectedOptions() as opt}
-						<Pill
-							label={opt.label}
-							icon={opt.icon}
-							image={opt.image}
-							onRemove={() => removeValue(opt.value)}
-						/>
+						{#if opt.icon}
+							<Pill
+								label={opt.label}
+								icon={opt.icon}
+								onRemove={() => removeValue(opt.value)}
+							/>
+						{:else if opt.image}
+							<Pill
+								label={opt.label}
+								image={opt.image}
+								onRemove={() => removeValue(opt.value)}
+							/>
+						{:else}
+							<Pill
+								label={opt.label}
+								onRemove={() => removeValue(opt.value)}
+							/>
+						{/if}
 					{/each}
 				</div>
 			{/if}
@@ -219,7 +235,7 @@
 							{#if selected.image}
 								<img src={selected.image} alt="" class="selected-image" />
 							{:else if selected.icon}
-								<Icon name={selected.icon} size={16} fill={selected.iconFilled} />
+								<Icon {...resolveIcon(selected.icon)} size={resolveIcon(selected.icon).size ?? 16} />
 							{/if}
 							<span>{selected.label}</span>
 						</div>
@@ -271,7 +287,7 @@
 						<img src={option.image} alt="" class="option-image" />
 					{:else if option.icon}
 						<span class="option-icon">
-							<Icon name={option.icon} size={16} fill={option.iconFilled} />
+							<Icon {...resolveIcon(option.icon)} size={resolveIcon(option.icon).size ?? 16} />
 						</span>
 					{:else if option.groupType}
 						<span class="option-icon group-{option.groupType}">

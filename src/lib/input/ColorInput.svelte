@@ -9,7 +9,7 @@
 		onChange?: (value: string) => void;
 	}
 
-	let { id, value = '#808080', disabled = false, onChange }: Props = $props();
+	let { id, value = $bindable('#808080'), disabled = false, onChange }: Props = $props();
 
 	let isOpen = $state(false);
 	let L = $state(0.5); // Lightness (0-1)
@@ -138,6 +138,7 @@
 
 	function handleLChange(newL: number) {
 		L = newL;
+		value = hexValue;
 		onChange?.(hexValue);
 	}
 
@@ -172,6 +173,7 @@
 			H = (90 - angleDeg + 360) % 360;
 		}
 
+		value = hexValue;
 		onChange?.(hexValue);
 	}
 
@@ -316,6 +318,7 @@
 		</button>
 	{/snippet}
 
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="color-popover-content"
 		onmousedown={(e) => e.stopPropagation()}
@@ -343,15 +346,17 @@
 
 			<!-- Lightness Slider -->
 			<div class="lightness-slider">
-				<label class="slider-label">Lightness</label>
-				<input
-					type="range"
-					min="0"
-					max="1"
-					step="0.01"
-					value={L}
-					oninput={(e) => handleLChange(Number((e.target as HTMLInputElement).value))}
-				/>
+				<label class="slider-label">
+					Lightness
+					<input
+						type="range"
+						min="0"
+						max="1"
+						step="0.01"
+						value={L}
+						oninput={(e) => handleLChange(Number((e.target as HTMLInputElement).value))}
+					/>
+				</label>
 			</div>
 		</div>
 	</div>

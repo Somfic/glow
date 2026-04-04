@@ -1,13 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { IconName } from '../icon/Icon.svelte';
-	import Icon from '../icon/Icon.svelte';
+	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
 
 	interface Tab {
 		id: string;
 		label: string;
-		icon?: IconName;
-		iconFilled?: boolean;
+		icon?: IconProp;
 		content: Snippet;
 		disabled?: boolean;
 	}
@@ -104,7 +102,7 @@
 				use:scrollToActive
 			>
 				{#if tab.icon}
-					<Icon name={tab.icon} size={16} fill={tab.iconFilled} />
+					<Icon {...resolveIcon(tab.icon)} size={resolveIcon(tab.icon).size ?? 16} />
 				{/if}
 				<span>{tab.label}</span>
 			</button>

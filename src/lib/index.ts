@@ -2,9 +2,9 @@ import "./style/reset.scss";
 import "./style/global.scss";
 
 export { default as Banner } from "./banner/Banner.svelte";
-export { default as Button } from "./button/Button.svelte";
+export { default as Button, type ButtonAction, type ButtonVariant } from "./button/Button.svelte";
 export { default as ButtonGroup } from "./button/ButtonGroup.svelte";
-export { default as Icon, type IconName } from "./icon/Icon.svelte";
+export { default as Icon, type IconName, type IconProp, type IconProps, resolveIcon } from "./icon/Icon.svelte";
 export { default as Input } from "./input/Input.svelte";
 export { default as ImageUpload } from "./input/ImageUpload.svelte";
 export { default as ImageCropper } from "./input/ImageCropper.svelte";
@@ -35,10 +35,13 @@ export { default as CursorProvider } from "./cursor/CursorProvider.svelte";
 export { default as GradientMesh } from "./gradient/GradientMesh.svelte";
 export { default as Popover } from "./popover/Popover.svelte";
 export { default as DropdownMenu } from "./menu/DropdownMenu.svelte";
+export { default as ContextMenu } from "./menu/ContextMenu.svelte";
 export type { DropdownMenuItem, DropdownMenuEntry } from "./menu/DropdownMenu.svelte";
 export { default as Avatar } from "./avatar/Avatar.svelte";
 export { default as AvatarGroup } from "./avatar/AvatarGroup.svelte";
 export { default as Spinner } from "./spinner/Spinner.svelte";
+
+export { default as Pagination } from "./pagination/Pagination.svelte";
 
 // Data display components
 export { default as Table } from "./data/Table.svelte";

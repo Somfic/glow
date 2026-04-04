@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { IconName } from '../icon/Icon.svelte';
+import type { IconProp } from '../icon/Icon.svelte';
 
 // Virtual List Types
 export interface VirtualListProps<T = any> {
@@ -38,7 +38,7 @@ export interface TableColumn<T = any> {
 	sortable?: boolean;
 	width?: string | number;
 	align?: 'left' | 'center' | 'right';
-	render?: (value: any, row: T, index: number) => any;
+	render?: Snippet<[value: any, row: T, index: number]>;
 	format?: (value: any) => string;
 }
 
@@ -48,8 +48,7 @@ export interface TableSort {
 }
 
 export interface TableRowAction {
-	icon: IconName;
-	iconFilled?: boolean;
+	icon: IconProp;
 	label: string;
 	onClick: (row: any, index: number) => void;
 	variant?: 'default' | 'danger';
@@ -78,12 +77,17 @@ export interface TableProps<T = any> {
 	// Styling
 	sticky?: boolean; // Sticky header
 	hoverable?: boolean;
-	layout?: 'table' | 'cards'; // Card layout for mobile/horizontal mode
 	variant?: 'default' | 'simple'; // Simple variant for documentation/reference tables
 
 	// Performance
 	virtual?: boolean; // Use virtual scrolling for large datasets
 	virtualHeight?: string | number; // Height for virtual scrolling container
+
+	// Pagination
+	pageSize?: number;
+	page?: number;
+	pageSizeOptions?: number[];
+	total?: number; // Total item count for server-side pagination. When set, disables client-side slicing.
 
 	// Row key
 	getRowKey?: (row: T, index: number) => string | number;
@@ -95,15 +99,13 @@ export interface TableProps<T = any> {
 // Data Types
 export interface DataItem {
 	label: string;
-	icon?: IconName;
-	iconFilled?: boolean;
+	icon?: IconProp;
 	value?: string | number | boolean;
 	href?: string;
 	pill?: {
 		label: string;
 		color?: string;
-		icon?: IconName;
-		iconFilled?: boolean;
+		icon?: IconProp;
 	};
 	render?: Snippet;
 	muted?: boolean;
@@ -111,8 +113,7 @@ export interface DataItem {
 
 export interface DataGroup {
 	label?: string;
-	icon?: IconName;
-	iconFilled?: boolean;
+	icon?: IconProp;
 	properties: DataItem[];
 }
 

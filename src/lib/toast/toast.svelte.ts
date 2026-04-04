@@ -18,7 +18,7 @@ let nextId = 0;
 export let toasts = $state<Toast[]>([]);
 
 export function showToast(label: string, options: ToastOptions = {}) {
-	const { variant = 'info', duration = 3000 } = options;
+	const { variant = 'info', duration = 5000 } = options;
 
 	const id = nextId++;
 	const toast: Toast = { id, variant, label, duration };

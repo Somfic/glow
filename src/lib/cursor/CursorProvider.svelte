@@ -223,11 +223,11 @@
 	}
 
 	// Magnetic snapping helper
-	function findNearestInteractive(x: number, y: number) {
+	function findNearestInteractive(x: number, y: number): { x: number; y: number; distance: number } | null {
 		const radius = 100; // Detection radius in pixels
 		const elements = document.querySelectorAll('button:not(:disabled), a[href]');
 
-		let nearest = null;
+		let nearest: { x: number; y: number; distance: number } | null = null;
 		let minDistance = radius;
 
 		elements.forEach((el) => {

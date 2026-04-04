@@ -12,23 +12,17 @@
 
 	let {
 		id,
-		checked = false,
+		checked = $bindable(false),
 		disabled = false,
 		indeterminate = false,
 		label,
 		onChange
 	}: Props = $props();
 
-	let internalChecked = $state(false);
-
-	$effect(() => {
-		internalChecked = checked ?? false;
-	});
-
 	function handleChange() {
 		if (disabled) return;
-		internalChecked = !internalChecked;
-		onChange?.(internalChecked);
+		checked = !checked;
+		onChange?.(checked);
 	}
 </script>
 
@@ -37,9 +31,9 @@
 		{id}
 		type="button"
 		role="checkbox"
-		aria-checked={indeterminate ? 'mixed' : internalChecked}
+		aria-checked={indeterminate ? 'mixed' : checked}
 		class="checkbox"
-		class:checked={internalChecked}
+		class:checked={checked}
 		class:indeterminate
 		{disabled}
 		onclick={handleChange}
@@ -47,7 +41,7 @@
 		<div class="checkbox-box">
 			{#if indeterminate}
 				<Icon name="Minus" size={14} />
-			{:else if internalChecked}
+			{:else if checked}
 				<Icon name="Check" size={14} />
 			{/if}
 		</div>

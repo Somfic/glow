@@ -12,7 +12,7 @@
 
 	let {
 		id,
-		value = 0,
+		value = $bindable(0),
 		min = 0,
 		max = 100,
 		step = 1,
@@ -21,21 +21,15 @@
 		onChange
 	}: Props = $props();
 
-	let internalValue = $state(0);
-
-	$effect(() => {
-		internalValue = value ?? 0;
-	});
-
 	function handleInput(e: Event) {
 		const val = (e.target as HTMLInputElement).valueAsNumber;
 		if (!isNaN(val)) {
-			internalValue = val;
+			value = val;
 			onChange?.(val);
 		}
 	}
 
-	let percentage = $derived(((internalValue - min) / (max - min)) * 100);
+	let percentage = $derived(((value - min) / (max - min)) * 100);
 
 	// Calculate step dots (excluding the last one)
 	let steps = $derived.by(() => {
@@ -50,7 +44,7 @@
 
 <div class="range-input" class:disabled>
 	{#if showValue}
-		<span class="range-value">{internalValue}</span>
+		<span class="range-value">{value}</span>
 	{/if}
 	<div class="range-container">
 		<div class="step-dots">
@@ -61,7 +55,7 @@
 		<input
 			{id}
 			type="range"
-			value={internalValue}
+			value={value}
 			{min}
 			{max}
 			{step}

@@ -3,6 +3,8 @@
 	import { fade, scale } from 'svelte/transition';
 	import { Button } from '../index.js';
 	import Hls from 'hls.js';
+	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
+	import { onEscape } from '../util/escapeKey.js';
 
 	export type RelatedMedia = {
 		src: string;
@@ -13,7 +15,7 @@
 	};
 
 	let {
-		open = false,
+		open = $bindable(false),
 		src,
 		type = 'image',
 		alt = '',
@@ -58,11 +60,7 @@
 		onClose();
 	}
 
-	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape') {
-			onClose();
-		}
-	}
+	// Escape key handling via $effect below
 
 	function seekToStartPosition() {
 		if (videoElement && videoElement.duration && isFinite(videoElement.duration) && startPosition > 0) {
@@ -109,9 +107,14 @@
 
 	$effect(() => {
 		if (open) {
-			document.body.style.overflow = 'hidden';
-		} else {
-			document.body.style.overflow = '';
+			lockScroll();
+			return () => unlockScroll();
+		}
+	});
+
+	$effect(() => {
+		if (open) {
+			return onEscape(() => onClose());
 		}
 	});
 
@@ -190,11 +193,9 @@
 			hls.destroy();
 			hls = null;
 		}
-		document.body.style.overflow = '';
+		unlockScroll();
 	});
 </script>
-
-<svelte:window on:keydown={handleKeydown} />
 
 {#if open}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->

@@ -1,12 +1,14 @@
-<script>
+<script lang="ts">
 	import '$lib/style/glow.scss';
 	import Page from '$lib/page/Page.svelte';
+	import ToastContainer from '$lib/toast/ToastContainer.svelte';
+	import type { SidebarItem, SidebarGroup } from '$lib/sidebar/Sidebar.svelte';
 
-	const sidebarConfig = {
+	const sidebarConfig: { title: string; topItems: SidebarItem[]; groups: SidebarGroup[] } = {
 		title: 'Glow UI',
 		topItems: [
-			{ label: 'Home', href: '/', icon: 'Home' },
-			{ label: 'Components', href: '/components', icon: 'Layout' }
+			{ label: 'Home', href: '/', icon: 'House' },
+			{ label: 'Components', href: '/components', icon: 'LayoutGrid' }
 		],
 		groups: [
 			{
@@ -32,7 +34,8 @@
 				items: [
 					{ label: 'Tabs', href: '/components/tabs', icon: 'PanelTop' },
 					{ label: 'Table of Contents', href: '/components/toc', icon: 'BookOpen' },
-					{ label: 'Dropdown Menu', href: '/components/dropdown', icon: 'ChevronDown' }
+					{ label: 'Dropdown Menu', href: '/components/dropdown', icon: 'ChevronDown' },
+					{ label: 'Context Menu', href: '/components/context-menu', icon: 'MousePointer' }
 				]
 			},
 			{
@@ -66,3 +69,5 @@
 <Page title="Glow UI" {sidebarConfig}>
 	<slot />
 </Page>
+
+<ToastContainer />

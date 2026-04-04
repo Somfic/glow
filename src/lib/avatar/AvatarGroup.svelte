@@ -12,7 +12,7 @@
 
 	let { avatars, max, size = 'md' }: Props = $props();
 
-	setContext('avatar-group-size', size);
+	setContext('avatar-group-size', () => size);
 
 	const sizes: Record<Size, number> = { sm: 28, md: 36, lg: 48, xl: 64 };
 

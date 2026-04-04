@@ -4,6 +4,7 @@
 	import Cropper from 'cropperjs';
 	import 'cropperjs/dist/cropper.css';
 	import { Button, ButtonGroup } from '../index.js';
+	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
 
 	let {
 		src,
@@ -38,12 +39,12 @@
 				background: false
 			});
 		}
-		document.body.style.overflow = 'hidden';
+		lockScroll();
 	});
 
 	onDestroy(() => {
 		cropper?.destroy();
-		document.body.style.overflow = '';
+		unlockScroll();
 	});
 
 	function handleKeydown(event: KeyboardEvent) {

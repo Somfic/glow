@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Button from '../button/Button.svelte';
 	import type { IconName } from '../icon/Icon.svelte';
 	import Icon from '../icon/Icon.svelte';
 
@@ -20,33 +19,26 @@
 
 <div class="banner {variant}">
 	<div class="icon">
-		<Icon name={icons[variant]} />
+		<Icon name={icons[variant]} size={18} />
 	</div>
-	<span class="label">
-		{label}
-	</span>
-	<Button icon="X" variant="ghost" />
+	<span class="label">{label}</span>
 </div>
 
 <style lang="scss">
 	@use '../style/theme.scss' as *;
 
-	$error: hsl(355, 70%, 74%);
-	$warning: hsl(45, 70%, 74%);
-	$info: hsl(195, 70%, 74%);
-	$success: hsl(120, 70%, 74%);
-
 	.banner {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-		gap: 0.5em;
-		font-weight: bold;
-		flex-grow: 1;
+		gap: 10px;
+		padding: 10px 14px;
 		border-radius: $radius;
-		padding: 0.5em;
-		color: $bg-base;
-		margin: 1em 0;
+		border: 2px solid;
+		background: $bg-surface-element;
+		color: $fg;
+		font-size: $text-sm;
+		font-family: $font-family;
+		margin: 0.5em 0;
 
 		&:first-child {
 			margin-top: 0;
@@ -55,27 +47,48 @@
 			margin-bottom: 0;
 		}
 
-		.label {
-			flex-grow: 1;
-		}
-
-		&.error {
-			background-color: $error;
-			border-color: darken($error, 10%);
-		}
-
-		&.warning {
-			background-color: $warning;
-			border-color: darken($warning, 10%);
-		}
-
 		&.info {
-			background-color: $info;
-			border-color: darken($info, 10%);
+			border-color: rgba(#6bb8e8, 0.3);
+
+			.icon {
+				color: #6bb8e8;
+			}
 		}
 
 		&.success {
-			background-color: $success;
+			border-color: rgba(#6be88b, 0.3);
+
+			.icon {
+				color: #6be88b;
+			}
+		}
+
+		&.warning {
+			border-color: rgba(#e8c86b, 0.3);
+
+			.icon {
+				color: #e8c86b;
+			}
+		}
+
+		&.error {
+			border-color: rgba(#e86b6b, 0.3);
+
+			.icon {
+				color: #e86b6b;
+			}
 		}
 	}
+
+	.icon {
+		display: flex;
+		align-items: center;
+		flex-shrink: 0;
+	}
+
+	.label {
+		flex: 1;
+		line-height: 1.4;
+	}
+
 </style>

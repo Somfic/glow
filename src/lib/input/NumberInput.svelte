@@ -15,7 +15,7 @@
 
 	let {
 		id,
-		value,
+		value = $bindable<number | undefined>(undefined),
 		placeholder,
 		min,
 		max,
@@ -25,23 +25,18 @@
 		onChange
 	}: Props = $props();
 
-	let internalValue = $state<number | undefined>(undefined);
 	let inputElement: HTMLInputElement;
-
-	$effect(() => {
-		internalValue = value;
-	});
 
 	function handleInput(e: Event) {
 		const val = (e.target as HTMLInputElement).valueAsNumber;
 		if (!isNaN(val)) {
-			internalValue = val;
+			value = val;
 			onChange?.(val);
 		}
 	}
 
 	function clearValue() {
-		internalValue = undefined;
+		value = undefined;
 		onChange?.(undefined as any);
 		inputElement?.focus();
 	}
@@ -52,7 +47,7 @@
 		{id}
 		type="number"
 		bind:this={inputElement}
-		value={internalValue ?? ''}
+		value={value ?? ''}
 		{placeholder}
 		{min}
 		{max}
@@ -60,7 +55,7 @@
 		{disabled}
 		oninput={handleInput}
 	/>
-	{#if clearable && internalValue !== undefined}
+	{#if clearable && value !== undefined}
 		<button type="button" class="clear-btn" onclick={clearValue} tabindex="-1">
 			<Icon name="X" size={16} />
 		</button>

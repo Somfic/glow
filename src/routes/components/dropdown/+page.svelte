@@ -9,6 +9,15 @@
 	import Code from '$lib/code/Code.svelte';
 	import type { DropdownMenuEntry } from '$lib/menu/DropdownMenu.svelte';
 
+	import type { DropdownMenuItem } from '$lib/menu/DropdownMenu.svelte';
+
+	const commonItems: DropdownMenuItem[] = [
+		{ label: 'Cut', icon: 'Scissors', onclick: () => {} },
+		{ label: 'Copy', icon: 'Copy', onclick: () => {} },
+		{ label: 'Paste', icon: 'Clipboard', onclick: () => {} },
+		{ label: 'Delete', icon: 'Trash2', danger: true, onclick: () => {} }
+	];
+
 	const basicItems: DropdownMenuEntry[] = [
 		{ label: 'Edit', icon: 'Pencil', onclick: () => {} },
 		{ label: 'Duplicate', icon: 'Copy', onclick: () => {} },
@@ -52,6 +61,17 @@
 	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 		Contextual menus for actions, triggered by any element.
 	</Text>
+
+	<Group label="Common Actions" id="common">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			A horizontal row of icon-only buttons at the top for frequent actions.
+		</Text>
+		<DropdownMenu common={commonItems} items={basicItems}>
+			{#snippet trigger()}
+				<Button variant="secondary" icon="MoreVertical">Actions</Button>
+			{/snippet}
+		</DropdownMenu>
+	</Group>
 
 	<Group label="Basic" id="basic">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">

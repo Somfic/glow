@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { type Snippet } from 'svelte';
 	import Popover from '../popover/Popover.svelte';
-	import Icon, { type IconName } from '../icon/Icon.svelte';
+	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
+	import { tooltip } from '../tooltip/tooltip.svelte.js';
 
 	export type DropdownMenuItem = {
 		label: string;
-		icon?: IconName;
-		iconFilled?: boolean;
+		icon?: IconProp;
 		shortcut?: string;
 		disabled?: boolean;
 		danger?: boolean;
@@ -16,6 +16,7 @@
 	export type DropdownMenuEntry = DropdownMenuItem | 'divider';
 
 	interface Props {
+		common?: DropdownMenuItem[];
 		items: DropdownMenuEntry[];
 		trigger: Snippet;
 		align?: 'left' | 'right' | 'stretch';
@@ -25,6 +26,7 @@
 	}
 
 	let {
+		common,
 		items,
 		trigger,
 		align = 'left',
@@ -82,6 +84,26 @@
 <Popover {trigger} {align} {offset} {disabled} bind:open>
 	{#snippet children()}
 		<div class="dropdown-menu" role="menu">
+			{#if common && common.length > 0}
+				<div class="common-section" role="group">
+					{#each common as entry}
+						<button
+							type="button"
+							class="common-item"
+							class:danger={entry.danger}
+							class:disabled={entry.disabled}
+							disabled={entry.disabled}
+							use:tooltip={{ content: entry.label, position: 'bottom' }}
+							onclick={() => handleItemClick(entry)}
+						>
+							{#if entry.icon}
+								<Icon {...resolveIcon(entry.icon)} size={resolveIcon(entry.icon).size ?? 16} />
+							{/if}
+						</button>
+					{/each}
+				</div>
+				<div class="divider"></div>
+			{/if}
 			{#each items as entry, i}
 				{#if entry === 'divider'}
 					<div class="divider"></div>
@@ -97,11 +119,11 @@
 						aria-checked={entry.selected ?? false}
 						disabled={entry.disabled}
 						onclick={() => handleItemClick(entry)}
-						onmouseenter={() => (activeIndex = i)}
+						onmouseenter={() => (activeIndex = -1)}
 					>
 						{#if entry.icon}
 							<span class="item-icon">
-								<Icon name={entry.icon} size={16} fill={entry.iconFilled} />
+								<Icon {...resolveIcon(entry.icon)} size={resolveIcon(entry.icon).size ?? 16} />
 							</span>
 						{/if}
 						<span class="item-label">{entry.label}</span>
@@ -129,10 +151,49 @@
 		margin: 4px 0;
 	}
 
+	.common-section {
+		display: flex;
+		gap: 2px;
+		padding: 2px;
+	}
+
+	.common-item {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex: 1;
+		padding: 8px;
+		border: none;
+		border-radius: 8px;
+		background: none;
+		color: $fg;
+		cursor: pointer;
+		transition: background 0.1s;
+
+		&:hover {
+			background: rgba($fg, 0.06);
+		}
+
+		&.disabled {
+			opacity: 0.4;
+			cursor: not-allowed;
+			&:hover {
+				background: none;
+			}
+		}
+
+		&.danger {
+			color: #ef4444;
+			&:hover {
+				background: rgba(#ef4444, 0.1);
+			}
+		}
+	}
+
 	.menu-item {
 		display: flex;
 		align-items: center;
-		gap: 8px;
+		gap: 12px;
 		width: 100%;
 		padding: 8px 12px;
 		border: none;
@@ -194,5 +255,4 @@
 		color: $text-muted;
 		margin-left: auto;
 	}
-
 </style>

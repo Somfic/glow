@@ -15,7 +15,7 @@
 
 	let {
 		id,
-		value = '',
+		value = $bindable(''),
 		placeholder,
 		disabled = false,
 		rows = 4,
@@ -25,21 +25,16 @@
 		onBlur
 	}: Props = $props();
 
-	let internalValue = $state('');
 	let textareaElement: HTMLTextAreaElement;
-
-	$effect(() => {
-		internalValue = value ?? '';
-	});
 
 	function handleInput(e: Event) {
 		const newValue = (e.target as HTMLTextAreaElement).value;
-		internalValue = newValue;
+		value = newValue;
 		onChange?.(newValue);
 	}
 
 	function clearValue() {
-		internalValue = '';
+		value = '';
 		onChange?.('');
 		textareaElement?.focus();
 	}
@@ -49,7 +44,7 @@
 	<textarea
 		{id}
 		bind:this={textareaElement}
-		value={internalValue}
+		value={value}
 		{placeholder}
 		{disabled}
 		{rows}
@@ -57,7 +52,7 @@
 		onfocus={onFocus}
 		onblur={onBlur}
 	></textarea>
-	{#if clearable && internalValue}
+	{#if clearable && value}
 		<button type="button" class="clear-btn" onclick={clearValue} tabindex="-1">
 			<Icon name="X" size={16} />
 		</button>

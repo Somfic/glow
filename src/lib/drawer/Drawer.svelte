@@ -3,20 +3,17 @@
 	import { fade, fly } from 'svelte/transition';
 	import { Button, Icon } from '../index.js';
 	import type { Snippet } from 'svelte';
-	import type { IconName } from '../icon/Icon.svelte';
+	import { type IconProp, resolveIcon } from '../icon/Icon.svelte';
+	import { type ButtonAction } from '../button/Button.svelte';
 	import ButtonGroup from '$lib/button/ButtonGroup.svelte';
-
-	type Action = {
-		label: string;
-		variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
-		onclick: () => void;
-	};
+	import { trapFocus } from '../util/focusTrap.js';
+	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
 
 	let {
+		open: isOpen = $bindable(false),
 		title,
 		subtitle,
 		icon,
-		iconFilled = false,
 		actions = [],
 		size = 'medium',
 		side = 'right',
@@ -27,11 +24,11 @@
 		onOpen,
 		children
 	}: {
+		open?: boolean;
 		title?: string;
 		subtitle?: string;
-		icon?: IconName;
-		iconFilled?: boolean;
-		actions?: Action[];
+		icon?: IconProp;
+		actions?: ButtonAction[];
 		size?: 'small' | 'medium' | 'large';
 		side?: 'left' | 'right';
 		showCloseButton?: boolean;
@@ -42,7 +39,6 @@
 		children?: Snippet;
 	} = $props();
 
-	let isOpen = $state(false);
 	let drawerElement = $state<HTMLDivElement | null>(null);
 	let previousActiveElement: Element | null = null;
 
@@ -87,27 +83,7 @@
 	}
 
 	function handleContentKeydown(event: KeyboardEvent) {
-		if (event.key !== 'Tab') return;
-		if (!drawerElement) return;
-
-		const focusableElements = Array.from(
-			drawerElement.querySelectorAll<HTMLElement>(
-				'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-			)
-		).filter((el) => !el.hasAttribute('disabled'));
-
-		if (focusableElements.length === 0) return;
-
-		const firstFocusable = focusableElements[0];
-		const lastFocusable = focusableElements[focusableElements.length - 1];
-
-		if (event.shiftKey && document.activeElement === firstFocusable) {
-			event.preventDefault();
-			lastFocusable.focus();
-		} else if (!event.shiftKey && document.activeElement === lastFocusable) {
-			event.preventDefault();
-			firstFocusable.focus();
-		}
+		trapFocus(drawerElement, event);
 	}
 
 	$effect(() => {
@@ -115,7 +91,7 @@
 
 		if (isOpen) {
 			previousActiveElement = document.activeElement;
-			document.body.style.overflow = 'hidden';
+			lockScroll();
 
 			setTimeout(() => {
 				if (!drawerElement) return;
@@ -128,7 +104,7 @@
 				firstFocusable?.focus();
 			}, 0);
 		} else {
-			document.body.style.overflow = '';
+			unlockScroll();
 
 			if (previousActiveElement && previousActiveElement instanceof HTMLElement) {
 				previousActiveElement.focus();
@@ -138,7 +114,7 @@
 
 	onDestroy(() => {
 		if (typeof document !== 'undefined') {
-			document.body.style.overflow = '';
+			unlockScroll();
 		}
 	});
 </script>
@@ -169,7 +145,7 @@
 				<div class="drawer-header">
 					<div class="drawer-header-content">
 						{#if icon}
-							<Icon name={icon} size={24} fill={iconFilled} />
+							<Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? 24} />
 						{/if}
 						{#if title || subtitle}
 							<div class="drawer-header-text">

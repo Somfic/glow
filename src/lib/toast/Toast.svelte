@@ -1,9 +1,7 @@
 <script lang="ts">
-	import Button from '../button/Button.svelte';
-	import type { IconName } from '../icon/Icon.svelte';
 	import Icon from '../icon/Icon.svelte';
+	import type { IconName } from '../icon/Icon.svelte';
 	import type { ToastVariant } from './toast.svelte.js';
-
 	type Props = {
 		variant: ToastVariant;
 		label: string;
@@ -20,67 +18,98 @@
 	};
 </script>
 
-<div class="toast {variant}">
+<div class="toast {variant}" role="alert">
 	<div class="icon">
-		<Icon name={icons[variant]} />
+		<Icon name={icons[variant]} size={18} />
 	</div>
-	<span class="label">
-		{label}
-	</span>
+	<span class="label">{label}</span>
 	{#if onDismiss}
-		<Button icon="X" variant="ghost" onclick={onDismiss} />
+		<button class="dismiss" onclick={onDismiss}>
+			<Icon name="X" size={14} />
+		</button>
 	{/if}
 </div>
 
 <style lang="scss">
 	@use '../style/theme.scss' as *;
 
-	$error: hsl(355, 70%, 74%);
-	$warning: hsl(45, 70%, 74%);
-	$info: hsl(195, 70%, 74%);
-	$success: hsl(120, 70%, 74%);
-
 	.toast {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-		gap: 0.5em;
-		font-weight: bold;
+		gap: 10px;
+		padding: 10px 14px;
 		border-radius: $radius;
-		padding: 0.5em;
-		color: $bg-base;
-		animation: slideIn 0.2s ease-out;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
-		.label {
-			flex-grow: 1;
-		}
-
-		&.error {
-			background-color: $error;
-		}
-
-		&.warning {
-			background-color: $warning;
-		}
+		border: 1px solid;
+		background: $bg-surface-element;
+		color: $fg;
+		font-size: $text-sm;
+		font-family: $font-family;
+		box-shadow:
+			0 8px 24px rgba(0, 0, 0, 0.35),
+			0 2px 8px rgba(0, 0, 0, 0.2);
+		backdrop-filter: blur(12px);
 
 		&.info {
-			background-color: $info;
+			border-color: rgba(#6bb8e8, 0.3);
+
+			.icon {
+				color: #6bb8e8;
+			}
 		}
 
 		&.success {
-			background-color: $success;
+			border-color: rgba(#6be88b, 0.3);
+
+			.icon {
+				color: #6be88b;
+			}
+		}
+
+		&.warning {
+			border-color: rgba(#e8c86b, 0.3);
+
+			.icon {
+				color: #e8c86b;
+			}
+		}
+
+		&.error {
+			border-color: rgba(#e86b6b, 0.3);
+
+			.icon {
+				color: #e86b6b;
+			}
 		}
 	}
 
-	@keyframes slideIn {
-		from {
-			opacity: 0;
-			transform: translateX(100%);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
+	.icon {
+		display: flex;
+		align-items: center;
+		flex-shrink: 0;
+	}
+
+	.label {
+		flex: 1;
+		line-height: 1.4;
+	}
+
+	.dismiss {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 24px;
+		height: 24px;
+		border: none;
+		border-radius: 6px;
+		background: none;
+		color: $text-muted;
+		cursor: pointer;
+		transition: background 0.15s, color 0.15s;
+
+		&:hover {
+			background: rgba($fg, 0.08);
+			color: $fg;
 		}
 	}
 </style>

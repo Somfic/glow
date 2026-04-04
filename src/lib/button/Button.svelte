@@ -1,13 +1,24 @@
+<script lang="ts" module>
+	import type { IconProp } from '../icon/Icon.svelte';
+
+	export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outlined' | 'danger';
+
+	export type ButtonAction = {
+		label?: string;
+		icon?: IconProp;
+		variant?: ButtonVariant;
+		onclick: () => void;
+	};
+</script>
+
 <script lang="ts">
-	import { getContext } from 'svelte';
-	import Icon, { type IconName } from '../icon/Icon.svelte';
+	import { type Snippet, getContext } from 'svelte';
+	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import { cursor, setCursorLoading } from '../cursor/cursor.svelte.js';
 	import { tooltip } from '../tooltip/tooltip.svelte.js';
 
-	type Variant = 'primary' | 'secondary' | 'ghost' | 'outlined' | 'danger';
-
 	type BaseProps = {
-		variant?: Variant;
+		variant?: ButtonVariant;
 		onclick?: () => void | Promise<void>;
 		disabled?: boolean;
 		loading?: boolean;
@@ -15,26 +26,29 @@
 		selected?: boolean;
 		fullWidth?: boolean;
 		tooltip?: string;
+		children?: Snippet;
 	};
 
 	type WithIcon = BaseProps & {
-		icon: IconName;
-		iconFilled?: boolean;
+		icon: IconProp;
 		label?: string;
 	};
 
 	type WithLabel = BaseProps & {
 		label: string;
-		icon?: IconName;
-		iconFilled?: boolean;
+		icon?: IconProp;
 	};
 
-	const group = getContext<{ defaultVariant: Variant } | undefined>('button-group');
+	type WithChildren = BaseProps & {
+		icon?: IconProp;
+		label?: string;
+	};
+
+	const group = getContext<{ defaultVariant: ButtonVariant } | undefined>('button-group');
 
 	let {
 		label,
 		icon,
-		iconFilled = false,
 		image,
 		variant = group?.defaultVariant ?? 'primary',
 		onclick,
@@ -42,8 +56,9 @@
 		loading: manualLoading = false,
 		selected = false,
 		fullWidth = false,
-		tooltip: tooltipText
-	}: WithIcon | WithLabel = $props();
+		tooltip: tooltipText,
+		children
+	}: WithIcon | WithLabel | WithChildren = $props();
 
 	let promiseLoading = $state(false);
 	let loading = $derived(promiseLoading || manualLoading);
@@ -92,7 +107,7 @@
 	use:cursor={disabled || loading
 		? { state: 'default' }
 		: icon
-			? { state: 'pointer', iconName: icon, variant }
+			? { state: 'pointer', iconName: resolveIcon(icon).name, variant }
 			: { state: 'pointer', content: label, variant }}
 	use:tooltip={{ content: tooltipText ?? '', useCursor: false, position: 'top' }}
 >
@@ -102,16 +117,16 @@
 		{:else if image}
 			<img src={image} alt="" class="button-image" />
 		{:else}
-			<Icon name={icon} size={16} fill={iconFilled} />
+			<Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? 16} />
 		{/if}
-		{#if label}<span class="label">{label}</span>{/if}
+		{#if label}<span class="label">{label}</span>{:else if children}{@render children()}{/if}
 	{:else}
 		{#if loading}<span class="spinner"></span>{/if}
 		<span class="content" class:hidden={loading}>
 			{#if image}
 				<img src={image} alt="" class="button-image" />
 			{/if}
-			{#if label}<span class="label">{label}</span>{/if}
+			{#if label}<span class="label">{label}</span>{:else if children}{@render children()}{/if}
 		</span>
 	{/if}
 </button>

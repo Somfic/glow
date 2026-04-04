@@ -1,52 +1,33 @@
 <script lang="ts">
-	import Button from '../button/Button.svelte';
+	import Button, { type ButtonAction } from '../button/Button.svelte';
 	import ButtonGroup from '../button/ButtonGroup.svelte';
-	import type { IconName } from '../icon/Icon.svelte';
-	import Icon from '../icon/Icon.svelte';
+	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
 
-	type ActionLabelProp = {
-		label: string;
-		icon?: IconName;
-		iconFilled?: boolean;
-	};
-
-	type ActionIconProp = {
-		icon: IconName;
-		iconFilled?: boolean;
-		label?: string;
-	};
-
-	type ActionProp = (ActionLabelProp | ActionIconProp) & {
-		onClick: () => void;
-	};
-
-	type IconProps = {
-		icon: IconName;
-		iconFilled?: boolean;
+	type GroupIconProps = {
+		icon: IconProp;
 		label?: string;
 	};
 
 	type LabelProps = {
 		label: string;
-		icon?: IconName;
-		iconFilled?: boolean;
+		icon?: IconProp;
 	};
 
 	type Props = {
-		actions?: ActionProp[];
+		actions?: ButtonAction[];
 		headerExtra?: import('svelte').Snippet;
 		children?: () => any;
 		id?: string;
-	} & (IconProps | LabelProps);
+	} & (GroupIconProps | LabelProps);
 
-	let { label, icon, iconFilled = false, actions, headerExtra, children, id }: Props = $props();
+	let { label, icon, actions, headerExtra, children, id }: Props = $props();
 </script>
 
 <div class="group">
 	<div class="header">
 		<h2 class="label" {id}>
 			{#if icon}
-				<Icon name={icon} size={16} fill={iconFilled} />
+				<Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? 16} />
 			{/if}
 			{label}
 		</h2>
@@ -56,7 +37,7 @@
 			{/if}
 			<ButtonGroup noborder>
 				{#each actions ?? [] as action}
-					<Button label={action.label!} icon={action.icon!} iconFilled={action.iconFilled} onclick={action.onClick} />
+					<Button label={action.label!} icon={action.icon!} onclick={action.onclick} />
 				{/each}
 			</ButtonGroup>
 		</div>

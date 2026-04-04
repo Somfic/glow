@@ -1,11 +1,10 @@
 <script lang="ts" module>
-	import type { IconName } from '../icon/Icon.svelte';
+	import { type IconProp } from '../icon/Icon.svelte';
 
 	export type SidebarItem = {
 		label: string;
 		href: string;
-		icon?: IconName;
-		iconFilled?: boolean;
+		icon?: IconProp;
 	};
 
 	export type SidebarGroup = {
@@ -17,7 +16,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
-	import Icon from '../icon/Icon.svelte';
+	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import { tooltip } from '../tooltip/tooltip.svelte.js';
 
 	type Props = {
@@ -107,7 +106,7 @@
 		{#key collapsed}
 			{#each topItems as item}
 				<a href={item.href} class="sidebar-item" class:is-active={isActive(item.href)} onclick={() => handleItemClick(item.href)} use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}>
-					{#if item.icon}<Icon name={item.icon} size={16} fill={item.iconFilled} />{/if}
+					{#if item.icon}<Icon {...resolveIcon(item.icon)} size={resolveIcon(item.icon).size ?? 16} />{/if}
 					{#if !collapsed}<span class="sidebar-item-label">{item.label}</span>{/if}
 				</a>
 			{/each}
@@ -121,7 +120,7 @@
 					{/if}
 					{#each group.items as item}
 						<a href={item.href} class="sidebar-item" class:is-active={isActive(item.href)} onclick={() => handleItemClick(item.href)} use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}>
-							{#if item.icon}<Icon name={item.icon} size={16} fill={item.iconFilled} />{/if}
+							{#if item.icon}<Icon {...resolveIcon(item.icon)} size={resolveIcon(item.icon).size ?? 16} />{/if}
 							{#if !collapsed}<span class="sidebar-item-label">{item.label}</span>{/if}
 						</a>
 					{/each}

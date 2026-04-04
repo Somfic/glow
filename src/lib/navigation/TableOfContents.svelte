@@ -25,7 +25,7 @@
 	} = $props();
 
 	let observer: IntersectionObserver | null = null;
-	let tocContainer: HTMLElement | null = null;
+	let tocContainer = $state<HTMLElement | null>(null);
 	let isManualScrolling = false;
 	let scrollTimeout: number | null = null;
 

@@ -1,4 +1,4 @@
-import type { IconName } from '../icon/Icon.svelte';
+import type { IconProp } from '../icon/Icon.svelte';
 
 export type SelectOption = {
 	value: string;
@@ -11,8 +11,7 @@ export type MultiSelectOption = SelectOption;
 export type ComboboxOption = {
 	value: string;
 	label: string;
-	icon?: IconName;
-	iconFilled?: boolean;
+	icon?: IconProp;
 	image?: string;
 	description?: string;
 	groupType?: string;

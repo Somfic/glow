@@ -5,6 +5,7 @@
 	import Table from '$lib/data/Table.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Code from '$lib/code/Code.svelte';
+	import Pill from '$lib/pill/Pill.svelte';
 	import type { TableColumn } from '$lib/data/types.js';
 
 	// Data Display Demo Data
@@ -69,9 +70,7 @@
 			key: 'status',
 			label: 'Status',
 			sortable: true,
-			render: (value: string) => {
-				return `<span style="padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; background: ${value === 'active' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; color: ${value === 'active' ? '#22c55e' : '#ef4444'}">${value}</span>`;
-			}
+			render: statusCell
 		},
 		{ key: 'lastSeen', label: 'Last Seen' }
 	];
@@ -82,6 +81,10 @@
 
 {#snippet codeCell(value)}
 	<Code>{value}</Code>
+{/snippet}
+
+{#snippet statusCell(value: string)}
+	<Pill label={value} color={value === 'active' ? '#22c55e' : '#ef4444'} />
 {/snippet}
 
 <svelte:head><title>Table | Glow UI</title></svelte:head>
@@ -100,6 +103,7 @@
 			columns={userColumns}
 			data={users}
 			selectable="multiple"
+			getRowKey={(row) => row.id}
 			bind:selectedRows={selectedUsers}
 			bind:sortBy={tableSort}
 			rowActions={[
@@ -119,57 +123,33 @@
 		{/if}
 	</Group>
 
-	<Group label="Card Layout (Horizontal Mode)" id="card-layout">
+	<Group label="Pagination" id="pagination">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-			Perfect for mobile or when you want a vertical card layout instead of a table
+			Set pageSize to enable built-in pagination.
 		</Text>
 		<Table
 			columns={userColumns}
-			data={users.slice(0, 3)}
-			layout="cards"
-			selectable="multiple"
-			rowActions={[
-				{ icon: 'Edit', label: 'Edit', onClick: (row: User) => alert(`Edit ${row.name}`) },
-				{
-					icon: 'Trash',
-					label: 'Delete',
-					variant: 'danger',
-					onClick: (row: User) => alert(`Delete ${row.name}`)
-				}
-			]}
+			data={users}
+			pageSize={2}
 		/>
 	</Group>
 
 	<Group label="Custom Cell Rendering" id="custom-rendering">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-			Use the <code>render</code> function on columns to customize how cells are displayed. The
-			status column above uses custom rendering to show colored badges.
+			Use Svelte snippets with the <code>render</code> property on columns to customize how cells are displayed.
 		</Text>
 		<CodeBlock
-			language="typescript"
-			code={`const columns: TableColumn<User>[] = [
-  { key: 'name', label: 'Name', sortable: true },
-  {
-    key: 'status',
-    label: 'Status',
-    sortable: true,
-    render: (value: string) => {
-      const color = value === 'active' ? '#22c55e' : '#ef4444';
-      const bg = value === 'active'
-        ? 'rgba(34, 197, 94, 0.2)'
-        : 'rgba(239, 68, 68, 0.2)';
+			language="svelte"
+			code={`{#snippet statusCell(value: string)}
+  <Pill label={value} color={value === 'active' ? '#22c55e' : '#ef4444'} />
+{/snippet}
 
-      return \`<span style="
-        padding: 0.25rem 0.5rem;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        background: \${bg};
-        color: \${color}
-      ">\${value}</span>\`;
-    }
-  }
-];`}
+<script>
+  const columns: TableColumn<User>[] = [
+    { key: 'name', label: 'Name', sortable: true },
+    { key: 'status', label: 'Status', render: statusCell }
+  ];
+</script>`}
 		/>
 	</Group>
 
@@ -239,8 +219,7 @@
 				{ prop: 'selectable', type: "'single' | 'multiple'", default: '-', description: 'Enable row selection' },
 				{ prop: 'selectedRows', type: 'T[]', default: '[]', description: 'Selected rows (bindable)' },
 				{ prop: 'sortBy', type: 'SortConfig', default: 'undefined', description: 'Sort configuration (bindable)' },
-				{ prop: 'rowActions', type: 'RowAction[]', default: '-', description: 'Actions for each row' },
-				{ prop: 'layout', type: "'table' | 'cards'", default: "'table'", description: 'Layout mode' }
+				{ prop: 'rowActions', type: 'RowAction[]', default: '-', description: 'Actions for each row' }
 			]}
 		/>
 	</Group>
@@ -258,7 +237,7 @@
 				{ property: 'label', type: 'string', description: 'Column header label' },
 				{ property: 'sortable', type: 'boolean', description: 'Enable sorting for this column' },
 				{ property: 'width', type: 'string', description: 'Fixed column width (e.g. \'80px\')' },
-				{ property: 'render', type: '(value: any) => string', description: 'Custom rendering function (returns HTML)' }
+				{ property: 'render', type: 'Snippet<[value, row, index]>', description: 'Svelte snippet for custom cell content' }
 			]}
 		/>
 	</Group>

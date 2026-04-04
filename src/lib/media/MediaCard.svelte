@@ -78,10 +78,10 @@
 	let showOverlay = $state(false);
 
 	// Slot element refs for gradient sizing
-	let topLeftEl: HTMLDivElement;
-	let topRightEl: HTMLDivElement;
-	let bottomLeftEl: HTMLDivElement;
-	let bottomRightEl: HTMLDivElement;
+	let topLeftEl = $state<HTMLDivElement>(undefined!);
+	let topRightEl = $state<HTMLDivElement>(undefined!);
+	let bottomLeftEl = $state<HTMLDivElement>(undefined!);
+	let bottomRightEl = $state<HTMLDivElement>(undefined!);
 
 	let topGradientHeight = $state(0);
 	let bottomGradientHeight = $state(0);

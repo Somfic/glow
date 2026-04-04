@@ -1,5 +1,12 @@
 <script lang="ts" module>
 	export { type IconName } from './types.js';
+
+	export type IconProps = { name: IconName; size?: number; color?: string; fill?: boolean };
+	export type IconProp = IconName | IconProps;
+
+	export function resolveIcon(icon: IconProp): IconProps {
+		return typeof icon === 'string' ? { name: icon } : icon;
+	}
 </script>
 
 <script lang="ts">

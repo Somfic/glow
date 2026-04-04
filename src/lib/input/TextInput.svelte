@@ -1,13 +1,12 @@
 <script lang="ts">
-	import Icon, { type IconName } from '../icon/Icon.svelte';
+	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
 	import { cursor } from '../cursor/cursor.svelte.js';
 
 	interface Props {
 		id?: string;
 		value?: string;
 		placeholder?: string;
-		icon?: IconName;
-		iconFilled?: boolean;
+		icon?: IconProp;
 		loading?: boolean;
 		disabled?: boolean;
 		clearable?: boolean;
@@ -24,7 +23,6 @@
 		value = $bindable(''),
 		placeholder,
 		icon,
-		iconFilled = false,
 		loading = false,
 		disabled = false,
 		clearable = false,
@@ -60,12 +58,12 @@
 <div
 	class="input text-input"
 	class:disabled
-	use:cursor={icon ? { state: 'text', iconName: icon } : { state: 'text' }}
+	use:cursor={icon ? { state: 'text', iconName: resolveIcon(icon).name } : { state: 'text' }}
 >
 	{#if loading}
 		<span class="spinner"></span>
 	{:else if icon}
-		<Icon name={icon} size={16} fill={iconFilled} />
+		<Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? 16} />
 	{/if}
 	<input
 		{id}

@@ -20,8 +20,8 @@
 		onclick
 	}: Props = $props();
 
-	const groupSize = getContext<Size>('avatar-group-size');
-	const size = sizeProp ?? groupSize ?? 'md';
+	const groupSizeGetter = getContext<(() => Size) | undefined>('avatar-group-size');
+	const size = $derived(sizeProp ?? groupSizeGetter?.() ?? 'md');
 
 	const sizes: Record<Size, number> = { sm: 28, md: 36, lg: 48, xl: 64 };
 
@@ -71,6 +71,7 @@
 	});
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
 	class="avatar"
 	class:grouped

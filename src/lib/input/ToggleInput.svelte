@@ -7,18 +7,12 @@
 		onChange?: (checked: boolean) => void;
 	}
 
-	let { id, checked = false, disabled = false, label, onChange }: Props = $props();
-
-	let internalChecked = $state(false);
-
-	$effect(() => {
-		internalChecked = checked ?? false;
-	});
+	let { id, checked = $bindable(false), disabled = false, label, onChange }: Props = $props();
 
 	function handleToggle() {
 		if (disabled) return;
-		internalChecked = !internalChecked;
-		onChange?.(internalChecked);
+		checked = !checked;
+		onChange?.(checked);
 	}
 </script>
 
@@ -27,10 +21,10 @@
 		{id}
 		type="button"
 		role="switch"
-		aria-checked={internalChecked}
+		aria-checked={checked}
 		aria-label={label || 'Toggle'}
 		class="toggle"
-		class:checked={internalChecked}
+		class:checked={checked}
 		{disabled}
 		onclick={handleToggle}
 	>
@@ -66,6 +60,7 @@
 		background-color: rgba($fg, 0.2);
 		border: none;
 		border-radius: 12px;
+		cursor: pointer;
 		transition: background-color 0.2s ease;
 		padding: 0;
 

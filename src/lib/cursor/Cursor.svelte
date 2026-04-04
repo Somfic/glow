@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getCursorState } from './cursor.svelte.js';
-	import Icon from '../icon/Icon.svelte';
+	import Icon, { type IconName } from '../icon/Icon.svelte';
 
 	let cursorState = getCursorState();
 
@@ -51,7 +51,7 @@
 		{:else if hasIcon}
 			<div class="cursor-icon">
 				{#if cursorState.iconName}
-					<Icon name={cursorState.iconName} size={14} />
+					<Icon name={cursorState.iconName as IconName} size={14} />
 				{:else if cursorState.state === 'copy'}
 					<Icon name="Copy" size={14} />
 				{:else if cursorState.state === 'text'}
@@ -59,7 +59,7 @@
 				{:else if cursorState.state === 'checkbox'}
 					<Icon name="Square" size={14} />
 				{:else if cursorState.state === 'checkbox-checked'}
-					<Icon name="CheckSquare" size={14} />
+					<Icon name="SquareCheck" size={14} />
 				{:else if cursorState.state === 'toggle'}
 					<Icon name="ToggleLeft" size={14} />
 				{:else if cursorState.state === 'toggle-checked'}
@@ -199,10 +199,6 @@
 		opacity: 0;
 		animation: fadeIn 0.2s ease forwards;
 		transition: color 0.2s ease;
-
-		&.selecting {
-			color: #eab308; // Yellow for highlight
-		}
 
 		// Button variants and links - hide content but keep for sizing
 		.variant-primary &,

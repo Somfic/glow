@@ -6,7 +6,7 @@
 
 	let { size = 16, color }: Props = $props();
 
-	const sizeValue = typeof size === 'number' ? `${size}px` : size;
+	const sizeValue = $derived(typeof size === 'number' ? `${size}px` : size);
 </script>
 
 <span

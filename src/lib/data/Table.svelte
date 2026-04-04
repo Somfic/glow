@@ -1,8 +1,10 @@
 <script lang="ts">
 	import type { TableProps, TableColumn, SortDirection } from './types.js';
 	import VirtualList from './VirtualList.svelte';
-	import Icon from '../icon/Icon.svelte';
+	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import Input from '../input/Input.svelte';
+	import Pagination from '../pagination/Pagination.svelte';
+	import { fade } from 'svelte/transition';
 
 	let {
 		columns,
@@ -17,19 +19,22 @@
 		emptyState,
 		sticky = false,
 		hoverable = true,
-		layout = 'table',
 		variant = 'default',
 		virtual = false,
 		virtualHeight = '500px',
 		getRowKey = (row, index) => index,
-		onRowClick
+		onRowClick,
+		pageSize = $bindable(undefined),
+		page = $bindable(1),
+		pageSizeOptions,
+		total
 	}: TableProps = $props();
 
 	// Simple variant disables interactive features
-	const isSimple = variant === 'simple';
-	const effectiveSelectable = isSimple ? false : selectable;
-	const effectiveHoverable = isSimple ? false : hoverable;
-	const effectiveRowActions = isSimple ? [] : rowActions;
+	const isSimple = $derived(variant === 'simple');
+	const effectiveSelectable = $derived(isSimple ? false : selectable);
+	const effectiveHoverable = $derived(isSimple ? false : hoverable);
+	const effectiveRowActions = $derived(isSimple ? [] : rowActions);
 
 	let selectAllChecked = $state(false);
 	let selectAllIndeterminate = $state(false);
@@ -51,15 +56,24 @@
 	const sortedData = $derived.by(() => {
 		if (!sortBy) return data;
 
+		const currentSort = sortBy;
 		return [...data].sort((a, b) => {
-			const aVal = a[sortBy.column];
-			const bVal = b[sortBy.column];
+			const aVal = a[currentSort.column];
+			const bVal = b[currentSort.column];
 
 			if (aVal === bVal) return 0;
 
 			const comparison = aVal > bVal ? 1 : -1;
-			return sortBy.direction === 'asc' ? comparison : -comparison;
+			return currentSort.direction === 'asc' ? comparison : -comparison;
 		});
+	});
+
+	// Paginated data — skip slicing when total is provided (server-side pagination)
+	const isServerPaginated = $derived(total != null);
+	const displayData = $derived.by(() => {
+		if (!pageSize || isServerPaginated) return sortedData;
+		const start = (page - 1) * pageSize;
+		return sortedData.slice(start, start + pageSize);
 	});
 
 	// Handle column sort
@@ -79,18 +93,25 @@
 	}
 
 	// Handle row selection
+	function getRowKeyForData(row: any): any {
+		const index = sortedData.indexOf(row);
+		return getRowKey(row, index >= 0 ? index : data.indexOf(row));
+	}
+
 	function isRowSelected(row: any): boolean {
-		return selectedRows.some((r) => getRowKey(r, -1) === getRowKey(row, -1));
+		const key = getRowKeyForData(row);
+		return selectedRows.some((r) => getRowKeyForData(r) === key);
 	}
 
 	function toggleRowSelection(row: any) {
 		const isSelected = isRowSelected(row);
+		const key = getRowKeyForData(row);
 
 		if (selectable === 'single') {
 			selectedRows = isSelected ? [] : [row];
 		} else {
 			selectedRows = isSelected
-				? selectedRows.filter((r) => getRowKey(r, -1) !== getRowKey(row, -1))
+				? selectedRows.filter((r) => getRowKeyForData(r) !== key)
 				: [...selectedRows, row];
 		}
 
@@ -112,80 +133,7 @@
 	}
 </script>
 
-<div class="table-container" class:card-layout={layout === 'cards'}>
-	{#if layout === 'cards'}
-		<!-- Card Layout for Mobile/Horizontal Mode -->
-		<div class="table-cards">
-			{#if loading}
-				<div class="table-loading">
-					<div class="spinner"></div>
-					<span>Loading...</span>
-				</div>
-			{:else if sortedData.length === 0}
-				<div class="table-empty">
-					{#if emptyState}
-						{@render emptyState()}
-					{:else}
-						<p>No data available</p>
-					{/if}
-				</div>
-			{:else}
-				{#each sortedData as row, index (getRowKey(row, index))}
-					<div
-						class="table-card"
-						class:selected={isRowSelected(row)}
-						onclick={() => onRowClick?.(row, index)}
-					>
-						{#if selectable}
-							<div class="table-card-select">
-								<Input
-									type="checkbox"
-									checked={isRowSelected(row)}
-									onChange={() => toggleRowSelection(row)}
-								/>
-							</div>
-						{/if}
-
-						<div class="table-card-content">
-							{#each columns as column}
-								<div class="table-card-field">
-									<div class="table-card-label">{column.label}</div>
-									<div class="table-card-value">
-										{#if column.render}
-											{@render column.render(getCellValue(row, column), row, index)}
-										{:else if column.format}
-											{column.format(getCellValue(row, column))}
-										{:else}
-											{getCellValue(row, column)}
-										{/if}
-									</div>
-								</div>
-							{/each}
-						</div>
-
-						{#if rowActions.length > 0}
-							<div class="table-card-actions">
-								{#each rowActions as action}
-									<button
-										class="action-button"
-										class:danger={action.variant === 'danger'}
-										onclick={(e) => {
-											e.stopPropagation();
-											action.onClick(row, index);
-										}}
-										title={action.label}
-									>
-										<Icon name={action.icon} size={16} fill={action.iconFilled} />
-									</button>
-								{/each}
-							</div>
-						{/if}
-					</div>
-				{/each}
-			{/if}
-		</div>
-	{:else}
-		<!-- Table Layout -->
+<div class="table-container">
 		<table class="table" class:hoverable={effectiveHoverable} class:simple={isSimple}>
 		<thead class:sticky>
 			<tr>
@@ -241,7 +189,7 @@
 					</td>
 				</tr>
 			</tbody>
-		{:else if sortedData.length === 0}
+		{:else if displayData.length === 0}
 			<tbody>
 				<tr>
 					<td colspan={columns.length + (selectable ? 1 : 0) + (rowActions.length > 0 ? 1 : 0)} class="table-empty">
@@ -253,14 +201,14 @@
 					</td>
 				</tr>
 			</tbody>
-		{:else if virtual && sortedData.length > 100}
+		{:else if virtual && displayData.length > 100}
 			<!-- Virtual scrolling for large datasets -->
 			<tbody>
 				<tr>
 					<td colspan={columns.length + (selectable ? 1 : 0) + (rowActions.length > 0 ? 1 : 0)} style="padding: 0;">
 						<VirtualList
-							items={sortedData}
-							itemHeight={compact ? 40 : 52}
+							items={displayData}
+							itemHeight={variant === 'simple' ? 40 : 52}
 							height={virtualHeight}
 							renderItem={(row, index) => {
 								return `
@@ -281,8 +229,9 @@
 				</tr>
 			</tbody>
 		{:else}
-			<tbody>
-				{#each sortedData as row, index (getRowKey(row, index))}
+			{#key pageSize ? page : null}
+			<tbody in:fade={{ duration: 150 }}>
+				{#each displayData as row, index (getRowKey(row, index))}
 					<tr
 						class="table-row"
 						class:selected={isRowSelected(row)}
@@ -323,7 +272,7 @@
 											}}
 											title={action.label}
 										>
-											<Icon name={action.icon} size={16} fill={action.iconFilled} />
+											<Icon {...resolveIcon(action.icon)} size={resolveIcon(action.icon).size ?? 16} />
 										</button>
 									{/each}
 								</div>
@@ -332,8 +281,13 @@
 					</tr>
 				{/each}
 			</tbody>
+			{/key}
 		{/if}
 	</table>
+	{#if pageSize}
+		<div class="table-footer">
+			<Pagination total={total ?? sortedData.length} bind:pageSize bind:page {pageSizeOptions} />
+		</div>
 	{/if}
 </div>
 
@@ -451,10 +405,11 @@
 		vertical-align: middle;
 	}
 
-	.table-select-cell {
-		width: 48px;
+	.table-select-cell.table-select-cell {
+		width: 0;
 		text-align: center;
-		padding: 0.25rem 0.75rem;
+		padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+		cursor: pointer;
 
 		:global(.input) {
 			gap: 0;
@@ -505,6 +460,10 @@
 		}
 	}
 
+	.table-footer {
+		border-top: $border;
+	}
+
 	.table-loading,
 	.table-empty {
 		padding: 3rem;
@@ -534,82 +493,4 @@
 		}
 	}
 
-	// Card Layout Styles
-	.table-cards {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		padding: 1rem;
-	}
-
-	.table-card {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		padding: 1rem;
-		background: $bg-surface-element;
-		border: $border;
-		border-radius: $radius;
-		transition: all 0.15s;
-
-		&:hover {
-			background: rgba($fg, 0.05);
-		}
-
-		&.selected {
-			background: rgba($primary, 0.1);
-			border-color: $primary;
-		}
-	}
-
-	.table-card-select {
-		display: flex;
-		align-items: center;
-
-		:global(.input) {
-			gap: 0;
-		}
-	}
-
-	.table-card-content {
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-	}
-
-	.table-card-field {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-	}
-
-	.table-card-label {
-		font-size: $text-xs;
-		font-weight: 600;
-		color: $text-secondary;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
-	.table-card-value {
-		font-size: $text-sm;
-		color: $fg;
-	}
-
-	.table-card-actions {
-		display: flex;
-		gap: 0.5rem;
-		padding-top: 0.5rem;
-		border-top: 1px solid rgba($border-color, 0.5);
-	}
-
-	.card-layout {
-		.table-loading,
-		.table-empty {
-			min-height: 200px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-	}
 </style>

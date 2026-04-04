@@ -2,6 +2,8 @@
 	import { fly } from 'svelte/transition';
 	import type { Snippet } from 'svelte';
 	import { portal } from '../util/portal.js';
+	import { onEscape } from '../util/escapeKey.js';
+	import { onClickOutside } from '../util/clickOutside.js';
 
 	interface Props {
 		open?: boolean;
@@ -26,7 +28,7 @@
 	}: Props = $props();
 
 	let containerElement: HTMLDivElement;
-	let contentElement: HTMLDivElement;
+	let contentElement = $state<HTMLDivElement>(undefined!);
 	let placement: 'below' | 'above' = $state('below');
 	let popoverStyle = $state('');
 
@@ -63,24 +65,6 @@
 		popoverStyle = style;
 	}
 
-	function handleClickOutside(e: MouseEvent) {
-		const target = e.target as Node;
-		if (
-			open &&
-			containerElement &&
-			!containerElement.contains(target) &&
-			(!contentElement || !contentElement.contains(target))
-		) {
-			open = false;
-		}
-	}
-
-	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape' && open) {
-			open = false;
-		}
-	}
-
 	$effect(() => {
 		if (open) {
 			updatePosition();
@@ -88,14 +72,18 @@
 
 			window.addEventListener('scroll', updatePosition, true);
 			window.addEventListener('resize', updatePosition);
-			document.addEventListener('mousedown', handleClickOutside);
-			document.addEventListener('keydown', handleKeydown);
+
+			const cleanupEscape = onEscape(() => { open = false; });
+			const cleanupClickOutside = onClickOutside(
+				[containerElement, contentElement],
+				() => { open = false; }
+			);
 
 			return () => {
 				window.removeEventListener('scroll', updatePosition, true);
 				window.removeEventListener('resize', updatePosition);
-				document.removeEventListener('mousedown', handleClickOutside);
-				document.removeEventListener('keydown', handleKeydown);
+				cleanupEscape();
+				cleanupClickOutside();
 			};
 		}
 	});
@@ -107,6 +95,8 @@
 	class:open
 	bind:this={containerElement}
 >
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="popover-trigger" onclick={() => !disabled && !manual && (open = !open)}>
 		{@render trigger()}
 	</div>
