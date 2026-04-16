@@ -48,3 +48,30 @@ $h6: 1.125rem;          // 18px
 $text-primary: $fg;
 $text-secondary: rgba($fg, 0.7);
 $text-muted: rgba($fg, 0.5);
+
+// NOTE: density CSS custom properties (--glow-field-*, --glow-section-*) live
+// in global.scss so they're declared once at the document root rather than
+// re-emitted into every component's scoped style by the per-file `@use`.
+
+// Standard control box. Apply to anything that needs to sit next to a Button
+// and look the same height — inputs, selects, color pickers, etc.
+//
+// Note on `height`: browsers render `<input>` with a content area sized from
+// the font's intrinsic ascent/descent regardless of declared line-height, so
+// neither `line-height: 1` nor `min-height` are enough to keep the wrapper
+// from growing to ~42px. Pinning the wrapper to a hard `height` of
+// `2em + 2px` (= 1em line-height + 0.5em*2 padding + 1px*2 border) guarantees
+// the wrapper is exactly Button-tall; the inner input/select sits centered
+// inside it via the flex layout each input wrapper already uses.
+//
+// `<textarea>` wrappers must override this back to `height: auto` so the
+// textarea can grow with `rows`.
+@mixin control-frame {
+	box-sizing: border-box;
+	font-size: 1rem;
+	line-height: 1;
+	padding: 0.5em 1em;
+	border: $border;
+	border-radius: $radius;
+	height: calc(2em + 2px);
+}

@@ -89,11 +89,8 @@
 	@use '../style/theme.scss' as *;
 
 	.input {
-		font-size: 1rem;
-		border: $border;
-		border-radius: $radius;
+		@include control-frame;
 		background-color: $bg-surface-element;
-		padding: 0.5em 1em;
 		color: $fg;
 
 		&:focus-within {
@@ -112,7 +109,10 @@
 			background: transparent;
 			color: inherit;
 			font: inherit;
+			line-height: inherit;
 			width: 100%;
+			padding: 0;
+			margin: 0;
 
 			&:focus {
 				outline: none;

@@ -136,17 +136,13 @@
 	@use '../style/theme.scss' as *;
 
 	button {
+		@include control-frame;
 		position: relative;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		gap: 0.4em;
-		padding: 0.5em 1em;
-		font-size: 1rem;
-		border: $border;
-		border-radius: $radius;
 		font-weight: 700;
-		line-height: 1;
 		cursor: pointer;
 		transition: background-color 150ms ease;
 

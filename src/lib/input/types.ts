@@ -18,6 +18,19 @@ export type ComboboxOption = {
 };
 
 /**
+ * Group header entry. Mix into a `ComboboxOption[]` to render an uppercase
+ * eyebrow label above the next run of options. Groups don't nest.
+ */
+export type ComboboxGroup = {
+	kind: 'group';
+	label: string;
+	options: ComboboxOption[];
+};
+
+/** What `<Input type="select">` accepts: a flat list, or a list with group headers. */
+export type ComboboxEntry = ComboboxOption | ComboboxGroup;
+
+/**
  * Generic search callback type for server-side search
  */
 export type SearchCallback<T> = (query: string) => Promise<T[]> | T[];

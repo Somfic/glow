@@ -157,7 +157,8 @@
 
 	<Group label="Select Input" id="select-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-			Searchable dropdown select with filtering
+			Searchable dropdown select with filtering. Options accept icons and descriptions
+			(rendered as a muted second line) so you don't need PopoverMenu for richer choices.
 		</Text>
 		<Input
 			type="select"
@@ -165,10 +166,58 @@
 			placeholder="Search and select..."
 			clearable={true}
 			options={[
-				{ label: 'Apple', value: 'apple' },
-				{ label: 'Banana', value: 'banana' },
-				{ label: 'Cherry', value: 'cherry' },
-				{ label: 'Date', value: 'date' }
+				{ label: 'Apple',  value: 'apple',  icon: 'Apple',  description: 'A red or green pomaceous fruit' },
+				{ label: 'Banana', value: 'banana', icon: 'Banana', description: 'Yellow tropical fruit, high in potassium' },
+				{ label: 'Cherry', value: 'cherry', icon: 'Cherry', description: 'Small stone fruit, often red' },
+				{ label: 'Grape',  value: 'grape',  icon: 'Grape',  description: 'Berries that grow in clusters on a vine' }
+			]}
+		/>
+	</Group>
+
+	<Group label="Select with groups" id="select-grouped">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Mix <Code>{`{ kind: 'group', label, options }`}</Code> entries into the options
+			array to render uppercase eyebrow headers between sections.
+		</Text>
+		<Input
+			type="select"
+			label="Pick a model"
+			placeholder="Pick a model..."
+			clearable={true}
+			options={[
+				{
+					kind: 'group',
+					label: 'Reasoning',
+					options: [
+						{ label: 'Qwen 3 (4B, thinking)', value: 'qwen3-4b-thinking', description: 'Abliterated, fast' },
+						{ label: 'DeepSeek R1 (8B)',       value: 'deepseek-r1-8b',    description: 'Strong reasoning, slower' }
+					]
+				},
+				{
+					kind: 'group',
+					label: 'Instruct',
+					options: [
+						{ label: 'Llama 3.1 (8B)',  value: 'llama3.1-8b',  description: 'No reasoning, very fast' },
+						{ label: 'Mistral Nemo 12B', value: 'mistral-nemo-12b', description: 'Solid all-rounder' }
+					]
+				}
+			]}
+		/>
+	</Group>
+
+	<Group label="Non-searchable select" id="select-non-searchable">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Set <Code>{`searchable={false}`}</Code> for short fixed lists where the
+			type-to-find affordance just gets in the way.
+		</Text>
+		<Input
+			type="select"
+			label="Seed mode"
+			placeholder="Pick a mode"
+			searchable={false}
+			options={[
+				{ label: 'Random', value: 'random', icon: 'Shuffle', description: 'New seed each generation' },
+				{ label: 'Fixed',  value: 'fixed',  icon: 'Lock',    description: 'Reproducible result' }
 			]}
 		/>
 	</Group>

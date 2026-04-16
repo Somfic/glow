@@ -1,6 +1,45 @@
 @use "./theme.scss" as *;
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
 
+// Settings / Field / Section spacing tokens.
+// Exposed as CSS custom properties so any element with data-density set can
+// flip the entire visual rhythm of its descendants without ceremony.
+:root {
+	--glow-field-row-gap: 0.625rem;        // gap between label cluster and control in row layout
+	--glow-field-stack-gap: 0.375rem;      // label → control spacing in stack layout
+	--glow-field-padding-y: 0.625rem;      // vertical breathing per field row
+	--glow-field-padding-x: 0.875rem;      // horizontal padding per field row
+	--glow-section-gap: 0.5rem;            // gap between fields inside a section
+	--glow-section-spacing: 1.5rem;        // gap between sections
+	--glow-section-header-gap: 0.75rem;    // gap between section header and content
+	--glow-field-label-size: #{$text-sm};
+	--glow-field-hint-size: #{$text-xs};
+}
+
+[data-density='compact'] {
+	--glow-field-row-gap: 0.5rem;
+	--glow-field-stack-gap: 0.25rem;
+	--glow-field-padding-y: 0.375rem;
+	--glow-field-padding-x: 0.625rem;
+	--glow-section-gap: 0.25rem;
+	--glow-section-spacing: 1rem;
+	--glow-section-header-gap: 0.5rem;
+	--glow-field-label-size: #{$text-xs};
+	--glow-field-hint-size: #{$text-xs};
+}
+
+[data-density='spacious'] {
+	--glow-field-row-gap: 1rem;
+	--glow-field-stack-gap: 0.5rem;
+	--glow-field-padding-y: 0.875rem;
+	--glow-field-padding-x: 1.125rem;
+	--glow-section-gap: 0.75rem;
+	--glow-section-spacing: 2rem;
+	--glow-section-header-gap: 1rem;
+	--glow-field-label-size: #{$text-base};
+	--glow-field-hint-size: #{$text-sm};
+}
+
 html,
 body,
 main {

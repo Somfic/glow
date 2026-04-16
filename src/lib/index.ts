@@ -8,7 +8,13 @@ export { default as Icon, type IconName, type IconProp, type IconProps, resolveI
 export { default as Input } from "./input/Input.svelte";
 export { default as ImageUpload } from "./input/ImageUpload.svelte";
 export { default as ImageCropper } from "./input/ImageCropper.svelte";
-export type { SelectOption, MultiSelectOption, ComboboxOption } from "./input/types.js";
+export type {
+	SelectOption,
+	MultiSelectOption,
+	ComboboxOption,
+	ComboboxGroup,
+	ComboboxEntry
+} from "./input/types.js";
 export { default as Group } from "./group/Group.svelte";
 export { default as Page } from "./page/Page.svelte";
 export { default as Pill } from "./pill/Pill.svelte";
@@ -34,9 +40,25 @@ export type { CursorConfig, CursorState } from "./cursor/cursor.svelte.js";
 export { default as CursorProvider } from "./cursor/CursorProvider.svelte";
 export { default as GradientMesh } from "./gradient/GradientMesh.svelte";
 export { default as Popover } from "./popover/Popover.svelte";
-export { default as DropdownMenu } from "./menu/DropdownMenu.svelte";
+export { default as PopoverMenu } from "./menu/PopoverMenu.svelte";
 export { default as ContextMenu } from "./menu/ContextMenu.svelte";
-export type { DropdownMenuItem, DropdownMenuEntry } from "./menu/DropdownMenu.svelte";
+export type {
+	PopoverMenuEntry,
+	PopoverMenuItem,
+	PopoverMenuToggle,
+	PopoverMenuSubmenu,
+	PopoverMenuCustom,
+	PopoverMenuHeader,
+	PopoverMenuCommonItem
+} from "./menu/PopoverMenu.svelte";
+
+// Settings / config primitives
+export { default as Field } from "./settings/Field.svelte";
+export { default as FieldRow } from "./settings/FieldRow.svelte";
+export { default as Section } from "./settings/Section.svelte";
+export { default as Disclosure } from "./settings/Disclosure.svelte";
+export { default as SettingsShell } from "./settings/SettingsShell.svelte";
+export type { FieldLayout, FieldTier, FieldContext } from "./settings/fieldContext.js";
 export { default as Avatar } from "./avatar/Avatar.svelte";
 export { default as AvatarGroup } from "./avatar/AvatarGroup.svelte";
 export { default as Spinner } from "./spinner/Spinner.svelte";

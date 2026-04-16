@@ -1,17 +1,20 @@
 <script lang="ts">
-	import type { SelectOption, ComboboxOption } from './types.js';
+	import { getContext, type Snippet } from 'svelte';
+	import type { SelectOption, ComboboxOption, ComboboxEntry } from './types.js';
+	import type { PopoverMenuEntry } from '../menu/PopoverMenu.svelte';
 	import Icon, { type IconProp } from '../icon/Icon.svelte';
 	import TextInput from './TextInput.svelte';
 	import NumberInput from './NumberInput.svelte';
 	import TextareaInput from './TextareaInput.svelte';
 	import MultiSelectInput from './MultiSelectInput.svelte';
 	import RadioInput from './RadioInput.svelte';
-	import ComboboxInput from './ComboboxInput.svelte';
+	import PopoverMenu from '../menu/PopoverMenu.svelte';
 	import CheckboxInput from './CheckboxInput.svelte';
 	import ToggleInput from './ToggleInput.svelte';
 	import RangeInput from './RangeInput.svelte';
 	import PasswordInput from './PasswordInput.svelte';
 	import ColorInput from './ColorInput.svelte';
+	import { FIELD_CONTEXT_KEY, type FieldContext } from '../settings/fieldContext.js';
 
 	type BaseProps = {
 		disabled?: boolean;
@@ -92,10 +95,24 @@
 
 	type SelectProps = BaseProps & {
 		type: 'select';
-		options: ComboboxOption[];
+		options: ComboboxEntry[];
 		value?: string;
 		placeholder?: string;
 		clearable?: boolean;
+		/** Show the search input. Default true. Set false for short fixed lists. */
+		searchable?: boolean;
+		/** Leading icon shown in the trigger when no option is selected (or when the selected option has no icon of its own). */
+		icon?: IconProp;
+		/**
+		 * Extra menu entries appended below the option list — use for embedded
+		 * toggles, submenus, custom snippets, dividers. Enables the Claude.ai
+		 * model-picker pattern through the same `<Input type="select">` API.
+		 */
+		items?: PopoverMenuEntry[];
+		/** Snippet rendered between the option list and any extra `items`. */
+		extras?: Snippet;
+		/** Trigger/menu alignment relative to the trigger. */
+		align?: 'left' | 'right' | 'stretch';
 		onChange?: (value: string) => void;
 		onSearch?: (query: string) => Promise<ComboboxOption[]> | ComboboxOption[];
 		searchDebounce?: number;
@@ -151,6 +168,15 @@
 
 	let inputId = `input-${Math.random().toString(36).substr(2, 9)}`;
 
+	// If this Input is nested inside a <Field>, register our type so Field can
+	// pick the right layout in `auto` mode and suppress our own label (Field owns
+	// labelling). Outside a Field everything works exactly as before.
+	const fieldCtx = getContext<FieldContext | undefined>(FIELD_CONTEXT_KEY);
+	$effect(() => {
+		fieldCtx?.setControlType(props.type);
+	});
+	const renderOwnLabel = $derived(!fieldCtx && !!props.label);
+
 	function handleLabelClick() {
 		// For non-native form controls (multiselect, radio, select), trigger a click
 		if (props.type === 'multiselect' || props.type === 'radio' || props.type === 'select') {
@@ -160,8 +186,8 @@
 	}
 </script>
 
-<div class="input">
-	{#if props.label}
+<div class="input" class:in-field={!!fieldCtx}>
+	{#if renderOwnLabel}
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<label class="input-label" for={inputId} onclick={handleLabelClick}>
@@ -246,19 +272,17 @@
 		/>
 	{:else if props.type === 'select'}
 		{@const p = props as SelectProps}
-		<ComboboxInput
-			id={inputId}
+		<PopoverMenu
 			options={p.options}
+			items={p.items}
+			extras={p.extras}
 			value={p.value}
 			placeholder={p.placeholder}
+			icon={p.icon}
 			disabled={p.disabled}
-			clearable={p.clearable}
-			multiple={false}
-			onChange={(v) => p.onChange?.(v as string)}
-			onSearch={p.onSearch}
-			searchDebounce={p.searchDebounce}
-			maxResults={p.maxResults}
-			minSearchLength={p.minSearchLength}
+			searchable={p.searchable ?? true}
+			align={p.align ?? 'stretch'}
+			onChange={p.onChange}
 		/>
 	{:else if props.type === 'textarea'}
 		{@const p = props as TextareaProps}
@@ -323,6 +347,13 @@
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
+
+		// When nested inside a <Field>, drop the wrapper gap and let Field
+		// drive layout/spacing. The label is also suppressed at the markup
+		// level (Field owns it).
+		&.in-field {
+			gap: 0;
+		}
 	}
 
 	.input-label {

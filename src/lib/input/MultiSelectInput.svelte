@@ -223,21 +223,16 @@
 	@use '../style/theme.scss' as *;
 
 	.multiselect-trigger {
+		@include control-frame;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 0.5em;
 		width: 100%;
-		padding: 0.5em 1em;
-		border: $border;
-		border-radius: $radius;
 		background-color: $bg-surface-element;
 		color: $fg;
-		font: inherit;
 		cursor: pointer;
 		text-align: left;
-		height: 2.5em;
-		font-size: 1rem;
 
 		&.open {
 			border-color: $primary;

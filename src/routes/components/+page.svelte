@@ -9,7 +9,8 @@
 			category: 'Form & Input',
 			items: [
 				{ name: 'Button', href: '/components/buttons', description: 'Buttons and button groups' },
-				{ name: 'Input', href: '/components/inputs', description: 'Form inputs and controls' }
+				{ name: 'Input', href: '/components/inputs', description: 'Form inputs and controls' },
+				{ name: 'Settings', href: '/components/settings', description: 'Section, Field, FieldRow, Disclosure, SettingsShell' }
 			]
 		},
 		{
@@ -28,7 +29,7 @@
 			items: [
 				{ name: 'Tabs', href: '/components/tabs', description: 'Tab navigation' },
 				{ name: 'Table of Contents', href: '/components/toc', description: 'Sticky navigation for long content' },
-				{ name: 'Dropdown Menu', href: '/components/dropdown', description: 'Contextual action menus' }
+				{ name: 'Popover Menu', href: '/components/popover-menu', description: 'Rich popover menus: items, toggles, submenus, custom snippets' }
 			]
 		},
 		{

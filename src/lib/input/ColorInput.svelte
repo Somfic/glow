@@ -366,16 +366,13 @@
 	@use '../style/theme.scss' as *;
 
 	.color-trigger {
+		@include control-frame;
 		display: flex;
 		align-items: center;
 		gap: 0.75em;
 		width: 100%;
-		padding: 0.5em 1em;
-		border: $border;
-		border-radius: $radius;
 		background-color: $bg-surface-element;
 		color: $fg;
-		font: inherit;
 		cursor: pointer;
 		transition: all 0.15s ease;
 

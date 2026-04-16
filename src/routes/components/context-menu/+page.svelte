@@ -7,30 +7,30 @@
 	import Table from '$lib/data/Table.svelte';
 	import Code from '$lib/code/Code.svelte';
 	import Card from '$lib/card/Card.svelte';
-	import type { DropdownMenuEntry, DropdownMenuItem } from '$lib/menu/DropdownMenu.svelte';
+	import type { PopoverMenuEntry, PopoverMenuCommonItem } from '$lib/menu/PopoverMenu.svelte';
 
-	const basicItems: DropdownMenuEntry[] = [
-		{ label: 'Cut', icon: 'Scissors', shortcut: '⌘X', onclick: () => {} },
-		{ label: 'Copy', icon: 'Copy', shortcut: '⌘C', onclick: () => {} },
-		{ label: 'Paste', icon: 'Clipboard', shortcut: '⌘V', onclick: () => {} },
+	const basicItems: PopoverMenuEntry[] = [
+		{ kind: 'item', label: 'Cut',   icon: 'Scissors',  shortcut: '⌘X', onclick: () => {} },
+		{ kind: 'item', label: 'Copy',  icon: 'Copy',      shortcut: '⌘C', onclick: () => {} },
+		{ kind: 'item', label: 'Paste', icon: 'Clipboard', shortcut: '⌘V', onclick: () => {} },
 		'divider',
-		{ label: 'Select All', icon: 'CheckSquare2', shortcut: '⌘A', onclick: () => {} },
+		{ kind: 'item', label: 'Select All', icon: 'SquareCheck', shortcut: '⌘A', onclick: () => {} },
 		'divider',
-		{ label: 'Delete', icon: 'Trash2', danger: true, onclick: () => {} }
+		{ kind: 'item', label: 'Delete', icon: 'Trash2', danger: true, onclick: () => {} }
 	];
 
-	const commonItems: DropdownMenuItem[] = [
-		{ label: 'Cut', icon: 'Scissors', onclick: () => {} },
-		{ label: 'Copy', icon: 'Copy', onclick: () => {} },
+	const commonItems: PopoverMenuCommonItem[] = [
+		{ label: 'Cut',   icon: 'Scissors',  onclick: () => {} },
+		{ label: 'Copy',  icon: 'Copy',      onclick: () => {} },
 		{ label: 'Paste', icon: 'Clipboard', onclick: () => {} }
 	];
 
-	const fileItems: DropdownMenuEntry[] = [
-		{ label: 'Open', icon: 'FolderOpen', onclick: () => {} },
-		{ label: 'Rename', icon: 'Pencil', onclick: () => {} },
-		{ label: 'Duplicate', icon: 'Copy', onclick: () => {} },
+	const fileItems: PopoverMenuEntry[] = [
+		{ kind: 'item', label: 'Open',      icon: 'FolderOpen', onclick: () => {} },
+		{ kind: 'item', label: 'Rename',    icon: 'Pencil',     onclick: () => {} },
+		{ kind: 'item', label: 'Duplicate', icon: 'Copy',       onclick: () => {} },
 		'divider',
-		{ label: 'Move to Trash', icon: 'Trash2', danger: true, onclick: () => {} }
+		{ kind: 'item', label: 'Move to Trash', icon: 'Trash2', danger: true, onclick: () => {} }
 	];
 </script>
 
@@ -42,7 +42,9 @@
 
 <Heading level={1}>Context Menu</Heading>
 <Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
-	Right-click menus using the same items as DropdownMenu.
+	Right-click menus using the same PopoverMenuEntry shape as PopoverMenu. Currently
+	only renders <Code>kind: 'item'</Code> and <Code>'divider'</Code> entries — for
+	toggles and submenus use <Code>PopoverMenu</Code>.
 </Text>
 
 <Group label="Basic" id="basic">
@@ -71,14 +73,14 @@
 	<CodeBlock
 		language="svelte"
 		code={`<script>
-  import { ContextMenu } from 'glow-ui';
-  import type { DropdownMenuEntry } from 'glow-ui';
+  import { ContextMenu } from 'glow';
+  import type { PopoverMenuEntry } from 'glow';
 
-  const items: DropdownMenuEntry[] = [
-    { label: 'Cut', icon: 'Scissors', shortcut: '⌘X', onclick: () => handleCut() },
-    { label: 'Copy', icon: 'Copy', shortcut: '⌘C', onclick: () => handleCopy() },
+  const items: PopoverMenuEntry[] = [
+    { kind: 'item', label: 'Cut',  icon: 'Scissors', shortcut: '⌘X', onclick: () => {} },
+    { kind: 'item', label: 'Copy', icon: 'Copy',     shortcut: '⌘C', onclick: () => {} },
     'divider',
-    { label: 'Delete', icon: 'Trash2', danger: true, onclick: () => handleDelete() }
+    { kind: 'item', label: 'Delete', icon: 'Trash2', danger: true, onclick: () => {} }
   ];
 </script>
 
@@ -98,10 +100,10 @@
 			{ key: 'description', label: 'Description' }
 		]}
 		data={[
-			{ prop: 'items', type: 'DropdownMenuEntry[]', default: '-', description: 'Menu items (same type as DropdownMenu)' },
-			{ prop: 'common', type: 'DropdownMenuItem[]', default: '-', description: 'Horizontal icon-only actions at the top' },
-			{ prop: 'children', type: 'Snippet', default: '-', description: 'Content area that triggers the context menu' },
-			{ prop: 'disabled', type: 'boolean', default: 'false', description: 'Disable the context menu' }
+			{ prop: 'items',    type: 'PopoverMenuEntry[]',      default: '-',     description: 'Menu items (only item-kind and divider rendered)' },
+			{ prop: 'common',   type: 'PopoverMenuCommonItem[]', default: '-',     description: 'Horizontal icon-only actions at the top' },
+			{ prop: 'children', type: 'Snippet',              default: '-',     description: 'Content area that triggers the context menu' },
+			{ prop: 'disabled', type: 'boolean',              default: 'false', description: 'Disable the context menu' }
 		]}
 	/>
 </Group>

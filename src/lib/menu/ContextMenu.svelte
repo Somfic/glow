@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { DropdownMenuItem, DropdownMenuEntry } from './DropdownMenu.svelte';
+	import type { PopoverMenuEntry, PopoverMenuItem, PopoverMenuCommonItem } from './PopoverMenu.svelte';
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import { portal } from '../util/portal.js';
 	import { onEscape } from '../util/escapeKey.js';
@@ -8,8 +8,8 @@
 	import { fly, fade } from 'svelte/transition';
 
 	interface Props {
-		items: DropdownMenuEntry[];
-		common?: DropdownMenuItem[];
+		items: PopoverMenuEntry[];
+		common?: PopoverMenuCommonItem[];
 		children: Snippet;
 		disabled?: boolean;
 	}
@@ -36,17 +36,22 @@
 		if (menuY + rect.height > window.innerHeight) menuY = menuY - rect.height;
 	}
 
-	function handleItemClick(item: DropdownMenuItem) {
+	function handleItemClick(item: PopoverMenuItem | PopoverMenuCommonItem) {
 		if (item.disabled) return;
 		open = false;
 		activeIndex = -1;
 		item.onclick();
 	}
 
-	const actionItems = $derived(
+	// ContextMenu currently only renders 'divider' and `kind: 'item'` entries;
+	// toggle/submenu/custom kinds are silently skipped (use <PopoverMenu> for
+	// those richer patterns).
+	const itemEntries = $derived(
 		items
-			.map((item, i) => (item !== 'divider' ? { item, index: i } : null))
-			.filter((x): x is { item: DropdownMenuItem; index: number } => x !== null && !x.item.disabled)
+			.map((entry, i) =>
+				entry !== 'divider' && entry.kind === 'item' ? { item: entry, index: i } : null
+			)
+			.filter((x): x is { item: PopoverMenuItem; index: number } => x !== null && !x.item.disabled)
 	);
 
 	function handleKeydown(e: KeyboardEvent) {
@@ -54,18 +59,18 @@
 
 		if (e.key === 'ArrowDown') {
 			e.preventDefault();
-			const currentPos = actionItems.findIndex((a) => a.index === activeIndex);
-			const next = currentPos < actionItems.length - 1 ? currentPos + 1 : 0;
-			activeIndex = actionItems[next].index;
+			const currentPos = itemEntries.findIndex((a) => a.index === activeIndex);
+			const next = currentPos < itemEntries.length - 1 ? currentPos + 1 : 0;
+			activeIndex = itemEntries[next].index;
 		} else if (e.key === 'ArrowUp') {
 			e.preventDefault();
-			const currentPos = actionItems.findIndex((a) => a.index === activeIndex);
-			const prev = currentPos > 0 ? currentPos - 1 : actionItems.length - 1;
-			activeIndex = actionItems[prev].index;
+			const currentPos = itemEntries.findIndex((a) => a.index === activeIndex);
+			const prev = currentPos > 0 ? currentPos - 1 : itemEntries.length - 1;
+			activeIndex = itemEntries[prev].index;
 		} else if (e.key === 'Enter' && activeIndex >= 0) {
 			e.preventDefault();
 			const entry = items[activeIndex];
-			if (entry !== 'divider' && !entry.disabled) {
+			if (entry !== 'divider' && entry.kind === 'item' && !entry.disabled) {
 				handleItemClick(entry);
 			}
 		}
@@ -130,7 +135,7 @@
 		{#each items as entry, i}
 			{#if entry === 'divider'}
 				<div class="divider"></div>
-			{:else}
+			{:else if entry.kind === 'item'}
 				<button
 					type="button"
 					class="menu-item"

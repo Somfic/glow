@@ -63,11 +63,10 @@
 	@use '../style/theme.scss' as *;
 
 	.input {
-		font-size: 1rem;
-		border: $border;
-		border-radius: $radius;
+		@include control-frame;
+		// Override the frame's fixed height — textarea must grow with `rows`.
+		height: auto;
 		background-color: $bg-surface-element;
-		padding: 0.5em 1em;
 		color: $fg;
 		position: relative;
 
@@ -87,9 +86,13 @@
 			background: transparent;
 			color: inherit;
 			font: inherit;
+			// Override the frame's line-height: 1 — multi-line text needs room.
+			line-height: 1.5;
 			width: 100%;
 			resize: vertical;
 			min-height: 3em;
+			padding: 0;
+			margin: 0;
 
 			&:focus {
 				outline: none;
