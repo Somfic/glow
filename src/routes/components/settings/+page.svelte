@@ -11,7 +11,7 @@
 	import type { PopoverMenuEntry } from '$lib/menu/PopoverMenu.svelte';
 
 	import SettingsShell from '$lib/settings/SettingsShell.svelte';
-	import Section from '$lib/settings/Section.svelte';
+	import Section from '$lib/settings/SettingsSection.svelte';
 	import Field from '$lib/settings/Field.svelte';
 	import FieldRow from '$lib/settings/FieldRow.svelte';
 	import Disclosure from '$lib/settings/Disclosure.svelte';
@@ -283,7 +283,7 @@
 			</ButtonGroup>
 		</div>
 
-		<Field label="Prompt" hint="Comma-separated Danbooru tags.">
+		<Field label="Prompt" hint="Comma-separated Danbooru tags." layout="vertical">
 			<Input
 				type="textarea"
 				rows={5}
@@ -329,7 +329,7 @@
 	</Section>
 
 	<Section title="Negative prompt" icon="Ban" id="negative">
-		<Field label="Tags to avoid">
+		<Field label="Tags to avoid" layout="vertical">
 			<Input
 				type="textarea"
 				rows={3}
@@ -347,7 +347,7 @@
 		defaultOpen={false}
 		description="Stripped from any AI-generated prompt before it reaches the textarea."
 	>
-		<Field label="Tags">
+		<Field label="Tags" layout="vertical">
 			<Input
 				type="textarea"
 				rows={2}
@@ -485,7 +485,7 @@
 	</Section>
 
 	<Section title="Resolution" icon="Frame" id="resolution">
-		<Field label="Aspect ratio" layout="stack">
+		<Field label="Aspect ratio" layout="vertical">
 			<div class="aspect-grid">
 				{#each aspectRatios as [key, _ratio] (key)}
 					<button

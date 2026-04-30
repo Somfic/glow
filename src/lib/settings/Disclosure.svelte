@@ -101,7 +101,7 @@
 			transition: border-color 0.15s ease;
 
 			&.active {
-				border-color: $primary;
+				border-color: var(--glow-primary);
 			}
 		}
 	}
@@ -114,7 +114,7 @@
 		padding: 0.5rem 0.75rem;
 		background: transparent;
 		border: 0;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		font-family: $font-family;
 		font-size: $text-xs;
 		font-weight: 600;
@@ -125,7 +125,7 @@
 		transition: color 0.12s ease, background 0.12s ease;
 
 		&:hover:not(:disabled) {
-			color: $text-primary;
+			color: var(--glow-text-primary);
 			background: rgba($fg, 0.03);
 		}
 
@@ -157,7 +157,7 @@
 		font-weight: 500;
 		text-transform: none;
 		letter-spacing: 0;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		font-size: $text-xs;
 	}
 

@@ -1,6 +1,84 @@
 @use "./theme.scss" as *;
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
 
+// ============================================================================
+// Theme tokens (color)
+//
+// Declared at the document root so any element below can override them on a
+// subtree:
+//   <div style="--glow-primary: #1db954">…spotify-green descendants…</div>
+// `<ThemeProvider>` (or any element with data-theme="light|dark") flips the
+// whole tree.
+// ============================================================================
+// As much as possible derives from a small set of seeds:
+//   --glow-bg-base   — page background
+//   --glow-bg-surface — surface (cards/panels)
+//   --glow-fg        — foreground / text colour
+//   --glow-primary   — accent / brand colour
+//   semantic colours (danger/success/warning/info)
+// Hovers, actives, soft tints, borders, text alpha variants, and secondary
+// all derive from those via `color-mix` — overriding a seed retunes the
+// whole palette without touching anything else.
+:root,
+[data-theme='dark'] {
+	--glow-bg-base: #{$bg-base};
+	--glow-bg-surface: #{$bg-surface};
+	--glow-bg-surface-element: #{$bg-surface-element};
+	--glow-fg: #{$fg};
+	--glow-primary: #{$primary};
+	--glow-color-danger: #ef4444;
+	--glow-color-success: #22c55e;
+	--glow-color-warning: #f59e0b;
+	--glow-color-info: #3b82f6;
+
+	// Borders sit between bg and fg; same recipe works in both light and dark
+	// modes because oklab interpolates symmetrically.
+	--glow-border-color: color-mix(in oklab, var(--glow-bg-base), var(--glow-fg) 16%);
+
+	// Primary hover/active. White lightens in both modes; black darkens.
+	--glow-primary-hover: color-mix(in oklab, var(--glow-primary), white 15%);
+	--glow-primary-active: color-mix(in oklab, var(--glow-primary), black 10%);
+
+	// Soft / strong primary tints — for hover backgrounds, focus rings, etc.
+	// Replace ad-hoc `rgba($primary, 0.05/0.15/0.30)` with these.
+	--glow-primary-soft: color-mix(in oklab, var(--glow-primary) 10%, transparent);
+	--glow-primary-soft-strong: color-mix(in oklab, var(--glow-primary) 30%, transparent);
+
+	// Secondary is a 10% wash of primary into the surface — derived too, so
+	// retinting `--glow-primary` repaints `selected` / `pill` backgrounds.
+	--glow-secondary: color-mix(in oklab, var(--glow-primary) 10%, var(--glow-bg-surface));
+	--glow-secondary-hover: color-mix(in oklab, var(--glow-secondary), white 15%);
+	--glow-secondary-active: color-mix(in oklab, var(--glow-secondary), black 10%);
+
+	// Foreground alpha variants — soft hover/disabled tints derived from fg.
+	--glow-fg-soft: color-mix(in oklab, var(--glow-fg) 5%, transparent);
+	--glow-fg-soft-strong: color-mix(in oklab, var(--glow-fg) 15%, transparent);
+
+	// Text colours derive from fg via alpha mixing (so a custom fg flows through).
+	--glow-text-primary: var(--glow-fg);
+	--glow-text-secondary: color-mix(in oklab, var(--glow-fg) 70%, transparent);
+	--glow-text-muted: color-mix(in oklab, var(--glow-fg) 50%, transparent);
+
+	// Semantic hover variants — same recipe.
+	--glow-color-danger-hover: color-mix(in oklab, var(--glow-color-danger), white 12%);
+	--glow-color-success-hover: color-mix(in oklab, var(--glow-color-success), white 12%);
+	--glow-color-warning-hover: color-mix(in oklab, var(--glow-color-warning), white 12%);
+	--glow-color-info-hover: color-mix(in oklab, var(--glow-color-info), white 12%);
+}
+
+[data-theme='light'] {
+	--glow-bg-base: #f7f7fb;
+	--glow-bg-surface: #ffffff;
+	--glow-bg-surface-element: #f0f0f5;
+	--glow-fg: #16161d;
+	--glow-primary: #6c4be3;
+	--glow-color-danger: #dc2626;
+	--glow-color-success: #16a34a;
+	--glow-color-warning: #d97706;
+	--glow-color-info: #2563eb;
+	// All other tokens derive from the seeds above via the recipes on `:root`.
+}
+
 // Settings / Field / Section spacing tokens.
 // Exposed as CSS custom properties so any element with data-density set can
 // flip the entire visual rhythm of its descendants without ceremony.

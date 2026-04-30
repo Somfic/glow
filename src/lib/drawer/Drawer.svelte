@@ -15,6 +15,7 @@
 		subtitle,
 		icon,
 		actions = [],
+		footer,
 		size = 'medium',
 		side = 'right',
 		showCloseButton = true,
@@ -29,6 +30,7 @@
 		subtitle?: string;
 		icon?: IconProp;
 		actions?: ButtonAction[];
+		footer?: Snippet;
 		size?: 'small' | 'medium' | 'large';
 		side?: 'left' | 'right';
 		showCloseButton?: boolean;
@@ -168,11 +170,15 @@
 				{@render children?.()}
 			</div>
 
-			{#if actions.length > 0}
+			{#if footer}
+				<div class="drawer-footer">
+					{@render footer()}
+				</div>
+			{:else if actions.length > 0}
 				<div class="drawer-footer">
 					<ButtonGroup>
 						{#each actions as action}
-							<Button label={action.label} variant={action.variant} onclick={action.onclick} />
+							<Button {...action} />
 						{/each}
 					</ButtonGroup>
 				</div>
@@ -196,7 +202,7 @@
 		position: absolute;
 		top: 0.75rem;
 		bottom: 0.75rem;
-		background: $bg-surface-element;
+		background: var(--glow-bg-surface-element);
 		border: $border;
 		display: flex;
 		flex-direction: column;
@@ -268,7 +274,7 @@
 		font-size: 1.25rem;
 		font-weight: 600;
 		margin: 0;
-		color: $fg;
+		color: var(--glow-fg);
 	}
 
 	.drawer-subtitle {

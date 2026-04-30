@@ -334,11 +334,4 @@
 
 		li + li { margin-top: 0.25rem; }
 	}
-
-	.trigger-demo {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, auto);
-		gap: 1.5rem;
-		align-items: start;
-	}
 </style>

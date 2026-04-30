@@ -55,17 +55,17 @@
 
 	.toggle {
 		position: relative;
-		width: 44px;
-		height: 24px;
+		width: 36px;
+		height: 20px;
 		background-color: rgba($fg, 0.2);
 		border: none;
-		border-radius: 12px;
+		border-radius: 10px;
 		cursor: pointer;
 		transition: background-color 0.2s ease;
 		padding: 0;
 
 		&.checked {
-			background-color: $primary;
+			background-color: var(--glow-primary);
 		}
 
 		&:not(:disabled):hover {
@@ -81,8 +81,8 @@
 		position: absolute;
 		top: 2px;
 		left: 2px;
-		width: 20px;
-		height: 20px;
+		width: 16px;
+		height: 16px;
 		background-color: white;
 		border-radius: 50%;
 		transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -90,11 +90,11 @@
 	}
 
 	.toggle.checked .toggle-slider {
-		transform: translateX(20px);
+		transform: translateX(16px);
 	}
 
 	.toggle-label {
-		color: $fg;
+		color: var(--glow-fg);
 		font-size: 1rem;
 	}
 </style>

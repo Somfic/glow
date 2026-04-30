@@ -183,14 +183,14 @@
 		}
 
 		&.selected {
-			background: $fg;
-			color: $bg-base;
-			border-color: $fg;
+			background: var(--glow-fg);
+			color: var(--glow-bg-base);
+			border-color: var(--glow-fg);
 
 			&.has-color {
 				background: var(--pill-color);
 				border-color: var(--pill-color);
-				color: $bg-base;
+				color: var(--glow-bg-base);
 			}
 
 			&.interactive:hover {
@@ -257,7 +257,7 @@
 		transition: all 0.15s ease;
 
 		&:hover {
-			color: $fg;
+			color: var(--glow-fg);
 			background: rgba($fg, 0.1);
 		}
 	}

@@ -261,30 +261,30 @@
 		}
 
 		&.primary {
-			background-color: $primary;
-			color: $fg;
+			background-color: var(--glow-primary);
+			color: var(--glow-fg);
 
 			&:hover,
 			&.cursor-hover {
-				background-color: $primary-hover;
+				background-color: var(--glow-primary-hover);
 			}
 
 			&:active {
-				background-color: $primary-active;
+				background-color: var(--glow-primary-active);
 			}
 		}
 
 		&.secondary {
-			background-color: $secondary;
-			color: $fg;
+			background-color: var(--glow-secondary);
+			color: var(--glow-fg);
 
 			&:hover,
 			&.cursor-hover {
-				background-color: $secondary-hover;
+				background-color: var(--glow-secondary-hover);
 			}
 
 			&:active {
-				background-color: $secondary-active;
+				background-color: var(--glow-secondary-active);
 			}
 		}
 
@@ -297,12 +297,12 @@
 			&:hover,
 			&.cursor-hover {
 				background-color: $tertiary-hover;
-				color: $fg;
+				color: var(--glow-fg);
 			}
 
 			&:active {
 				background-color: $tertiary-active;
-				color: $fg;
+				color: var(--glow-fg);
 			}
 		}
 
@@ -313,12 +313,12 @@
 			&:hover,
 			&.cursor-hover {
 				background-color: $tertiary-hover;
-				color: $fg;
+				color: var(--glow-fg);
 			}
 
 			&:active {
 				background-color: $tertiary-active;
-				color: $fg;
+				color: var(--glow-fg);
 			}
 		}
 
@@ -330,7 +330,7 @@
 
 			&:hover,
 			&.cursor-hover {
-				color: $fg;
+				color: var(--glow-fg);
 				border-color: rgba($fg, 0.4);
 				background: rgba($fg, 0.04);
 			}

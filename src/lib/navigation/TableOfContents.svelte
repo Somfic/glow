@@ -179,7 +179,7 @@
 		max-height: calc(100vh - 4rem);
 		overflow-y: auto;
 		padding: 1.5rem;
-		background: $bg-surface-element;
+		background: var(--glow-bg-surface-element);
 		border: $border;
 		border-radius: $radius;
 		width: 250px;
@@ -188,7 +188,7 @@
 	.toc-title {
 		font-size: $text-sm;
 		font-weight: 600;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		margin-bottom: 1rem;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
@@ -206,7 +206,7 @@
 		transition: border-color 0.15s;
 
 		&.active {
-			border-left-color: $primary;
+			border-left-color: var(--glow-primary);
 		}
 
 		&:hover {
@@ -217,24 +217,24 @@
 	.toc-link {
 		display: block;
 		padding: 0.5rem 0.75rem;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		text-decoration: none;
 		font-size: $text-sm;
 		line-height: 1.4;
 		transition: all 0.15s;
 
 		.toc-item.active & {
-			color: $primary;
+			color: var(--glow-primary);
 			font-weight: 500;
 		}
 
 		&:hover {
-			color: $fg;
+			color: var(--glow-fg);
 			background: rgba($fg, 0.05);
 		}
 
 		.toc-item.active &:hover {
-			color: $primary;
+			color: var(--glow-primary);
 		}
 	}
 </style>

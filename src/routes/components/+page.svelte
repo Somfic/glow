@@ -73,6 +73,7 @@
 			<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
 				{#each category.items as component}
 					<a href={component.href} style="text-decoration: none;">
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<div
 							style="padding: 1.5rem; background: #1e1f29; border: 1px solid #30313C; border-radius: 12px; transition: all 0.15s; height: 100%;"
 							onmouseenter={(e) => {

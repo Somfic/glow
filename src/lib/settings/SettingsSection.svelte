@@ -163,13 +163,13 @@
 		margin: 0;
 		background: transparent;
 		border: 0;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		font-family: $font-family;
 		cursor: pointer;
 		transition: color 0.12s ease;
 
 		&:hover {
-			color: $text-primary;
+			color: var(--glow-text-primary);
 		}
 	}
 
@@ -188,12 +188,12 @@
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		line-height: 1;
 	}
 
 	.title-button:hover .title {
-		color: $text-primary;
+		color: var(--glow-text-primary);
 	}
 
 	.chevron {
@@ -216,7 +216,7 @@
 	.description {
 		margin: 0;
 		font-size: $text-xs;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		line-height: 1.5;
 	}
 

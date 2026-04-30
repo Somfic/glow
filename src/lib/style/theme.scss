@@ -1,6 +1,22 @@
 @use 'sass:color' as color;
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
 
+// ============================================================================
+// Token sources
+//
+// Every theme color exists in two forms:
+//   - Sass variable ($primary etc.) — used at build time for places that mix
+//     alpha into a color (`rgba($primary, 0.3)`) or run color math like
+//     `color.scale`. These stay frozen at the dark-theme defaults below.
+//   - CSS custom property (--glow-primary etc.) — read at runtime. Anywhere a
+//     color is used directly (background, color, border-color), prefer the
+//     custom property so consumers can override it on a parent: e.g.
+//     `<div style="--glow-primary: #1db954">` to repaint the whole subtree.
+//
+// `<ThemeProvider>` flips `data-theme="light|dark"` on its root, which selects
+// the appropriate set of CSS custom properties below.
+// ============================================================================
+
 $bg-base: #090A13;
 $bg-surface: hsl(240, 11%, 9%);
 $bg-surface-element: #1e1f29;
@@ -25,6 +41,10 @@ $border: $border-width solid $border-color;
 
 $radius: 12px;
 $radius-small: 18px;
+
+// Runtime theme tokens declared as CSS custom properties live in
+// `global.scss` so they're emitted once at the document root rather than
+// re-emitted (and scoped) into every component's stylesheet.
 
 // Typography
 $font-family: 'Nunito', 'Zalando Sans', sans-serif;
@@ -70,7 +90,7 @@ $text-muted: rgba($fg, 0.5);
 	box-sizing: border-box;
 	font-size: 1rem;
 	line-height: 1;
-	padding: 0.5em 1em;
+	padding: 0.5em 0.75em;
 	border: $border;
 	border-radius: $radius;
 	height: calc(2em + 2px);

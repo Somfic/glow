@@ -23,11 +23,11 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 	const options: TooltipOptions =
 		typeof params === 'string' ? { content: params } : params;
 
-	const { content, position = 'top', delay = 200, useCursor = false } = options;
-
-	if (!content) return;
-
-	if (useCursor) {
+	// Note: we don't early-return when content is empty. Listeners always
+	// attach so that consumers can flip content on/off via `update` (e.g. a
+	// sidebar that adds a tooltip only when collapsed). `show` bails on empty
+	// content instead.
+	if (options.useCursor) {
 		node.setAttribute('data-cursor-controlled', 'true');
 	}
 
@@ -80,6 +80,10 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 	}
 
 	function show() {
+		// Bail when there's nothing to show — handles the dynamic case where
+		// a parent sets `content` to '' to disable the tooltip without
+		// destroying/recreating the action.
+		if (!options.content) return;
 		if (isShowing) return;
 
 		// Cancel any in-progress hide
@@ -87,15 +91,20 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 			isHiding = false;
 		}
 
+		const currentContent = options.content;
+		const currentPosition = options.position ?? 'top';
+		const currentDelay = options.delay ?? 200;
+		const currentUseCursor = options.useCursor ?? false;
+
 		showTimeout = setTimeout(() => {
-			if (useCursor) {
-				setCursorState('tooltip', content);
+			if (currentUseCursor) {
+				setCursorState('tooltip', currentContent);
 				isShowing = true;
 			} else {
 				if (tooltipInstance) return;
 
 				const rect = node.getBoundingClientRect();
-				const { x, y, finalPosition } = getPosition(rect, position);
+				const { x, y, finalPosition } = getPosition(rect, currentPosition);
 
 				tooltipTarget = document.createElement('div');
 				document.body.appendChild(tooltipTarget);
@@ -104,7 +113,7 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 					target: tooltipTarget,
 					intro: true,
 					props: {
-						content,
+						content: currentContent,
 						x,
 						y,
 						position: finalPosition
@@ -113,7 +122,7 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 
 				isShowing = true;
 			}
-		}, delay);
+		}, currentDelay);
 	}
 
 	async function hide() {
@@ -122,7 +131,7 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 			showTimeout = null;
 		}
 
-		if (useCursor) {
+		if (options.useCursor) {
 			setCursorState('default');
 			isShowing = false;
 		} else {
@@ -164,7 +173,7 @@ export function tooltip(node: HTMLElement, params: TooltipParams) {
 			node.removeEventListener('mouseleave', hide);
 			node.removeEventListener('focus', show);
 			node.removeEventListener('blur', hide);
-			if (useCursor) {
+			if (options.useCursor) {
 				node.removeAttribute('data-cursor-controlled');
 			}
 		}

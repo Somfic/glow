@@ -70,8 +70,8 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 50%;
-		background: $bg-surface-element;
-		color: $text-secondary;
+		background: var(--glow-bg-surface-element);
+		color: var(--glow-text-secondary);
 		font-weight: 600;
 		margin-left: var(--overlap);
 		box-shadow: 0 0 0 2px $bg-base;

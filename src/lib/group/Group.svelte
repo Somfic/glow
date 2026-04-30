@@ -55,7 +55,7 @@
 		flex-direction: column;
 		border-radius: $radius;
 		margin: 1.5em 0;
-		background-color: $bg-surface;
+		background-color: var(--glow-bg-surface);
 		border: 1px solid rgba($fg, 0.06);
 
 		.header {

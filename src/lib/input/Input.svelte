@@ -14,12 +14,16 @@
 	import RangeInput from './RangeInput.svelte';
 	import PasswordInput from './PasswordInput.svelte';
 	import ColorInput from './ColorInput.svelte';
+	import DateInput from './DateInput.svelte';
+	import TimeInput from './TimeInput.svelte';
 	import { FIELD_CONTEXT_KEY, type FieldContext } from '../settings/fieldContext.js';
 
 	type BaseProps = {
 		disabled?: boolean;
 		label?: string;
 		required?: boolean;
+		/** Validation error. When set (or inherited from a parent <Field>), the input renders in an error state and shows the message below. */
+		error?: string;
 	};
 
 	type TextProps = BaseProps & {
@@ -155,6 +159,31 @@
 		onChange?: (value: string) => void;
 	};
 
+	type DateProps = BaseProps & {
+		type: 'date';
+		value?: string; // ISO YYYY-MM-DD
+		placeholder?: string;
+		clearable?: boolean;
+		min?: string;
+		max?: string;
+		locale?: string;
+		format?: (date: Date | null) => string;
+		onChange?: (value: string) => void;
+	};
+
+	type TimeProps = BaseProps & {
+		type: 'time';
+		value?: string; // "HH:MM" 24-hour
+		placeholder?: string;
+		clearable?: boolean;
+		min?: string;
+		max?: string;
+		step?: number; // minute granularity
+		hourFormat?: '12' | '24';
+		locale?: string;
+		onChange?: (value: string) => void;
+	};
+
 	type Props =
 		| TextProps
 		| PasswordProps
@@ -166,20 +195,28 @@
 		| CheckboxProps
 		| ToggleProps
 		| RangeProps
-		| ColorProps;
+		| ColorProps
+		| DateProps
+		| TimeProps;
 
 	let props: Props = $props();
-
-	let inputId = `input-${Math.random().toString(36).substr(2, 9)}`;
 
 	// If this Input is nested inside a <Field>, register our type so Field can
 	// pick the right layout in `auto` mode and suppress our own label (Field owns
 	// labelling). Outside a Field everything works exactly as before.
 	const fieldCtx = getContext<FieldContext | undefined>(FIELD_CONTEXT_KEY);
+
+	// When nested in a Field, adopt Field's control id so its <label for=...>
+	// targets the underlying control. Standalone Inputs keep their own id.
+	let inputId = $derived(
+		fieldCtx?.getControlId() ?? `input-${Math.random().toString(36).slice(2, 11)}`
+	);
 	$effect(() => {
 		fieldCtx?.setControlType(props.type);
 	});
 	const renderOwnLabel = $derived(!fieldCtx && !!props.label);
+	// Inherit error state from a parent Field, but allow per-input override.
+	const effectiveError = $derived(props.error ?? fieldCtx?.getError?.());
 
 	function handleLabelClick() {
 		// For non-native form controls (multiselect, radio, select), trigger a click
@@ -190,7 +227,7 @@
 	}
 </script>
 
-<div class="input" class:in-field={!!fieldCtx}>
+<div class="input" class:in-field={!!fieldCtx} class:invalid={!!effectiveError}>
 	{#if renderOwnLabel}
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
@@ -344,6 +381,42 @@
 			disabled={p.disabled}
 			onChange={p.onChange}
 		/>
+	{:else if props.type === 'date'}
+		{@const p = props as DateProps}
+		<DateInput
+			id={inputId}
+			value={p.value}
+			placeholder={p.placeholder}
+			disabled={p.disabled}
+			clearable={p.clearable}
+			min={p.min}
+			max={p.max}
+			locale={p.locale}
+			format={p.format}
+			onChange={p.onChange}
+		/>
+	{:else if props.type === 'time'}
+		{@const p = props as TimeProps}
+		<TimeInput
+			id={inputId}
+			value={p.value}
+			placeholder={p.placeholder}
+			disabled={p.disabled}
+			clearable={p.clearable}
+			min={p.min}
+			max={p.max}
+			step={p.step}
+			hourFormat={p.hourFormat}
+			locale={p.locale}
+			onChange={p.onChange}
+		/>
+	{/if}
+
+	{#if effectiveError && !fieldCtx}
+		<span class="input-error" role="alert">
+			<Icon name="CircleAlert" size={12} />
+			{effectiveError}
+		</span>
 	{/if}
 </div>
 
@@ -362,6 +435,28 @@
 		&.in-field {
 			gap: 0;
 		}
+
+		// Invalid state — bleeds into the inner control's border via :global.
+		// Each specialized input renders its own border, so we target by the
+		// shared selectors most use.
+		&.invalid {
+			:global(input),
+			:global(textarea),
+			:global(.text-input),
+			:global(.number-input),
+			:global(.popover-trigger) {
+				border-color: var(--glow-color-danger, #ef4444);
+			}
+		}
+	}
+
+	.input-error {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		font-size: $text-xs;
+		color: var(--glow-color-danger, #ef4444);
+		line-height: 1.35;
 	}
 
 	.input-label {
@@ -377,7 +472,7 @@
 		.required {
 			display: inline-flex;
 			align-items: center;
-			color: $primary;
+			color: var(--glow-primary);
 			margin-left: 0.25rem;
 		}
 	}

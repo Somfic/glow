@@ -160,6 +160,13 @@
 							class:sorted={sortBy?.column === column.key}
 							style:width={column.width}
 							style:text-align={column.align || 'left'}
+							aria-sort={
+								column.sortable && !isSimple
+									? sortBy?.column === column.key
+										? sortBy.direction === 'asc' ? 'ascending' : 'descending'
+										: 'none'
+									: undefined
+							}
 							onclick={() => handleSort(column)}
 						>
 							<div class="table-header-content">
@@ -214,20 +221,7 @@
 							items={displayData}
 							itemHeight={variant === 'simple' ? 40 : 52}
 							height={virtualHeight}
-							renderItem={(row, index) => {
-								return `
-									<div class="virtual-table-row">
-										${selectable ? `<div class="table-cell table-select-cell">
-											<input type="checkbox" ${isRowSelected(row) ? 'checked' : ''} />
-										</div>` : ''}
-										${columns.map((col) => `
-											<div class="table-cell" style="width: ${col.width}; text-align: ${col.align || 'left'}">
-												${col.render ? col.render(getCellValue(row, col), row, index) : col.format ? col.format(getCellValue(row, col)) : getCellValue(row, col)}
-											</div>
-										`).join('')}
-									</div>
-								`;
-							}}
+							renderItem={virtualRow}
 						/>
 					</td>
 				</tr>
@@ -295,6 +289,61 @@
 	{/if}
 </div>
 
+{#snippet virtualRow(row: any, index: number)}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div
+		class="virtual-table-row"
+		class:selected={isRowSelected(row)}
+		class:hoverable={effectiveHoverable}
+		onclick={() => !isSimple && onRowClick?.(row, index)}
+	>
+		{#if effectiveSelectable}
+			<div class="table-cell table-select-cell">
+				<Input
+					type="checkbox"
+					checked={isRowSelected(row)}
+					onChange={() => toggleRowSelection(row)}
+				/>
+			</div>
+		{/if}
+		{#each columns as column}
+			<div
+				class="table-cell"
+				style:width={column.width}
+				style:text-align={column.align || 'left'}
+			>
+				{#if column.render}
+					{@render column.render(getCellValue(row, column), row, index)}
+				{:else if column.format}
+					{column.format(getCellValue(row, column))}
+				{:else}
+					{getCellValue(row, column)}
+				{/if}
+			</div>
+		{/each}
+		{#if effectiveRowActions.length > 0}
+			<div class="table-cell table-actions-cell">
+				<div class="table-actions">
+					{#each effectiveRowActions as action}
+						<button
+							class="action-button"
+							class:danger={action.variant === 'danger'}
+							onclick={(e) => {
+								e.stopPropagation();
+								action.onClick(row, index);
+							}}
+							title={action.label}
+						>
+							<Icon {...resolveIcon(action.icon)} size={resolveIcon(action.icon).size ?? 16} />
+						</button>
+					{/each}
+				</div>
+			</div>
+		{/if}
+	</div>
+{/snippet}
+
 <style lang="scss">
 	@use '../style/theme.scss' as *;
 	@use 'sass:color';
@@ -313,7 +362,7 @@
 		width: 100%;
 		border-collapse: collapse;
 		font-size: $text-sm;
-		color: $fg;
+		color: var(--glow-fg);
 
 		th,
 		td {
@@ -333,7 +382,7 @@
 				font-size: $text-xs;
 				text-transform: uppercase;
 				letter-spacing: 0.05em;
-				color: $text-muted;
+				color: var(--glow-text-muted);
 				font-weight: 600;
 			}
 
@@ -348,7 +397,7 @@
 	}
 
 	thead {
-		background: $bg-surface-element;
+		background: var(--glow-bg-surface-element);
 		border-bottom: $border;
 
 		&.sticky {
@@ -361,7 +410,7 @@
 	.table-header-cell {
 		padding: 0.75rem 1rem;
 		font-weight: 600;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		white-space: nowrap;
 		user-select: none;
 
@@ -374,7 +423,7 @@
 		}
 
 		&.sorted {
-			color: $primary;
+			color: var(--glow-primary);
 		}
 	}
 
@@ -404,6 +453,28 @@
 
 		&:last-child {
 			border-bottom: none;
+		}
+	}
+
+	.virtual-table-row {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+		border-bottom: 1px solid rgba($border-color, 0.5);
+		transition: background-color 0.15s;
+
+		&.hoverable:hover {
+			background: rgba($fg, 0.05);
+		}
+
+		&.selected {
+			background: rgba($primary, 0.1);
+		}
+
+		.table-cell {
+			flex: 1 1 0;
+			min-width: 0;
 		}
 	}
 
@@ -453,12 +524,12 @@
 		background: transparent;
 		border-radius: $radius;
 		cursor: pointer;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		transition: all 0.15s;
 
 		&:hover {
 			background: rgba($fg, 0.1);
-			color: $fg;
+			color: var(--glow-fg);
 		}
 
 		&.danger:hover {
@@ -475,7 +546,7 @@
 	.table-empty {
 		padding: 3rem;
 		text-align: center;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 	}
 
 	.table-loading {
@@ -489,7 +560,7 @@
 		width: 24px;
 		height: 24px;
 		border: 2px solid rgba($primary, 0.3);
-		border-top-color: $primary;
+		border-top-color: var(--glow-primary);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}

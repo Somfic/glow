@@ -209,7 +209,7 @@
 			margin: 0;
 			padding: 0.5rem 0 0.5rem 1rem;
 			border-left: 3px solid rgba($fg, 0.2);
-			color: $text-secondary;
+			color: var(--glow-text-secondary);
 			font-style: italic;
 		}
 
@@ -228,7 +228,7 @@
 		}
 
 		:global(.md-link) {
-			color: $primary;
+			color: var(--glow-primary);
 			text-decoration: none;
 
 			&:hover {

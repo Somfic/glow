@@ -90,11 +90,16 @@
 
 	.radio-input {
 		display: inline-flex;
+		align-items: stretch;
 		position: relative;
 		border: $border;
 		border-radius: $radius;
-		background-color: $bg-surface-element;
+		background-color: var(--glow-bg-surface-element);
 		gap: 1px;
+		// Match the height of every other input control (see control-frame).
+		height: calc(2em + 2px);
+		font-size: 1rem;
+		line-height: 1;
 
 		&.disabled {
 			opacity: 0.5;
@@ -106,7 +111,7 @@
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		background-color: $primary;
+		background-color: var(--glow-primary);
 		border-radius: calc($radius - $border-width);
 		transition:
 			left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
@@ -119,12 +124,16 @@
 
 	.radio-option {
 		flex: 1;
-		padding: 0.5em 1em;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 1em;
 		border: none;
 		background: transparent;
 		color: rgba($fg, 0.7);
 		font: inherit;
 		font-size: 1rem;
+		line-height: 1;
 		font-weight: 700;
 		cursor: pointer;
 		transition: color 0.15s ease;
@@ -133,7 +142,7 @@
 		z-index: 1;
 
 		&:hover:not(:disabled):not(.selected) {
-			color: $fg;
+			color: var(--glow-fg);
 		}
 
 		&.selected {

@@ -15,6 +15,7 @@
 	import Media from '$lib/media/Media.svelte';
 	import ListItem from '$lib/list/ListItem.svelte';
 	import Section from '$lib/typography/Section.svelte';
+	import ThemeProvider from '$lib/style/ThemeProvider.svelte';
 
 	import type { TableColumn } from '$lib/data/types.js';
 
@@ -76,6 +77,7 @@ const trackColumns: TableColumn<Track>[] = [
 
 <svelte:head><title>Spotify · Glow example</title></svelte:head>
 
+<ThemeProvider tokens={{ '--glow-primary': '#1db954' }}>
 <div class="spotify-app">
 	<!-- Top bar -->
 	<header class="topbar">
@@ -108,13 +110,14 @@ const trackColumns: TableColumn<Track>[] = [
 		</Row>
 	</header>
 
+	{#snippet libraryActions()}
+		<Button icon="Plus" tooltip="Nieuwe playlist" />
+		<Button icon="Maximize2" tooltip="Uitvouwen" />
+	{/snippet}
+
 	<!-- Library sidebar -->
 	<aside class="library">
 		<Stack gap="md">
-			{#snippet libraryActions()}
-				<Button icon="Plus" tooltip="Nieuwe playlist" />
-				<Button icon="Maximize2" tooltip="Uitvouwen" />
-			{/snippet}
 			<Section title="Bibliotheek" icon="Library" actions={libraryActions} />
 
 			<Row gap="xs">
@@ -134,13 +137,13 @@ const trackColumns: TableColumn<Track>[] = [
 		</Stack>
 
 		<!-- Profile group expander -->
+		{#snippet profileLeading()}
+			<div class="profile-icon"><Icon name="Folder" /></div>
+		{/snippet}
+		{#snippet profileTrailing()}
+			<Icon name="ChevronUp" size={14} />
+		{/snippet}
 		<Stack gap="none" class="library-list">
-			{#snippet profileLeading()}
-				<div class="profile-icon"><Icon name="Folder" /></div>
-			{/snippet}
-			{#snippet profileTrailing()}
-				<Icon name="ChevronUp" size={14} />
-			{/snippet}
 			<ListItem
 				title="my profile"
 				subtitle="41 playlists"
@@ -206,7 +209,7 @@ const trackColumns: TableColumn<Track>[] = [
 					size="lg"
 					variant="primary"
 					class="play-big"
-					onclick={() => (isPlaying = !isPlaying)}
+					onclick={() => { isPlaying = !isPlaying; }}
 				/>
 				<Button icon="Shuffle" tooltip="Willekeurig" />
 				<Button icon="Download" tooltip="Downloaden" />
@@ -223,12 +226,13 @@ const trackColumns: TableColumn<Track>[] = [
 		</div>
 	</main>
 
+	{#snippet npClose()}
+		<Button icon="X" tooltip="Sluiten" />
+	{/snippet}
+
 	<!-- Now playing sidebar -->
 	<aside class="now-playing">
 		<Stack gap="md">
-			{#snippet npClose()}
-				<Button icon="X" tooltip="Sluiten" />
-			{/snippet}
 			<Section title="Nummers die je leuk vindt" actions={npClose} />
 			<div class="np-cover">
 				<div class="np-cover-img"></div>
@@ -296,7 +300,7 @@ const trackColumns: TableColumn<Track>[] = [
 					shape="circle"
 					variant="primary"
 					class="play-small"
-					onclick={() => (isPlaying = !isPlaying)}
+					onclick={() => { isPlaying = !isPlaying; }}
 				/>
 				<Button icon="SkipForward" tooltip="Volgende" />
 				<Button icon="Repeat" tooltip="Herhalen" />
@@ -336,6 +340,7 @@ const trackColumns: TableColumn<Track>[] = [
 		</Row>
 	</footer>
 </div>
+</ThemeProvider>
 
 {#snippet numberCell(value: any)}
 	{#if value === 'playing'}
@@ -380,38 +385,6 @@ const trackColumns: TableColumn<Track>[] = [
 {/snippet}
 
 <style lang="scss">
-	// Lock the viewport so the spotify shell fills it. `<main>` is now
-	// transparent (display: contents from app.html) since we removed the
-	// hostile global rule, so we can pin .page directly.
-	:global(html),
-	:global(body) {
-		height: 100%;
-		overflow: hidden;
-	}
-	:global(.sidebar) {
-		display: none !important;
-	}
-	:global(.page) {
-		height: 100%;
-		min-height: 0 !important;
-		overflow: hidden;
-		margin: 0 !important;
-	}
-	:global(.page .content) {
-		max-width: 100% !important;
-		padding: 0 !important;
-		margin: 0 !important;
-		height: 100%;
-		min-height: 0;
-		overflow: hidden;
-	}
-	:global(.page .content > article) {
-		flex: 1 1 auto;
-		min-height: 0;
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-	}
 
 	.spotify-app {
 		flex: 1 1 auto;

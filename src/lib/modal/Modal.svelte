@@ -15,6 +15,7 @@
 		subtitle,
 		icon,
 		actions = [],
+		footer,
 		size = 'medium',
 		showCloseButton = true,
 		closeOnBackdropClick = true,
@@ -28,6 +29,7 @@
 		subtitle?: string;
 		icon?: IconProp;
 		actions?: ButtonAction[];
+		footer?: Snippet;
 		size?: 'small' | 'medium' | 'large' | 'full';
 		showCloseButton?: boolean;
 		closeOnBackdropClick?: boolean;
@@ -172,11 +174,15 @@
 				{@render children?.()}
 			</div>
 
-			{#if actions.length > 0}
+			{#if footer}
+				<div class="modal-footer">
+					{@render footer()}
+				</div>
+			{:else if actions.length > 0}
 				<div class="modal-footer">
 					<ButtonGroup>
 						{#each actions as action}
-							<Button label={action.label} variant={action.variant} onclick={action.onclick} />
+							<Button {...action} />
 						{/each}
 					</ButtonGroup>
 				</div>
@@ -205,7 +211,7 @@
 	}
 
 	.modal-container {
-		background: $bg-surface-element;
+		background: var(--glow-bg-surface-element);
 		border: $border;
 		border-radius: $radius;
 		max-height: calc(100vh - 4rem);
@@ -273,7 +279,7 @@
 		font-size: 1.25rem;
 		font-weight: 600;
 		margin: 0;
-		color: $fg;
+		color: var(--glow-fg);
 	}
 
 	.modal-subtitle {

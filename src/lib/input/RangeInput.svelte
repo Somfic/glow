@@ -91,7 +91,7 @@
 		display: flex;
 		align-items: center;
 		gap: 1em;
-		padding: 0.5em 1em;
+		padding: 0.5em 0.75em;
 
 		&.disabled {
 			opacity: 0.5;
@@ -125,7 +125,7 @@
 
 	.range-fill {
 		right: auto;
-		background: $primary;
+		background: var(--glow-primary);
 		transition: width 0.12s ease;
 	}
 
@@ -134,7 +134,7 @@
 		top: 50%;
 		width: 14px;
 		height: 14px;
-		background: $primary;
+		background: var(--glow-primary);
 		border-radius: 50%;
 		transform: translate(-50%, -50%);
 		pointer-events: none;
@@ -220,11 +220,11 @@ input[type='range'] {
 		min-width: 3ch;
 		text-align: center;
 		font-weight: 600;
-		color: $fg;
+		color: var(--glow-fg);
 		font-size: 0.875rem;
 		font-variant-numeric: tabular-nums;
 		line-height: 1;
-		background: $secondary;
+		background: var(--glow-secondary);
 		padding: 0.4em 0.6em;
 		border-radius: 999px;
 	}

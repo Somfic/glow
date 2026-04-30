@@ -55,7 +55,11 @@
 		let style = `position: fixed; top: ${top}px; z-index: 10000;`;
 
 		if (align === 'stretch') {
-			style += ` left: ${rect.left}px; width: ${rect.width}px;`;
+			// Match trigger width as a floor, but let the popover grow to fit
+			// its content (e.g. dense option labels in a narrow Field row).
+			// Cap at the remaining viewport width so it doesn't run off-screen.
+			const maxWidth = window.innerWidth - rect.left - 8;
+			style += ` left: ${rect.left}px; min-width: ${rect.width}px; max-width: ${maxWidth}px;`;
 		} else if (align === 'left') {
 			style += ` left: ${rect.left}px;`;
 		} else if (align === 'right') {
@@ -130,7 +134,7 @@
 	}
 
 	:global(.popover-content) {
-		background-color: $bg-surface-element;
+		background-color: var(--glow-bg-surface-element);
 		border: $border;
 		border-radius: $radius;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);

@@ -144,7 +144,7 @@
 	}
 
 	.cropper-container {
-		background: $bg-surface;
+		background: var(--glow-bg-surface);
 		border-radius: $radius;
 		border: $border;
 		display: flex;
@@ -165,14 +165,14 @@
 
 	.cropper-title {
 		font-weight: 600;
-		color: $fg;
+		color: var(--glow-fg);
 	}
 
 	.cropper-content {
 		flex: 1;
 		min-height: 0;
 		max-height: 60vh;
-		background: $bg-base;
+		background: var(--glow-bg-base);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -205,15 +205,15 @@
 
 	:global(.cropper-view-box) {
 		outline: 2px solid $primary !important;
-		outline-color: $primary !important;
+		outline-color: var(--glow-primary) !important;
 	}
 
 	:global(.cropper-line) {
-		background-color: $primary !important;
+		background-color: var(--glow-primary) !important;
 	}
 
 	:global(.cropper-point) {
-		background-color: $primary !important;
+		background-color: var(--glow-primary) !important;
 		width: 10px !important;
 		height: 10px !important;
 		opacity: 1 !important;

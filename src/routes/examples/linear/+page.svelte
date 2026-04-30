@@ -202,7 +202,7 @@
 
 		<Spacer />
 		<Row class="lsidebar-footer">
-			<Button icon="CircleHelp" tooltip="Help" />
+			<Button icon="CircleQuestionMark" tooltip="Help" />
 		</Row>
 	</aside>
 
@@ -276,37 +276,6 @@
 </div>
 
 <style lang="scss">
-	// Lock viewport.
-	:global(html),
-	:global(body) {
-		height: 100%;
-		overflow: hidden;
-	}
-	:global(.sidebar) {
-		display: none !important;
-	}
-	:global(.page) {
-		height: 100%;
-		min-height: 0 !important;
-		overflow: hidden;
-		margin: 0 !important;
-	}
-	:global(.page .content) {
-		max-width: 100% !important;
-		padding: 0 !important;
-		margin: 0 !important;
-		height: 100%;
-		min-height: 0;
-		overflow: hidden;
-	}
-	:global(.page .content > article) {
-		flex: 1 1 auto;
-		min-height: 0;
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-	}
-
 	.linear-app {
 		display: grid;
 		grid-template-columns: 240px 1fr;

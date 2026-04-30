@@ -6,6 +6,18 @@ export { default as Button, type ButtonAction, type ButtonVariant, type ButtonSi
 export { default as ButtonGroup } from "./button/ButtonGroup.svelte";
 export { default as Icon, type IconName, type IconProp, type IconProps, resolveIcon } from "./icon/Icon.svelte";
 export { default as Input } from "./input/Input.svelte";
+export { default as TextInput } from "./input/TextInput.svelte";
+export { default as PasswordInput } from "./input/PasswordInput.svelte";
+export { default as NumberInput } from "./input/NumberInput.svelte";
+export { default as TextareaInput } from "./input/TextareaInput.svelte";
+export { default as MultiSelectInput } from "./input/MultiSelectInput.svelte";
+export { default as RadioInput } from "./input/RadioInput.svelte";
+export { default as CheckboxInput } from "./input/CheckboxInput.svelte";
+export { default as ToggleInput } from "./input/ToggleInput.svelte";
+export { default as RangeInput } from "./input/RangeInput.svelte";
+export { default as ColorInput } from "./input/ColorInput.svelte";
+export { default as DateInput } from "./input/DateInput.svelte";
+export { default as TimeInput } from "./input/TimeInput.svelte";
 export { default as ImageUpload } from "./input/ImageUpload.svelte";
 export { default as ImageCropper } from "./input/ImageCropper.svelte";
 export type {
@@ -25,6 +37,7 @@ export { default as Card } from "./card/Card.svelte";
 export { default as Lightbox, type RelatedMedia } from "./media/Lightbox.svelte";
 export { default as Modal } from "./modal/Modal.svelte";
 export { default as Drawer } from "./drawer/Drawer.svelte";
+export { useModal, useDrawer, ModalController } from "./modal/modal.svelte.js";
 export { default as Toast } from "./toast/Toast.svelte";
 export { default as ToastContainer } from "./toast/ToastContainer.svelte";
 export { toast, showToast, dismissToast, toasts } from "./toast/toast.svelte.js";
@@ -63,7 +76,7 @@ export type {
 // Settings / config primitives
 export { default as Field } from "./settings/Field.svelte";
 export { default as FieldRow } from "./settings/FieldRow.svelte";
-export { default as SettingsSection } from "./settings/Section.svelte";
+export { default as SettingsSection } from "./settings/SettingsSection.svelte";
 export { default as Disclosure } from "./settings/Disclosure.svelte";
 export { default as SettingsShell } from "./settings/SettingsShell.svelte";
 export type { FieldLayout, FieldTier, FieldContext } from "./settings/fieldContext.js";
@@ -74,12 +87,18 @@ export { default as Spinner } from "./spinner/Spinner.svelte";
 export { default as Pagination } from "./pagination/Pagination.svelte";
 export { default as ListItem } from "./list/ListItem.svelte";
 
+// Utilities — small, dependency-free primitives apps can reach for.
+export { trapFocus } from "./util/focusTrap.js";
+export { registerShortcut } from "./util/shortcut.svelte.js";
+export { portal } from "./util/portal.js";
+
+// Theming
+export { default as ThemeProvider, type ThemeMode } from "./style/ThemeProvider.svelte";
+
 // Data display components
 export { default as Table } from "./data/Table.svelte";
 export { default as VirtualList } from "./data/VirtualList.svelte";
 export { default as Data } from "./data/Data.svelte";
-/** @deprecated Use Data instead */
-export { default as PropertyList } from "./data/Data.svelte";
 export type {
 	TableProps,
 	TableColumn,
@@ -88,10 +107,7 @@ export type {
 	VirtualListProps,
 	DataProps,
 	DataItem,
-	DataGroup,
-	PropertyListProps,
-	PropertyItem,
-	PropertyGroup
+	DataGroup
 } from "./data/types.js";
 export { default as TableOfContents } from "./navigation/TableOfContents.svelte";
 export { default as Tabs } from "./tabs/Tabs.svelte";

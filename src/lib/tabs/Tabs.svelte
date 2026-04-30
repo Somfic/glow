@@ -150,7 +150,7 @@
 		background: transparent;
 		border: none;
 		border-radius: $radius $radius 0 0;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		font-size: $text-sm;
 		font-weight: 500;
 		font-family: $font-family;
@@ -161,7 +161,7 @@
 		position: relative;
 
 		&:hover:not(.disabled):not(.active) {
-			color: $fg;
+			color: var(--glow-fg);
 		}
 
 		.tab-count {
@@ -178,8 +178,8 @@
 		}
 
 		&.active {
-			background: $bg-surface-element;
-			color: $primary;
+			background: var(--glow-bg-surface-element);
+			color: var(--glow-primary);
 			z-index: 1;
 
 			// Inverse border radius - right
@@ -222,7 +222,7 @@
 	}
 
 	.tabs-content {
-		background: $bg-surface-element;
+		background: var(--glow-bg-surface-element);
 		border-radius: $radius;
 		padding: 1.5rem;
 		transition: border-radius 0.2s ease;

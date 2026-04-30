@@ -79,7 +79,7 @@
 	}
 
 	.checkbox-label {
-		color: $fg;
+		color: var(--glow-fg);
 		font-size: 1rem;
 	}
 
@@ -91,7 +91,7 @@
 		height: 20px;
 		border: $border;
 		border-radius: 4px;
-		background-color: $bg-surface-element;
+		background-color: var(--glow-bg-surface-element);
 		transition: all 0.15s ease;
 		color: white;
 
@@ -104,8 +104,8 @@
 
 	.checkbox.checked .checkbox-box,
 	.checkbox.indeterminate .checkbox-box {
-		background-color: $primary;
-		border-color: $primary;
+		background-color: var(--glow-primary);
+		border-color: var(--glow-primary);
 
 		:global(svg) {
 			opacity: 1;
@@ -114,7 +114,7 @@
 	}
 
 	.checkbox:not(.disabled):hover .checkbox-box {
-		border-color: $primary;
+		border-color: var(--glow-primary);
 	}
 
 	.checkbox:not(.disabled):active .checkbox-box {

@@ -192,7 +192,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.25rem;
-		background: $bg-surface;
+		background: var(--glow-bg-surface);
 		border: 2px dashed $border-color;
 		border-radius: $radius;
 		cursor: pointer;
@@ -201,7 +201,7 @@
 		color: rgba($fg, 0.5);
 
 		&:hover:not(.disabled) {
-			border-color: $primary;
+			border-color: var(--glow-primary);
 		}
 
 		&.disabled {
@@ -250,7 +250,7 @@
 		transition: background-color 150ms ease;
 
 		&:hover {
-			background: $primary;
+			background: var(--glow-primary);
 		}
 	}
 
@@ -262,7 +262,7 @@
 		width: 1.5rem;
 		height: 1.5rem;
 		border: 2px solid $border-color;
-		border-top-color: $primary;
+		border-top-color: var(--glow-primary);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}

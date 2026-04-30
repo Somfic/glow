@@ -49,13 +49,13 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.3em;
-		color: $primary;
+		color: var(--glow-primary);
 		text-decoration: none;
 		cursor: pointer;
 		transition: color 150ms ease;
 
 		&.variant-muted {
-			color: $text-secondary;
+			color: var(--glow-text-secondary);
 		}
 
 		&.variant-subtle {
@@ -71,11 +71,11 @@
 		}
 
 		&:hover {
-			color: $primary-hover;
+			color: var(--glow-primary-hover);
 
 			&.variant-muted,
 			&.variant-subtle {
-				color: $fg;
+				color: var(--glow-fg);
 			}
 		}
 	}

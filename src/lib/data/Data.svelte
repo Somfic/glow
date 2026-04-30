@@ -2,6 +2,7 @@
 	import type { DataProps, DataGroup } from './types.js';
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import Pill from '../pill/Pill.svelte';
+	import Field from '../settings/Field.svelte';
 
 	let {
 		properties,
@@ -15,6 +16,10 @@
 	let normalizedGroups: DataGroup[] = $derived(
 		groups ?? (properties ? [{ properties }] : [])
 	);
+
+	// Map Data's old vocabulary to Field's. `inline` → label-on-left,
+	// `stacked` → label-above. Same shape, consistent naming.
+	const fieldLayout = $derived(variant === 'inline' ? 'horizontal' : 'vertical');
 </script>
 
 <div
@@ -22,7 +27,7 @@
 	data-variant={variant}
 	class:divided
 	class:padded
-	style:--label-width={variant === 'inline' ? labelWidth : undefined}
+	style:--glow-field-label-width={variant === 'inline' ? labelWidth : undefined}
 >
 	{#each normalizedGroups as group}
 		<div class="property-group">
@@ -34,45 +39,41 @@
 					<span>{group.label}</span>
 				</div>
 			{/if}
-			<dl>
-				{#each group.properties as prop}
-					{@const hasValue = prop.value != null || prop.render || prop.pill}
-					{@const labelOnlyLink = !hasValue && prop.href}
-					<div class="property-row" class:label-only={!hasValue}>
-						<svelte:element
-							this={labelOnlyLink ? 'a' : 'dt'}
-							class="dt"
-							href={labelOnlyLink ? prop.href : undefined}
-						>
-							{#if prop.icon}
-								<Icon {...resolveIcon(prop.icon)} size={resolveIcon(prop.icon).size ?? 14} />
-							{/if}
-							<span>{prop.label}</span>
-						</svelte:element>
-						{#if hasValue}
-							<dd class:muted={prop.muted}>
-								{#if prop.render}
-									{@render prop.render()}
-								{:else if prop.pill}
-									{#if prop.pill.icon}
-										<Pill label={prop.pill.label} color={prop.pill.color} icon={prop.pill.icon} />
-									{:else}
-										<Pill label={prop.pill.label} color={prop.pill.color} />
-									{/if}
-								{:else if prop.href && prop.value != null}
-									<a href={prop.href}>{prop.value}</a>
-								{:else if prop.value != null}
-									{#if typeof prop.value === 'boolean'}
-										{prop.value ? 'Yes' : 'No'}
-									{:else}
-										{prop.value}
-									{/if}
-								{/if}
-							</dd>
+			{#each group.properties as prop}
+				{@const hasValue = prop.value != null || prop.render || prop.pill}
+				{#if !hasValue && prop.href}
+					<!-- Label-only link row: the entire label is the affordance, so
+					     skip Field and render a single anchor. -->
+					<a class="label-link" href={prop.href}>
+						{#if prop.icon}
+							<Icon {...resolveIcon(prop.icon)} size={resolveIcon(prop.icon).size ?? 14} />
 						{/if}
-					</div>
-				{/each}
-			</dl>
+						<span>{prop.label}</span>
+					</a>
+				{:else}
+					<Field label={prop.label} leading={prop.icon} layout={fieldLayout} align="center">
+						{#if prop.render}
+							{@render prop.render()}
+						{:else if prop.pill}
+							{#if prop.pill.icon}
+								<Pill label={prop.pill.label} color={prop.pill.color} icon={prop.pill.icon} />
+							{:else}
+								<Pill label={prop.pill.label} color={prop.pill.color} />
+							{/if}
+						{:else if prop.href && prop.value != null}
+							<a class="value-link" href={prop.href}>{prop.value}</a>
+						{:else if prop.value != null}
+							<span class="value" class:muted={prop.muted}>
+								{#if typeof prop.value === 'boolean'}
+									{prop.value ? 'Yes' : 'No'}
+								{:else}
+									{prop.value}
+								{/if}
+							</span>
+						{/if}
+					</Field>
+				{/if}
+			{/each}
 		</div>
 	{/each}
 </div>
@@ -83,12 +84,27 @@
 	.property-list {
 		--pl-padding: 0;
 
+		// Field's per-row padding is sized for forms — way too generous for
+		// detail-panel key/value rows. Tighten it within Data's scope.
+		--glow-field-padding-y: 0.25rem;
+		--glow-field-padding-x: 0;
+		--glow-field-row-gap: 0.5rem;
+
 		display: flex;
 		flex-direction: column;
 
 		&.padded {
 			--pl-padding: 1rem;
-			padding: 0.75rem var(--pl-padding);
+			padding: 0.5rem var(--pl-padding);
+		}
+
+		// Detail rows are read-only — drop Field's hover tint and the
+		// click-to-focus pointer cursor on labels.
+		:global(.field:hover) {
+			background: transparent;
+		}
+		:global(.field .label) {
+			cursor: default;
 		}
 	}
 
@@ -115,84 +131,41 @@
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		padding: 0.5rem 0;
 	}
 
-	dl {
-		margin: 0;
-	}
-
-	.property-row {
-		display: flex;
-		flex-direction: column;
-		padding: 0.25rem var(--pl-padding);
-		margin-left: calc(-1 * var(--pl-padding));
-		margin-right: calc(-1 * var(--pl-padding));
-
-		[data-variant='inline'] & {
-			flex-direction: row;
-			align-items: center;
-		}
-	}
-
-
-	.dt {
+	.label-link {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
 		font-size: $text-sm;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		font-weight: 600;
-		flex-shrink: 0;
-		text-decoration: none;
-
-		[data-variant='inline'] & {
-			width: var(--label-width);
-		}
-
-		[data-variant='stacked'] & {
-			margin-bottom: 0.25rem;
-		}
-
-		.label-only & {
-			width: 100%;
-		}
-	}
-
-	a.dt {
-		color: inherit;
-		cursor: pointer;
+		padding: var(--glow-field-padding-y) var(--glow-field-padding-x);
 		text-decoration: none;
 
 		&:hover {
-			color: $primary;
-			text-decoration: none;
+			color: var(--glow-primary);
 		}
 	}
 
-	dd {
-		margin: 0;
+	.value {
 		font-size: $text-sm;
-		color: $text-primary;
-
-		[data-variant='inline'] & {
-			flex: 1;
-			min-width: 0;
-		}
+		color: var(--glow-text-primary);
 
 		&.muted {
-			color: $text-muted;
+			color: var(--glow-text-muted);
 		}
 	}
 
-	a {
-		color: $primary;
+	.value-link {
+		font-size: $text-sm;
+		color: var(--glow-primary);
 		text-decoration: none;
 
 		&:hover {
 			text-decoration: underline;
 		}
 	}
-
 </style>

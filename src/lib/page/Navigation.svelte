@@ -31,33 +31,33 @@
 	nav {
 		display: flex;
 		align-items: center;
-		background-color: $bg-surface-element;
+		background-color: var(--glow-bg-surface-element);
 		border-radius: 200px;
 
 		a {
 			padding: 0.5em 1.5em;
-			color: $fg;
+			color: var(--glow-fg);
 			text-decoration: none;
 			border-radius: 100px;
 
 			&:hover {
-				background-color: $secondary-hover;
+				background-color: var(--glow-secondary-hover);
 			}
 
 			&:active {
-				background-color: $secondary-active;
+				background-color: var(--glow-secondary-active);
 			}
 
 			&.is-active {
-				background-color: $primary;
+				background-color: var(--glow-primary);
 				font-weight: 700;
 
 				&:hover {
-					background-color: $primary-hover;
+					background-color: var(--glow-primary-hover);
 				}
 
 				&:active {
-					background-color: $primary-active;
+					background-color: var(--glow-primary-active);
 				}
 			}
 		}

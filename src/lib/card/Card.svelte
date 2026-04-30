@@ -14,6 +14,7 @@
 		header?: Snippet;
 		footer?: Snippet;
 		children?: Snippet;
+		class?: string;
 	};
 
 	let {
@@ -27,7 +28,8 @@
 		padding = 'md',
 		header,
 		footer,
-		children
+		children,
+		class: className = ''
 	}: Props = $props();
 
 	// Convert accent color to CSS custom properties
@@ -62,7 +64,7 @@
 
 {#if href}
 	<a
-		class="card sectioned"
+		class={['card sectioned', className].filter(Boolean).join(' ')}
 		class:disabled
 		class:has-accent={!!accentColor}
 		data-variant={variant}
@@ -75,7 +77,7 @@
 	</a>
 {:else}
 	<div
-		class="card sectioned"
+		class={['card sectioned', className].filter(Boolean).join(' ')}
 		class:disabled
 		class:has-accent={!!accentColor}
 		data-variant={variant}
@@ -91,7 +93,7 @@
 	.card {
 		display: block;
 		padding: 1.5rem;
-		background: $bg-surface;
+		background: var(--glow-bg-surface);
 		border: 1px solid $border-color;
 		border-radius: $radius;
 		text-decoration: none;
@@ -110,7 +112,7 @@
 
 		// Hover/focus styles only apply to clickable cards (anchors)
 		&:is(a):hover:not(.disabled):not(.has-accent) {
-			border-color: $primary;
+			border-color: var(--glow-primary);
 			background: rgba($primary, 0.05);
 		}
 
@@ -126,7 +128,7 @@
 		}
 
 		&:is(a)[data-variant='secondary']:hover:not(.disabled):not(.has-accent) {
-			border-color: $secondary;
+			border-color: var(--glow-secondary);
 			background: rgba($secondary, 0.05);
 		}
 	}
@@ -163,18 +165,18 @@
 	.icon {
 		margin-bottom: 0.5rem;
 		display: flex;
-		color: $fg;
+		color: var(--glow-fg);
 	}
 
 	.title {
 		font-weight: 600;
 		font-size: 1.125rem;
-		color: $fg;
+		color: var(--glow-fg);
 		margin-bottom: 0.5rem;
 	}
 
 	.description {
 		font-size: $text-sm;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 	}
 </style>

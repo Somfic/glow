@@ -371,13 +371,13 @@
 		align-items: center;
 		gap: 0.75em;
 		width: 100%;
-		background-color: $bg-surface-element;
-		color: $fg;
+		background-color: var(--glow-bg-surface-element);
+		color: var(--glow-fg);
 		cursor: pointer;
 		transition: all 0.15s ease;
 
 		&.open {
-			border-color: $primary;
+			border-color: var(--glow-primary);
 			box-shadow: 0 0 0 2px rgba($primary, 0.3);
 		}
 
@@ -435,7 +435,7 @@
 		overflow: hidden;
 		cursor: crosshair;
 		user-select: none;
-		background: $bg-surface;
+		background: var(--glow-bg-surface);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
 		// Ring overlay to cover pixelated edges

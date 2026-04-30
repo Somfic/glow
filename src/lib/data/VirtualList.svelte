@@ -199,7 +199,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 2rem;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		font-size: $text-sm;
 
 		&.empty {
@@ -219,7 +219,7 @@
 		width: 24px;
 		height: 24px;
 		border: 2px solid rgba($primary, 0.3);
-		border-top-color: $primary;
+		border-top-color: var(--glow-primary);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}

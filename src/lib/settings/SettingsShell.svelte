@@ -100,14 +100,14 @@
 		margin: 0;
 		font-size: $text-lg;
 		font-weight: 700;
-		color: $text-primary;
+		color: var(--glow-text-primary);
 		line-height: 1.2;
 	}
 
 	.shell-description {
 		margin: 0;
 		font-size: $text-sm;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		line-height: 1.5;
 	}
 

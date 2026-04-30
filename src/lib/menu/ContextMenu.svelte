@@ -172,7 +172,7 @@
 	}
 
 	:global(.context-menu) {
-		background-color: $bg-surface-element;
+		background-color: var(--glow-bg-surface-element);
 		border: $border;
 		border-radius: $radius;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -182,7 +182,7 @@
 
 	.divider {
 		height: 1px;
-		background: $border-color;
+		background: var(--glow-border-color);
 		margin: 4px 0;
 	}
 
@@ -201,7 +201,7 @@
 		border: none;
 		border-radius: 8px;
 		background: none;
-		color: $fg;
+		color: var(--glow-fg);
 		cursor: pointer;
 		transition: background 0.1s;
 
@@ -234,7 +234,7 @@
 		border: none;
 		border-radius: 8px;
 		background: none;
-		color: $fg;
+		color: var(--glow-fg);
 		font-size: $text-sm;
 		font-family: $font-family;
 		cursor: pointer;
@@ -247,8 +247,8 @@
 		}
 
 		&.selected {
-			background: $secondary;
-			color: $primary;
+			background: var(--glow-secondary);
+			color: var(--glow-primary);
 		}
 
 		&.disabled {
@@ -287,7 +287,7 @@
 
 	.item-shortcut {
 		font-size: $text-xs;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		margin-left: auto;
 	}
 </style>

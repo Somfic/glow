@@ -138,7 +138,7 @@
 	@use '../style/theme.scss' as *;
 
 	.code-block {
-		background: $bg-surface;
+		background: var(--glow-bg-surface);
 		border: $border;
 		border-radius: $radius;
 		overflow: hidden;
@@ -166,7 +166,7 @@
 
 	.code-loading {
 		padding: 1rem;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		font-size: $text-sm;
 		font-style: italic;
 	}
@@ -246,7 +246,7 @@
 	.shell-copy {
 		background: none;
 		border: none;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		cursor: pointer;
 		padding: 0.25rem;
 		display: flex;
@@ -259,11 +259,11 @@
 		flex-shrink: 0;
 
 		&:hover {
-			color: $text-primary;
+			color: var(--glow-text-primary);
 		}
 
 		&:active {
-			color: $primary;
+			color: var(--glow-primary);
 		}
 
 		svg {

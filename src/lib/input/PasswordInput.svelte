@@ -91,12 +91,12 @@
 
 	.input {
 		@include control-frame;
-		background-color: $bg-surface-element;
-		color: $fg;
+		background-color: var(--glow-bg-surface-element);
+		color: var(--glow-fg);
 
 		&:focus-within {
 			outline: none;
-			border-color: $primary;
+			border-color: var(--glow-primary);
 			box-shadow: 0 0 0 2px rgba($primary, 0.3);
 		}
 
@@ -132,10 +132,10 @@
 	.text-input {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.4em;
+		gap: 0.5em;
 
 		> :global(svg) {
-			color: $fg;
+			color: var(--glow-fg);
 			flex-shrink: 0;
 		}
 	}
@@ -153,7 +153,7 @@
 		border-radius: $radius;
 
 		&:hover {
-			color: $fg;
+			color: var(--glow-fg);
 			background: rgba($fg, 0.1);
 		}
 

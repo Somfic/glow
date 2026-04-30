@@ -10,15 +10,24 @@
 		groups?: SidebarGroup[];
 	};
 
+	type Layout = 'contained' | 'full' | 'bare';
+
 	type Props = {
 		title: string;
 		navItems?: NavItem[];
+		/** Layout mode: 'contained' (centered, padded), 'full' (full-width, padded), 'bare' (no shell, fills viewport — for app-style layouts). */
+		layout?: Layout;
+		/** @deprecated Use `layout` instead. 'normal' maps to 'contained'. */
 		size?: 'normal' | 'full';
 		sidebarConfig?: SidebarConfig;
 		children?: () => any;
 	};
 
-	let { title, navItems, size = 'normal', sidebarConfig, children }: Props = $props();
+	let { title, navItems, layout, size, sidebarConfig, children }: Props = $props();
+
+	const effectiveLayout: Layout = $derived(
+		layout ?? (size === 'full' ? 'full' : 'contained')
+	);
 
 	let sidebarOpen = $state(false);
 	let sidebarCollapsed = $state(false);
@@ -28,7 +37,11 @@
 	<title>{title}</title>
 </svelte:head>
 
-{#if sidebarConfig}
+{#if effectiveLayout === 'bare'}
+	<div class="page bare">
+		{@render children?.()}
+	</div>
+{:else if sidebarConfig}
 	<Sidebar
 		title={sidebarConfig.title}
 		topItems={sidebarConfig.topItems}
@@ -37,7 +50,7 @@
 		bind:collapsed={sidebarCollapsed}
 		onclose={() => (sidebarOpen = false)}
 	/>
-	<div class="page sidebar-mode {size}" class:sidebar-collapsed={sidebarCollapsed}>
+	<div class="page sidebar-mode {effectiveLayout}" class:sidebar-collapsed={sidebarCollapsed}>
 		<button class="mobile-menu-toggle" onclick={() => (sidebarOpen = !sidebarOpen)}>
 			☰
 		</button>
@@ -48,7 +61,7 @@
 		</div>
 	</div>
 {:else}
-	<div class={`page ${size}`}>
+	<div class={`page ${effectiveLayout}`}>
 		<div class="header">
 			<div class="navigation">
 				<div class="left"><div class="title">{title}</div></div>
@@ -68,6 +81,21 @@
 
 <style lang="scss">
 	@use '../style/theme.scss' as *;
+
+	.page.bare {
+		position: fixed;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		min-height: 0;
+
+		// Children fill remaining height — apps lay out their own scroll regions.
+		& > :global(*) {
+			flex: 1 1 auto;
+			min-height: 0;
+		}
+	}
 
 	.page {
 		display: flex;
@@ -107,7 +135,7 @@
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				background-color: $bg-surface;
+				background-color: var(--glow-bg-surface);
 				border-radius: 100px;
 				padding: 0.5rem 2rem;
 				width: 100%;
@@ -170,9 +198,9 @@
 		top: 1rem;
 		left: 1rem;
 		z-index: 98;
-		background: $bg-surface;
+		background: var(--glow-bg-surface);
 		border: 1px solid $border-color;
-		color: $fg;
+		color: var(--glow-fg);
 		width: 40px;
 		height: 40px;
 		border-radius: 8px;

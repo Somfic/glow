@@ -367,7 +367,7 @@
 		position: relative;
 		border-radius: $radius;
 		overflow: hidden;
-		background: $bg-surface;
+		background: var(--glow-bg-surface);
 		transition:
 			transform 0.2s ease,
 			box-shadow 0.2s ease;
@@ -542,7 +542,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: $primary;
+		background: var(--glow-primary);
 		border-radius: 0 1.5px 1.5px 0;
 		transition: width 0.3s ease;
 	}

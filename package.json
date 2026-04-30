@@ -30,6 +30,18 @@
       "types": "./dist/index.d.ts",
       "svelte": "./dist/index.js"
     },
+    "./forms": {
+      "types": "./dist/forms.d.ts",
+      "svelte": "./dist/forms.js"
+    },
+    "./data": {
+      "types": "./dist/data-display.d.ts",
+      "svelte": "./dist/data-display.js"
+    },
+    "./layout": {
+      "types": "./dist/layout.d.ts",
+      "svelte": "./dist/layout.js"
+    },
     "./styles": "./dist/style/glow.scss",
     "./styles/reset": "./dist/style/reset.scss",
     "./styles/global": "./dist/style/global.scss",

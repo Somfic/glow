@@ -158,7 +158,7 @@
 		align-items: center;
 		gap: 0.25rem;
 		font-size: 0.75rem;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;

@@ -66,13 +66,13 @@
 		@include control-frame;
 		// Override the frame's fixed height — textarea must grow with `rows`.
 		height: auto;
-		background-color: $bg-surface-element;
-		color: $fg;
+		background-color: var(--glow-bg-surface-element);
+		color: var(--glow-fg);
 		position: relative;
 
 		&:focus-within {
 			outline: none;
-			border-color: $primary;
+			border-color: var(--glow-primary);
 			box-shadow: 0 0 0 2px rgba($primary, 0.3);
 		}
 
@@ -110,7 +110,7 @@
 
 	.textarea-input {
 		display: flex;
-		gap: 0.4em;
+		gap: 0.5em;
 	}
 
 	.clear-btn {
@@ -126,7 +126,7 @@
 		flex-shrink: 0;
 
 		&:hover {
-			color: $fg;
+			color: var(--glow-fg);
 			background: rgba($fg, 0.1);
 		}
 

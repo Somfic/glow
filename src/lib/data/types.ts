@@ -128,9 +128,3 @@ export interface DataProps {
 	padded?: boolean;
 }
 
-/** @deprecated Use DataItem instead */
-export type PropertyItem = DataItem;
-/** @deprecated Use DataGroup instead */
-export type PropertyGroup = DataGroup;
-/** @deprecated Use DataProps instead */
-export type PropertyListProps = DataProps;

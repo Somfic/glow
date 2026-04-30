@@ -101,7 +101,7 @@
 		border: none;
 		border-radius: 8px;
 		background: none;
-		color: $fg;
+		color: var(--glow-fg);
 		font-size: $text-sm;
 		font-family: $font-family;
 		cursor: pointer;
@@ -119,7 +119,7 @@
 		}
 
 		&.selected {
-			color: $primary;
+			color: var(--glow-primary);
 		}
 
 		&.disabled {
@@ -175,14 +175,14 @@
 
 	.description {
 		font-size: $text-xs;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		line-height: 1.35;
 		font-weight: 400;
 	}
 
 	.shortcut {
 		font-size: $text-xs;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		margin-left: auto;
 	}
 
@@ -193,6 +193,6 @@
 	}
 
 	.trailing.check {
-		color: $primary;
+		color: var(--glow-primary);
 	}
 </style>

@@ -65,8 +65,8 @@
 		padding: 10px 14px;
 		border-radius: $radius;
 		border: 1px solid;
-		background: $bg-surface-element;
-		color: $fg;
+		background: var(--glow-bg-surface-element);
+		color: var(--glow-fg);
 		font-size: $text-sm;
 		font-family: $font-family;
 		margin: 0.5em 0;
@@ -85,7 +85,7 @@
 		color: rgba($fg, 0.92);
 
 		.icon {
-			color: $primary;
+			color: var(--glow-primary);
 		}
 	}
 

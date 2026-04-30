@@ -82,15 +82,15 @@
 		}
 
 		&.variant-primary {
-			color: $text-primary;
+			color: var(--glow-text-primary);
 		}
 
 		&.variant-secondary {
-			color: $text-secondary;
+			color: var(--glow-text-secondary);
 		}
 
 		&.variant-muted {
-			color: $text-muted;
+			color: var(--glow-text-muted);
 		}
 
 		&.weight-normal {

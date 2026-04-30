@@ -1,8 +1,20 @@
 <script lang="ts">
 	import '$lib/style/glow.scss';
+	import { page } from '$app/state';
 	import Page from '$lib/page/Page.svelte';
 	import ToastContainer from '$lib/toast/ToastContainer.svelte';
 	import type { SidebarItem, SidebarGroup } from '$lib/sidebar/Sidebar.svelte';
+	import type { Snippet } from 'svelte';
+
+	let { children }: { children?: Snippet } = $props();
+
+	// Examples that render their own full-bleed shell — they want viewport
+	// lock + no sidebar. Other examples (e.g. /examples/github) reuse the
+	// docs shell and just style their content area.
+	const bareRoutes = ['/examples/linear', '/examples/spotify'];
+	const isBareExample = $derived(
+		bareRoutes.some((r) => page.url.pathname.startsWith(r))
+	);
 
 	const sidebarConfig: { title: string; topItems: SidebarItem[]; groups: SidebarGroup[] } = {
 		title: 'Glow UI',
@@ -61,13 +73,28 @@
 					{ label: 'Cursor', href: '/components/cursor', icon: 'MousePointer' },
 					{ label: 'Gradient Mesh', href: '/components/gradient', icon: 'Sparkles' }
 				]
+			},
+			{
+				label: 'Examples',
+				items: [
+					{ label: 'Form', href: '/examples/form', icon: 'ClipboardList' },
+					{ label: 'Linear', href: '/examples/linear', icon: 'CircleDot' },
+					{ label: 'Spotify', href: '/examples/spotify', icon: 'Music' },
+					{ label: 'GitHub', href: '/examples/github', icon: 'Github' }
+				]
 			}
 		]
 	};
 </script>
 
-<Page title="Glow UI" {sidebarConfig}>
-	<slot />
-</Page>
+{#if isBareExample}
+	<Page title="Glow UI" layout="bare">
+		{@render children?.()}
+	</Page>
+{:else}
+	<Page title="Glow UI" {sidebarConfig}>
+		{@render children?.()}
+	</Page>
+{/if}
 
 <ToastContainer />

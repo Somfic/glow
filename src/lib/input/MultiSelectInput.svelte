@@ -229,13 +229,13 @@
 		justify-content: space-between;
 		gap: 0.5em;
 		width: 100%;
-		background-color: $bg-surface-element;
-		color: $fg;
+		background-color: var(--glow-bg-surface-element);
+		color: var(--glow-fg);
 		cursor: pointer;
 		text-align: left;
 
 		&.open {
-			border-color: $primary;
+			border-color: var(--glow-primary);
 			box-shadow: 0 0 0 2px rgba($primary, 0.3);
 		}
 
@@ -263,7 +263,7 @@
 		border-radius: $radius;
 
 		&:hover {
-			color: $fg;
+			color: var(--glow-fg);
 			background: rgba($fg, 0.1);
 		}
 	}
@@ -278,7 +278,7 @@
 		cursor: pointer;
 
 		&:hover {
-			color: $fg;
+			color: var(--glow-fg);
 			background: rgba($fg, 0.1);
 		}
 	}
@@ -320,14 +320,14 @@
 		padding: 0.5em 1em;
 		border: none;
 		background: transparent;
-		color: $fg;
+		color: var(--glow-fg);
 		font: inherit;
 		cursor: pointer;
 		text-align: left;
 		transition: background-color 0.15s ease;
 
 		&:hover {
-			background-color: $secondary;
+			background-color: var(--glow-secondary);
 		}
 	}
 
@@ -337,7 +337,7 @@
 		gap: 0.5em;
 		padding: 0.5em 1em;
 		border-bottom: $border;
-		background-color: $bg-surface-element;
+		background-color: var(--glow-bg-surface-element);
 		position: sticky;
 		top: 0;
 		z-index: 1;
@@ -347,7 +347,7 @@
 		flex: 1;
 		border: none;
 		background: transparent;
-		color: $fg;
+		color: var(--glow-fg);
 		font: inherit;
 		font-size: 0.875rem;
 		outline: none;
@@ -371,7 +371,7 @@
 		width: 14px;
 		height: 14px;
 		border: 2px solid rgba($fg, 0.2);
-		border-top-color: $primary;
+		border-top-color: var(--glow-primary);
 		border-radius: 50%;
 		animation: spin 0.6s linear infinite;
 	}

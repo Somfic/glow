@@ -73,7 +73,7 @@
 		gap: 1rem;
 		padding: 0.5rem 1rem;
 		font-size: $text-xs;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 	}
 
 	.pagination-controls {
@@ -91,13 +91,13 @@
 		border: none;
 		border-radius: 6px;
 		background: none;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		cursor: pointer;
 		transition: background 0.15s, color 0.15s;
 
 		&:hover:not(:disabled) {
 			background: rgba($fg, 0.08);
-			color: $fg;
+			color: var(--glow-fg);
 		}
 
 		&:disabled {
@@ -117,7 +117,7 @@
 		border: $border;
 		border-radius: 6px;
 		background: transparent;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		font-size: $text-xs;
 		font-family: $font-family;
 		cursor: pointer;

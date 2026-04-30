@@ -45,8 +45,10 @@
 </script>
 
 <section class={['glow-section', className].filter(Boolean).join(' ')} {style}>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<svelte:element
 		this={collapsible ? 'button' : 'header'}
+		type={collapsible ? 'button' : undefined}
 		class={['section-header', collapsible ? 'collapsible' : null].filter(Boolean).join(' ')}
 		onclick={collapsible ? toggle : undefined}
 		aria-expanded={collapsible ? open : undefined}

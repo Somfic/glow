@@ -117,6 +117,20 @@
 		<Input type="color" label="Color Input (OKLAB)" value="#3b82f6" />
 	</Group>
 
+	<Group label="Date Input" id="date-input">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Calendar popover with month navigation, optional <code>min</code>/<code>max</code> bounds, and <code>clearable</code>.
+		</Text>
+		<Input type="date" label="Date Input" placeholder="Pick a date" clearable />
+	</Group>
+
+	<Group label="Time Input" id="time-input">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Hour/minute scroll picker. Configurable <code>step</code> granularity and 12 / 24-hour display.
+		</Text>
+		<Input type="time" label="Time Input" placeholder="Pick a time" step={5} clearable />
+	</Group>
+
 	<Group label="Multi-Select Input" id="multiselect-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Select multiple options from a dropdown list

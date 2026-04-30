@@ -154,6 +154,7 @@
 	}: Props = $props();
 
 	let searchQuery = $state('');
+	let searchInputEl = $state<HTMLInputElement | null>(null);
 
 	function isComboboxGroup(entry: ComboboxEntry): entry is ComboboxGroup {
 		return (entry as ComboboxGroup).kind === 'group';
@@ -278,20 +279,47 @@
 			const cur = visibleOptionItems.findIndex((v) => v.index === activeOptionIndex);
 			const prev = cur > 0 ? cur - 1 : visibleOptionItems.length - 1;
 			activeOptionIndex = visibleOptionItems[prev].index;
-		} else if (e.key === 'Enter' && activeOptionIndex >= 0) {
+		} else if (e.key === 'Enter') {
+			// Pick the highlighted item, or fall back to the first visible
+			// result when the user is typing in the search box and hasn't
+			// arrowed-down yet — the standard "type then Enter" pattern.
+			const targetIndex =
+				activeOptionIndex >= 0 ? activeOptionIndex : visibleOptionItems[0]?.index ?? -1;
+			if (targetIndex < 0) return;
 			e.preventDefault();
-			const target = optionEntries[activeOptionIndex];
+			const target = optionEntries[targetIndex];
 			if (target !== 'divider' && target.kind === 'item') {
 				handleItemClick(target);
 			}
 		}
 	}
 
+	// When a printable key is pressed while the popover is open and the search
+	// input doesn't already own focus, redirect focus there so typing filters
+	// immediately. Lets users start typing the moment the menu opens.
+	function focusSearchOnPrintable(e: KeyboardEvent) {
+		if (!searchable || !searchInputEl) return;
+		if (document.activeElement === searchInputEl) return;
+		// One printable character (no modifiers, length 1).
+		if (e.key.length !== 1 || e.metaKey || e.ctrlKey || e.altKey) return;
+		searchInputEl.focus();
+	}
+
 	$effect(() => {
 		if (open) {
 			activeOptionIndex = -1;
 			document.addEventListener('keydown', handleKeydown);
-			return () => document.removeEventListener('keydown', handleKeydown);
+			document.addEventListener('keydown', focusSearchOnPrintable);
+
+			// Auto-focus the search input when the popover opens.
+			if (searchable) {
+				requestAnimationFrame(() => searchInputEl?.focus());
+			}
+
+			return () => {
+				document.removeEventListener('keydown', handleKeydown);
+				document.removeEventListener('keydown', focusSearchOnPrintable);
+			};
 		} else {
 			openSubmenuIndex = null;
 			searchQuery = '';
@@ -314,6 +342,7 @@
 			<div class="search-row">
 				<Icon name="Search" size={14} />
 				<input
+					bind:this={searchInputEl}
 					type="text"
 					class="search-input"
 					placeholder="Search..."
@@ -503,7 +532,7 @@
 
 	.divider {
 		height: 1px;
-		background: $border-color;
+		background: var(--glow-border-color);
 		margin: 4px 0;
 	}
 
@@ -512,7 +541,7 @@
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		padding: 8px 12px 4px;
 
 		&:not(:first-child) {
@@ -527,7 +556,7 @@
 		align-items: center;
 		gap: 6px;
 		padding: 6px 10px;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 	}
 
 	.search-input {
@@ -535,7 +564,7 @@
 		min-width: 0;
 		border: none;
 		background: transparent;
-		color: $fg;
+		color: var(--glow-fg);
 		font: inherit;
 		font-size: $text-sm;
 		line-height: 1;
@@ -543,14 +572,14 @@
 		outline: none;
 
 		&::placeholder {
-			color: $text-muted;
+			color: var(--glow-text-muted);
 		}
 	}
 
 	.no-results {
 		padding: 10px 12px;
 		font-size: $text-sm;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		text-align: center;
 	}
 
@@ -575,7 +604,7 @@
 		border: none;
 		border-radius: 8px;
 		background: none;
-		color: $fg;
+		color: var(--glow-fg);
 		cursor: pointer;
 		transition: background 0.1s;
 
@@ -608,8 +637,8 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5em;
-		background-color: $bg-surface-element;
-		color: $fg;
+		background-color: var(--glow-bg-surface-element);
+		color: var(--glow-fg);
 		font-family: $font-family;
 		cursor: pointer;
 		text-align: left;
@@ -620,7 +649,7 @@
 		}
 
 		&.open {
-			border-color: $primary;
+			border-color: var(--glow-primary);
 			box-shadow: 0 0 0 2px rgba($primary, 0.3);
 		}
 
@@ -652,7 +681,7 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		line-height: 1;
 	}
 
@@ -660,7 +689,7 @@
 		display: inline-flex;
 		align-items: center;
 		flex-shrink: 0;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		transition: transform 0.2s ease;
 
 		.builtin-trigger.open & {
@@ -676,7 +705,7 @@
 		position: absolute;
 		top: -4px;
 		left: calc(100% + 4px);
-		background: $bg-surface-element;
+		background: var(--glow-bg-surface-element);
 		border: 1px solid $border-color;
 		border-radius: $radius * 0.75;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
