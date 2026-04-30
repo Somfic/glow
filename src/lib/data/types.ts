@@ -77,6 +77,8 @@ export interface TableProps<T = any> {
 	// Styling
 	sticky?: boolean; // Sticky header
 	hoverable?: boolean;
+	showHeader?: boolean; // default true; when false, the column header row is omitted
+	bordered?: boolean; // default true; when false, drops the outer border and border-radius (useful when nesting inside a Card)
 	variant?: 'default' | 'simple'; // Simple variant for documentation/reference tables
 
 	// Performance
@@ -123,6 +125,7 @@ export interface DataProps {
 	variant?: 'inline' | 'stacked';
 	divided?: boolean;
 	labelWidth?: string;
+	padded?: boolean;
 }
 
 /** @deprecated Use DataItem instead */

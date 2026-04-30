@@ -74,6 +74,7 @@
 		flex-grow: 1;
 		flex-direction: column;
 		align-items: center;
+		min-height: 100vh;
 
 		&.sidebar-mode {
 			margin-left: 240px;

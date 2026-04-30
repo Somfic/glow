@@ -6,6 +6,7 @@
 		id: string;
 		label: string;
 		icon?: IconProp;
+		count?: number;
 		content: Snippet;
 		disabled?: boolean;
 	}
@@ -105,6 +106,9 @@
 					<Icon {...resolveIcon(tab.icon)} size={resolveIcon(tab.icon).size ?? 16} />
 				{/if}
 				<span>{tab.label}</span>
+				{#if tab.count !== undefined}
+					<span class="tab-count">{tab.count}</span>
+				{/if}
 			</button>
 		{/each}
 	</div>
@@ -158,6 +162,19 @@
 
 		&:hover:not(.disabled):not(.active) {
 			color: $fg;
+		}
+
+		.tab-count {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			min-width: 1.4em;
+			padding: 0 0.45em;
+			font-size: 0.75rem;
+			font-weight: 600;
+			background: rgba(255, 255, 255, 0.08);
+			border-radius: 999px;
+			line-height: 1.4;
 		}
 
 		&.active {

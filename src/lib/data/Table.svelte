@@ -19,6 +19,8 @@
 		emptyState,
 		sticky = false,
 		hoverable = true,
+		showHeader = true,
+		bordered = true,
 		variant = 'default',
 		virtual = false,
 		virtualHeight = '500px',
@@ -133,52 +135,54 @@
 	}
 </script>
 
-<div class="table-container">
+<div class="table-container" class:bordered>
 		<table class="table" class:hoverable={effectiveHoverable} class:simple={isSimple}>
-		<thead class:sticky>
-			<tr>
-				{#if effectiveSelectable}
-					<th class="table-select-cell">
-						{#if effectiveSelectable === 'multiple'}
-							<Input
-								type="checkbox"
-								checked={selectAllChecked}
-								indeterminate={selectAllIndeterminate}
-								onChange={toggleSelectAll}
-							/>
-						{/if}
-					</th>
-				{/if}
-
-				{#each columns as column}
-					<th
-						class="table-header-cell"
-						class:sortable={column.sortable && !isSimple}
-						class:sorted={sortBy?.column === column.key}
-						style:width={column.width}
-						style:text-align={column.align || 'left'}
-						onclick={() => handleSort(column)}
-					>
-						<div class="table-header-content">
-							<span>{column.label}</span>
-							{#if column.sortable && !isSimple}
-								<div class="sort-icon">
-									{#if sortBy?.column === column.key}
-										<Icon name={sortBy.direction === 'asc' ? 'ChevronUp' : 'ChevronDown'} size={14} />
-									{:else}
-										<Icon name="ChevronsUpDown" size={14} />
-									{/if}
-								</div>
+		{#if showHeader}
+			<thead class:sticky>
+				<tr>
+					{#if effectiveSelectable}
+						<th class="table-select-cell">
+							{#if effectiveSelectable === 'multiple'}
+								<Input
+									type="checkbox"
+									checked={selectAllChecked}
+									indeterminate={selectAllIndeterminate}
+									onChange={toggleSelectAll}
+								/>
 							{/if}
-						</div>
-					</th>
-				{/each}
+						</th>
+					{/if}
 
-				{#if effectiveRowActions.length > 0}
-					<th class="table-actions-header"></th>
-				{/if}
-			</tr>
-		</thead>
+					{#each columns as column}
+						<th
+							class="table-header-cell"
+							class:sortable={column.sortable && !isSimple}
+							class:sorted={sortBy?.column === column.key}
+							style:width={column.width}
+							style:text-align={column.align || 'left'}
+							onclick={() => handleSort(column)}
+						>
+							<div class="table-header-content">
+								<span>{column.label}</span>
+								{#if column.sortable && !isSimple}
+									<div class="sort-icon">
+										{#if sortBy?.column === column.key}
+											<Icon name={sortBy.direction === 'asc' ? 'ChevronUp' : 'ChevronDown'} size={14} />
+										{:else}
+											<Icon name="ChevronsUpDown" size={14} />
+										{/if}
+									</div>
+								{/if}
+							</div>
+						</th>
+					{/each}
+
+					{#if effectiveRowActions.length > 0}
+						<th class="table-actions-header"></th>
+					{/if}
+				</tr>
+			</thead>
+		{/if}
 
 		{#if loading}
 			<tbody>
@@ -298,8 +302,11 @@
 	.table-container {
 		width: 100%;
 		overflow-x: auto;
-		border-radius: $radius;
-		border: $border;
+
+		&.bordered {
+			border-radius: $radius;
+			border: $border;
+		}
 	}
 
 	.table {

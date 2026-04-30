@@ -7,6 +7,8 @@
 		step?: number;
 		disabled?: boolean;
 		showValue?: boolean;
+		/** When `'hover'`, the thumb is hidden until the user hovers/drags. */
+		thumb?: 'always' | 'hover';
 		onChange?: (value: number) => void;
 	}
 
@@ -18,6 +20,7 @@
 		step = 1,
 		disabled = false,
 		showValue = true,
+		thumb = 'hover',
 		onChange
 	}: Props = $props();
 
@@ -31,27 +34,41 @@
 
 	let percentage = $derived(((value - min) / (max - min)) * 100);
 
-	// Calculate step dots (excluding the last one)
-	let steps = $derived.by(() => {
-		const stepCount = Math.floor((max - min) / step) + 1;
-		return Array.from({ length: stepCount - 1 }, (_, i) => {
-			const value = min + i * step;
-			const position = ((value - min) / (max - min)) * 100;
-			return position;
-		});
+	// Click-to-jump should animate; ongoing drag should follow the cursor with
+	// no lag. Track pointerdown + pointermove to distinguish the two.
+	let pressing = $state(false);
+	let isDragging = $state(false);
+
+	function onPointerDown() {
+		pressing = true;
+	}
+	function onPointerMove() {
+		if (pressing) isDragging = true;
+	}
+	function onPointerUp() {
+		pressing = false;
+		isDragging = false;
+	}
+
+	$effect(() => {
+		if (typeof window === 'undefined') return;
+		window.addEventListener('pointerup', onPointerUp);
+		window.addEventListener('pointermove', onPointerMove);
+		return () => {
+			window.removeEventListener('pointerup', onPointerUp);
+			window.removeEventListener('pointermove', onPointerMove);
+		};
 	});
 </script>
 
-<div class="range-input" class:disabled>
+<div class="range-input" class:disabled class:thumb-hover={thumb === 'hover'}>
 	{#if showValue}
 		<span class="range-value">{value}</span>
 	{/if}
-	<div class="range-container">
-		<div class="step-dots">
-			{#each steps as position}
-				<span class="step-dot" style="left: {position}%"></span>
-			{/each}
-		</div>
+	<div class="range-container" class:dragging={isDragging}>
+		<div class="range-track"></div>
+		<div class="range-fill" style:width="{percentage}%"></div>
+		<div class="range-thumb" style:left="{percentage}%"></div>
 		<input
 			{id}
 			type="range"
@@ -61,6 +78,7 @@
 			{step}
 			{disabled}
 			oninput={handleInput}
+			onpointerdown={onPointerDown}
 			style="--percentage: {percentage}%"
 		/>
 	</div>
@@ -86,33 +104,56 @@
 		position: relative;
 		display: flex;
 		align-items: center;
+		min-height: 18px;
 	}
 
-	.step-dots {
+	.range-track,
+	.range-fill {
 		position: absolute;
-		left: 9px; /* Half of thumb width (18px) */
-		right: 9px; /* Half of thumb width (18px) */
+		left: 0;
+		right: 0;
 		height: 6px;
+		top: 50%;
+		transform: translateY(-50%);
+		border-radius: 999px;
 		pointer-events: none;
-		opacity: 0;
-		transition: opacity 0.2s ease;
 	}
 
-	.range-input:hover .step-dots {
-		opacity: 1;
+	.range-track {
+		background: rgba($fg, 0.15);
 	}
 
-	.step-dot {
+	.range-fill {
+		right: auto;
+		background: $primary;
+		transition: width 0.12s ease;
+	}
+
+	.range-thumb {
 		position: absolute;
-		width: 2px;
-		height: 2px;
-		background: rgba($fg, 0.2);
+		top: 50%;
+		width: 14px;
+		height: 14px;
+		background: $primary;
 		border-radius: 50%;
 		transform: translate(-50%, -50%);
-		top: 50%;
+		pointer-events: none;
+		transition:
+			left 0.12s ease,
+			opacity 0.15s ease,
+			transform 0.15s ease;
 	}
 
-	input[type='range'] {
+	// Disable smooth transitions while the user is actively dragging so the
+	// fill/thumb stay glued to the cursor.
+	.range-container.dragging {
+		.range-fill,
+		.range-thumb {
+			transition-duration: 0s;
+		}
+	}
+
+input[type='range'] {
 		width: 100%;
 		height: 30px;
 		background: transparent;
@@ -128,80 +169,51 @@
 			cursor: not-allowed;
 		}
 
-		// Track
+		// Native track is transparent — the visible track/fill are rendered
+		// as sibling divs inside .range-container so we can fully control
+		// rounding of both the unfilled background and the progress fill.
 		&::-webkit-slider-runnable-track {
 			height: 6px;
-			background: linear-gradient(
-					to right,
-					$primary 0%,
-					$primary var(--percentage),
-					rgba($fg, 0.15) var(--percentage),
-					rgba($fg, 0.15) 100%
-				);
-			border-radius: 3px;
+			background: transparent;
 		}
-
 		&::-moz-range-track {
 			height: 6px;
-			background: rgba($fg, 0.15);
-			border-radius: 3px;
+			background: transparent;
 		}
-
 		&::-moz-range-progress {
-			height: 6px;
-			background: $primary;
-			border-radius: 3px;
+			background: transparent;
 		}
 
-		// Thumb
+		// Native thumb is invisible — drag/keyboard handled by the input,
+		// visuals come from `.range-thumb`.
 		&::-webkit-slider-thumb {
 			-webkit-appearance: none;
 			appearance: none;
 			width: 18px;
 			height: 18px;
-			background: $primary;
+			background: transparent;
 			border: none;
-			border-radius: 50%;
 			cursor: pointer;
-			transition:
-				transform 0.15s ease,
-				box-shadow 0.15s ease;
-			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 			margin-top: -6px;
-
-			&:hover {
-				transform: scale(1.1);
-				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-			}
-
-			&:active {
-				transform: scale(1.05);
-				transition: transform 0.05s ease;
-			}
 		}
-
 		&::-moz-range-thumb {
 			width: 18px;
 			height: 18px;
-			background: $primary;
+			background: transparent;
 			border: none;
-			border-radius: 50%;
 			cursor: pointer;
-			transition:
-				transform 0.15s ease,
-				box-shadow 0.15s ease;
-			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-
-			&:hover {
-				transform: scale(1.1);
-				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-			}
-
-			&:active {
-				transform: scale(1.05);
-				transition: transform 0.05s ease;
-			}
 		}
+	}
+
+	// Hover-mode thumb: hidden by default, revealed when the row is hovered or
+	// the user is actively dragging.
+	.range-input.thumb-hover .range-thumb {
+		opacity: 0;
+	}
+	.range-input.thumb-hover:hover .range-thumb,
+	.range-input.thumb-hover .range-container.dragging .range-thumb,
+	.range-input.thumb-hover .range-container:has(input:focus-visible) .range-thumb {
+		opacity: 1;
 	}
 
 	.range-value {

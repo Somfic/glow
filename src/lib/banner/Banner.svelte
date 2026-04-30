@@ -1,27 +1,58 @@
 <script lang="ts">
-	import type { IconName } from '../icon/Icon.svelte';
-	import Icon from '../icon/Icon.svelte';
+	import type { Snippet } from 'svelte';
+	import Icon, { type IconProp, resolveIcon, type IconName } from '../icon/Icon.svelte';
+
+	type Variant = 'neutral' | 'info' | 'success' | 'warning' | 'error';
 
 	type Props = {
-		variant: 'info' | 'success' | 'warning' | 'error';
-		label: string;
+		variant?: Variant;
+		/** Override the default variant icon. */
+		icon?: IconProp;
+		/** Plain-text label. Use `children` for custom content. */
+		label?: string;
+		/** Trailing actions (buttons, icons). */
+		actions?: Snippet;
+		/** Replaces `label` with custom content. */
+		children?: Snippet;
+		class?: string;
+		style?: string;
 	};
 
-	let { variant, label }: Props = $props();
+	let {
+		variant = 'neutral',
+		icon,
+		label,
+		actions,
+		children,
+		class: className,
+		style
+	}: Props = $props();
 
-	let icons = {
+	const defaultIcons: Record<Variant, IconName> = {
+		neutral: 'Info',
 		info: 'Info',
 		success: 'PartyPopper',
 		warning: 'MessageCircleWarning',
 		error: 'MessageCircleX'
-	} as Record<Props['variant'], IconName>;
+	};
+
+	const iconProp = $derived(icon ?? defaultIcons[variant]);
 </script>
 
-<div class="banner {variant}">
+<div class={['banner', `variant-${variant}`, className].filter(Boolean).join(' ')} {style}>
 	<div class="icon">
-		<Icon name={icons[variant]} size={18} />
+		<Icon {...resolveIcon(iconProp)} size={resolveIcon(iconProp).size ?? 16} />
 	</div>
-	<span class="label">{label}</span>
+	<span class="content">
+		{#if children}
+			{@render children()}
+		{:else if label}
+			{label}
+		{/if}
+	</span>
+	{#if actions}
+		<div class="actions">{@render actions()}</div>
+	{/if}
 </div>
 
 <style lang="scss">
@@ -33,7 +64,7 @@
 		gap: 10px;
 		padding: 10px 14px;
 		border-radius: $radius;
-		border: 2px solid;
+		border: 1px solid;
 		background: $bg-surface-element;
 		color: $fg;
 		font-size: $text-sm;
@@ -46,38 +77,33 @@
 		&:last-child {
 			margin-bottom: 0;
 		}
+	}
 
-		&.info {
-			border-color: rgba(#6bb8e8, 0.3);
+	.variant-neutral {
+		background: rgba($primary, 0.08);
+		border-color: rgba($primary, 0.2);
+		color: rgba($fg, 0.92);
 
-			.icon {
-				color: #6bb8e8;
-			}
+		.icon {
+			color: $primary;
 		}
+	}
 
-		&.success {
-			border-color: rgba(#6be88b, 0.3);
-
-			.icon {
-				color: #6be88b;
-			}
-		}
-
-		&.warning {
-			border-color: rgba(#e8c86b, 0.3);
-
-			.icon {
-				color: #e8c86b;
-			}
-		}
-
-		&.error {
-			border-color: rgba(#e86b6b, 0.3);
-
-			.icon {
-				color: #e86b6b;
-			}
-		}
+	.variant-info {
+		border-color: rgba(#6bb8e8, 0.3);
+		.icon { color: #6bb8e8; }
+	}
+	.variant-success {
+		border-color: rgba(#6be88b, 0.3);
+		.icon { color: #6be88b; }
+	}
+	.variant-warning {
+		border-color: rgba(#e8c86b, 0.3);
+		.icon { color: #e8c86b; }
+	}
+	.variant-error {
+		border-color: rgba(#e86b6b, 0.3);
+		.icon { color: #e86b6b; }
 	}
 
 	.icon {
@@ -86,9 +112,16 @@
 		flex-shrink: 0;
 	}
 
-	.label {
+	.content {
 		flex: 1;
 		line-height: 1.4;
+		min-width: 0;
 	}
 
+	.actions {
+		flex: 0 0 auto;
+		display: flex;
+		align-items: center;
+		gap: 4px;
+	}
 </style>

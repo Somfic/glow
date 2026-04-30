@@ -2,7 +2,7 @@ import "./style/reset.scss";
 import "./style/global.scss";
 
 export { default as Banner } from "./banner/Banner.svelte";
-export { default as Button, type ButtonAction, type ButtonVariant } from "./button/Button.svelte";
+export { default as Button, type ButtonAction, type ButtonVariant, type ButtonSize } from "./button/Button.svelte";
 export { default as ButtonGroup } from "./button/ButtonGroup.svelte";
 export { default as Icon, type IconName, type IconProp, type IconProps, resolveIcon } from "./icon/Icon.svelte";
 export { default as Input } from "./input/Input.svelte";
@@ -33,6 +33,14 @@ export { tooltip } from "./tooltip/tooltip.svelte.js";
 export type { TooltipOptions, TooltipParams, TooltipPosition } from "./tooltip/tooltip.svelte.js";
 export { default as Heading } from "./typography/Heading.svelte";
 export { default as Text } from "./typography/Text.svelte";
+export { default as Link } from "./typography/Link.svelte";
+export { default as Kbd } from "./typography/Kbd.svelte";
+export { default as Section } from "./typography/Section.svelte";
+export { default as Markdown } from "./typography/Markdown.svelte";
+export { default as Stack } from "./layout/Stack.svelte";
+export { default as Row } from "./layout/Row.svelte";
+export { default as Spacer } from "./layout/Spacer.svelte";
+export { default as Divider } from "./layout/Divider.svelte";
 export { default as Code } from "./code/Code.svelte";
 export { default as CodeBlock } from "./code/CodeBlock.svelte";
 export { cursor } from "./cursor/cursor.svelte.js";
@@ -55,7 +63,7 @@ export type {
 // Settings / config primitives
 export { default as Field } from "./settings/Field.svelte";
 export { default as FieldRow } from "./settings/FieldRow.svelte";
-export { default as Section } from "./settings/Section.svelte";
+export { default as SettingsSection } from "./settings/Section.svelte";
 export { default as Disclosure } from "./settings/Disclosure.svelte";
 export { default as SettingsShell } from "./settings/SettingsShell.svelte";
 export type { FieldLayout, FieldTier, FieldContext } from "./settings/fieldContext.js";
@@ -64,6 +72,7 @@ export { default as AvatarGroup } from "./avatar/AvatarGroup.svelte";
 export { default as Spinner } from "./spinner/Spinner.svelte";
 
 export { default as Pagination } from "./pagination/Pagination.svelte";
+export { default as ListItem } from "./list/ListItem.svelte";
 
 // Data display components
 export { default as Table } from "./data/Table.svelte";

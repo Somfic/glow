@@ -10,6 +10,9 @@
 		disabled?: boolean;
 		icon?: IconProp;
 		accentColor?: string;
+		padding?: 'none' | 'sm' | 'md' | 'lg';
+		header?: Snippet;
+		footer?: Snippet;
 		children?: Snippet;
 	};
 
@@ -21,6 +24,9 @@
 		disabled = false,
 		icon,
 		accentColor,
+		padding = 'md',
+		header,
+		footer,
 		children
 	}: Props = $props();
 
@@ -30,9 +36,33 @@
 		: '');
 </script>
 
+{#snippet body()}
+	{#if header}
+		<div class="card-header">{@render header()}</div>
+	{/if}
+	<div class="card-body padding-{padding}">
+		{#if icon}
+			<div class="icon"><Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? 24} /></div>
+		{/if}
+		{#if children}
+			{@render children()}
+		{:else}
+			{#if title}
+				<div class="title">{title}</div>
+			{/if}
+			{#if description}
+				<div class="description">{description}</div>
+			{/if}
+		{/if}
+	</div>
+	{#if footer}
+		<div class="card-footer">{@render footer()}</div>
+	{/if}
+{/snippet}
+
 {#if href}
 	<a
-		class="card"
+		class="card sectioned"
 		class:disabled
 		class:has-accent={!!accentColor}
 		data-variant={variant}
@@ -41,41 +71,17 @@
 		tabindex={disabled ? -1 : 0}
 		style={accentStyle}
 	>
-		{#if icon}
-			<div class="icon"><Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? 24} /></div>
-		{/if}
-		{#if children}
-			{@render children()}
-		{:else}
-			{#if title}
-				<div class="title">{title}</div>
-			{/if}
-			{#if description}
-				<div class="description">{description}</div>
-			{/if}
-		{/if}
+		{@render body()}
 	</a>
 {:else}
 	<div
-		class="card"
+		class="card sectioned"
 		class:disabled
 		class:has-accent={!!accentColor}
 		data-variant={variant}
 		style={accentStyle}
 	>
-		{#if icon}
-			<div class="icon"><Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? 24} /></div>
-		{/if}
-		{#if children}
-			{@render children()}
-		{:else}
-			{#if title}
-				<div class="title">{title}</div>
-			{/if}
-			{#if description}
-				<div class="description">{description}</div>
-			{/if}
-		{/if}
+		{@render body()}
 	</div>
 {/if}
 
@@ -92,17 +98,23 @@
 		transition: all 0.15s ease;
 		height: 100%;
 
+		&.sectioned {
+			padding: 0;
+			overflow: hidden;
+		}
+
 		&.has-accent {
 			background: var(--accent-bg);
 			border-color: var(--accent-border);
 		}
 
-		&:hover:not(.disabled):not(.has-accent) {
+		// Hover/focus styles only apply to clickable cards (anchors)
+		&:is(a):hover:not(.disabled):not(.has-accent) {
 			border-color: $primary;
 			background: rgba($primary, 0.05);
 		}
 
-		&:focus-visible {
+		&:is(a):focus-visible {
 			outline: 2px solid $primary;
 			outline-offset: 2px;
 		}
@@ -113,9 +125,38 @@
 			pointer-events: none;
 		}
 
-		&[data-variant='secondary']:hover:not(.disabled):not(.has-accent) {
+		&:is(a)[data-variant='secondary']:hover:not(.disabled):not(.has-accent) {
 			border-color: $secondary;
 			background: rgba($secondary, 0.05);
+		}
+	}
+
+	.card-header,
+	.card-footer {
+		padding: 0.75rem 1rem;
+		background: rgba(255, 255, 255, 0.02);
+	}
+
+	.card-header {
+		border-bottom: 1px solid $border-color;
+	}
+
+	.card-footer {
+		border-top: 1px solid $border-color;
+	}
+
+	.card-body {
+		&.padding-none {
+			padding: 0;
+		}
+		&.padding-sm {
+			padding: 0.75rem;
+		}
+		&.padding-md {
+			padding: 1.5rem;
+		}
+		&.padding-lg {
+			padding: 2rem;
 		}
 	}
 

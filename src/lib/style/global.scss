@@ -46,11 +46,6 @@ main {
     font-family: $font-family;
     font-size: $text-base;
     font-weight: 600;
-    display: flex !important;
-    flex-direction: column;
-    flex-grow: 1;
-    min-height: 100vh;
-
     background-color: $bg-base;
     color: $text-primary;
 }

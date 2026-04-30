@@ -3,6 +3,10 @@
 
 	interface BaseProps {
 		onRemove?: () => void;
+		variant?: 'filled' | 'outlined';
+		selected?: boolean;
+		href?: string;
+		onclick?: (e: MouseEvent) => void;
 	}
 
 	interface TextProps extends BaseProps {
@@ -34,6 +38,8 @@
 	let hasIcon = $derived('icon' in props && props.icon);
 	let hasLabel = $derived('label' in props && props.label);
 	let color = $derived('color' in props ? props.color : undefined);
+	let variant = $derived(props.variant ?? 'filled');
+	let selected = $derived(props.selected ?? false);
 
 	let imageLoaded = $state(false);
 	let imageError = $state(false);
@@ -54,15 +60,7 @@
 	}
 </script>
 
-<span
-	class="pill"
-	class:image-only={hasImage && !hasLabel}
-	class:has-image={hasImage}
-	class:removable={props.onRemove}
-	class:has-color={!!color}
-	title={props.label}
-	style:--pill-color={color}
->
+{#snippet body()}
 	{#if hasImage && !imageError}
 		<img
 			src={props.image}
@@ -89,7 +87,51 @@
 			<Icon name="X" size={12} />
 		</button>
 	{/if}
-</span>
+{/snippet}
+
+{#if props.href}
+	<a
+		class="pill variant-{variant} interactive"
+		class:image-only={hasImage && !hasLabel}
+		class:has-image={hasImage}
+		class:removable={props.onRemove}
+		class:has-color={!!color}
+		class:selected
+		href={props.href}
+		title={props.label}
+		style:--pill-color={color}
+	>
+		{@render body()}
+	</a>
+{:else if props.onclick}
+	<button
+		type="button"
+		class="pill variant-{variant} interactive"
+		class:image-only={hasImage && !hasLabel}
+		class:has-image={hasImage}
+		class:removable={props.onRemove}
+		class:has-color={!!color}
+		class:selected
+		onclick={props.onclick}
+		title={props.label}
+		style:--pill-color={color}
+	>
+		{@render body()}
+	</button>
+{:else}
+	<span
+		class="pill variant-{variant}"
+		class:image-only={hasImage && !hasLabel}
+		class:has-image={hasImage}
+		class:removable={props.onRemove}
+		class:has-color={!!color}
+		class:selected
+		title={props.label}
+		style:--pill-color={color}
+	>
+		{@render body()}
+	</span>
+{/if}
 
 <style lang="scss">
 	@use '../style/theme.scss' as *;
@@ -113,6 +155,48 @@
 			background: color-mix(in oklch, var(--pill-color) 15%, transparent);
 			border-color: color-mix(in oklch, var(--pill-color) 25%, transparent);
 			color: color-mix(in oklch, var(--pill-color) 70%, $fg);
+		}
+
+		&.variant-outlined {
+			background: transparent;
+
+			&.has-color {
+				background: transparent;
+			}
+		}
+
+		&.interactive {
+			cursor: pointer;
+			text-decoration: none;
+			border: 1px solid rgba($fg, 0.1);
+			font: inherit;
+
+			&:hover {
+				background: rgba($fg, 0.12);
+				border-color: rgba($fg, 0.2);
+			}
+
+			&.has-color:hover {
+				background: color-mix(in oklch, var(--pill-color) 25%, transparent);
+				border-color: color-mix(in oklch, var(--pill-color) 40%, transparent);
+			}
+		}
+
+		&.selected {
+			background: $fg;
+			color: $bg-base;
+			border-color: $fg;
+
+			&.has-color {
+				background: var(--pill-color);
+				border-color: var(--pill-color);
+				color: $bg-base;
+			}
+
+			&.interactive:hover {
+				background: rgba($fg, 0.85);
+				border-color: rgba($fg, 0.85);
+			}
 		}
 	}
 

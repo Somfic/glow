@@ -4,6 +4,36 @@
 	import Icon from '../icon/Icon.svelte';
 	import Spinner from '../spinner/Spinner.svelte';
 
+	// Palette of gradient stops used as the fallback when no src is provided.
+	// Deterministic from `alt` so the same playlist/track always gets the same
+	// gradient.
+	const gradientPalette: [string, string][] = [
+		['#8b6ded', '#b794f4'],
+		['#06b6d4', '#3b82f6'],
+		['#f59e0b', '#ec4899'],
+		['#10b981', '#84cc16'],
+		['#f43f5e', '#ec4899'],
+		['#a78bfa', '#6366f1'],
+		['#1e3a8a', '#4338ca'],
+		['#831843', '#db2777'],
+		['#7c2d12', '#ea580c'],
+		['#14532d', '#65a30d']
+	];
+
+	function hashString(s: string): number {
+		let h = 0;
+		for (let i = 0; i < s.length; i++) {
+			h = (h << 5) - h + s.charCodeAt(i);
+			h |= 0;
+		}
+		return Math.abs(h);
+	}
+
+	function gradientFor(seed: string): string {
+		const [a, b] = gradientPalette[hashString(seed || 'default') % gradientPalette.length];
+		return `linear-gradient(135deg, ${a} 0%, ${b} 100%)`;
+	}
+
 	type MediaType = 'image' | 'video' | 'auto';
 	type Fit = 'cover' | 'contain';
 
@@ -30,7 +60,7 @@
 		onVideoReady,
 		onVideoPlaying
 	}: {
-		src: string;
+		src?: string;
 		type?: MediaType;
 		fit?: Fit;
 		alt?: string;
@@ -237,14 +267,16 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="media" class:clickable={!!onclick} {onclick}>
-	{#if initialLoad && !mediaError}
+	{#if !src}
+		<div class="fallback" style:background={gradientFor(alt)}></div>
+	{:else if initialLoad && !mediaError}
 		<div class="placeholder">
 			<Spinner size={24} />
 		</div>
 	{/if}
 
 	{#if mediaError}
-		<div class="error">
+		<div class="error" style:background={gradientFor(alt)}>
 			<Icon name="MessageCircleWarning" size={24} />
 		</div>
 	{/if}
@@ -292,18 +324,26 @@
 	}
 
 	.placeholder,
-	.error {
+	.error,
+	.fallback {
 		position: absolute;
 		inset: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(0, 0, 0, 0.1);
 		z-index: 2;
 	}
 
+	.placeholder {
+		background: rgba(0, 0, 0, 0.1);
+	}
+
 	.error {
-		color: rgba(255, 255, 255, 0.5);
+		color: rgba(255, 255, 255, 0.7);
+	}
+
+	.fallback {
+		z-index: 1;
 	}
 
 	.layer {

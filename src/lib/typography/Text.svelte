@@ -7,6 +7,8 @@
 		variant = 'primary',
 		weight = 'normal',
 		align,
+		style,
+		class: className,
 		children
 	}: {
 		as?: 'p' | 'span' | 'div';
@@ -14,13 +16,16 @@
 		variant?: 'primary' | 'secondary' | 'muted';
 		weight?: 'normal' | 'medium' | 'semibold' | 'bold';
 		align?: 'left' | 'center' | 'right';
+		style?: string;
+		class?: string;
 		children: Snippet;
 	} = $props();
 </script>
 
 {#if as === 'p'}
 	<p
-		class="text size-{size} variant-{variant} weight-{weight}"
+		{style}
+		class="text size-{size} variant-{variant} weight-{weight} {className ?? ''}"
 		class:align-left={align === 'left'}
 		class:align-center={align === 'center'}
 		class:align-right={align === 'right'}
@@ -29,7 +34,8 @@
 	</p>
 {:else if as === 'span'}
 	<span
-		class="text size-{size} variant-{variant} weight-{weight}"
+		{style}
+		class="text size-{size} variant-{variant} weight-{weight} {className ?? ''}"
 		class:align-left={align === 'left'}
 		class:align-center={align === 'center'}
 		class:align-right={align === 'right'}
@@ -38,7 +44,8 @@
 	</span>
 {:else}
 	<div
-		class="text size-{size} variant-{variant} weight-{weight}"
+		{style}
+		class="text size-{size} variant-{variant} weight-{weight} {className ?? ''}"
 		class:align-left={align === 'left'}
 		class:align-center={align === 'center'}
 		class:align-right={align === 'right'}

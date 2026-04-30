@@ -30,6 +30,9 @@
 		loading?: boolean;
 		clearable?: boolean;
 		autocomplete?: AutoFill;
+		prefix?: Snippet;
+		suffix?: Snippet;
+		shortcut?: string;
 		onChange?: (value: string) => void;
 		onFocus?: () => void;
 		onBlur?: () => void;
@@ -142,6 +145,7 @@
 		max?: number;
 		step?: number;
 		showValue?: boolean;
+		thumb?: 'always' | 'hover';
 		onChange?: (value: number) => void;
 	};
 
@@ -211,6 +215,9 @@
 			disabled={p.disabled}
 			clearable={p.clearable}
 			autocomplete={p.autocomplete}
+			prefix={p.prefix}
+			suffix={p.suffix}
+			shortcut={p.shortcut}
 			onChange={p.onChange}
 			onFocus={p.onFocus}
 			onBlur={p.onBlur}
@@ -326,6 +333,7 @@
 			step={p.step}
 			disabled={p.disabled}
 			showValue={p.showValue}
+			thumb={p.thumb}
 			onChange={p.onChange}
 		/>
 	{:else if props.type === 'color'}

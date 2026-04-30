@@ -8,7 +8,8 @@
 		groups,
 		variant = 'inline',
 		divided = true,
-		labelWidth = '40%'
+		labelWidth = '40%',
+		padded = true
 	}: DataProps = $props();
 
 	let normalizedGroups: DataGroup[] = $derived(
@@ -20,6 +21,7 @@
 	class="property-list"
 	data-variant={variant}
 	class:divided
+	class:padded
 	style:--label-width={variant === 'inline' ? labelWidth : undefined}
 >
 	{#each normalizedGroups as group}
@@ -34,32 +36,40 @@
 			{/if}
 			<dl>
 				{#each group.properties as prop}
-					<div class="property-row">
-						<dt>
+					{@const hasValue = prop.value != null || prop.render || prop.pill}
+					{@const labelOnlyLink = !hasValue && prop.href}
+					<div class="property-row" class:label-only={!hasValue}>
+						<svelte:element
+							this={labelOnlyLink ? 'a' : 'dt'}
+							class="dt"
+							href={labelOnlyLink ? prop.href : undefined}
+						>
 							{#if prop.icon}
 								<Icon {...resolveIcon(prop.icon)} size={resolveIcon(prop.icon).size ?? 14} />
 							{/if}
 							<span>{prop.label}</span>
-						</dt>
-						<dd class:muted={prop.muted}>
-							{#if prop.render}
-								{@render prop.render()}
-							{:else if prop.pill}
-								{#if prop.pill.icon}
-									<Pill label={prop.pill.label} color={prop.pill.color} icon={prop.pill.icon} />
-								{:else}
-									<Pill label={prop.pill.label} color={prop.pill.color} />
+						</svelte:element>
+						{#if hasValue}
+							<dd class:muted={prop.muted}>
+								{#if prop.render}
+									{@render prop.render()}
+								{:else if prop.pill}
+									{#if prop.pill.icon}
+										<Pill label={prop.pill.label} color={prop.pill.color} icon={prop.pill.icon} />
+									{:else}
+										<Pill label={prop.pill.label} color={prop.pill.color} />
+									{/if}
+								{:else if prop.href && prop.value != null}
+									<a href={prop.href}>{prop.value}</a>
+								{:else if prop.value != null}
+									{#if typeof prop.value === 'boolean'}
+										{prop.value ? 'Yes' : 'No'}
+									{:else}
+										{prop.value}
+									{/if}
 								{/if}
-							{:else if prop.href && prop.value != null}
-								<a href={prop.href}>{prop.value}</a>
-							{:else if prop.value != null}
-								{#if typeof prop.value === 'boolean'}
-									{prop.value ? 'Yes' : 'No'}
-								{:else}
-									{prop.value}
-								{/if}
-							{/if}
-						</dd>
+							</dd>
+						{/if}
 					</div>
 				{/each}
 			</dl>
@@ -71,11 +81,15 @@
 	@use '../style/theme.scss' as *;
 
 	.property-list {
-		--pl-padding: 1rem;
+		--pl-padding: 0;
 
 		display: flex;
 		flex-direction: column;
-		padding: 0.75rem var(--pl-padding);
+
+		&.padded {
+			--pl-padding: 1rem;
+			padding: 0.75rem var(--pl-padding);
+		}
 	}
 
 	.property-group {
@@ -122,11 +136,8 @@
 		}
 	}
 
-	.property-row:hover {
-		background: rgba($fg, 0.03);
-	}
 
-	dt {
+	.dt {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
@@ -134,6 +145,7 @@
 		color: $text-secondary;
 		font-weight: 600;
 		flex-shrink: 0;
+		text-decoration: none;
 
 		[data-variant='inline'] & {
 			width: var(--label-width);
@@ -141,6 +153,21 @@
 
 		[data-variant='stacked'] & {
 			margin-bottom: 0.25rem;
+		}
+
+		.label-only & {
+			width: 100%;
+		}
+	}
+
+	a.dt {
+		color: inherit;
+		cursor: pointer;
+		text-decoration: none;
+
+		&:hover {
+			color: $primary;
+			text-decoration: none;
 		}
 	}
 

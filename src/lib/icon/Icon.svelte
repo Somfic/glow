@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	export { type IconName } from './types.js';
 
-	export type IconProps = { name: IconName; size?: number; color?: string; fill?: boolean };
+	export type IconProps = { name: IconName; size?: number | string; color?: string; fill?: boolean };
 	export type IconProp = IconName | IconProps;
 
 	export function resolveIcon(icon: IconProp): IconProps {
@@ -15,12 +15,12 @@
 
 	let {
 		name,
-		size = 16,
+		size = '1em',
 		color,
 		fill = false
-	}: { name: IconName; size?: number; color?: string; fill?: boolean } = $props();
+	}: { name: IconName; size?: number | string; color?: string; fill?: boolean } = $props();
 
-	const IconComponent = $derived(icons[name] as Component<{ size?: number; color?: string; fill?: string }>);
+	const IconComponent = $derived(icons[name] as Component<{ size?: number | string; color?: string; fill?: string }>);
 </script>
 
 <span class="icon" style="--icon-color: {color ?? 'currentColor'}; --icon-fill: {fill ? color ?? 'currentColor' : 'none'}">

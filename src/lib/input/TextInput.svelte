@@ -1,6 +1,9 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
+	import Kbd from '../typography/Kbd.svelte';
 	import { cursor } from '../cursor/cursor.svelte.js';
+	import { registerShortcut } from '../util/shortcut.svelte.js';
 
 	interface Props {
 		id?: string;
@@ -11,6 +14,9 @@
 		disabled?: boolean;
 		clearable?: boolean;
 		autocomplete?: AutoFill;
+		prefix?: Snippet;
+		suffix?: Snippet;
+		shortcut?: string;
 		onChange?: (value: string) => void;
 		onFocus?: () => void;
 		onBlur?: () => void;
@@ -27,6 +33,9 @@
 		disabled = false,
 		clearable = false,
 		autocomplete,
+		prefix,
+		suffix,
+		shortcut,
 		onChange,
 		onFocus,
 		onBlur,
@@ -40,6 +49,11 @@
 		if (inputElement && inputRef) {
 			inputRef(inputElement);
 		}
+	});
+
+	$effect(() => {
+		if (!shortcut || disabled) return;
+		return registerShortcut(shortcut, () => inputElement?.focus());
 	});
 
 	function handleInput(e: Event) {
@@ -63,8 +77,9 @@
 	{#if loading}
 		<span class="spinner"></span>
 	{:else if icon}
-		<Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? 16} />
+		<Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? '1em'} />
 	{/if}
+	{#if prefix}<span class="affix prefix">{@render prefix()}</span>{/if}
 	<input
 		{id}
 		type="text"
@@ -78,6 +93,11 @@
 		onblur={onBlur}
 		onkeydown={onKeydown}
 	/>
+	{#if suffix}
+		<span class="affix suffix">{@render suffix()}</span>
+	{:else if shortcut}
+		<span class="affix suffix"><Kbd size="sm">{shortcut}</Kbd></span>
+	{/if}
 	{#if clearable && value}
 		<button type="button" class="clear-btn" onclick={clearValue} tabindex="-1">
 			<Icon name="X" size={16} />
@@ -137,6 +157,14 @@
 			color: $fg;
 			flex-shrink: 0;
 		}
+	}
+
+	.affix {
+		display: inline-flex;
+		align-items: center;
+		color: rgba($fg, 0.5);
+		flex-shrink: 0;
+		font-size: 0.9em;
 	}
 
 	.spinner {
