@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Input from '$lib/input/Input.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
@@ -20,7 +20,7 @@
 		states.
 	</Text>
 
-	<Group label="Text Input" id="text-input">
+	<Card title="Text Input" id="text-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Standard text input with icon, placeholder, and clearable option
 		</Text>
@@ -32,9 +32,9 @@
 			clearable={true}
 			required={true}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Loading Input" id="loading-input">
+	<Card title="Loading Input" id="loading-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Text input with loading state, replaces the icon with a spinner
 		</Text>
@@ -46,9 +46,9 @@
 			loading={true}
 			clearable={true}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Number Input" id="number-input">
+	<Card title="Number Input" id="number-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Numeric input with min/max validation and step increments
 		</Text>
@@ -61,9 +61,9 @@
 			step={5}
 			clearable={true}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Textarea Input" id="textarea-input">
+	<Card title="Textarea Input" id="textarea-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Multi-line text input for longer content
 		</Text>
@@ -74,9 +74,9 @@
 			rows={3}
 			clearable={true}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Checkbox Input" id="checkbox-input">
+	<Card title="Checkbox Input" id="checkbox-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Checkbox with custom cursor states showing checked/unchecked/indeterminate
 		</Text>
@@ -90,9 +90,9 @@
 				checkboxLabel="Indeterminate - hover to see minus"
 			/>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Toggle Input" id="toggle-input">
+	<Card title="Toggle Input" id="toggle-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Toggle switch with custom cursor states showing position
 		</Text>
@@ -101,37 +101,37 @@
 			<Input type="toggle" toggleLabel="Off - hover to see toggle left" />
 			<Input type="toggle" checked={true} toggleLabel="On - hover to see toggle right" />
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Range Input" id="range-input">
+	<Card title="Range Input" id="range-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Slider input with optional value display
 		</Text>
 		<Input type="range" label="Range Input" min={0} max={100} step={5} showValue={true} />
-	</Group>
+	</Card>
 
-	<Group label="Color Input" id="color-input">
+	<Card title="Color Input" id="color-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Color picker using OKLAB color space for perceptually uniform colors
 		</Text>
 		<Input type="color" label="Color Input (OKLAB)" value="#3b82f6" />
-	</Group>
+	</Card>
 
-	<Group label="Date Input" id="date-input">
+	<Card title="Date Input" id="date-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Calendar popover with month navigation, optional <code>min</code>/<code>max</code> bounds, and <code>clearable</code>.
 		</Text>
 		<Input type="date" label="Date Input" placeholder="Pick a date" clearable />
-	</Group>
+	</Card>
 
-	<Group label="Time Input" id="time-input">
+	<Card title="Time Input" id="time-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Hour/minute scroll picker. Configurable <code>step</code> granularity and 12 / 24-hour display.
 		</Text>
 		<Input type="time" label="Time Input" placeholder="Pick a time" step={5} clearable />
-	</Group>
+	</Card>
 
-	<Group label="Multi-Select Input" id="multiselect-input">
+	<Card title="Multi-Select Input" id="multiselect-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Select multiple options from a dropdown list
 		</Text>
@@ -151,9 +151,9 @@
 				{ label: 'Cyan', value: 'cyan' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Radio Input" id="radio-input">
+	<Card title="Radio Input" id="radio-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Select one option from a group of radio buttons
 		</Text>
@@ -167,9 +167,9 @@
 				{ label: 'Monthly', value: 'monthly' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Select Input" id="select-input">
+	<Card title="Select Input" id="select-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Searchable dropdown select with filtering. Options accept icons and descriptions
 			(rendered as a muted second line) so you don't need PopoverMenu for richer choices.
@@ -186,9 +186,9 @@
 				{ label: 'Grape',  value: 'grape',  icon: 'Grape',  description: 'Berries that grow in clusters on a vine' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Select with groups" id="select-grouped">
+	<Card title="Select with groups" id="select-grouped">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Mix <Code>{`{ kind: 'group', label, options }`}</Code> entries into the options
 			array to render uppercase eyebrow headers between sections.
@@ -217,9 +217,9 @@
 				}
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Non-searchable select" id="select-non-searchable">
+	<Card title="Non-searchable select" id="select-non-searchable">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Set <Code>{`searchable={false}`}</Code> for short fixed lists where the
 			type-to-find affordance just gets in the way.
@@ -234,9 +234,9 @@
 				{ label: 'Fixed',  value: 'fixed',  icon: 'Lock',    description: 'Reproducible result' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Usage" id="usage">
+	<Card title="Usage" id="usage">
 		<Heading level={3} id="text-usage">Text & Number Inputs</Heading>
 		<CodeBlock
 			language="svelte"
@@ -312,9 +312,9 @@
   bind:value={multiSelected}
 />`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Common Props" id="props">
+	<Card title="Common Props" id="props">
 		<Table
 			variant="simple"
 			columns={[
@@ -334,9 +334,9 @@
 				{ prop: 'icon', type: 'IconName', default: '-', description: 'Icon to display (text inputs)' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Features" id="features">
+	<Card title="Features" id="features">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 			<li><Text>📝 10 input types covering all common use cases</Text></li>
 			<li><Text>🎯 Custom cursor states for interactive inputs</Text></li>
@@ -347,4 +347,4 @@
 			<li><Text>🎭 Icon support for text inputs</Text></li>
 			<li><Text>♿ Fully accessible with proper labels and ARIA</Text></li>
 		</ul>
-	</Group>
+	</Card>

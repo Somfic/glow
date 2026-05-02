@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Banner from '$lib/banner/Banner.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
@@ -19,7 +19,7 @@
 		Simple banner component for displaying notifications and alerts with different severity levels.
 	</Text>
 
-	<Group label="Banner Variants" id="banner-variants">
+	<Card title="Banner Variants" id="banner-variants">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Four color variants for different message types
 		</Text>
@@ -29,9 +29,9 @@
 			<Banner variant="warning" label="Warning banner" />
 			<Banner variant="error" label="Error banner" />
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Banner Examples" id="banner-examples">
+	<Card title="Banner Examples" id="banner-examples">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Real-world usage examples with descriptive messages
 		</Text>
@@ -50,9 +50,9 @@
 				label="Unable to connect to the server. Please check your internet connection and try again."
 			/>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Usage" id="usage">
+	<Card title="Usage" id="usage">
 		<CodeBlock
 			language="svelte"
 			code={`<script>
@@ -64,9 +64,9 @@
 <Banner variant="warning" label="Warning message" />
 <Banner variant="error" label="Error message" />`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Props" id="props">
+	<Card title="Props" id="props">
 		<Table
 			variant="simple"
 			columns={[
@@ -80,9 +80,9 @@
 				{ prop: 'label', type: 'string', default: 'required', description: 'Banner message text' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="When to Use Each Variant" id="variants-guide">
+	<Card title="When to Use Each Variant" id="variants-guide">
 		<div style="display: flex; flex-direction: column; gap: 1rem;">
 			<div>
 				<Text weight="semibold" size="sm">Info (Blue)</Text>
@@ -111,9 +111,9 @@
 				>
 			</div>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Features" id="features">
+	<Card title="Features" id="features">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 			<li><Text>🎨 Four semantic color variants</Text></li>
 			<li><Text>📱 Responsive and mobile-friendly</Text></li>
@@ -121,4 +121,4 @@
 			<li><Text>♿ Accessible with proper ARIA roles</Text></li>
 			<li><Text>🎭 Consistent styling across variants</Text></li>
 		</ul>
-	</Group>
+	</Card>

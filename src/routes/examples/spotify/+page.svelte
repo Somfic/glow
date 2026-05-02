@@ -6,8 +6,7 @@
 	import Avatar from '$lib/avatar/Avatar.svelte';
 	import Icon from '$lib/icon/Icon.svelte';
 	import Input from '$lib/input/Input.svelte';
-	import Stack from '$lib/layout/Stack.svelte';
-	import Row from '$lib/layout/Row.svelte';
+	import Flex from "$lib/layout/Flex.svelte";
 	import Spacer from '$lib/layout/Spacer.svelte';
 	import Table from '$lib/data/Table.svelte';
 	import Card from '$lib/card/Card.svelte';
@@ -87,7 +86,7 @@ const trackColumns: TableColumn<Track>[] = [
 			</div>
 		</div>
 
-		<Row gap="sm" class="topbar-search">
+		<Flex direction="horizontal" gap="sm" class="topbar-search">
 			<Button icon="House" tooltip="Home" />
 			<div class="search-input">
 				<Input
@@ -100,14 +99,14 @@ const trackColumns: TableColumn<Track>[] = [
 				/>
 			</div>
 			<Button icon="LayoutGrid" tooltip="Bladeren" />
-		</Row>
+		</Flex>
 
-		<Row gap="sm" class="topbar-right">
+		<Flex direction="horizontal" gap="sm" class="topbar-right">
 			<Button icon="Download" label="De app installeren" variant="ghost" />
 			<Button icon="Bell" tooltip="Inbox" />
 			<Button icon="Users" tooltip="Vrienden" />
 			<Avatar name="Somfic" size="md" />
-		</Row>
+		</Flex>
 	</header>
 
 	{#snippet libraryActions()}
@@ -117,24 +116,24 @@ const trackColumns: TableColumn<Track>[] = [
 
 	<!-- Library sidebar -->
 	<aside class="library">
-		<Stack gap="md">
+		<Flex gap="md">
 			<Section title="Bibliotheek" icon="Library" actions={libraryActions} />
 
-			<Row gap="xs">
+			<Flex direction="horizontal" gap="xs">
 				<Pill label="Playlists" selected={activeTab === 'playlists'} onclick={() => (activeTab = 'playlists')} />
 				<Pill label="Artiesten" selected={activeTab === 'artiesten'} onclick={() => (activeTab = 'artiesten')} />
 				<Pill label="Albums" selected={activeTab === 'albums'} onclick={() => (activeTab = 'albums')} />
-			</Row>
+			</Flex>
 
-			<Row>
+			<Flex direction="horizontal">
 				<Button icon="Search" tooltip="Zoeken in bibliotheek" />
 				<Spacer />
-				<Row gap="xs">
+				<Flex direction="horizontal" gap="xs">
 					<Text size="sm" variant="secondary" as="span">Maker</Text>
 					<Icon name="List" size={14} />
-				</Row>
-			</Row>
-		</Stack>
+				</Flex>
+			</Flex>
+		</Flex>
 
 		<!-- Profile group expander -->
 		{#snippet profileLeading()}
@@ -143,7 +142,7 @@ const trackColumns: TableColumn<Track>[] = [
 		{#snippet profileTrailing()}
 			<Icon name="ChevronUp" size={14} />
 		{/snippet}
-		<Stack gap="none" class="library-list">
+		<Flex gap="none" class="library-list">
 			<ListItem
 				title="my profile"
 				subtitle="41 playlists"
@@ -176,33 +175,33 @@ const trackColumns: TableColumn<Track>[] = [
 					trailing={p.active ? itemTrailing : undefined}
 				/>
 			{/each}
-		</Stack>
+		</Flex>
 	</aside>
 
 	<!-- Main pane -->
 	<main class="main">
 		<div class="hero">
 			<GradientMesh colors={['#8b6ded', '#6c4be3', '#3b1d8f', '#1d1238']} intensity={0.4} speed={0.4}>
-				<Row gap="lg" align="end" class="hero-row">
+				<Flex direction="horizontal" gap="lg" align="end" class="hero-row">
 					<div class="hero-cover">
 						<Media alt="Nummers die je leuk vindt" />
 						<div class="hero-cover-icon"><Icon name="Heart" size="120" color="white" fill /></div>
 					</div>
-					<Stack gap="sm">
+					<Flex gap="sm">
 						<Text size="sm" weight="semibold" as="span">Playlist</Text>
 						<Heading level={1} class="hero-title">Nummers die je leuk vindt</Heading>
-						<Row gap="sm">
+						<Flex direction="horizontal" gap="sm">
 							<Avatar name="lucas" size="sm" />
 							<Text size="sm" weight="semibold" as="span">lucas :)</Text>
 							<Text size="sm" variant="secondary" as="span">· 4.755 nummers</Text>
-						</Row>
-					</Stack>
-				</Row>
+						</Flex>
+					</Flex>
+				</Flex>
 			</GradientMesh>
 		</div>
 
 		<div class="track-controls">
-			<Row gap="sm">
+			<Flex direction="horizontal" gap="sm">
 				<Button
 					icon={{ name: isPlaying ? 'Pause' : 'Play', fill: true }}
 					shape="circle"
@@ -214,11 +213,11 @@ const trackColumns: TableColumn<Track>[] = [
 				<Button icon="Shuffle" tooltip="Willekeurig" />
 				<Button icon="Download" tooltip="Downloaden" />
 				<Spacer />
-				<Row gap="xs">
+				<Flex direction="horizontal" gap="xs">
 					<Text size="sm" variant="secondary" as="span">Lijst</Text>
 					<Icon name="List" />
-				</Row>
-			</Row>
+				</Flex>
+			</Flex>
 		</div>
 
 		<div class="tracks">
@@ -232,7 +231,7 @@ const trackColumns: TableColumn<Track>[] = [
 
 	<!-- Now playing sidebar -->
 	<aside class="now-playing">
-		<Stack gap="md">
+		<Flex gap="md">
 			<Section title="Nummers die je leuk vindt" actions={npClose} />
 			<div class="np-cover">
 				<div class="np-cover-img"></div>
@@ -241,18 +240,18 @@ const trackColumns: TableColumn<Track>[] = [
 					<Text size="sm" weight="semibold" as="span">Overschakelen naar video</Text>
 				</button>
 			</div>
-			<Row>
-				<Stack gap="none">
+			<Flex direction="horizontal">
+				<Flex gap="none">
 					<Text weight="bold">Barbie Girl</Text>
 					<Text size="sm" variant="secondary">Aqua</Text>
-				</Stack>
+				</Flex>
 				<Spacer />
 				<Icon name="CircleCheck" color="#1db954" fill size={20} />
-			</Row>
+			</Flex>
 
-			<Stack gap="sm">
+			<Flex gap="sm">
 				<Section title="Vergelijkbare muziekvideo's" />
-				<Row gap="sm">
+				<Flex direction="horizontal" gap="sm">
 					<Card padding="none" class="video-card">
 						<div class="video-thumb"><Media alt="How R U Doin?" /></div>
 						<div class="video-meta">
@@ -267,32 +266,32 @@ const trackColumns: TableColumn<Track>[] = [
 							<Text size="xs" variant="secondary">Aqua</Text>
 						</div>
 					</Card>
-				</Row>
-			</Stack>
+				</Flex>
+			</Flex>
 
-			<Stack gap="sm">
+			<Flex gap="sm">
 				<Section title="Over de artiest" />
 				<div class="artist-card"><Media alt="Aqua" /></div>
-			</Stack>
-		</Stack>
+			</Flex>
+		</Flex>
 	</aside>
 
 	<!-- Bottom player -->
 	<footer class="player">
-		<Row gap="md" class="player-left">
+		<Flex direction="horizontal" gap="md" class="player-left">
 			<div class="now-cover"><Media alt="Barbie Girl" /></div>
-			<Stack gap="none">
+			<Flex gap="none">
 				<Text size="sm" weight="semibold" as="span">Barbie Girl</Text>
-				<Row gap="xs">
+				<Flex direction="horizontal" gap="xs">
 					<Icon name="Pin" size={11} />
 					<Text size="xs" variant="secondary" as="span">Muziekvideo · Aqua</Text>
-				</Row>
-			</Stack>
+				</Flex>
+			</Flex>
 			<Icon name="CircleCheck" color="#1db954" fill size={20} />
-		</Row>
+		</Flex>
 
-		<Stack gap="xs" class="player-center">
-			<Row gap="sm" justify="center">
+		<Flex gap="xs" class="player-center">
+			<Flex direction="horizontal" gap="sm" justify="center">
 				<Button icon="Shuffle" tooltip="Willekeurig" />
 				<Button icon="SkipBack" tooltip="Vorige" />
 				<Button
@@ -304,8 +303,8 @@ const trackColumns: TableColumn<Track>[] = [
 				/>
 				<Button icon="SkipForward" tooltip="Volgende" />
 				<Button icon="Repeat" tooltip="Herhalen" />
-			</Row>
-			<Row gap="sm">
+			</Flex>
+			<Flex direction="horizontal" gap="sm">
 				<Text size="xs" variant="secondary" as="span">1:18</Text>
 				<div class="seek">
 					<Input
@@ -318,10 +317,10 @@ const trackColumns: TableColumn<Track>[] = [
 					/>
 				</div>
 				<Text size="xs" variant="secondary" as="span">3:18</Text>
-			</Row>
-		</Stack>
+			</Flex>
+		</Flex>
 
-		<Row gap="sm" class="player-right" justify="end">
+		<Flex direction="horizontal" gap="sm" class="player-right" justify="end">
 			<Button icon="Mic" tooltip="Songtekst" />
 			<Button icon="ListVideo" tooltip="Wachtrij" />
 			<Button icon="Speaker" tooltip="Apparaat" />
@@ -337,7 +336,7 @@ const trackColumns: TableColumn<Track>[] = [
 				/>
 			</div>
 			<Button icon="Maximize2" tooltip="Volledig scherm" />
-		</Row>
+		</Flex>
 	</footer>
 </div>
 </ThemeProvider>
@@ -351,25 +350,25 @@ const trackColumns: TableColumn<Track>[] = [
 {/snippet}
 
 {#snippet titleCell(_value: any, row: Track, idx: number)}
-	<Row gap="sm">
+	<Flex direction="horizontal" gap="sm">
 		<div class="track-art"><Media alt={row.title} /></div>
-		<Stack gap="none">
+		<Flex gap="none">
 			<Text size="sm" weight="semibold" as="span" class={row.n === 'playing' ? 'now-playing' : ''}>{row.title}</Text>
-			<Row gap="xs">
+			<Flex direction="horizontal" gap="xs">
 				{#if row.isExplicit}
 					<span class="explicit">E</span>
 				{/if}
 				{#if row.isVideo}
-					<Row gap="xs">
+					<Flex direction="horizontal" gap="xs">
 						<Icon name="Video" size={12} />
 						<Text size="xs" variant="secondary" as="span">Muziekvideo · {row.artist}</Text>
-					</Row>
+					</Flex>
 				{:else}
 					<Text size="xs" variant="secondary" as="span">{row.artist}</Text>
 				{/if}
-			</Row>
-		</Stack>
-	</Row>
+			</Flex>
+		</Flex>
+	</Flex>
 {/snippet}
 
 {#snippet albumCell(value: any)}

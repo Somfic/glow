@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Data from '$lib/data/Data.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
@@ -71,43 +71,43 @@
 		Display key-value pairs for entity details, record inspectors, and sidebars.
 	</Text>
 
-	<Group label="Inline Variant" id="inline">
+	<Card title="Inline Variant" id="inline">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Side-by-side layout with labels and values. Good for detail panels and sidebars.
 		</Text>
 		<div style="border: 1px solid #30313C; border-radius: 12px; overflow: hidden; max-width: 500px;">
 			<Data properties={userProperties} />
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Stacked Variant" id="stacked">
+	<Card title="Stacked Variant" id="stacked">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Labels appear above values. Better for narrow containers or long values.
 		</Text>
 		<div style="border: 1px solid #30313C; border-radius: 12px; overflow: hidden; max-width: 400px;">
 			<Data properties={userProperties} variant="stacked" />
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Grouped Sections" id="grouped">
+	<Card title="Grouped Sections" id="grouped">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Organize properties into labeled groups with section headers.
 		</Text>
 		<div style="border: 1px solid #30313C; border-radius: 12px; overflow: hidden; max-width: 500px;">
 			<Data groups={groupedData} />
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Divided Groups" id="divided-groups">
+	<Card title="Divided Groups" id="divided-groups">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Dividers appear between groups to visually separate sections.
 		</Text>
 		<div style="border: 1px solid #30313C; border-radius: 12px; overflow: hidden; max-width: 500px;">
 			<Data groups={groupedData} divided />
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Usage" id="usage">
+	<Card title="Usage" id="usage">
 		<Heading level={3} id="basic-usage">Basic Usage</Heading>
 		<CodeBlock
 			language="svelte"
@@ -149,9 +149,9 @@
   ]}
 />`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Data Props" id="props">
+	<Card title="Data Props" id="props">
 		<Table
 			variant="simple"
 			columns={[
@@ -168,9 +168,9 @@
 				{ prop: 'labelWidth', type: 'string', default: "'40%'", description: 'Label column width (inline variant only)' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="DataItem" id="data-item">
+	<Card title="DataItem" id="data-item">
 		<Table
 			variant="simple"
 			columns={[
@@ -189,4 +189,4 @@
 				{ prop: 'muted', type: 'boolean', default: 'false', description: 'Dims the value (for empty/null states)' }
 			]}
 		/>
-	</Group>
+	</Card>

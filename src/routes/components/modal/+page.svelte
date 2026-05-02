@@ -3,7 +3,7 @@
 
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Modal from '$lib/modal/Modal.svelte';
 	import Button from '$lib/button/Button.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
@@ -28,7 +28,7 @@
 	actions.
 </Text>
 
-<Group label="Modal Examples" id="modal-examples">
+<Card title="Modal Examples" id="modal-examples">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Click the buttons to open different modal variants
 	</Text>
@@ -38,7 +38,7 @@
 		<Button label="Open Confirm Dialog" onclick={() => confirmModal.open()} variant="ghost" />
 		<Button label="Open Large Modal" onclick={() => largeModal.open()} />
 	</div>
-</Group>
+</Card>
 
 <!-- Basic Modal -->
 <Modal
@@ -111,7 +111,7 @@
 	</p>
 </Modal>
 
-<Group label="Usage" id="usage">
+<Card title="Usage" id="usage">
 	<Heading level={3} id="basic-usage">Basic Modal</Heading>
 	<CodeBlock
 		language="svelte"
@@ -180,9 +180,9 @@
   <p>Content here...</p>
 </Modal>`}
 	/>
-</Group>
+</Card>
 
-<Group label="Props" id="props">
+<Card title="Props" id="props">
 	<Table
 		variant="simple"
 		columns={[
@@ -215,9 +215,9 @@
 			}
 		]}
 	/>
-</Group>
+</Card>
 
-<Group label="Methods" id="methods">
+<Card title="Methods" id="methods">
 	<Table
 		variant="simple"
 		columns={[
@@ -229,9 +229,9 @@
 			{ method: 'close()', description: 'Close the modal' }
 		]}
 	/>
-</Group>
+</Card>
 
-<Group label="Action Type" id="action-type">
+<Card title="Action Type" id="action-type">
 	<CodeBlock
 		language="typescript"
 		code={`interface ModalAction {
@@ -240,9 +240,9 @@
   onclick: () => void;
 }`}
 	/>
-</Group>
+</Card>
 
-<Group label="Features" id="features">
+<Card title="Features" id="features">
 	<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 		<li><Text>🎯 Focus trap - keeps keyboard focus inside modal</Text></li>
 		<li><Text>⌨️ Escape key to close</Text></li>
@@ -253,4 +253,4 @@
 		<li><Text>📱 Responsive and mobile-friendly</Text></li>
 		<li><Text>♿ Fully accessible with ARIA attributes</Text></li>
 	</ul>
-</Group>
+</Card>

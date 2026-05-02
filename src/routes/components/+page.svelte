@@ -1,8 +1,9 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import MediaCard from '$lib/media/MediaCard.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from '$lib/card/Card.svelte';
+	import Grid from '$lib/layout/Grid.svelte';
+	import Flex from '$lib/layout/Flex.svelte';
 
 	const components = [
 		{
@@ -10,7 +11,7 @@
 			items: [
 				{ name: 'Button', href: '/components/buttons', description: 'Buttons and button groups' },
 				{ name: 'Input', href: '/components/inputs', description: 'Form inputs and controls' },
-				{ name: 'Settings', href: '/components/settings', description: 'Section, Field, FieldRow, Disclosure, SettingsShell' }
+				{ name: 'Settings', href: '/components/settings', description: 'Section, Field, FieldRow, SettingsShell' }
 			]
 		},
 		{
@@ -67,33 +68,15 @@
 		Explore all the components available in the Glow UI library.
 	</Text>
 
-	{#each components as category}
-		<Group>
-			<Heading level={2}>{category.category}</Heading>
-			<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
-				{#each category.items as component}
-					<a href={component.href} style="text-decoration: none;">
-						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<div
-							style="padding: 1.5rem; background: #1e1f29; border: 1px solid #30313C; border-radius: 12px; transition: all 0.15s; height: 100%;"
-							onmouseenter={(e) => {
-								e.currentTarget.style.borderColor = '#8B6DED';
-								e.currentTarget.style.background = 'rgba(139, 109, 237, 0.05)';
-							}}
-							onmouseleave={(e) => {
-								e.currentTarget.style.borderColor = '#30313C';
-								e.currentTarget.style.background = '#1e1f29';
-							}}
-						>
-							<div style="font-weight: 600; font-size: 1.125rem; color: #eee; margin-bottom: 0.5rem;">
-								{component.name}
-							</div>
-							<div style="font-size: 0.875rem; color: rgba(238, 238, 238, 0.7);">
-								{component.description}
-							</div>
-						</div>
-					</a>
-				{/each}
-			</div>
-		</Group>
-	{/each}
+	<Flex gap="lg">
+		{#each components as category}
+			<Flex gap="sm">
+				<Heading level={2}>{category.category}</Heading>
+				<Grid min="280px" gap="md">
+					{#each category.items as component}
+						<Card href={component.href} title={component.name} description={component.description} />
+					{/each}
+				</Grid>
+			</Flex>
+		{/each}
+	</Flex>

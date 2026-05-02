@@ -96,6 +96,7 @@ export interface TableProps<T = any> {
 
 	// Callbacks
 	onRowClick?: (row: T, index: number) => void;
+	onRowContextMenu?: (row: T, index: number, event: MouseEvent) => void;
 }
 
 // Data Types

@@ -76,6 +76,11 @@
 		border: none;
 		padding: 0;
 		font: inherit;
+		cursor: pointer;
+
+		&:disabled {
+			cursor: not-allowed;
+		}
 	}
 
 	.checkbox-label {

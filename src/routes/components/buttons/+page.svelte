@@ -3,7 +3,7 @@
 
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Button from '$lib/button/Button.svelte';
 	import ButtonGroup from '$lib/button/ButtonGroup.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
@@ -28,7 +28,7 @@
 	Versatile button components with multiple variants, icons, and loading states.
 </Text>
 
-<Group label="Button Variants" id="button-variants">
+<Card title="Button Variants" id="button-variants">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Five visual variants for different levels of emphasis
 	</Text>
@@ -40,9 +40,9 @@
 		<Button icon="Trash" label="Delete" variant="danger" tooltip="Delete action" />
 		<Button icon="Trash" variant="danger" tooltip="Delete action" />
 	</div>
-</Group>
+</Card>
 
-<Group label="Buttons with Icons" id="buttons-with-icons">
+<Card title="Buttons with Icons" id="buttons-with-icons">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Add icons to buttons for better visual recognition
 	</Text>
@@ -52,9 +52,9 @@
 		<Button icon="Heart" label="Filled icon" variant="secondary" iconFilled />
 		<Button icon="Trash" label="Delete" variant="danger" />
 	</div>
-</Group>
+</Card>
 
-<Group label="Icon-Only Buttons" id="icon-only-buttons">
+<Card title="Icon-Only Buttons" id="icon-only-buttons">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Compact buttons with only an icon (no label)
 	</Text>
@@ -66,9 +66,9 @@
 		<Button icon="Trash" variant="ghost" tooltip="Delete" />
 		<Button icon="Settings" variant="outlined" tooltip="Settings" />
 	</div>
-</Group>
+</Card>
 
-<Group label="Loading State" id="button-loading-state">
+<Card title="Loading State" id="button-loading-state">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Buttons automatically show loading state during async operations. The cursor also shows a
 		spinner!
@@ -77,9 +77,9 @@
 		<Button label="Click me (2s delay)" onclick={simulateAsync} />
 		<Button icon="Download" label="Download" variant="secondary" onclick={simulateAsync} />
 	</div>
-</Group>
+</Card>
 
-<Group label="Button Group" id="button-group">
+<Card title="Button Group" id="button-group">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Group related buttons together with connected borders
 	</Text>
@@ -88,9 +88,9 @@
 		<Button icon="Volleyball" />
 		<Button label="Third" />
 	</ButtonGroup>
-</Group>
+</Card>
 
-<Group label="Usage" id="usage">
+<Card title="Usage" id="usage">
 	<Heading level={3} id="basic-button">Basic Button</Heading>
 	<CodeBlock
 		language="svelte"
@@ -129,9 +129,9 @@
   <Button label="Third" />
 </ButtonGroup>`}
 	/>
-</Group>
+</Card>
 
-<Group label="Props" id="props">
+<Card title="Props" id="props">
 	<Table
 		variant="simple"
 		columns={[
@@ -175,9 +175,9 @@
 			}
 		]}
 	/>
-</Group>
+</Card>
 
-<Group label="Features" id="features">
+<Card title="Features" id="features">
 	<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 		<li><Text>🎨 Five visual variants (primary, secondary, ghost, outlined, danger)</Text></li>
 		<li><Text>🎯 Icon support with automatic cursor mirroring</Text></li>
@@ -187,4 +187,4 @@
 		<li><Text>🔗 Button groups for connected layouts</Text></li>
 		<li><Text>♿ Fully accessible with proper ARIA attributes</Text></li>
 	</ul>
-</Group>
+</Card>

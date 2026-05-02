@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Spinner from '$lib/spinner/Spinner.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
@@ -19,7 +19,7 @@
 	Loading indicator for async operations.
 </Text>
 
-<Group label="Sizes" id="sizes">
+<Card title="Sizes" id="sizes">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Spinners at different sizes
 	</Text>
@@ -30,9 +30,9 @@
 		<Spinner size={32} />
 		<Spinner size={48} />
 	</div>
-</Group>
+</Card>
 
-<Group label="Colors" id="colors">
+<Card title="Colors" id="colors">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Custom spinner colors
 	</Text>
@@ -43,18 +43,18 @@
 		<Spinner size={24} color="#3b82f6" />
 		<Spinner size={24} color="#eab308" />
 	</div>
-</Group>
+</Card>
 
-<Group label="Inline with Text" id="inline">
+<Card title="Inline with Text" id="inline">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Spinners work inline with text content
 	</Text>
 	<Text>
 		<Spinner size={14} /> Loading results...
 	</Text>
-</Group>
+</Card>
 
-<Group label="Usage" id="usage">
+<Card title="Usage" id="usage">
 	<CodeBlock
 		language="svelte"
 		code={`<script>
@@ -65,9 +65,9 @@
 <Spinner size={24} />
 <Spinner size={32} color="#ef4444" />`}
 	/>
-</Group>
+</Card>
 
-<Group label="Props" id="props">
+<Card title="Props" id="props">
 	<Table
 		variant="simple"
 		columns={[
@@ -81,4 +81,4 @@
 			{ prop: 'color', type: 'string', default: 'primary', description: 'Spinner color (any CSS color value)' }
 		]}
 	/>
-</Group>
+</Card>

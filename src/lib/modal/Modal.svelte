@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { fade, scale } from 'svelte/transition';
-	import { Button, Icon } from '../index.js';
 	import type { Snippet } from 'svelte';
-	import { type IconProp, resolveIcon } from '../icon/Icon.svelte';
+	import { type IconProp } from '../icon/Icon.svelte';
 	import { type ButtonAction } from '../button/Button.svelte';
-	import ButtonGroup from '$lib/button/ButtonGroup.svelte';
+	import Card from '../card/Card.svelte';
 	import { trapFocus } from '../util/focusTrap.js';
 	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
+	import { portal } from '../util/portal.js';
 
 	let {
 		open: isOpen = $bindable(false),
@@ -28,7 +28,9 @@
 		title?: string;
 		subtitle?: string;
 		icon?: IconProp;
+		/** Footer-action buttons (the Cancel/Save row). Maps to Card's `footerActions`. */
 		actions?: ButtonAction[];
+		/** Override the default footer with a snippet. */
 		footer?: Snippet;
 		size?: 'small' | 'medium' | 'large' | 'full';
 		showCloseButton?: boolean;
@@ -55,11 +57,8 @@
 	}
 
 	export function toggle() {
-		if (isOpen) {
-			close();
-		} else {
-			open();
-		}
+		if (isOpen) close();
+		else open();
 	}
 
 	export function isOpenState(): boolean {
@@ -68,60 +67,49 @@
 
 	function handleOverlayClick(event: MouseEvent) {
 		if (!closeOnBackdropClick) return;
-		const target = event.target as HTMLElement;
-		// Only close if clicking the overlay itself, not the modal content
-		if (target === event.currentTarget) {
-			close();
-		}
+		if (event.target === event.currentTarget) close();
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape' && closeOnEscape) {
-			close();
-		}
+		if (event.key === 'Escape' && closeOnEscape) close();
 	}
 
 	function handleContentKeydown(event: KeyboardEvent) {
 		trapFocus(modalContentElement, event);
 	}
 
-	// Manage body scroll lock and focus
+	// Card's `actions` prop renders header-right buttons. We use that slot for
+	// the close X. Modal's own `actions` prop is the *footer* buttons (Cancel /
+	// Save) which we forward to Card.footerActions.
+	const headerActions = $derived<ButtonAction[]>(
+		showCloseButton ? [{ icon: 'X', variant: 'ghost', onclick: close }] : []
+	);
+
 	$effect(() => {
 		if (typeof document === 'undefined') return;
 
 		if (isOpen) {
-			// Store previous focus
 			previousActiveElement = document.activeElement;
-
-			// Lock body scroll
 			lockScroll();
 
-			// Focus first focusable element in modal
 			setTimeout(() => {
 				if (!modalContentElement) return;
-				const focusableElements = modalContentElement.querySelectorAll<HTMLElement>(
+				const focusable = modalContentElement.querySelectorAll<HTMLElement>(
 					'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 				);
-				const firstFocusable = Array.from(focusableElements).find(
-					(el) => !el.hasAttribute('disabled')
-				);
-				firstFocusable?.focus();
+				const first = Array.from(focusable).find((el) => !el.hasAttribute('disabled'));
+				first?.focus();
 			}, 0);
 		} else {
-			// Restore body scroll
 			unlockScroll();
-
-			// Restore previous focus
-			if (previousActiveElement && previousActiveElement instanceof HTMLElement) {
+			if (previousActiveElement instanceof HTMLElement) {
 				previousActiveElement.focus();
 			}
 		}
 	});
 
 	onDestroy(() => {
-		if (typeof document !== 'undefined') {
-			unlockScroll();
-		}
+		if (typeof document !== 'undefined') unlockScroll();
 	});
 </script>
 
@@ -132,6 +120,7 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
 		class="modal-overlay"
+		use:portal
 		onclick={handleOverlayClick}
 		role="dialog"
 		aria-modal="true"
@@ -147,46 +136,18 @@
 			onkeydown={handleContentKeydown}
 			transition:scale={{ duration: 200, start: 0.95, opacity: 0 }}
 		>
-			{#if title || showCloseButton}
-				<div class="modal-header">
-					<div class="modal-header-content">
-						{#if icon}
-							<Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? 24} />
-						{/if}
-						{#if title || subtitle}
-							<div class="modal-header-text">
-								{#if title}
-									<h2 class="modal-title">{title}</h2>
-								{/if}
-								{#if subtitle}
-									<p class="modal-subtitle">{subtitle}</p>
-								{/if}
-							</div>
-						{/if}
-					</div>
-					{#if showCloseButton}
-						<Button icon="X" variant="ghost" onclick={close} />
-					{/if}
-				</div>
-			{/if}
-
-			<div class="modal-content">
+			<Card
+				{title}
+				{subtitle}
+				{icon}
+				actions={headerActions}
+				footerActions={actions}
+				{footer}
+				padding="md"
+				class="modal-card"
+			>
 				{@render children?.()}
-			</div>
-
-			{#if footer}
-				<div class="modal-footer">
-					{@render footer()}
-				</div>
-			{:else if actions.length > 0}
-				<div class="modal-footer">
-					<ButtonGroup>
-						{#each actions as action}
-							<Button {...action} />
-						{/each}
-					</ButtonGroup>
-				</div>
-			{/if}
+			</Card>
 		</div>
 	</div>
 {/if}
@@ -203,42 +164,29 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 1rem;
+		padding: $space-md;
 
 		@media (max-width: 640px) {
-			padding: 0.5rem;
+			padding: $space-sm;
 		}
 	}
 
 	.modal-container {
-		background: var(--glow-bg-surface-element);
-		border: $border;
-		border-radius: $radius;
-		max-height: calc(100vh - 4rem);
 		display: flex;
 		flex-direction: column;
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 		width: 100%;
+		max-height: calc(100vh - 4rem);
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+		border-radius: $radius;
 
 		&:focus {
 			outline: none;
 		}
 
-		&.size-small {
-			max-width: 400px;
-		}
-
-		&.size-medium {
-			max-width: 600px;
-		}
-
-		&.size-large {
-			max-width: 800px;
-		}
-
-		&.size-full {
-			max-width: 95vw;
-		}
+		&.size-small  { max-width: 400px; }
+		&.size-medium { max-width: 600px; }
+		&.size-large  { max-width: 800px; }
+		&.size-full   { max-width: 95vw; }
 
 		@media (max-width: 640px) {
 			max-width: 100%;
@@ -246,69 +194,19 @@
 		}
 	}
 
-	.modal-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 1rem;
-		border-bottom: $border;
-		flex-shrink: 0;
-		gap: 1rem;
-
-		@media (max-width: 640px) {
-			padding: 0.75rem;
-		}
-	}
-
-	.modal-header-content {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		flex: 1;
-		min-width: 0;
-	}
-
-	.modal-header-text {
+	// Make the Card inside the dialog flex-fill the container so its body can
+	// scroll while header/footer stay pinned. Chained selector outranks
+	// Card's own `.card` defaults at the same specificity.
+	:global(.card.modal-card) {
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
-		min-width: 0;
-	}
-
-	.modal-title {
-		font-size: 1.25rem;
-		font-weight: 600;
-		margin: 0;
-		color: var(--glow-fg);
-	}
-
-	.modal-subtitle {
-		font-size: 0.875rem;
-		margin: 0;
-		color: rgba($fg, 0.7);
-	}
-
-	.modal-content {
-		padding: 1rem;
-		overflow-y: auto;
-		flex: 1;
 		min-height: 0;
-
-		@media (max-width: 640px) {
-			padding: 0.75rem;
-		}
+		flex: 1 1 auto;
 	}
 
-	.modal-footer {
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-		padding: 1rem;
-		border-top: $border;
-		flex-shrink: 0;
-
-		@media (max-width: 640px) {
-			padding: 0.75rem;
-		}
+	:global(.card.modal-card > .card-body) {
+		overflow-y: auto;
+		min-height: 0;
+		flex: 1 1 auto;
 	}
 </style>

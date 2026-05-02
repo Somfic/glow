@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import { tooltip } from '$lib/tooltip/tooltip.svelte.js';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
@@ -20,7 +20,7 @@
 		and elegant user experience.
 	</Text>
 
-	<Group label="Basic Tooltips" id="basic-tooltips">
+	<Card title="Basic Tooltips" id="basic-tooltips">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Hover over elements to see tooltips appear inside the cursor
 		</Text>
@@ -45,9 +45,9 @@
 				Hover me (right)
 			</button>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Tooltips on Any Element" id="tooltip-on-any-element">
+	<Card title="Tooltips on Any Element" id="tooltip-on-any-element">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			The tooltip action works on any HTML element, not just buttons
 		</Text>
@@ -70,9 +70,9 @@
 				Hover me
 			</div>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Tooltips with Emojis" id="tooltip-with-emojis">
+	<Card title="Tooltips with Emojis" id="tooltip-with-emojis">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Tooltips support emojis and special characters
 		</Text>
@@ -85,9 +85,9 @@
 			</button>
 			<button class="demo-btn" use:tooltip={'✨ Works with emojis too!'}> With emoji </button>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Usage" id="usage">
+	<Card title="Usage" id="usage">
 		<Heading level={3} id="simple-string">Simple String Tooltip</Heading>
 		<CodeBlock
 			language="svelte"
@@ -122,9 +122,9 @@
   Custom element
 </div>`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Tooltip Options" id="options">
+	<Card title="Tooltip Options" id="options">
 		<Table
 			variant="simple"
 			columns={[
@@ -138,9 +138,9 @@
 				{ option: 'position', type: "'top' | 'bottom' | 'left' | 'right'", default: "'top'", description: 'Tooltip position (Note: renders in cursor)' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="How It Works" id="how-it-works">
+	<Card title="How It Works" id="how-it-works">
 		<Text>
 			Unlike traditional tooltips that float above elements, Glow's tooltip system integrates
 			with the custom cursor component. When you hover over an element with a tooltip:
@@ -155,9 +155,9 @@
 			This creates a more cohesive and visually interesting experience compared to traditional
 			tooltip implementations.
 		</Text>
-	</Group>
+	</Card>
 
-	<Group label="Features" id="features">
+	<Card title="Features" id="features">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 			<li><Text>✨ Unique cursor-integrated design</Text></li>
 			<li><Text>🎯 Works on any HTML element via Svelte action</Text></li>
@@ -167,7 +167,7 @@
 			<li><Text>📱 Responsive and mobile-friendly</Text></li>
 			<li><Text>♿ Accessible with proper ARIA attributes</Text></li>
 		</ul>
-	</Group>
+	</Card>
 
 <style>
 	.demo-btn {

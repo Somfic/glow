@@ -11,7 +11,7 @@
 	// Examples that render their own full-bleed shell — they want viewport
 	// lock + no sidebar. Other examples (e.g. /examples/github) reuse the
 	// docs shell and just style their content area.
-	const bareRoutes = ['/examples/linear', '/examples/spotify'];
+	const bareRoutes = ['/examples/linear', '/examples/spotify', '/examples/spark'];
 	const isBareExample = $derived(
 		bareRoutes.some((r) => page.url.pathname.startsWith(r))
 	);
@@ -80,7 +80,8 @@
 					{ label: 'Form', href: '/examples/form', icon: 'ClipboardList' },
 					{ label: 'Linear', href: '/examples/linear', icon: 'CircleDot' },
 					{ label: 'Spotify', href: '/examples/spotify', icon: 'Music' },
-					{ label: 'GitHub', href: '/examples/github', icon: 'Github' }
+					{ label: 'GitHub', href: '/examples/github', icon: 'Github' },
+					{ label: 'Spark', href: '/examples/spark', icon: 'Zap' }
 				]
 			}
 		]

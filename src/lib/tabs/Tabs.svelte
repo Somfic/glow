@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { fly } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
 	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
 
 	interface Tab {
@@ -21,7 +23,46 @@
 		onChange?: (tabId: string) => void;
 	} = $props();
 
-	let headerElement: HTMLDivElement;
+	let headerElement: HTMLDivElement | undefined = $state();
+	let panelHeight = $state(0);
+	// Width of the content area — drives the fly distance so the slide
+	// fully clears the visible area regardless of how wide the Tabs is.
+	let contentWidth = $state(0);
+
+	// Direction of the slide: +1 means moving forward (the new tab is to the
+	// right of the old one) → outgoing slides left, incoming arrives from
+	// right. -1 mirrors. `$effect.pre` runs before the DOM update that
+	// triggers the keyed-block outro/intro, so the transitions see the
+	// correct direction when they start.
+	let direction = $state(1);
+	let prevTabIndex = -1;
+	$effect.pre(() => {
+		const idx = tabs.findIndex((t) => t.id === activeTab);
+		if (prevTabIndex !== -1 && idx !== prevTabIndex) {
+			direction = idx > prevTabIndex ? 1 : -1;
+		}
+		prevTabIndex = idx;
+	});
+
+	// Active tab indicator — same RadioInput-style approach: a single
+	// absolutely-positioned element whose left/width animate to match the
+	// active button's box. Avoids per-button background animation.
+	let indicatorLeft = $state(0);
+	let indicatorWidth = $state(0);
+	let indicatorReady = $state(false);
+
+	$effect(() => {
+		// Re-run when activeTab changes or layout changes (window resize).
+		void activeTab;
+		if (!headerElement) return;
+		const buttons = headerElement.querySelectorAll<HTMLElement>('[role="tab"]');
+		const idx = tabs.findIndex((t) => t.id === activeTab);
+		const el = buttons[idx];
+		if (!el) return;
+		indicatorLeft = el.offsetLeft;
+		indicatorWidth = el.offsetWidth;
+		indicatorReady = true;
+	});
 
 	function selectTab(tabId: string) {
 		const tab = tabs.find((t) => t.id === tabId);
@@ -88,6 +129,14 @@
 
 <div class="tabs">
 	<div class="tabs-header" role="tablist" bind:this={headerElement}>
+		<div
+			class="tab-indicator"
+			class:first={tabs[0]?.id === activeTab}
+			class:ready={indicatorReady}
+			style:left="{indicatorLeft}px"
+			style:width="{indicatorWidth}px"
+			aria-hidden="true"
+		></div>
 		{#each tabs as tab, index (tab.id)}
 			<button
 				class="tab"
@@ -105,7 +154,7 @@
 				{#if tab.icon}
 					<Icon {...resolveIcon(tab.icon)} size={resolveIcon(tab.icon).size ?? 16} />
 				{/if}
-				<span>{tab.label}</span>
+				<span class="tab-label" data-label={tab.label}>{tab.label}</span>
 				{#if tab.count !== undefined}
 					<span class="tab-count">{tab.count}</span>
 				{/if}
@@ -113,10 +162,27 @@
 		{/each}
 	</div>
 
-	<div class="tabs-content" class:first-active={isFirstTabActive} role="tabpanel" id="tab-panel-{activeTab}" aria-labelledby="tab-{activeTab}">
-		{#if activeTabContent}
-			{@render activeTabContent()}
-		{/if}
+	<div
+		class="tabs-content"
+		class:first-active={isFirstTabActive}
+		role="tabpanel"
+		id="tab-panel-{activeTab}"
+		aria-labelledby="tab-{activeTab}"
+		bind:clientWidth={contentWidth}
+		style:height={panelHeight ? `${panelHeight}px` : undefined}
+	>
+		{#key activeTab}
+			<div
+				class="tabs-panel"
+				bind:offsetHeight={panelHeight}
+				in:fly={{ x: direction * contentWidth, duration: 320, opacity: 1, easing: cubicOut }}
+				out:fly={{ x: -direction * contentWidth, duration: 320, opacity: 1, easing: cubicOut }}
+			>
+				{#if activeTabContent}
+					{@render activeTabContent()}
+				{/if}
+			</div>
+		{/key}
 	</div>
 </div>
 
@@ -138,6 +204,58 @@
 		position: relative;
 
 		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	// Sliding active-tab indicator. Sits behind the tab buttons (z-index 0)
+	// and animates `left` + `width` to match the active button's box.
+	// `::before` and `::after` render the inverse-border curves that visually
+	// merge the active tab into the content panel below — they slide along
+	// with the indicator.
+	.tab-indicator {
+		position: absolute;
+		bottom: 0;
+		top: 0;
+		background: var(--glow-bg-surface-element);
+		border-radius: $radius $radius 0 0;
+		z-index: 0;
+		pointer-events: none;
+		// Skip the entrance animation on first paint to avoid an awkward
+		// slide-in from x=0; only animate on subsequent activeTab changes.
+		opacity: 0;
+		transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+			width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+		&.ready {
+			opacity: 1;
+		}
+
+		// Right corner — concave curve down into the content panel.
+		&::after {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			right: -8px;
+			width: 8px;
+			height: 8px;
+			background: radial-gradient(circle at 100% 0, transparent 8px, var(--glow-bg-surface-element) 8px);
+		}
+
+		// Left corner — same trick, mirrored. Hidden when the indicator is
+		// at the left edge (i.e. first tab is active) — that tab's bottom-left
+		// is straight, matching the content panel's top-left corner.
+		&::before {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: -8px;
+			width: 8px;
+			height: 8px;
+			background: radial-gradient(circle at 0 0, transparent 8px, var(--glow-bg-surface-element) 8px);
+		}
+
+		&.first::before {
 			display: none;
 		}
 	}
@@ -177,37 +295,28 @@
 			line-height: 1.4;
 		}
 
-		&.active {
-			background: var(--glow-bg-surface-element);
-			color: var(--glow-primary);
-			z-index: 1;
+		// Reserve bold-width via a hidden duplicate of the label, so flipping
+		// font-weight on .active doesn't reflow the row of tabs.
+		.tab-label {
+			display: inline-flex;
+			flex-direction: column;
+			align-items: center;
 
-			// Inverse border radius - right
 			&::after {
-				content: '';
-				position: absolute;
-				bottom: 0;
-				right: -8px;
-				width: 8px;
-				height: 8px;
-				background: radial-gradient(circle at 100% 0, transparent 8px, $bg-surface-element 8px);
+				content: attr(data-label) / '';
+				font-weight: 700;
+				height: 0;
+				visibility: hidden;
+				overflow: hidden;
+				user-select: none;
+				pointer-events: none;
 			}
+		}
 
-			// First tab: no left curve, straight bottom-left matching content
-			&:first-child {
-				border-radius: $radius $radius 0 0;
-			}
-
-			// Non-first tabs: inverse border radius on left
-			&:not(:first-child)::before {
-				content: '';
-				position: absolute;
-				bottom: 0;
-				left: -8px;
-				width: 8px;
-				height: 8px;
-				background: radial-gradient(circle at 0 0, transparent 8px, $bg-surface-element 8px);
-			}
+		&.active {
+			color: var(--glow-primary);
+			font-weight: 700;
+			z-index: 1;
 		}
 
 		&.disabled {
@@ -224,11 +333,29 @@
 	.tabs-content {
 		background: var(--glow-bg-surface-element);
 		border-radius: $radius;
-		padding: 1.5rem;
-		transition: border-radius 0.2s ease;
+		// Padding lives on the panel (see below) so its measured offsetHeight
+		// includes the gutter, and the wrapper's explicit `height` is exactly
+		// what we want to display.
+		position: relative;
+		overflow: hidden;
+		transition: border-radius 0.2s ease, height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 
 		&.first-active {
 			border-radius: 0 $radius $radius $radius;
 		}
+	}
+
+	.tabs-panel {
+		// Absolute positioning lets each panel's intrinsic content height be
+		// measured independently of the wrapper — otherwise the wrapper's
+		// height would constrain the panel and the height transition would
+		// lock at whichever tab was tallest.
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		padding: 1.5rem;
+		box-sizing: border-box;
+		min-width: 0;
 	}
 </style>

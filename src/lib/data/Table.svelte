@@ -26,6 +26,7 @@
 		virtualHeight = '500px',
 		getRowKey = (row, index) => index,
 		onRowClick,
+		onRowContextMenu,
 		pageSize = $bindable(undefined),
 		page = $bindable(1),
 		pageSizeOptions,
@@ -234,6 +235,11 @@
 						class="table-row"
 						class:selected={isRowSelected(row)}
 						onclick={() => !isSimple && onRowClick?.(row, index)}
+						oncontextmenu={(e) => {
+							if (!onRowContextMenu) return;
+							e.preventDefault();
+							onRowContextMenu(row, index, e);
+						}}
 					>
 						{#if effectiveSelectable}
 							<td class="table-cell table-select-cell">

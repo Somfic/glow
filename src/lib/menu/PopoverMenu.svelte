@@ -35,6 +35,8 @@
 		label: string;
 		description?: string;
 		icon?: IconProp;
+		/** Keyboard shortcut hint shown on the row (rendered as <Kbd> badges). */
+		shortcut?: string;
 		/**
 		 * Action / mixed entries inside the submenu. Use when the submenu
 		 * holds things other than value-picker options.
@@ -450,6 +452,7 @@
 				label={entry.label}
 				description={entry.description}
 				icon={entry.icon}
+				shortcut={entry.shortcut}
 				active={openSubmenuIndex === key}
 				onclick={() => handleSubmenuClick(key)}
 				trailing={submenuArrow}

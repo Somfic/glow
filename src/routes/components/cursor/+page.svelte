@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Button from '$lib/button/Button.svelte';
 	import Input from '$lib/input/Input.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
@@ -25,7 +25,7 @@
 		loading states directly in the cursor itself.
 	</Text>
 
-	<Group label="Interactive Demos" id="demos">
+	<Card title="Interactive Demos" id="demos">
 		<div style="display: flex; flex-direction: column; gap: 1.5rem;">
 			<Text>
 				Watch the white dot cursor transform as you move around! Hover over different elements
@@ -144,9 +144,9 @@ bun run dev`}
 				</Text>
 			</div>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Usage" id="usage">
+	<Card title="Usage" id="usage">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			The cursor is automatically initialized and doesn't require manual setup. It responds to
 			various interactions throughout the application.
@@ -185,13 +185,13 @@ bun run dev`}
   Shows spinner in cursor
 </Button>`}
 		/>
-	</Group>
+	</Card>
 
 {#snippet codeCell(value)}
 	<Code>{value}</Code>
 {/snippet}
 
-	<Group label="Cursor States" id="cursor-states">
+	<Card title="Cursor States" id="cursor-states">
 		<Table
 			variant="simple"
 			columns={[
@@ -210,9 +210,9 @@ bun run dev`}
 				{ state: 'toggle', trigger: 'Toggle inputs', appearance: 'Toggle icon (left or right)' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Cursor Action Options" id="cursor-action-options">
+	<Card title="Cursor Action Options" id="cursor-action-options">
 		<CodeBlock
 			language="typescript"
 			code={`interface CursorOptions {
@@ -220,9 +220,9 @@ bun run dev`}
   content?: string; // Optional text content to show
 }`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Features" id="features">
+	<Card title="Features" id="features">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 			<li><Text>🎯 Context-aware morphing based on element type</Text></li>
 			<li><Text>🎨 Icon mirroring for buttons (32px consistency)</Text></li>
@@ -235,9 +235,9 @@ bun run dev`}
 			<li><Text>⚡ Click animation (cursor shrinks)</Text></li>
 			<li><Text>🎮 Svelte action for custom cursor states</Text></li>
 		</ul>
-	</Group>
+	</Card>
 
-	<Group label="Technical Details" id="technical-details">
+	<Card title="Technical Details" id="technical-details">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 			<li>
 				<Text><strong>Position:</strong> Fixed positioning that follows mouse movement</Text>
@@ -257,7 +257,7 @@ bun run dev`}
 				<Text><strong>Z-Index:</strong> High z-index (9999) to stay above all content</Text>
 			</li>
 		</ul>
-	</Group>
+	</Card>
 
 <style>
 	.demo-btn {

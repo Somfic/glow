@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Button from '$lib/button/Button.svelte';
 	import PopoverMenu from '$lib/menu/PopoverMenu.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
@@ -123,7 +123,7 @@
 	Contextual menus with rich item kinds: items, toggles, submenus, and custom snippets.
 </Text>
 
-<Group label="When to use what" id="when-to-use">
+<Card title="When to use what" id="when-to-use">
 	<Text variant="secondary" size="sm">
 		Glow has several ways to pick a value or trigger an action. Quick map:
 	</Text>
@@ -134,9 +134,9 @@
 		<li><strong>ButtonGroup</strong> as toggle — 2–4 options where you want chunky inline buttons (e.g. seed mode).</li>
 		<li><strong>PopoverMenu</strong> (this component) — popover with arbitrary items: actions, toggles, submenus, custom snippets. Reach for this when you need richer content than a Select can express, or when items are actions rather than values.</li>
 	</ul>
-</Group>
+</Card>
 
-<Group label="Value picker (the Select replacement)" id="value-picker">
+<Card title="Value picker (the Select replacement)" id="value-picker">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Pass <Code>options</Code> + <Code>bind:value</Code> and PopoverMenu acts as a fully-featured
 		Select: input-style trigger, descriptions, icons, selected-checkmark, the works.
@@ -147,9 +147,9 @@
 		bind:value={pickedFruit}
 		placeholder="Pick a fruit"
 	/>
-</Group>
+</Card>
 
-<Group label="Searchable + grouped" id="searchable">
+<Card title="Searchable + grouped" id="searchable">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Add <Code>searchable</Code> for type-to-find, and mix
 		<Code>{`{ kind: 'group', label, options }`}</Code> entries to render section headers.
@@ -160,9 +160,9 @@
 		placeholder="Pick a model"
 		searchable
 	/>
-</Group>
+</Card>
 
-<Group label="Value picker + extras (Claude.ai pattern)" id="rich">
+<Card title="Value picker + extras (Claude.ai pattern)" id="rich">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Combine <Code>options</Code> with an <Code>extras</Code> snippet (or extra
 		<Code>items</Code>) when the menu needs more than just a flat value list — inline
@@ -174,9 +174,9 @@
 		items={claudeExtras}
 		placeholder="Pick a model"
 	/>
-</Group>
+</Card>
 
-<Group label="Custom trigger" id="custom-trigger">
+<Card title="Custom trigger" id="custom-trigger">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Provide a <Code>trigger</Code> snippet to override the built-in trigger entirely
 		— use when the menu is acting as an action menu (e.g. a kebab button) rather
@@ -187,9 +187,9 @@
 			<Button variant="secondary" icon="MoreVertical">{pickedFruit}</Button>
 		{/snippet}
 	</PopoverMenu>
-</Group>
+</Card>
 
-<Group label="Common Actions" id="common">
+<Card title="Common Actions" id="common">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		A horizontal row of icon-only buttons at the top for frequent actions.
 	</Text>
@@ -198,9 +198,9 @@
 			<Button variant="secondary" icon="MoreVertical">Actions</Button>
 		{/snippet}
 	</PopoverMenu>
-</Group>
+</Card>
 
-<Group label="Basic" id="basic">
+<Card title="Basic" id="basic">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		A simple dropdown with icons, dividers, and danger items.
 	</Text>
@@ -209,9 +209,9 @@
 			<Button variant="secondary" icon="MoreVertical">Actions</Button>
 		{/snippet}
 	</PopoverMenu>
-</Group>
+</Card>
 
-<Group label="With Shortcuts" id="shortcuts">
+<Card title="With Shortcuts" id="shortcuts">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Menu items can display keyboard shortcuts.
 	</Text>
@@ -220,9 +220,9 @@
 			<Button variant="secondary" icon="Menu">Edit</Button>
 		{/snippet}
 	</PopoverMenu>
-</Group>
+</Card>
 
-<Group label="Disabled Items" id="disabled">
+<Card title="Disabled Items" id="disabled">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Individual items can be disabled.
 	</Text>
@@ -231,9 +231,9 @@
 			<Button variant="secondary">Options</Button>
 		{/snippet}
 	</PopoverMenu>
-</Group>
+</Card>
 
-<Group label="Selection" id="selection">
+<Card title="Selection" id="selection">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Use the selected property to indicate the active item with a check mark.
 	</Text>
@@ -242,9 +242,9 @@
 			<Button variant="secondary" icon="Languages">{selectedLang.toUpperCase()}</Button>
 		{/snippet}
 	</PopoverMenu>
-</Group>
+</Card>
 
-<Group label="Right Aligned" id="right">
+<Card title="Right Aligned" id="right">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Use align="right" to anchor the menu to the right edge.
 	</Text>
@@ -255,9 +255,9 @@
 			{/snippet}
 		</PopoverMenu>
 	</div>
-</Group>
+</Card>
 
-<Group label="Entry kinds" id="kinds">
+<Card title="Entry kinds" id="kinds">
 	<CodeBlock
 		language="ts"
 		code={`type PopoverMenuEntry =
@@ -267,9 +267,9 @@
   | { kind: 'custom';   render: Snippet }
   | 'divider';`}
 	/>
-</Group>
+</Card>
 
-<Group label="Usage" id="usage">
+<Card title="Usage" id="usage">
 	<CodeBlock
 		language="svelte"
 		code={`<script>
@@ -298,9 +298,9 @@
   {/snippet}
 </PopoverMenu>`}
 	/>
-</Group>
+</Card>
 
-<Group label="Props" id="props">
+<Card title="Props" id="props">
 	<Table
 		variant="simple"
 		columns={[
@@ -323,7 +323,7 @@
 			{ prop: 'open',        type: 'boolean',                  default: 'false',   description: 'Bindable open state' }
 		]}
 	/>
-</Group>
+</Card>
 
 <style>
 	.when-to-use {

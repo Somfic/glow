@@ -42,6 +42,32 @@ $border: $border-width solid $border-color;
 $radius: 12px;
 $radius-small: 18px;
 
+// Spacing scale — same vocabulary as the runtime `Flex.gap` / `Stack.gap`
+// values so build-time and runtime spacing share one source of truth. Use
+// `$space-md` etc. in component styles instead of bare `1rem`.
+$space-none: 0;
+$space-xs: 0.25rem;
+$space-sm: 0.5rem;
+$space-md: 1rem;
+$space-lg: 1.5rem;
+$space-xl: 2rem;
+
+// Motion — codifies the easing and durations we use everywhere. Components
+// should reference these tokens instead of bare numbers / cubic-beziers so
+// the entire library breathes at the same tempo, and so the values can be
+// retuned in one place.
+$ease-out:    cubic-bezier(0.4, 0, 0.2, 1);    // standard-out: snappy on the way in, eases out
+$ease-in-out: cubic-bezier(0.4, 0, 0.6, 1);    // symmetric for in-place flips
+$ease-in:     cubic-bezier(0.4, 0, 1, 1);      // accelerating
+$ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); // playful overshoot
+
+// Durations
+$dur-instant: 100ms;  // micro-feedback (button press, hover colour)
+$dur-fast:    150ms;  // small ui state changes
+$dur-base:    220ms;  // standard panel / popover / tab transitions
+$dur-slow:    320ms;  // larger pieces (drawer, modal, big slide)
+$dur-glacial: 500ms;  // page-level reveals
+
 // Runtime theme tokens declared as CSS custom properties live in
 // `global.scss` so they're emitted once at the document root rather than
 // re-emitted (and scoped) into every component's stylesheet.

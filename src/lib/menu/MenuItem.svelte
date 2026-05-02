@@ -29,6 +29,7 @@
 
 <script lang="ts">
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
+	import Kbd from '../typography/Kbd.svelte';
 
 	let {
 		label,
@@ -78,7 +79,11 @@
 		{/if}
 	</span>
 	{#if shortcut}
-		<span class="shortcut">{shortcut}</span>
+		<span class="shortcut">
+			{#each shortcut.split(' ').filter(Boolean) as token}
+				<Kbd size="sm">{token}</Kbd>
+			{/each}
+		</span>
 	{/if}
 	{#if trailing}
 		<span class="trailing">{@render trailing()}</span>
@@ -181,8 +186,9 @@
 	}
 
 	.shortcut {
-		font-size: $text-xs;
-		color: var(--glow-text-muted);
+		display: inline-flex;
+		align-items: center;
+		gap: 2px;
 		margin-left: auto;
 	}
 

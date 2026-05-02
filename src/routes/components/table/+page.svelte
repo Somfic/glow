@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Table from '$lib/data/Table.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Code from '$lib/code/Code.svelte';
@@ -95,7 +95,7 @@
 		for large datasets.
 	</Text>
 
-	<Group label="Basic Data Table" id="basic-table">
+	<Card title="Basic Data Table" id="basic-table">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Sortable columns, row selection, and action buttons
 		</Text>
@@ -121,9 +121,9 @@
 				Selected: {selectedUsers.map((u) => u.name).join(', ')}
 			</Text>
 		{/if}
-	</Group>
+	</Card>
 
-	<Group label="Pagination" id="pagination">
+	<Card title="Pagination" id="pagination">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Set pageSize to enable built-in pagination.
 		</Text>
@@ -132,9 +132,9 @@
 			data={users}
 			pageSize={2}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Custom Cell Rendering" id="custom-rendering">
+	<Card title="Custom Cell Rendering" id="custom-rendering">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Use Svelte snippets with the <code>render</code> property on columns to customize how cells are displayed.
 		</Text>
@@ -151,9 +151,9 @@
   ];
 </script>`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Usage" id="usage">
+	<Card title="Usage" id="usage">
 		<CodeBlock
 			language="svelte"
 			code={`<script>
@@ -202,9 +202,9 @@
   ]}
 />`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Props" id="props">
+	<Card title="Props" id="props">
 		<Table
 			variant="simple"
 			columns={[
@@ -222,9 +222,9 @@
 				{ prop: 'rowActions', type: 'RowAction[]', default: '-', description: 'Actions for each row' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Column Configuration" id="column-config">
+	<Card title="Column Configuration" id="column-config">
 		<Table
 			variant="simple"
 			columns={[
@@ -240,9 +240,9 @@
 				{ property: 'render', type: 'Snippet<[value, row, index]>', description: 'Svelte snippet for custom cell content' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Features" id="features">
+	<Card title="Features" id="features">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 			<li><Text>🔄 Sortable columns with visual indicators</Text></li>
 			<li><Text>✅ Row selection (single or multiple)</Text></li>
@@ -253,4 +253,4 @@
 			<li><Text>🎯 Virtual scrolling for large datasets</Text></li>
 			<li><Text>♿ Fully accessible with ARIA attributes</Text></li>
 		</ul>
-	</Group>
+	</Card>

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
-	import { Button, Icon } from '../index.js';
 	import type { Snippet } from 'svelte';
-	import { type IconProp, resolveIcon } from '../icon/Icon.svelte';
+	import { type IconProp } from '../icon/Icon.svelte';
 	import { type ButtonAction } from '../button/Button.svelte';
-	import ButtonGroup from '$lib/button/ButtonGroup.svelte';
+	import Card from '../card/Card.svelte';
 	import { trapFocus } from '../util/focusTrap.js';
 	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
+	import { portal } from '../util/portal.js';
 
 	let {
 		open: isOpen = $bindable(false),
@@ -29,6 +29,7 @@
 		title?: string;
 		subtitle?: string;
 		icon?: IconProp;
+		/** Footer-action buttons. Maps to Card's `footerActions`. */
 		actions?: ButtonAction[];
 		footer?: Snippet;
 		size?: 'small' | 'medium' | 'large';
@@ -60,11 +61,8 @@
 	}
 
 	export function toggle() {
-		if (isOpen) {
-			close();
-		} else {
-			open();
-		}
+		if (isOpen) close();
+		else open();
 	}
 
 	export function isOpenState(): boolean {
@@ -73,20 +71,22 @@
 
 	function handleOverlayClick(event: MouseEvent) {
 		if (!closeOnBackdropClick) return;
-		if (event.target === event.currentTarget) {
-			close();
-		}
+		if (event.target === event.currentTarget) close();
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape' && closeOnEscape) {
-			close();
-		}
+		if (event.key === 'Escape' && closeOnEscape) close();
 	}
 
 	function handleContentKeydown(event: KeyboardEvent) {
 		trapFocus(drawerElement, event);
 	}
+
+	// Close X button → Card.actions (header right). Modal's `actions` (footer
+	// row) → Card.footerActions.
+	const headerActions = $derived<ButtonAction[]>(
+		showCloseButton ? [{ icon: 'X', variant: 'ghost', onclick: close }] : []
+	);
 
 	$effect(() => {
 		if (typeof document === 'undefined') return;
@@ -97,27 +97,22 @@
 
 			setTimeout(() => {
 				if (!drawerElement) return;
-				const focusableElements = drawerElement.querySelectorAll<HTMLElement>(
+				const focusable = drawerElement.querySelectorAll<HTMLElement>(
 					'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 				);
-				const firstFocusable = Array.from(focusableElements).find(
-					(el) => !el.hasAttribute('disabled')
-				);
-				firstFocusable?.focus();
+				const first = Array.from(focusable).find((el) => !el.hasAttribute('disabled'));
+				first?.focus();
 			}, 0);
 		} else {
 			unlockScroll();
-
-			if (previousActiveElement && previousActiveElement instanceof HTMLElement) {
+			if (previousActiveElement instanceof HTMLElement) {
 				previousActiveElement.focus();
 			}
 		}
 	});
 
 	onDestroy(() => {
-		if (typeof document !== 'undefined') {
-			unlockScroll();
-		}
+		if (typeof document !== 'undefined') unlockScroll();
 	});
 </script>
 
@@ -128,6 +123,7 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
 		class="drawer-overlay"
+		use:portal
 		onclick={handleOverlayClick}
 		role="dialog"
 		aria-modal="true"
@@ -143,46 +139,18 @@
 			onkeydown={handleContentKeydown}
 			transition:fly={{ duration: 250, x: flyX }}
 		>
-			{#if title || showCloseButton}
-				<div class="drawer-header">
-					<div class="drawer-header-content">
-						{#if icon}
-							<Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? 24} />
-						{/if}
-						{#if title || subtitle}
-							<div class="drawer-header-text">
-								{#if title}
-									<h2 class="drawer-title">{title}</h2>
-								{/if}
-								{#if subtitle}
-									<p class="drawer-subtitle">{subtitle}</p>
-								{/if}
-							</div>
-						{/if}
-					</div>
-					{#if showCloseButton}
-						<Button icon="X" variant="ghost" onclick={close} />
-					{/if}
-				</div>
-			{/if}
-
-			<div class="drawer-content">
+			<Card
+				{title}
+				{subtitle}
+				{icon}
+				actions={headerActions}
+				footerActions={actions}
+				{footer}
+				padding="md"
+				class="drawer-card"
+			>
 				{@render children?.()}
-			</div>
-
-			{#if footer}
-				<div class="drawer-footer">
-					{@render footer()}
-				</div>
-			{:else if actions.length > 0}
-				<div class="drawer-footer">
-					<ButtonGroup>
-						{#each actions as action}
-							<Button {...action} />
-						{/each}
-					</ButtonGroup>
-				</div>
-			{/if}
+			</Card>
 		</div>
 	</div>
 {/if}
@@ -202,10 +170,9 @@
 		position: absolute;
 		top: 0.75rem;
 		bottom: 0.75rem;
-		background: var(--glow-bg-surface-element);
-		border: $border;
 		display: flex;
 		flex-direction: column;
+		border-radius: $radius;
 
 		&:focus {
 			outline: none;
@@ -213,97 +180,43 @@
 
 		&.side-right {
 			right: 0.75rem;
-			border-radius: $radius;
 			box-shadow: -8px 0 30px rgba(0, 0, 0, 0.3);
 		}
 
 		&.side-left {
 			left: 0.75rem;
-			border-radius: $radius;
 			box-shadow: 8px 0 30px rgba(0, 0, 0, 0.3);
 		}
 
-		&.size-small {
-			width: 320px;
-		}
-
-		&.size-medium {
-			width: 420px;
-		}
-
-		&.size-large {
-			width: 600px;
-		}
+		&.size-small  { width: 320px; }
+		&.size-medium { width: 420px; }
+		&.size-large  { width: 600px; }
 
 		@media (max-width: 640px) {
 			width: 100% !important;
 			border-radius: 0;
+			top: 0;
+			bottom: 0;
+			right: 0;
+			left: 0;
 		}
 	}
 
-	.drawer-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 1rem;
-		border-bottom: $border;
-		flex-shrink: 0;
-		gap: 1rem;
-
-		@media (max-width: 640px) {
-			padding: 0.75rem;
-		}
-	}
-
-	.drawer-header-content {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		flex: 1;
-		min-width: 0;
-	}
-
-	.drawer-header-text {
+	// Make the Card flex-fill the drawer so its body scrolls while header/footer
+	// stay pinned. The chained `.card.drawer-card` selector outranks Card's own
+	// `.card { display: block; height: 100% }` rule (same specificity tie was
+	// causing the footer to sit right under the body instead of at the bottom).
+	:global(.card.drawer-card) {
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
-		min-width: 0;
-	}
-
-	.drawer-title {
-		font-size: 1.25rem;
-		font-weight: 600;
-		margin: 0;
-		color: var(--glow-fg);
-	}
-
-	.drawer-subtitle {
-		font-size: 0.875rem;
-		margin: 0;
-		color: rgba($fg, 0.7);
-	}
-
-	.drawer-content {
-		padding: 1rem;
-		overflow-y: auto;
-		flex: 1;
 		min-height: 0;
-
-		@media (max-width: 640px) {
-			padding: 0.75rem;
-		}
+		flex: 1 1 auto;
+		height: 100%;
 	}
 
-	.drawer-footer {
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-		padding: 1rem;
-		border-top: $border;
-		flex-shrink: 0;
-
-		@media (max-width: 640px) {
-			padding: 0.75rem;
-		}
+	:global(.card.drawer-card > .card-body) {
+		overflow-y: auto;
+		min-height: 0;
+		flex: 1 1 auto;
 	}
 </style>

@@ -3,11 +3,11 @@
 	import Text from '$lib/typography/Text.svelte';
 	import Button from '$lib/button/Button.svelte';
 	import ButtonGroup from '$lib/button/ButtonGroup.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import GradientMesh from '$lib/gradient/GradientMesh.svelte';
-	import Card from '$lib/card/Card.svelte';
-	import Stack from '$lib/layout/Stack.svelte';
+	import Flex from "$lib/layout/Flex.svelte";
+	import Grid from '$lib/layout/Grid.svelte';
 
 	type Feature = {
 		icon: 'Sparkles' | 'Palette' | 'Zap' | 'Accessibility' | 'Wrench' | 'Target';
@@ -31,27 +31,21 @@
 
 <svelte:head><title>Home | Glow UI</title></svelte:head>
 
-<div style="position: relative; margin-bottom: 4rem;">
-		<div
-			style="position: relative; height: 400px; border-radius: 12px; overflow: hidden; margin-bottom: 2rem;"
+<div class="hero">
+		<GradientMesh
+			colors={['#8B6DED', '#FF006E', '#06FFA5', '#FFD60A']}
+			intensity={0.6}
+			speed={1.2}
 		>
-			<GradientMesh
-				colors={['#8B6DED', '#FF006E', '#06FFA5', '#FFD60A']}
-				intensity={0.6}
-				speed={1.2}
-			>
-				<div
-					style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 2rem;"
-				>
-					<div
-						style="background: rgba(30, 31, 41, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 3rem; max-width: 600px; text-align: center;"
-					>
-						<Heading level={1} style="margin-bottom: 1rem;">Glow UI</Heading>
-						<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
+			<div class="hero-inner">
+				<Card class="hero-card" padding="lg">
+					<Flex gap="md" align="center">
+						<Heading level={1}>Glow UI</Heading>
+						<Text size="lg" variant="secondary">
 							A modern, accessible UI component library for Svelte 5 with custom cursor effects,
 							gradient animations, and beautiful components.
 						</Text>
-						<div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+						<Flex direction="horizontal" gap="sm" justify="center" wrap>
 							<Button
 								label="Browse Components"
 								variant="primary"
@@ -63,27 +57,27 @@
 								icon="Github"
 								onclick={() => window.open('https://github.com/Somfic/glow', '_blank')}
 							/>
-						</div>
-					</div>
-				</div>
-			</GradientMesh>
-		</div>
+						</Flex>
+					</Flex>
+				</Card>
+			</div>
+		</GradientMesh>
 	</div>
 
-	<Group label="Features">
-		<div class="feature-grid">
+	<Card title="Features">
+		<Grid min="250px" gap="lg">
 			{#each features as feature}
-				<Card icon={feature.icon} accentColor={feature.accent}>
-					<Stack gap="xs">
-						<Heading level={3}>{feature.title}</Heading>
-						<Text variant="secondary" size="sm">{feature.description}</Text>
-					</Stack>
-				</Card>
+				<Card
+					title={feature.title}
+					description={feature.description}
+					icon={feature.icon}
+					accentColor={feature.accent}
+				/>
 			{/each}
-		</div>
-	</Group>
+		</Grid>
+	</Card>
 
-	<Group label="Quick Start">
+	<Card title="Quick Start">
 		<Text variant="secondary" style="margin-bottom: 1rem;">
 			Get started with Glow UI in your Svelte project.
 		</Text>
@@ -114,10 +108,10 @@ bun add glow-ui`}
 
 <Button label="Submit" variant="primary" />`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Component Categories">
-		<div class="category-grid">
+	<Card title="Component Categories">
+		<Grid min="280px" gap="md">
 			<Card
 				href="/components"
 				title="Form & Input"
@@ -138,7 +132,7 @@ bun add glow-ui`}
 				title="Feedback"
 				description="Modals, toasts, tooltips, banners"
 			/>
-		</div>
+		</Grid>
 
 		<div class="all-components-cta">
 			<Button
@@ -147,23 +141,32 @@ bun add glow-ui`}
 				onclick={() => (window.location.href = '/components')}
 			/>
 		</div>
-	</Group>
+	</Card>
 
 <style lang="scss">
-	.feature-grid,
-	.category-grid {
-		display: grid;
-		gap: 1rem;
-		margin-top: 1rem;
+	.hero {
+		position: relative;
+		height: 400px;
+		border-radius: 12px;
+		overflow: hidden;
+		margin-bottom: 4rem;
 	}
 
-	.feature-grid {
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: 1.5rem;
+	.hero-inner {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+		padding: 2rem;
 	}
 
-	.category-grid {
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	// Frosted-glass treatment on the hero card. Scoped to this page only.
+	:global(.hero-card) {
+		background: rgba(30, 31, 41, 0.8) !important;
+		backdrop-filter: blur(10px);
+		border-color: rgba(255, 255, 255, 0.1);
+		max-width: 600px;
+		text-align: center;
 	}
 
 	.all-components-cta {

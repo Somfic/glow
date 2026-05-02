@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Pill from '$lib/pill/Pill.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
@@ -19,7 +19,7 @@
 		Compact labels for tags, categories, and status indicators. Supports text, icons, and images.
 	</Text>
 
-	<Group label="Basic" id="basic">
+	<Card title="Basic" id="basic">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Simple text pills for tags and labels
 		</Text>
@@ -28,9 +28,9 @@
 			<Pill label="Frontend" />
 			<Pill label="Svelte" />
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="With Icons" id="icons">
+	<Card title="With Icons" id="icons">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Pills with leading icons for visual context
 		</Text>
@@ -40,9 +40,9 @@
 			<Pill icon="AlertTriangle" label="Warning" />
 			<Pill icon="Clock" label="Pending" />
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Colored" id="colored">
+	<Card title="Colored" id="colored">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Tinted pills for semantic meaning or categorization
 		</Text>
@@ -54,9 +54,9 @@
 			<Pill icon="Star" label="Featured" color="#a855f7" />
 			<Pill label="Custom" color="#ec4899" />
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="With Images" id="images">
+	<Card title="With Images" id="images">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Image-only avatars and image + label combinations
 		</Text>
@@ -70,9 +70,9 @@
 			<Pill image="https://i.pravatar.cc/100?img=2" label="Bob" />
 			<Pill image="https://i.pravatar.cc/100?img=3" label="Charlie" />
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Removable" id="removable">
+	<Card title="Removable" id="removable">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Pills with a remove button for dismissible tags
 		</Text>
@@ -81,9 +81,9 @@
 			<Pill label="TypeScript" onRemove={() => {}} />
 			<Pill icon="Tag" label="Design" onRemove={() => {}} />
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Usage" id="usage">
+	<Card title="Usage" id="usage">
 		<CodeBlock
 			language="svelte"
 			code={`<script>
@@ -105,9 +105,9 @@
 <!-- Removable -->
 <Pill label="Dismiss me" onRemove={() => handleRemove()} />`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Props" id="props">
+	<Card title="Props" id="props">
 		<Table
 			variant="simple"
 			columns={[
@@ -124,4 +124,4 @@
 				{ prop: 'onRemove', type: '() => void', default: '-', description: 'Remove callback (shows X button)' }
 			]}
 		/>
-	</Group>
+	</Card>

@@ -5,8 +5,7 @@
 	import Pill from '$lib/pill/Pill.svelte';
 	import Avatar from '$lib/avatar/Avatar.svelte';
 	import Icon from '$lib/icon/Icon.svelte';
-	import Stack from '$lib/layout/Stack.svelte';
-	import Row from '$lib/layout/Row.svelte';
+	import Flex from "$lib/layout/Flex.svelte";
 	import Spacer from '$lib/layout/Spacer.svelte';
 	import ListItem from '$lib/list/ListItem.svelte';
 	import Section from '$lib/typography/Section.svelte';
@@ -86,26 +85,26 @@ UpdateDelay = 500
 	<!-- Left sidebar -->
 	<aside class="lsidebar">
 		<div class="ws-switcher">
-			<Row gap="sm">
+			<Flex direction="horizontal" gap="sm">
 				<Avatar name="somfic" size="sm" />
-				<Row gap="xs">
+				<Flex direction="horizontal" gap="xs">
 					<Text weight="semibold" as="span">somfic</Text>
 					<Icon name="ChevronDown" size={14} />
-				</Row>
+				</Flex>
 				<Spacer />
 				<Button icon="Search" tooltip="Search" />
 				<Button icon="SquarePen" tooltip="New issue" />
-			</Row>
+			</Flex>
 		</div>
 
-		<Stack gap="none" class="nav-list">
+		<Flex gap="none" class="nav-list">
 			{#each topItems as item}
 				{#snippet itemLeading()}
 					{#if item.icon}<Icon name={item.icon} size={16} />{/if}
 				{/snippet}
 				<ListItem title={item.label} onclick={() => {}} leading={itemLeading} />
 			{/each}
-		</Stack>
+		</Flex>
 
 		<!-- Workspace group -->
 		<div class="nav-group">
@@ -113,14 +112,14 @@ UpdateDelay = 500
 				<Text size="xs" variant="secondary" weight="semibold" as="span">Workspace</Text>
 				<Icon name="ChevronDown" size={12} />
 			</button>
-			<Stack gap="none">
+			<Flex gap="none">
 				{#each workspaceGroups[0].items as item}
 					{#snippet wsLeading()}
 						{#if item.icon}<Icon name={item.icon} size={16} />{/if}
 					{/snippet}
 					<ListItem title={item.label} onclick={() => {}} leading={wsLeading} />
 				{/each}
-			</Stack>
+			</Flex>
 		</div>
 
 		<!-- Teams group -->
@@ -133,14 +132,14 @@ UpdateDelay = 500
 				<div class="team-icon">🐛</div>
 			{/snippet}
 			<ListItem title="Somfic" onclick={() => {}} leading={teamLeading} />
-			<Stack gap="none" class="indent">
+			<Flex gap="none" class="indent">
 				{#each teamItems as item}
 					{#snippet teamItemLeading()}
 						{#if item.icon}<Icon name={item.icon} size={16} />{/if}
 					{/snippet}
 					<ListItem title={item.label} onclick={() => {}} leading={teamItemLeading} />
 				{/each}
-			</Stack>
+			</Flex>
 		</div>
 
 		<!-- Try group -->
@@ -149,48 +148,48 @@ UpdateDelay = 500
 				<Text size="xs" variant="secondary" weight="semibold" as="span">Try</Text>
 				<Icon name="ChevronDown" size={12} />
 			</button>
-			<Stack gap="none">
+			<Flex gap="none">
 				{#each workspaceGroups[2].items as item}
 					{#snippet tryLeading()}
 						{#if item.icon}<Icon name={item.icon} size={16} />{/if}
 					{/snippet}
 					<ListItem title={item.label} onclick={() => {}} leading={tryLeading} />
 				{/each}
-			</Stack>
+			</Flex>
 		</div>
 
 		<Spacer />
-		<Row class="lsidebar-footer">
+		<Flex direction="horizontal" class="lsidebar-footer">
 			<Button icon="CircleQuestionMark" tooltip="Help" />
-		</Row>
+		</Flex>
 	</aside>
 
 	<!-- Main pane -->
 	<main class="main">
 		<header class="topbar">
-			<Row gap="sm" class="breadcrumb">
+			<Flex direction="horizontal" gap="sm" class="breadcrumb">
 				<div class="team-icon-sm">🐛</div>
 				<Text weight="semibold" as="span">Somfic</Text>
 				<Text variant="secondary" as="span">›</Text>
 				<Text as="span">SOM-341 LegalState error</Text>
 				<Button icon="Star" tooltip="Favorite" />
 				<Button icon="Ellipsis" tooltip="More" />
-			</Row>
+			</Flex>
 			<Spacer />
-			<Row gap="sm">
+			<Flex direction="horizontal" gap="sm">
 				<Text size="sm" variant="secondary" as="span">7 / 61</Text>
 				<Button icon="ArrowDown" tooltip="Next issue" />
 				<Button icon="ArrowUp" tooltip="Previous issue" />
-			</Row>
+			</Flex>
 		</header>
 
 		<div class="content">
-			<Row gap="sm" class="content-toolbar" justify="end">
+			<Flex direction="horizontal" gap="sm" class="content-toolbar" justify="end">
 				<Button icon="Link" tooltip="Copy link" />
 				<Button icon="Copy" tooltip="Copy" />
 				<Button icon="GitBranch" tooltip="Branch" />
 				<Button icon="ChevronDown" tooltip="More options" />
-			</Row>
+			</Flex>
 
 			{#snippet syncActions()}
 				<Button icon="ExternalLink" tooltip="Open in GitHub" />
@@ -209,26 +208,26 @@ UpdateDelay = 500
 
 		<footer class="statusbar">
 			<Spacer />
-			<Row gap="sm">
+			<Flex direction="horizontal" gap="sm">
 				<Button icon="Triangle" label="Ask Linear" variant="ghost" />
 				<Button icon="History" tooltip="History" />
-			</Row>
+			</Flex>
 		</footer>
 	</main>
 
 	<!-- Properties sidebar -->
 	<aside class="rsidebar">
-		<Row gap="sm" class="rsidebar-toolbar" justify="end">
+		<Flex direction="horizontal" gap="sm" class="rsidebar-toolbar" justify="end">
 			<Button icon="Link" tooltip="Copy link" />
 			<Button icon="Boxes" tooltip="Sub-issues" />
 			<Button icon="GitBranch" tooltip="Branch" />
 			<Button icon="ListFilter" tooltip="Filter" />
 			<Button icon="ChevronDown" tooltip="More" />
-		</Row>
+		</Flex>
 
-		<Stack gap="md" class="rsidebar-content">
+		<Flex gap="md" class="rsidebar-content">
 			<Section title="Properties" level={4} collapsible>
-				<Stack gap="xs" class="prop-list">
+				<Flex gap="xs" class="prop-list">
 					<button class="prop-row">
 						<Icon name="CircleDashed" size={14} />
 						<Text size="sm" as="span">Backlog</Text>
@@ -241,15 +240,15 @@ UpdateDelay = 500
 						<Avatar name="Lucas" size="sm" />
 						<Text size="sm" as="span">Lucas</Text>
 					</button>
-				</Stack>
+				</Flex>
 			</Section>
 
 			<Section title="Labels" level={4} collapsible>
-				<Row gap="xs" wrap>
+				<Flex direction="horizontal" gap="xs" wrap>
 					<Pill label="Bug" color="#ef4444" />
 					<Pill label="Migrated" color="#3b82f6" />
 					<Button icon="Plus" variant="dashed" tooltip="Add label" />
-				</Row>
+				</Flex>
 			</Section>
 
 			<Section title="Project" level={4} collapsible>
@@ -258,7 +257,7 @@ UpdateDelay = 500
 					<Text size="sm" variant="secondary" as="span">Add to project</Text>
 				</button>
 			</Section>
-		</Stack>
+		</Flex>
 	</aside>
 </div>
 

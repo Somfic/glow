@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Code from '$lib/code/Code.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
@@ -18,7 +18,7 @@
 		Components for displaying code with syntax highlighting, line numbers, and copy functionality.
 	</Text>
 
-	<Group label="Inline Code" id="inline-code">
+	<Card title="Inline Code" id="inline-code">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Use inline code for short code snippets within text
 		</Text>
@@ -26,9 +26,9 @@
 			You can use <Code>inline code</Code> within text, like <Code>const x = 42;</Code> or
 			<Code>npm install</Code>.
 		</p>
-	</Group>
+	</Card>
 
-	<Group label="Code Block - JavaScript" id="code-block-javascript">
+	<Card title="Code Block - JavaScript" id="code-block-javascript">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Full code blocks with syntax highlighting
 		</Text>
@@ -41,9 +41,9 @@
 
 console.log(fibonacci(10)); // 55`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Code Block with Line Numbers" id="code-block-line-numbers">
+	<Card title="Code Block with Line Numbers" id="code-block-line-numbers">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Add line numbers for easier reference
 		</Text>
@@ -64,9 +64,9 @@ const createUser = (data: Partial<User>): User => {
   };
 };`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Auto-detected from Filename" id="code-auto-detected">
+	<Card title="Auto-detected from Filename" id="code-auto-detected">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Language is automatically detected from file extension
 		</Text>
@@ -84,9 +84,9 @@ export function Example() {
   );
 }`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="More Auto-detection Examples" id="code-more-examples">
+	<Card title="More Auto-detection Examples" id="code-more-examples">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Supports many languages with automatic detection
 		</Text>
@@ -113,9 +113,9 @@ export function Example() {
     return fibonacci(n-1) + fibonacci(n-2)`}
 			/>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Shell/Terminal Mode" id="code-shell-terminal">
+	<Card title="Shell/Terminal Mode" id="code-shell-terminal">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Special mode for shell commands with copy icon in cursor
 		</Text>
@@ -125,9 +125,9 @@ export function Example() {
 npm run dev
 bun test`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Supported Languages" id="code-languages">
+	<Card title="Supported Languages" id="code-languages">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Examples of different language syntaxes
 		</Text>
@@ -174,9 +174,9 @@ bun test`}
 				/>
 			</div>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Usage" id="usage">
+	<Card title="Usage" id="usage">
 		<Heading level={3} id="inline-usage">Inline Code</Heading>
 		<CodeBlock
 			language="svelte"
@@ -213,9 +213,9 @@ bun test`}
   code={\`export default () => <div>Hello</div>\`}
 />`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="CodeBlock Props" id="code-block-props">
+	<Card title="CodeBlock Props" id="code-block-props">
 		<Table
 			variant="simple"
 			columns={[
@@ -231,9 +231,9 @@ bun test`}
 				{ prop: 'showLineNumbers', type: 'boolean', default: 'false', description: 'Show line numbers' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Supported Languages" id="supported-languages-list">
+	<Card title="Supported Languages" id="supported-languages-list">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Full list of supported programming languages
 		</Text>
@@ -259,9 +259,9 @@ bun test`}
 			<li><Text>Bash/Shell</Text></li>
 			<li><Text>SQL</Text></li>
 		</ul>
-	</Group>
+	</Card>
 
-	<Group label="Features" id="features">
+	<Card title="Features" id="features">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 			<li><Text>🎨 Syntax highlighting for 20+ languages</Text></li>
 			<li><Text>📋 Copy icon in cursor when hovering shell commands</Text></li>
@@ -272,4 +272,4 @@ bun test`}
 			<li><Text>📱 Responsive with horizontal scrolling</Text></li>
 			<li><Text>♿ Accessible with proper ARIA attributes</Text></li>
 		</ul>
-	</Group>
+	</Card>

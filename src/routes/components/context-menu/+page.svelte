@@ -1,12 +1,11 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import ContextMenu from '$lib/menu/ContextMenu.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
 	import Code from '$lib/code/Code.svelte';
-	import Card from '$lib/card/Card.svelte';
 	import type { PopoverMenuEntry, PopoverMenuCommonItem } from '$lib/menu/PopoverMenu.svelte';
 
 	const basicItems: PopoverMenuEntry[] = [
@@ -47,7 +46,7 @@
 	toggles and submenus use <Code>PopoverMenu</Code>.
 </Text>
 
-<Group label="Basic" id="basic">
+<Card title="Basic" id="basic">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Right-click anywhere in the box below.
 	</Text>
@@ -56,9 +55,9 @@
 			<Text variant="secondary" size="sm">Right-click me</Text>
 		</Card>
 	</ContextMenu>
-</Group>
+</Card>
 
-<Group label="With Common Actions" id="common">
+<Card title="With Common Actions" id="common">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		A horizontal icon row at the top for frequent actions.
 	</Text>
@@ -67,9 +66,9 @@
 			<Text variant="secondary" size="sm">Right-click for file actions</Text>
 		</Card>
 	</ContextMenu>
-</Group>
+</Card>
 
-<Group label="Usage" id="usage">
+<Card title="Usage" id="usage">
 	<CodeBlock
 		language="svelte"
 		code={`<script>
@@ -88,9 +87,9 @@
   <div>Right-click this area</div>
 </ContextMenu>`}
 	/>
-</Group>
+</Card>
 
-<Group label="Props" id="props">
+<Card title="Props" id="props">
 	<Table
 		variant="simple"
 		columns={[
@@ -106,4 +105,4 @@
 			{ prop: 'disabled', type: 'boolean',              default: 'false', description: 'Disable the context menu' }
 		]}
 	/>
-</Group>
+</Card>

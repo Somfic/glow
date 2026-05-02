@@ -72,7 +72,7 @@
 			background-color: rgba($fg, 0.25);
 
 			&.checked {
-				background-color: color.scale($primary, $lightness: 10%);
+				background-color: var(--glow-primary-hover);
 			}
 		}
 	}

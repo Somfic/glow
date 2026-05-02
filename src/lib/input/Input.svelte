@@ -465,7 +465,7 @@
 		font-weight: 500;
 		margin-left: calc(1rem + $border-width);
 		font-size: 0.75rem;
-		color: color.mix($fg, $bg-surface-element, 50%);
+		color: var(--glow-text-muted);
 		user-select: none;
 		cursor: pointer;
 

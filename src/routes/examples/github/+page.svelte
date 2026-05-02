@@ -10,8 +10,7 @@
 	import Icon from '$lib/icon/Icon.svelte';
 	import Input from '$lib/input/Input.svelte';
 	import Code from '$lib/code/Code.svelte';
-	import Stack from '$lib/layout/Stack.svelte';
-	import Row from '$lib/layout/Row.svelte';
+	import Flex from "$lib/layout/Flex.svelte";
 	import Spacer from '$lib/layout/Spacer.svelte';
 	import Divider from '$lib/layout/Divider.svelte';
 	import Table from '$lib/data/Table.svelte';
@@ -53,9 +52,9 @@
 
 <svelte:head><title>Somfic / Golf0ned · GitHub example</title></svelte:head>
 
-<Stack gap="md">
+<Flex gap="md">
 	<!-- Top app bar -->
-	<Row gap="sm" class="topbar">
+	<Flex direction="horizontal" gap="sm" class="topbar">
 		<Button icon="Menu" tooltip="Menu" />
 		<Button icon="Github" tooltip="Home" />
 		<Button icon="Ellipsis" tooltip="More" />
@@ -72,7 +71,7 @@
 				shortcut="/"
 			/>
 		</div>
-		<Row gap="xs">
+		<Flex direction="horizontal" gap="xs">
 			<Button icon="Terminal" tooltip="Open in terminal" />
 			<Button icon="MessageCircle" tooltip="Copilot" />
 			<Button icon="Cloud" tooltip="Cloud" />
@@ -81,8 +80,8 @@
 			<Button icon="Inbox" tooltip="Inbox" />
 			<Button icon="Bell" tooltip="Notifications" />
 			<Avatar name="Somfic Dev" size="sm" />
-		</Row>
-	</Row>
+		</Flex>
+	</Flex>
 
 	{#snippet searchPrefix()}
 		<Icon name="Search" />
@@ -103,13 +102,13 @@
 			]}
 		/>
 	</div>
-</Stack>
+</Flex>
 
 {#snippet codeTab()}
 	<div class="code-grid">
-		<Stack gap="md" class="main-col">
+		<Flex gap="md" class="main-col">
 			<!-- Repo header -->
-			<Row gap="sm">
+			<Flex direction="horizontal" gap="sm">
 				<div class="repo-avatar">🦆</div>
 				<Heading level={2} class="repo-name">Golf0ned</Heading>
 				<Pill label="Public" variant="outlined" />
@@ -117,19 +116,19 @@
 				<Button label="Watch" icon="Eye" variant="secondary" count={1} />
 				<Button label="Fork" icon="GitFork" variant="secondary" count={0} />
 				<Button label="Star" icon="Star" variant="primary" count={1} />
-			</Row>
+			</Flex>
 
 			<!-- Branch row -->
-			<Row gap="sm">
+			<Flex direction="horizontal" gap="sm">
 				<Button label="main" icon="GitBranch" variant="secondary" />
-				<Row gap="xs">
+				<Flex direction="horizontal" gap="xs">
 					<Icon name="GitBranch" size={14} />
 					<Text size="sm" variant="secondary" as="span">1 Branch</Text>
-				</Row>
-				<Row gap="xs">
+				</Flex>
+				<Flex direction="horizontal" gap="xs">
 					<Icon name="Tag" size={14} />
 					<Text size="sm" variant="secondary" as="span">0 Tags</Text>
-				</Row>
+				</Flex>
 				<Spacer />
 				<div class="goto">
 					<Input
@@ -142,7 +141,7 @@
 				</div>
 				<Button icon="Plus" variant="secondary" />
 				<Button label="Code" icon="Code" variant="primary" />
-			</Row>
+			</Flex>
 
 			<!-- File list -->
 			<Card padding="none" header={lastCommit}>
@@ -151,66 +150,66 @@
 
 			<!-- README -->
 			<Card>
-				<Stack gap="sm">
+				<Flex gap="sm">
 					<div class="readme-tab">
-						<Row gap="xs">
+						<Flex direction="horizontal" gap="xs">
 							<Icon name="BookOpen" />
 							<Text weight="semibold" as="span">README</Text>
-						</Row>
+						</Flex>
 					</div>
 					<Heading level={3}>
 						<em>Last updated: 2026-04-29 13:25:37.818760</em>
 					</Heading>
-				</Stack>
+				</Flex>
 			</Card>
-		</Stack>
+		</Flex>
 
-		<Stack gap="lg" class="sidebar">
-			<Stack gap="sm">
+		<Flex gap="lg" class="sidebar">
+			<Flex gap="sm">
 				<Heading level={3} class="sidebar-title">About</Heading>
 				<Text variant="secondary" size="sm">
 					<em>No description, website, or topics provided.</em>
 				</Text>
 				<Data properties={aboutItems} padded={false} />
 				<Link href="#report" variant="muted" style="font-size: 0.85rem; margin-top: 0.5rem;">Report repository</Link>
-			</Stack>
+			</Flex>
 
-			<Stack gap="sm">
+			<Flex gap="sm">
 				<Heading level={3} class="sidebar-title">Releases</Heading>
 				<Text size="sm" variant="secondary">No releases published</Text>
-			</Stack>
+			</Flex>
 
-			<Stack gap="sm">
+			<Flex gap="sm">
 				<Heading level={3} class="sidebar-title">Packages</Heading>
 				<Text size="sm" variant="secondary">No packages published</Text>
-			</Stack>
+			</Flex>
 
-			<Stack gap="sm">
+			<Flex gap="sm">
 				<Heading level={3} class="sidebar-title">Languages</Heading>
 				<div class="lang-bar">
 					<div style="background: #3572A5; flex: 78;"></div>
 					<div style="background: #89e051; flex: 22;"></div>
 				</div>
-				<Stack gap="xs">
-					<Row gap="xs">
+				<Flex gap="xs">
+					<Flex direction="horizontal" gap="xs">
 						<span class="dot" style="background: #3572A5;"></span>
 						<Text size="sm" as="span">Python <strong>78%</strong></Text>
-					</Row>
-					<Row gap="xs">
+					</Flex>
+					<Flex direction="horizontal" gap="xs">
 						<span class="dot" style="background: #89e051;"></span>
 						<Text size="sm" as="span">Shell <strong>22%</strong></Text>
-					</Row>
-				</Stack>
-			</Stack>
-		</Stack>
+					</Flex>
+				</Flex>
+			</Flex>
+		</Flex>
 	</div>
 {/snippet}
 
 {#snippet nameCell(_value: any, row: FileEntry)}
-	<Row gap="sm">
+	<Flex direction="horizontal" gap="sm">
 		<Icon name={row.type === 'dir' ? 'Folder' : 'File'} />
 		<Link href={`#${row.name}`} variant="subtle">{row.name}</Link>
-	</Row>
+	</Flex>
 {/snippet}
 
 {#snippet messageCell(value: any)}
@@ -222,18 +221,18 @@
 {/snippet}
 
 {#snippet lastCommit()}
-	<Row gap="sm">
+	<Flex direction="horizontal" gap="sm">
 		<Avatar name="GA" size="sm" />
 		<Text size="sm" as="span"><strong>github-actions[bot]</strong></Text>
 		<Text size="sm" variant="secondary" as="span">Update README</Text>
 		<Spacer />
 		<Code>5c8c750</Code>
 		<Text size="sm" variant="secondary" as="span">· 3 hours ago</Text>
-		<Row gap="xs">
+		<Flex direction="horizontal" gap="xs">
 			<Icon name="History" size={14} />
 			<Text size="sm" variant="secondary" as="span">506 Commits</Text>
-		</Row>
-	</Row>
+		</Flex>
+	</Flex>
 {/snippet}
 
 {#snippet placeholderTab()}

@@ -92,6 +92,31 @@
 	--glow-section-header-gap: 0.75rem;    // gap between section header and content
 	--glow-field-label-size: #{$text-sm};
 	--glow-field-hint-size: #{$text-xs};
+
+	// Motion tokens — runtime mirrors of the Sass tokens in theme.scss.
+	// Use these in inline styles or non-Sass contexts: `transition: opacity var(--glow-dur-fast) var(--glow-ease-out)`.
+	--glow-ease-out:    #{$ease-out};
+	--glow-ease-in-out: #{$ease-in-out};
+	--glow-ease-in:     #{$ease-in};
+	--glow-ease-spring: #{$ease-spring};
+	--glow-dur-instant: #{$dur-instant};
+	--glow-dur-fast:    #{$dur-fast};
+	--glow-dur-base:    #{$dur-base};
+	--glow-dur-slow:    #{$dur-slow};
+	--glow-dur-glacial: #{$dur-glacial};
+}
+
+// Honour reduced-motion preference globally — collapse all transition durations
+// to a near-zero value so motion-using components don't have to opt in. Apps
+// can still scope a stronger override (e.g. `transition: none`) per element.
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--glow-dur-instant: 1ms;
+		--glow-dur-fast:    1ms;
+		--glow-dur-base:    1ms;
+		--glow-dur-slow:    1ms;
+		--glow-dur-glacial: 1ms;
+	}
 }
 
 [data-density='compact'] {
@@ -189,14 +214,22 @@ p {
     }
 }
 
+// Default vertical rhythm for bare Card stacks inside a Page article. Pages
+// that want tighter (or no) spacing wrap their cards in `<Flex gap="…">` —
+// the explicit gap wins because the flex container becomes the cards' parent
+// and this adjacent-sibling rule no longer matches.
+article > .card + .card {
+    margin-top: $space-lg;
+}
+
 // Links
 a {
-    color: $primary;
+    color: var(--glow-primary);
     text-decoration: none;
     transition: color 0.15s;
 
     &:hover {
-        color: $primary-hover;
+        color: var(--glow-primary-hover);
         text-decoration: underline;
     }
 }

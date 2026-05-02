@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import GradientMesh from '$lib/gradient/GradientMesh.svelte';
 	import Button from '$lib/button/Button.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
@@ -21,7 +21,7 @@
 		engaging, dynamic backgrounds.
 	</Text>
 
-	<Group label="Interactive Demo" id="gradient-demo">
+	<Card title="Interactive Demo" id="gradient-demo">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Watch the gradient blobs flow and pulse in smooth, organic patterns
 		</Text>
@@ -49,9 +49,9 @@
 				</div>
 			</GradientMesh>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Color Variations" id="color-variations">
+	<Card title="Color Variations" id="color-variations">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Customize the gradient with different color combinations
 		</Text>
@@ -84,9 +84,9 @@
 				</GradientMesh>
 			</div>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Usage" id="usage">
+	<Card title="Usage" id="usage">
 		<CodeBlock
 			language="svelte"
 			code={`<script>
@@ -101,9 +101,9 @@
   <YourContent />
 </GradientMesh>`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Props" id="props">
+	<Card title="Props" id="props">
 		<Table
 			variant="simple"
 			columns={[
@@ -118,9 +118,9 @@
 				{ prop: 'speed', type: 'number', default: '1.0', description: 'Animation speed multiplier (0.5-2.0 recommended)' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Customization Examples" id="customization">
+	<Card title="Customization Examples" id="customization">
 		<Heading level={3} id="slow-subtle">Slow & Subtle</Heading>
 		<CodeBlock
 			language="svelte"
@@ -156,9 +156,9 @@
   <Content />
 </GradientMesh>`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Features" id="features">
+	<Card title="Features" id="features">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 			<li>
 				<Text>🎨 Customizable colors - pass any array of hex colors</Text>
@@ -188,9 +188,9 @@
 				<Text>🎭 Perfect for hero sections, backgrounds, and cards</Text>
 			</li>
 		</ul>
-	</Group>
+	</Card>
 
-	<Group label="Best Practices" id="best-practices">
+	<Card title="Best Practices" id="best-practices">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 			<li>
 				<Text><strong>Colors:</strong> Use 3-5 colors for best visual results</Text>
@@ -216,12 +216,12 @@
 				>
 			</li>
 		</ul>
-	</Group>
+	</Card>
 
-	<Group label="Accessibility" id="accessibility">
+	<Card title="Accessibility" id="accessibility">
 		<Text>
 			The gradient mesh automatically respects the <code>prefers-reduced-motion</code> media query.
 			Users who have enabled reduced motion in their system preferences will see a static gradient
 			instead of the animated version.
 		</Text>
-	</Group>
+	</Card>

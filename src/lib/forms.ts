@@ -27,6 +27,5 @@ export type {
 export { default as Field } from "./settings/Field.svelte";
 export { default as FieldRow } from "./settings/FieldRow.svelte";
 export { default as SettingsSection } from "./settings/SettingsSection.svelte";
-export { default as Disclosure } from "./settings/Disclosure.svelte";
 export { default as SettingsShell } from "./settings/SettingsShell.svelte";
 export type { FieldLayout, FieldTier, FieldContext } from "./settings/fieldContext.js";

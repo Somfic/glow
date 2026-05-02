@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Avatar from '$lib/avatar/Avatar.svelte';
 	import AvatarGroup from '$lib/avatar/AvatarGroup.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
@@ -30,7 +30,7 @@
 		User avatars with image and initials fallback. Hover to see names.
 	</Text>
 
-	<Group label="Basic" id="basic">
+	<Card title="Basic" id="basic">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Avatars with images and initials fallback. Hover to see the name tooltip.
 		</Text>
@@ -40,9 +40,9 @@
 			<Avatar name="Carol Davis" />
 			<Avatar name="Dan Lee" />
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Sizes" id="sizes">
+	<Card title="Sizes" id="sizes">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Available in sm (28px), md (36px), lg (48px), and xl (64px).
 		</Text>
@@ -58,9 +58,9 @@
 			<Avatar name="Bob Smith" size="lg" />
 			<Avatar name="Bob Smith" size="xl" />
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Avatar Group" id="group">
+	<Card title="Avatar Group" id="group">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Stacked avatars with overflow indicator. Hover to smoothly expand.
 		</Text>
@@ -78,9 +78,9 @@
 				<AvatarGroup avatars={groupAvatars} max={5} size="lg" />
 			</div>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Usage" id="usage">
+	<Card title="Usage" id="usage">
 		<CodeBlock
 			language="svelte"
 			code={`<script>
@@ -104,9 +104,9 @@
   size="md"
 />`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Avatar Props" id="avatar-props">
+	<Card title="Avatar Props" id="avatar-props">
 		<Table
 			variant="simple"
 			columns={[
@@ -121,9 +121,9 @@
 				{ prop: 'size', type: "'sm' | 'md' | 'lg' | 'xl'", default: "'md'", description: 'Avatar size' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="AvatarGroup Props" id="group-props">
+	<Card title="AvatarGroup Props" id="group-props">
 		<Table
 			variant="simple"
 			columns={[
@@ -138,4 +138,4 @@
 				{ prop: 'size', type: "'sm' | 'md' | 'lg' | 'xl'", default: "'md'", description: 'Size applied to all avatars' }
 			]}
 		/>
-	</Group>
+	</Card>

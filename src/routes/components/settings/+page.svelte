@@ -14,7 +14,7 @@
 	import Section from '$lib/settings/SettingsSection.svelte';
 	import Field from '$lib/settings/Field.svelte';
 	import FieldRow from '$lib/settings/FieldRow.svelte';
-	import Disclosure from '$lib/settings/Disclosure.svelte';
+	import Card from '$lib/card/Card.svelte';
 
 	// === Mock state — mirrors what tagger persists ===
 	let checkpoint = $state('illustriousXL_v10.safetensors');
@@ -169,8 +169,8 @@
 <Heading level={1}>Settings primitives</Heading>
 <p class="page-intro">
 	A live port of the tagger app's controls column, built with only the new
-	<code>Section</code>, <code>Field</code>, <code>FieldRow</code>,
-	<code>Disclosure</code>, and <code>SettingsShell</code> primitives — plus the
+	<code>Section</code>, <code>Field</code>, <code>FieldRow</code>, and
+	<code>SettingsShell</code> primitives (with collapsible <code>Card</code>) — plus the
 	new rich <code>PopoverMenu</code>. Use the toggles below to flip density and
 	see whether the shell layer is worth keeping.
 </p>
@@ -314,17 +314,17 @@
 		</div>
 
 		{#if thinkingText}
-			<Disclosure title="Reasoning" variant="boxed" active={improving}>
+			<Card collapsible title="Reasoning" active={improving} padding="sm">
 				{#snippet headerExtra()}
 					{#if improving}<Spinner size={14} />{/if}
 				{/snippet}
 				<pre class="trace">{thinkingText}</pre>
-			</Disclosure>
+			</Card>
 		{/if}
 		{#if responseText}
-			<Disclosure title="Raw response" variant="boxed">
+			<Card collapsible title="Raw response" padding="sm">
 				<pre class="trace">{responseText}</pre>
-			</Disclosure>
+			</Card>
 		{/if}
 	</Section>
 

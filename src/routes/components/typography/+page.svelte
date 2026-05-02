@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
 	import Code from '$lib/code/Code.svelte';
@@ -19,7 +19,7 @@
 		accessible, and beautiful content.
 	</Text>
 
-	<Group label="Heading Examples" id="heading-examples">
+	<Card title="Heading Examples" id="heading-examples">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Six levels of headings for document hierarchy
 		</Text>
@@ -31,9 +31,9 @@
 			<Heading level={5}>Heading 5 - Small Heading</Heading>
 			<Heading level={6}>Heading 6 - Minor Heading</Heading>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Text Sizes" id="text-sizes">
+	<Card title="Text Sizes" id="text-sizes">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Five size options for different emphasis levels
 		</Text>
@@ -44,9 +44,9 @@
 			<Text size="sm">Small text - For captions and secondary information</Text>
 			<Text size="xs">Extra small text - For metadata and fine print</Text>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Text Variants" id="text-variants">
+	<Card title="Text Variants" id="text-variants">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Three color variants for different levels of importance
 		</Text>
@@ -55,9 +55,9 @@
 			<Text variant="secondary">Secondary text - Less prominent information</Text>
 			<Text variant="muted">Muted text - Subtle background information</Text>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Text Weights" id="text-weights">
+	<Card title="Text Weights" id="text-weights">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Four weight options for different levels of emphasis
 		</Text>
@@ -67,9 +67,9 @@
 			<Text weight="semibold">Semibold weight - Emphasized text</Text>
 			<Text weight="bold">Bold weight - Strong emphasis</Text>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Combining Properties" id="combining-properties">
+	<Card title="Combining Properties" id="combining-properties">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Mix sizes, variants, and weights for rich typography
 		</Text>
@@ -89,9 +89,9 @@
 				information that should be present but not prominent.
 			</Text>
 		</div>
-	</Group>
+	</Card>
 
-	<Group label="Usage" id="usage">
+	<Card title="Usage" id="usage">
 		<Heading level={3} id="headings-usage">Headings</Heading>
 		<CodeBlock
 			language="svelte"
@@ -137,9 +137,9 @@
   Combined properties
 </Text>`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Heading Props" id="heading-props">
+	<Card title="Heading Props" id="heading-props">
 		<Table
 			variant="simple"
 			columns={[
@@ -153,9 +153,9 @@
 				{ prop: 'id', type: 'string', default: '-', description: 'ID for anchor links' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Text Props" id="text-props">
+	<Card title="Text Props" id="text-props">
 		<Table
 			variant="simple"
 			columns={[
@@ -170,9 +170,9 @@
 				{ prop: 'weight', type: "'normal' | 'medium' | 'semibold' | 'bold'", default: "'normal'", description: 'Font weight' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Type Scale" id="type-scale">
+	<Card title="Type Scale" id="type-scale">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Font sizes follow a modular scale for visual harmony
 		</Text>
@@ -195,9 +195,9 @@
 				{ component: 'Text XS', size: '0.75rem', lineHeight: '1.4', useCase: 'Metadata, fine print' }
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Features" id="features">
+	<Card title="Features" id="features">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 			<li><Text>📏 Modular type scale for visual consistency</Text></li>
 			<li><Text>🎨 Multiple size, weight, and color variants</Text></li>
@@ -207,4 +207,4 @@
 			<li><Text>🎯 Flexible composition of properties</Text></li>
 			<li><Text>📱 Responsive and mobile-optimized</Text></li>
 		</ul>
-	</Group>
+	</Card>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import TableOfContents from '$lib/navigation/TableOfContents.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
@@ -22,7 +22,7 @@
 				the active section. Perfect for documentation pages and long-form content.
 			</Text>
 
-			<Group label="Introduction" id="introduction">
+			<Card title="Introduction" id="introduction">
 				<Text>
 					The Table of Contents component provides automatic navigation for your page. It scans
 					the page for headings, builds a hierarchical navigation structure, and highlights the
@@ -32,9 +32,9 @@
 					Look to the right side of this page to see the component in action! It automatically
 					detected all the headings on this page and created a navigation menu.
 				</Text>
-			</Group>
+			</Card>
 
-			<Group label="Automatic Detection" id="automatic-detection">
+			<Card title="Automatic Detection" id="automatic-detection">
 				<Text>
 					By default, the component automatically detects all headings in the page. You can
 					control which heading levels to include and customize the behavior.
@@ -51,9 +51,9 @@
 					The table of contents stays fixed in position as you scroll, making it always
 					accessible. On smaller screens (below 1200px), it automatically hides to save space.
 				</Text>
-			</Group>
+			</Card>
 
-			<Group label="Usage" id="usage">
+			<Card title="Usage" id="usage">
 				<Heading level={3} id="auto-detect-usage">Automatic Detection (Recommended)</Heading>
 				<CodeBlock
 					language="svelte"
@@ -96,9 +96,9 @@
 					code={`<!-- Only include h2 and h3 headings -->
 <TableOfContents levels={[2, 3]} />`}
 				/>
-			</Group>
+			</Card>
 
-			<Group label="Props" id="props">
+			<Card title="Props" id="props">
 				<Table
 					variant="simple"
 					columns={[
@@ -113,9 +113,9 @@
 						{ prop: 'levels', type: 'number[]', default: '[1, 2, 3]', description: 'Which heading levels to include (1-6)' }
 					]}
 				/>
-			</Group>
+			</Card>
 
-			<Group label="Heading Type" id="heading-type">
+			<Card title="Heading Type" id="heading-type">
 				<CodeBlock
 					language="typescript"
 					code={`interface Heading {
@@ -124,9 +124,9 @@
   level: number;   // Heading level (1-6)
 }`}
 				/>
-			</Group>
+			</Card>
 
-			<Group label="Styling & Layout" id="styling">
+			<Card title="Styling & Layout" id="styling">
 				<Heading level={3} id="recommended-layout">Recommended Layout</Heading>
 				<CodeBlock
 					language="svelte"
@@ -158,9 +158,9 @@
 					of the viewport as you scroll. Make sure the parent container has enough height for the
 					sticky behavior to work properly.
 				</Text>
-			</Group>
+			</Card>
 
-			<Group label="Features" id="features">
+			<Card title="Features" id="features">
 				<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 					<li>
 						<Text>📍 Sticky positioning on the right side</Text>
@@ -190,9 +190,9 @@
 						<Text>♿ Accessible with proper ARIA attributes</Text>
 					</li>
 				</ul>
-			</Group>
+			</Card>
 
-			<Group label="Best Practices" id="best-practices">
+			<Card title="Best Practices" id="best-practices">
 				<Heading level={3} id="heading-ids">Always Add IDs to Headings</Heading>
 				<Text>
 					For the table of contents to work, your headings must have unique <code>id</code> attributes:
@@ -214,9 +214,9 @@
 					On smaller screens, the table of contents is typically hidden. Make sure your content is
 					still navigable without it, perhaps with a jump-to-section menu or clear section breaks.
 				</Text>
-			</Group>
+			</Card>
 
-			<Group label="Technical Implementation" id="technical-implementation">
+			<Card title="Technical Implementation" id="technical-implementation">
 				<Text>
 					The component uses several modern web APIs to provide a smooth, performant experience:
 				</Text>
@@ -238,7 +238,7 @@
 						<Text><strong>Sticky Positioning:</strong> CSS sticky for fixed sidebar behavior</Text>
 					</li>
 				</ul>
-			</Group>
+			</Card>
 		</div>
 
 		<!-- Table of Contents Sidebar -->

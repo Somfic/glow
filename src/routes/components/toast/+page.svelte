@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Button from '$lib/button/Button.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
@@ -20,7 +20,7 @@
 	Toast notifications for brief, non-intrusive feedback.
 </Text>
 
-<Group label="Variants" id="variants">
+<Card title="Variants" id="variants">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Four variants for different message types.
 	</Text>
@@ -34,9 +34,9 @@
 		>
 		<Button variant="secondary" onclick={() => toast.error('Something went wrong')}>Error</Button>
 	</div>
-</Group>
+</Card>
 
-<Group label="Custom Duration" id="duration">
+<Card title="Custom Duration" id="duration">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Control how long the toast stays visible.
 	</Text>
@@ -48,9 +48,9 @@
 			>10s</Button
 		>
 	</div>
-</Group>
+</Card>
 
-<Group label="Usage" id="usage">
+<Card title="Usage" id="usage">
 	<CodeBlock
 		language="svelte"
 		code={`<script>
@@ -70,9 +70,9 @@
   toast.dismiss(id);
 </script>`}
 	/>
-</Group>
+</Card>
 
-<Group label="ToastContainer Setup" id="setup">
+<Card title="ToastContainer Setup" id="setup">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Add the ToastContainer once in your root layout.
 	</Text>
@@ -85,9 +85,9 @@
 <!-- Position options: top-right, top-left, bottom-right, bottom-left, top-center, bottom-center -->
 <ToastContainer position="top-right" />`}
 	/>
-</Group>
+</Card>
 
-<Group label="Toast API" id="api">
+<Card title="Toast API" id="api">
 	<Table
 		variant="simple"
 		columns={[
@@ -103,9 +103,9 @@
 			{ method: 'toast.dismiss', args: '(id)', description: 'Dismiss a toast by ID' }
 		]}
 	/>
-</Group>
+</Card>
 
-<Group label="ToastContainer Props" id="props">
+<Card title="ToastContainer Props" id="props">
 	<Table
 		variant="simple"
 		columns={[
@@ -123,4 +123,4 @@
 			}
 		]}
 	/>
-</Group>
+</Card>

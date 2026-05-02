@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Media from '$lib/media/Media.svelte';
 	import Button from '$lib/button/Button.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
@@ -28,7 +28,7 @@
 	Smooth crossfade media component with loading state and dual-layer transitions. Supports images and videos with seamless crossfade between any source type.
 </Text>
 
-<Group label="Smooth switching" id="switching">
+<Card title="Smooth switching" id="switching">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Click the buttons to swap the source. The transition crossfades between images and video.
 	</Text>
@@ -46,9 +46,9 @@
 	<div style="width: 100%; height: 400px; border-radius: 12px; overflow: hidden;">
 		<Media src={sources[current]} fit="cover" autoplay />
 	</div>
-</Group>
+</Card>
 
-<Group label="Object fit" id="fit">
+<Card title="Object fit" id="fit">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Contain (default) vs cover.
 	</Text>
@@ -66,9 +66,9 @@
 			</div>
 		</div>
 	</div>
-</Group>
+</Card>
 
-<Group label="Usage" id="usage">
+<Card title="Usage" id="usage">
 	<CodeBlock
 		language="svelte"
 		code={`<script>
@@ -85,9 +85,9 @@
 <!-- Smooth switch: just change the src -->
 <Media src={dynamicUrl} fit="cover" />`}
 	/>
-</Group>
+</Card>
 
-<Group label="Props" id="props">
+<Card title="Props" id="props">
 	<Table
 		variant="simple"
 		columns={[
@@ -101,4 +101,4 @@
 			{ prop: 'fit', type: "'cover' | 'contain'", default: "'contain'", description: 'Object-fit mode' }
 		]}
 	/>
-</Group>
+</Card>

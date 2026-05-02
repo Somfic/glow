@@ -1,8 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Stack from '$lib/layout/Stack.svelte';
-	import Row from '$lib/layout/Row.svelte';
+	import Flex from "$lib/layout/Flex.svelte";
 	import Spacer from '$lib/layout/Spacer.svelte';
 	import Button from '$lib/button/Button.svelte';
 	import ButtonGroup from '$lib/button/ButtonGroup.svelte';
@@ -96,14 +95,14 @@
 
 <svelte:head><title>Form example | Glow UI</title></svelte:head>
 
-<Stack gap="lg" class="form-page">
-	<Stack gap="xs">
+<Flex gap="lg" class="form-page">
+	<Flex gap="xs">
 		<Heading level={1}>Submit a feature request</Heading>
 		<Text size="lg" variant="secondary">
 			Demonstrates <code>&lt;Field&gt;</code> with the <code>error</code> prop, the
 			<code>useModal()</code> rune, and the toast helper.
 		</Text>
-	</Stack>
+	</Flex>
 
 	<Card padding="md">
 		<Section title="Request" description="Tell us what you'd like to see." variant="plain">
@@ -221,7 +220,7 @@
 			</Field>
 		</Section>
 
-		<Row class="form-actions">
+		<Flex direction="horizontal" class="form-actions">
 			<Button label="Reset" variant="ghost" onclick={reset} disabled={submitting} />
 			<Spacer />
 			<ButtonGroup>
@@ -234,9 +233,9 @@
 					onclick={submit}
 				/>
 			</ButtonGroup>
-		</Row>
+		</Flex>
 	</Card>
-</Stack>
+</Flex>
 
 <Modal
 	bind:open={confirm.open}
@@ -246,10 +245,10 @@
 	size="small"
 	footer={confirmFooter}
 >
-	<Stack gap="sm">
+	<Flex gap="sm">
 		<Text>Thanks for taking the time to write this up.</Text>
 		<Card padding="sm" variant="secondary">
-			<Stack gap="xs">
+			<Flex gap="xs">
 				<Text size="sm" variant="secondary">Title</Text>
 				<Text weight="semibold">{title}</Text>
 				<Text size="sm" variant="secondary">Priority</Text>
@@ -258,9 +257,9 @@
 					<Text size="sm" variant="secondary">Tags</Text>
 					<Text>{tags.join(', ')}</Text>
 				{/if}
-			</Stack>
+			</Flex>
 		</Card>
-	</Stack>
+	</Flex>
 </Modal>
 
 {#snippet confirmFooter()}

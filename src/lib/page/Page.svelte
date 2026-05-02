@@ -82,6 +82,8 @@
 <style lang="scss">
 	@use '../style/theme.scss' as *;
 
+	// `bare` is its own thing: pins to the viewport and lets children own
+	// their own scroll regions. Used for full-bleed app shells.
 	.page.bare {
 		position: fixed;
 		inset: 0;
@@ -90,24 +92,23 @@
 		overflow: hidden;
 		min-height: 0;
 
-		// Children fill remaining height — apps lay out their own scroll regions.
 		& > :global(*) {
 			flex: 1 1 auto;
 			min-height: 0;
 		}
 	}
 
+	// Standard page — relies on document scroll. No internal overflow tricks,
+	// so the browser scrollbar sits at the viewport's right edge regardless of
+	// sidebar width or zoom level.
 	.page {
 		display: flex;
-		flex-grow: 1;
 		flex-direction: column;
-		align-items: center;
 		min-height: 100vh;
+		min-width: 0;
 
 		&.sidebar-mode {
 			margin-left: 240px;
-			min-height: 100vh;
-			align-items: stretch;
 			transition: margin-left 0.2s ease;
 
 			&.sidebar-collapsed {
@@ -127,9 +128,7 @@
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			padding: 0.5rem 2rem;
-			width: 100%;
-			max-width: 1400px;
+			padding: 0.5rem 1.5rem;
 
 			.navigation {
 				display: flex;
@@ -137,58 +136,43 @@
 				justify-content: space-between;
 				background-color: var(--glow-bg-surface);
 				border-radius: 100px;
-				padding: 0.5rem 2rem;
+				padding: 0.5rem 1.5rem;
 				width: 100%;
 				max-width: 1200px;
-				margin: 1rem;
+				margin: 1rem auto;
 			}
 		}
 
-		.header,
 		.content {
-			@media only screen and (max-width: 600px) {
-				padding: 0 0.5rem;
-			}
+			width: 100%;
+			min-width: 0;
+			flex: 1 1 auto;
+			padding: 2rem clamp(1rem, 4vw, 3rem);
 
-			@media only screen and (min-width: 600px) {
-				padding: 0 2rem;
-			}
-
-			@media only screen and (min-width: 768px) {
-				padding: 0 3rem;
-			}
-
-			@media only screen and (min-width: 768px) {
-				padding: 0 4rem;
-			}
-
-			@media only screen and (min-width: 1200px) {
-				padding: 0 5rem;
+			// The article inside .content sets vertical rhythm.
+			> :global(article) {
+				display: flex;
+				flex-direction: column;
+				min-width: 0;
 			}
 		}
 
-		&.sidebar-mode .content {
-			display: flex;
-			flex-direction: column;
-			width: 100%;
-			max-width: 1111px;
+		// `contained` (default for non-sidebar pages) — cap and centre.
+		// Sidebar pages are full-width within the sidebar offset so they
+		// adapt to viewport width; opt back in to a cap with `layout="contained"`.
+		&.contained:not(.sidebar-mode) .content {
+			max-width: 1200px;
 			margin: 0 auto;
-			padding: 2rem 3rem;
-
-			@media only screen and (max-width: 600px) {
-				padding: 1rem;
-			}
 		}
 
-		&.normal .content {
-			display: flex;
-			flex-direction: column;
-			width: 100%;
-			max-width: 1111px;
+		&.contained.sidebar-mode .content {
+			max-width: 1200px;
+			margin: 0 auto;
 		}
 
+		// `full` — content fills the available width (viewport minus sidebar).
 		&.full .content {
-			width: 100%;
+			max-width: none;
 		}
 	}
 
@@ -199,7 +183,7 @@
 		left: 1rem;
 		z-index: 98;
 		background: var(--glow-bg-surface);
-		border: 1px solid $border-color;
+		border: 1px solid var(--glow-border-color);
 		color: var(--glow-fg);
 		width: 40px;
 		height: 40px;

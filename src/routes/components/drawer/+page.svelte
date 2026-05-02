@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Button from '$lib/button/Button.svelte';
 	import Drawer from '$lib/drawer/Drawer.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
@@ -27,7 +27,7 @@
 	Slide-in panel from the edge of the screen for secondary content, forms, and detail views.
 </Text>
 
-<Group label="Basic" id="basic">
+<Card title="Basic" id="basic">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Drawers slide in from the right by default. Click the backdrop or press Escape to close.
 	</Text>
@@ -35,9 +35,9 @@
 		<Button label="Open right drawer" onclick={() => rightDrawer.open()} />
 		<Button label="Open left drawer" variant="secondary" onclick={() => leftDrawer.open()} />
 	</div>
-</Group>
+</Card>
 
-<Group label="Sizes" id="sizes">
+<Card title="Sizes" id="sizes">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Available in small (320px), medium (420px), and large (600px). Goes full-width on mobile.
 	</Text>
@@ -45,16 +45,16 @@
 		<Button label="Small" variant="secondary" onclick={() => smallDrawer.open()} />
 		<Button label="Large" variant="secondary" onclick={() => largeDrawer.open()} />
 	</div>
-</Group>
+</Card>
 
-<Group label="With form" id="form">
+<Card title="With form" id="form">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Drawers can contain forms with action buttons in the footer.
 	</Text>
 	<Button label="Edit profile" onclick={() => formDrawer.open()} />
-</Group>
+</Card>
 
-<Group label="Usage" id="usage">
+<Card title="Usage" id="usage">
 	<CodeBlock
 		language="svelte"
 		code={`<script>
@@ -80,9 +80,9 @@
   <p>Drawer content goes here.</p>
 </Drawer>`}
 	/>
-</Group>
+</Card>
 
-<Group label="Props" id="props">
+<Card title="Props" id="props">
 	<Table
 		variant="simple"
 		columns={[
@@ -105,9 +105,9 @@
 			{ prop: 'onOpen', type: '() => void', default: '-', description: 'Callback when drawer opens' }
 		]}
 	/>
-</Group>
+</Card>
 
-<Group label="Methods" id="methods">
+<Card title="Methods" id="methods">
 	<Table
 		variant="simple"
 		columns={[
@@ -121,7 +121,7 @@
 			{ method: 'isOpenState()', description: 'Returns whether the drawer is open' }
 		]}
 	/>
-</Group>
+</Card>
 
 <!-- Drawer instances -->
 

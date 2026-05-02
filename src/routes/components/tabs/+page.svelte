@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
-	import Group from '$lib/group/Group.svelte';
+	import Card from "$lib/card/Card.svelte";
 	import Tabs from '$lib/tabs/Tabs.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
@@ -21,7 +21,7 @@
 		A tabs component with visual connection between the active tab and content area.
 	</Text>
 
-	<Group label="Basic Tabs" id="basic-tabs">
+	<Card title="Basic Tabs" id="basic-tabs">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Simple tabs with text labels
 		</Text>
@@ -66,9 +66,9 @@
 				}
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Tabs with Icons" id="tabs-with-icons">
+	<Card title="Tabs with Icons" id="tabs-with-icons">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Add icons to tabs for better visual recognition
 		</Text>
@@ -126,9 +126,9 @@
 				}
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Disabled Tabs" id="disabled-tabs">
+	<Card title="Disabled Tabs" id="disabled-tabs">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Some tabs can be disabled to prevent interaction
 		</Text>
@@ -152,9 +152,9 @@
 				}
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Usage" id="usage">
+	<Card title="Usage" id="usage">
 		<CodeBlock
 			language="svelte"
 			code={`<script>
@@ -183,9 +183,9 @@
   onChange={(tabId) => console.log('Changed to:', tabId)}
 />`}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Props" id="props">
+	<Card title="Props" id="props">
 		<Table
 			variant="simple"
 			columns={[
@@ -223,9 +223,9 @@
 				}
 			]}
 		/>
-	</Group>
+	</Card>
 
-	<Group label="Features" id="features">
+	<Card title="Features" id="features">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
 			<li><Text>✨ Visual connection between active tab and content</Text></li>
 			<li><Text>⌨️ Keyboard navigation (Arrow keys, Home, End)</Text></li>
@@ -234,4 +234,4 @@
 			<li><Text>♿ Fully accessible with ARIA attributes</Text></li>
 			<li><Text>🎯 Bindable active state</Text></li>
 		</ul>
-	</Group>
+	</Card>

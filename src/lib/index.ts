@@ -27,12 +27,10 @@ export type {
 	ComboboxGroup,
 	ComboboxEntry
 } from "./input/types.js";
-export { default as Group } from "./group/Group.svelte";
 export { default as Page } from "./page/Page.svelte";
 export { default as Pill } from "./pill/Pill.svelte";
 export type { NavItem } from "./page/Navigation.svelte";
 export { default as Media } from "./media/Media.svelte";
-export { default as MediaCard } from "./media/MediaCard.svelte";
 export { default as Card } from "./card/Card.svelte";
 export { default as Lightbox, type RelatedMedia } from "./media/Lightbox.svelte";
 export { default as Modal } from "./modal/Modal.svelte";
@@ -50,8 +48,8 @@ export { default as Link } from "./typography/Link.svelte";
 export { default as Kbd } from "./typography/Kbd.svelte";
 export { default as Section } from "./typography/Section.svelte";
 export { default as Markdown } from "./typography/Markdown.svelte";
-export { default as Stack } from "./layout/Stack.svelte";
-export { default as Row } from "./layout/Row.svelte";
+export { default as Flex } from "./layout/Flex.svelte";
+export { default as Grid } from "./layout/Grid.svelte";
 export { default as Spacer } from "./layout/Spacer.svelte";
 export { default as Divider } from "./layout/Divider.svelte";
 export { default as Code } from "./code/Code.svelte";
@@ -77,7 +75,6 @@ export type {
 export { default as Field } from "./settings/Field.svelte";
 export { default as FieldRow } from "./settings/FieldRow.svelte";
 export { default as SettingsSection } from "./settings/SettingsSection.svelte";
-export { default as Disclosure } from "./settings/Disclosure.svelte";
 export { default as SettingsShell } from "./settings/SettingsShell.svelte";
 export type { FieldLayout, FieldTier, FieldContext } from "./settings/fieldContext.js";
 export { default as Avatar } from "./avatar/Avatar.svelte";
