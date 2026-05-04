@@ -24,6 +24,12 @@
 		fit?: 'cover' | 'contain';
 		/** Optional progress bar (0–1) drawn at the bottom of the media region. */
 		progress?: number;
+		// Video playback — only used when `src` resolves to a video.
+		autoplay?: boolean;
+		muted?: boolean;
+		loop?: boolean;
+		controls?: boolean;
+		poster?: string;
 	};
 
 	type Props = {
@@ -299,6 +305,11 @@
 				fallback={mediaConfig.fallback}
 				alt={mediaConfig.alt}
 				fit={mediaConfig.fit ?? 'cover'}
+				autoplay={mediaConfig.autoplay}
+				muted={mediaConfig.muted}
+				loop={mediaConfig.loop}
+				controls={mediaConfig.controls}
+				poster={mediaConfig.poster}
 			/>
 			{#if mediaConfig.progress != null && mediaConfig.progress > 0}
 				<div class="media-progress"><div class="media-progress-fill" style:width="{Math.min(mediaConfig.progress, 1) * 100}%"></div></div>
