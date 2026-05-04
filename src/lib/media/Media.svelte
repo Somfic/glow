@@ -45,6 +45,7 @@
 
 	let {
 		src,
+		fallback,
 		type = 'auto',
 		fit = 'contain',
 		alt = '',
@@ -61,6 +62,10 @@
 		onVideoPlaying
 	}: {
 		src?: string;
+		/** Image URL shown beneath the main layers until `src` finishes loading.
+		 *  Useful for showing a thumbnail while a video buffers. The crossfade
+		 *  to `src` happens automatically once it's ready. */
+		fallback?: string;
 		type?: MediaType;
 		fit?: Fit;
 		alt?: string;
@@ -267,12 +272,16 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="media" class:clickable={!!onclick} {onclick}>
-	{#if !src}
+	{#if !src && !fallback}
 		<div class="fallback" style:background={gradientFor(alt)}></div>
-	{:else if initialLoad && !mediaError}
+	{:else if initialLoad && !mediaError && !fallback}
 		<div class="placeholder">
 			<Spinner size={24} />
 		</div>
+	{/if}
+
+	{#if fallback}
+		<img src={fallback} {alt} class="fallback-layer" style="object-fit: {fit}" />
 	{/if}
 
 	{#if mediaError}
@@ -346,6 +355,15 @@
 		z-index: 1;
 	}
 
+	.fallback-layer {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		display: block;
+		z-index: 0;
+	}
+
 	.layer {
 		position: absolute;
 		inset: 0;
@@ -354,6 +372,7 @@
 		display: block;
 		opacity: 0;
 		transition: opacity 0.4s ease;
+		z-index: 1;
 
 		&.active {
 			opacity: 1;

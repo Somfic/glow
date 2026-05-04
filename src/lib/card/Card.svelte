@@ -16,6 +16,9 @@
 
 	type MediaConfig = {
 		src: string;
+		/** Image shown beneath the main media until it finishes loading
+		 *  (e.g. a thumbnail behind a video that's still buffering). */
+		fallback?: string;
 		alt?: string;
 		aspectRatio?: string;
 		fit?: 'cover' | 'contain';
@@ -178,16 +181,23 @@
 		? `--accent-bg: ${accentColor}1a; --accent-border: ${accentColor}4d;`
 		: '');
 
+	// Whether the overlay caption strip will actually render — only then do we
+	// reserve the extra 22% of vertical space below the image.
+	const hasOverlayCaption = $derived(
+		!!title || !!subtitle || (!!actions && actions.length > 0)
+	);
+
 	// Combined inline style on the card root: accent tokens + sampled bottom
-	// colour for the ambient overlay glow + (in overlay mode) an extended
-	// aspect ratio so there's room below the image for the caption strip.
+	// colour for the ambient overlay glow + (in overlay mode with caption) an
+	// extended aspect ratio so there's room below the image for the caption.
 	const overlayCardAspect = $derived.by(() => {
 		if (!isOverlay || !mediaConfig?.aspectRatio) return '';
 		const parts = mediaConfig.aspectRatio.split('/');
 		const w = parseFloat(parts[0]);
 		const h = parseFloat(parts[1] ?? '1');
 		if (!w || !h) return '';
-		return `aspect-ratio: ${w} / ${(h * 1.22).toFixed(3)}`;
+		const heightMultiplier = hasOverlayCaption ? 1.22 : 1;
+		return `aspect-ratio: ${w} / ${(h * heightMultiplier).toFixed(3)}`;
 	});
 
 	const rootStyle = $derived(
@@ -284,7 +294,12 @@
 		<!-- Media-led layouts: image + a single content row. No banded headers
 		     or footers — that pattern is reserved for non-media cards. -->
 		<div class="card-media" class:overlay={isOverlay} style:aspect-ratio={mediaConfig.aspectRatio}>
-			<Media src={mediaConfig.src} alt={mediaConfig.alt} fit={mediaConfig.fit ?? 'cover'} />
+			<Media
+				src={mediaConfig.src}
+				fallback={mediaConfig.fallback}
+				alt={mediaConfig.alt}
+				fit={mediaConfig.fit ?? 'cover'}
+			/>
 			{#if mediaConfig.progress != null && mediaConfig.progress > 0}
 				<div class="media-progress"><div class="media-progress-fill" style:width="{Math.min(mediaConfig.progress, 1) * 100}%"></div></div>
 			{/if}
