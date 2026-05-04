@@ -36,6 +36,9 @@ export { default as Lightbox, type RelatedMedia } from "./media/Lightbox.svelte"
 export { default as Modal } from "./modal/Modal.svelte";
 export { default as Drawer } from "./drawer/Drawer.svelte";
 export { useModal, useDrawer, ModalController } from "./modal/modal.svelte.js";
+export { default as CommandPalette } from "./command-palette/CommandPalette.svelte";
+export { commands, useCommandRegistry, CommandRegistry } from "./command-palette/registry.svelte.js";
+export type { Command, CommandContext, CommandGroup } from "./command-palette/types.js";
 export { default as Toast } from "./toast/Toast.svelte";
 export { default as ToastContainer } from "./toast/ToastContainer.svelte";
 export { toast, showToast, dismissToast, toasts } from "./toast/toast.svelte.js";
@@ -80,6 +83,7 @@ export type { FieldLayout, FieldTier, FieldContext } from "./settings/fieldConte
 export { default as Avatar } from "./avatar/Avatar.svelte";
 export { default as AvatarGroup } from "./avatar/AvatarGroup.svelte";
 export { default as Spinner } from "./spinner/Spinner.svelte";
+export { default as Skeleton } from "./skeleton/Skeleton.svelte";
 
 export { default as Pagination } from "./pagination/Pagination.svelte";
 export { default as ListItem } from "./list/ListItem.svelte";

@@ -120,7 +120,8 @@
 
 		&:hover:not(.disabled),
 		&.active:not(.disabled) {
-			background: rgba($fg, 0.06);
+			background: var(--glow-primary-soft);
+			color: var(--glow-primary);
 		}
 
 		&.selected {

@@ -74,7 +74,7 @@
 
 	{#if hasIcon && props.icon}
 		<span class="pill-icon">
-			<Icon {...resolveIcon(props.icon)} size={resolveIcon(props.icon).size ?? 14} />
+			<Icon {...resolveIcon(props.icon)} size={resolveIcon(props.icon).size ?? 12} />
 		</span>
 	{/if}
 
@@ -140,8 +140,11 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.375em;
-		padding: 0.3em 0.75em;
-		font-size: 0.8rem;
+		padding: 0.1em 0.6em;
+		font-size: 0.75rem;
+		line-height: 1;
+		max-height: 1rem;
+		box-sizing: border-box;
 		background: rgba($fg, 0.06);
 		color: rgba($fg, 0.85);
 		border: 1px solid rgba($fg, 0.1);

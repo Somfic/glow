@@ -37,6 +37,7 @@
 			category: 'Feedback',
 			items: [
 				{ name: 'Modal', href: '/components/modal', description: 'Dialogs and modals' },
+				{ name: 'Command Palette', href: '/components/command-palette', description: 'Modular, extendable command launcher' },
 				{ name: 'Drawer', href: '/components/drawer', description: 'Slide-in side panels' },
 				{ name: 'Toast', href: '/components/toast', description: 'Toast notifications' },
 				{ name: 'Tooltip', href: '/components/tooltip', description: 'Hover tooltips' },

@@ -78,6 +78,7 @@
 					id: 'overview',
 					label: 'Overview',
 					icon: 'Home',
+					badge: 12,
 					content: () => `
 						<div>
 							<h4 style="margin: 0 0 1rem 0;">Dashboard Overview</h4>
@@ -102,6 +103,7 @@
 					id: 'analytics',
 					label: 'Analytics',
 					icon: 'BarChart',
+					badge: { icon: 'Sparkles' as const, label: 'new' },
 					content: () => `
 						<div>
 							<h4 style="margin: 0 0 0.5rem 0;">Analytics & Insights</h4>

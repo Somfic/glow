@@ -54,6 +54,7 @@
 				label: 'Feedback',
 				items: [
 					{ label: 'Modal', href: '/components/modal', icon: 'MessageSquare' },
+				{ label: 'Command Palette', href: '/components/command-palette', icon: 'Command' },
 					{ label: 'Drawer', href: '/components/drawer', icon: 'PanelRight' },
 					{ label: 'Toast', href: '/components/toast', icon: 'Bell' },
 					{ label: 'Tooltip', href: '/components/tooltip', icon: 'Info' },

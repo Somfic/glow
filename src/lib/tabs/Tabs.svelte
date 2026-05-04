@@ -3,12 +3,13 @@
 	import { fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
+	import Pill from '../pill/Pill.svelte';
 
 	interface Tab {
 		id: string;
 		label: string;
 		icon?: IconProp;
-		count?: number;
+		badge?: string | number | { icon: IconProp; label?: string };
 		content: Snippet;
 		disabled?: boolean;
 	}
@@ -155,8 +156,12 @@
 					<Icon {...resolveIcon(tab.icon)} size={resolveIcon(tab.icon).size ?? 16} />
 				{/if}
 				<span class="tab-label" data-label={tab.label}>{tab.label}</span>
-				{#if tab.count !== undefined}
-					<span class="tab-count">{tab.count}</span>
+				{#if tab.badge != null}
+					{#if typeof tab.badge === 'object'}
+						<Pill icon={tab.badge.icon} label={tab.badge.label} />
+					{:else}
+						<Pill label={String(tab.badge)} />
+					{/if}
 				{/if}
 			</button>
 		{/each}
@@ -280,19 +285,6 @@
 
 		&:hover:not(.disabled):not(.active) {
 			color: var(--glow-fg);
-		}
-
-		.tab-count {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			min-width: 1.4em;
-			padding: 0 0.45em;
-			font-size: 0.75rem;
-			font-weight: 600;
-			background: rgba(255, 255, 255, 0.08);
-			border-radius: 999px;
-			line-height: 1.4;
 		}
 
 		// Reserve bold-width via a hidden duplicate of the label, so flipping
