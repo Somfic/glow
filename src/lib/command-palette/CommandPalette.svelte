@@ -32,6 +32,29 @@
 	let query = $state('');
 	let activeIndex = $state(0);
 	let inputEl = $state<HTMLInputElement | null>(null);
+	let inputFocused = $state(false);
+	/** Mirrors the real input's `selectionStart` so we can place the visible
+	 *  caret at the right character offset in the chip display. */
+	let inputCaret = $state(0);
+	let displayEl = $state<HTMLDivElement | null>(null);
+	let caretX = $state(0);
+	let caretY = $state(0);
+	let caretH = $state(0);
+	let caretInsideChip = $state(false);
+	let caretBusy = $state(false);
+	let caretBusyTimer: ReturnType<typeof setTimeout> | null = null;
+	function bumpCaret() {
+		caretBusy = true;
+		if (caretBusyTimer) clearTimeout(caretBusyTimer);
+		caretBusyTimer = setTimeout(() => {
+			caretBusy = false;
+		}, 500);
+	}
+	let caretEl = $state<HTMLSpanElement | null>(null);
+	function syncCaret() {
+		if (inputEl) inputCaret = inputEl.selectionStart ?? query.length;
+		bumpCaret();
+	}
 	let listEl = $state<HTMLDivElement | null>(null);
 	let resultsEl = $state<HTMLDivElement | null>(null);
 	let resultsInnerEl = $state<HTMLDivElement | null>(null);
@@ -51,10 +74,18 @@
 	let panelWidth = $state(0);
 	/** Natural height of the current level's content. */
 	let levelHeight = $state(0);
+	/** Normalised query — collapses internal whitespace and trims edges so
+	 *  scoring, chipize and the visible input display all see a clean form. */
+	const cleanQuery = $derived(query.replace(/\s+/g, ' ').trim());
 	/** True while async children for the current level are being fetched. */
 	let loadingChildren = $state(false);
+	/** Memoized async-children results keyed by parent command id. Persists
+	 *  for the lifetime of one palette session and clears on (re)open. */
+	let childrenCache = $state<Map<string, Command[]>>(new Map());
+	/** Ids of async-children parents currently being resolved. */
+	let loadingParents = $state<Set<string>>(new Set());
 
-	type QuerySegment = { text: string; chipIdx: number };
+	type QuerySegment = { text: string; chipIdx: number; start: number };
 
 	/** Chain of commands aligned with the chipIdx values produced by querySegments.
 	 *  Index 0 is the group (null — group is just a label, no command), then each
@@ -77,9 +108,9 @@
 	 * into the same chip so adjacent words visually merge.
 	 */
 	const querySegments = $derived.by<QuerySegment[]>(() => {
-		if (!query.trim()) return [];
+		if (!query) return [];
 		const active = flat[activeIndex];
-		if (!active) return [{ text: query, chipIdx: -1 }];
+		if (!active) return [{ text: query, chipIdx: -1, start: 0 }];
 		// Chain layout: [group?, ...path, leaf]. The group entry is special —
 		// it qualifies the action but isn't its own "level", so it's allowed
 		// to fold into adjacent chips. Path/leaf entries are real levels and
@@ -92,9 +123,17 @@
 			active.label
 		].map((l) => l.toLowerCase());
 		const raw = query.split(/(\s+)/);
-		const matched: { text: string; isWord: boolean; chipIdx: number }[] = raw.map(
-			(text) => ({ text, isWord: /\S/.test(text), chipIdx: -1 })
-		);
+		let cursor = 0;
+		const matched: {
+			text: string;
+			isWord: boolean;
+			chipIdx: number;
+			start: number;
+		}[] = raw.map((text) => {
+			const start = cursor;
+			cursor += text.length;
+			return { text, isWord: /\S/.test(text), chipIdx: -1, start };
+		});
 		for (const seg of matched) {
 			if (!seg.isWord) continue;
 			const needle = seg.text.toLowerCase();
@@ -136,7 +175,7 @@
 				last.text += seg.text;
 				continue;
 			}
-			out.push({ text: seg.text, chipIdx: seg.chipIdx });
+			out.push({ text: seg.text, chipIdx: seg.chipIdx, start: seg.start });
 		}
 		return out;
 	});
@@ -156,6 +195,89 @@
 	function visibleAt(level: Command[]): Command[] {
 		return level.filter((c) => !c.when || c.when());
 	}
+
+	$effect(() => {
+		// Measure the caret position relative to the display, so we can paint
+		// it as an absolute element that doesn't displace any text.
+		void inputCaret;
+		void inputFocused;
+		void querySegments;
+		void cleanQuery;
+		if (!displayEl || !inputFocused) {
+			caretH = 0;
+			return;
+		}
+		requestAnimationFrame(() => {
+			const display = displayEl;
+			if (!display) return;
+			const wrapRect = display.getBoundingClientRect();
+			// Empty query → caret at display origin.
+			if (cleanQuery.length === 0) {
+				caretX = 0;
+				caretY = 0;
+				caretH = display.clientHeight;
+				caretInsideChip = false;
+				return;
+			}
+			// Find the segment that owns the caret position. Whitespace-only
+			// segments aren't rendered, so when the caret lands inside one
+			// (e.g. just after deleting a trailing chip), step backwards to
+			// the nearest *visible* segment so the caret snaps to its end
+			// instead of getting stuck at the deleted location.
+			let ownerIdx =
+				inputCaret === 0
+					? -1
+					: querySegments.findIndex(
+							(s) => s.start < inputCaret && inputCaret <= s.start + s.text.length
+						);
+			while (
+				ownerIdx >= 0 &&
+				querySegments[ownerIdx].chipIdx < 0 &&
+				!querySegments[ownerIdx].text.trim()
+			) {
+				ownerIdx--;
+			}
+			if (ownerIdx === -1) {
+				// Before any segment / nothing visible to anchor to.
+				caretX = 0;
+				caretY = 0;
+				caretH = display.clientHeight;
+				caretInsideChip = false;
+				return;
+			}
+			const seg = querySegments[ownerIdx];
+			const segEl = display.querySelector<HTMLElement>(`[data-cp-seg="${ownerIdx}"]`);
+			if (!segEl) return;
+			// Use the LAST text node inside the segment — chips have an icon
+			// + text, plain segments are pure text. Either way the trailing
+			// text node holds the rendered characters.
+			let textNode: Text | null = null;
+			const walker = document.createTreeWalker(segEl, NodeFilter.SHOW_TEXT);
+			let n: Node | null;
+			while ((n = walker.nextNode())) textNode = n as Text;
+			if (!textNode) {
+				// Empty seg (whitespace-only that we hide) — fall back to seg box.
+				const r = segEl.getBoundingClientRect();
+				caretX = r.left - wrapRect.left;
+				caretY = r.top - wrapRect.top;
+				caretH = r.height;
+				caretInsideChip = seg.chipIdx >= 0;
+				return;
+			}
+			const offsetInText = Math.min(
+				inputCaret - seg.start,
+				textNode.textContent?.length ?? 0
+			);
+			const range = document.createRange();
+			range.setStart(textNode, offsetInText);
+			range.setEnd(textNode, offsetInText);
+			const r = range.getBoundingClientRect();
+			caretX = r.left - wrapRect.left;
+			caretY = r.top - wrapRect.top;
+			caretH = r.height || segEl.getBoundingClientRect().height;
+			caretInsideChip = seg.chipIdx >= 0;
+		});
+	});
 
 	$effect(() => {
 		// Re-resolve the current level whenever the path or registry changes.
@@ -196,8 +318,9 @@
 
 	/**
 	 * Walk the tree starting at `cmds`, emitting an entry for every leaf that
-	 * lives at least one level deep (i.e. has at least one ancestor). Async
-	 * children can't be flattened eagerly, so those branches are skipped.
+	 * lives at least one level deep. Async children get expanded only when
+	 * their resolved value is cached — uncached async branches are skipped
+	 * here and triggered separately by `prewarmAsyncChildren`.
 	 */
 	function flattenTree(
 		cmds: Command[],
@@ -207,10 +330,12 @@
 		for (const c of cmds) {
 			if (c.when && !c.when()) continue;
 			if (c.children) {
-				if (Array.isArray(c.children)) {
-					out.push(...flattenTree(c.children, [...pathSoFar, c]));
+				const kids = Array.isArray(c.children)
+					? c.children
+					: childrenCache.get(c.id);
+				if (kids) {
+					out.push(...flattenTree(kids, [...pathSoFar, c]));
 				}
-				// async children → skip; they'd require a fetch to compose.
 			} else if (pathSoFar.length > 0) {
 				out.push({ command: c, path: pathSoFar });
 			}
@@ -218,12 +343,59 @@
 		return out;
 	}
 
+	const STOP_WORDS_SET = new Set([
+		'a', 'an', 'the', 'to', 'of', 'in', 'on', 'for', 'and', 'or',
+		'with', 'at', 'by', 'is', 'it'
+	]);
+
+	/** Walk the tree once the user starts typing at the root and prefetch
+	 *  every async-children branch so their leaves can participate in the
+	 *  search. Each branch is fetched at most once per palette session
+	 *  (memoized in `childrenCache`). */
+	$effect(() => {
+		if (path.length !== 0) return;
+		if (cleanQuery.length === 0) return;
+		const cache = childrenCache;
+		const loading = loadingParents;
+		const walk = (cmds: Command[]) => {
+			for (const c of cmds) {
+				if (c.when && !c.when()) continue;
+				if (!c.children) continue;
+				if (Array.isArray(c.children)) {
+					walk(c.children);
+					continue;
+				}
+				if (cache.has(c.id) || loading.has(c.id)) continue;
+				const id = c.id;
+				const fn = c.children;
+				const next = new Set(loadingParents);
+				next.add(id);
+				loadingParents = next;
+				Promise.resolve(fn())
+					.then((arr) => {
+						const m = new Map(childrenCache);
+						m.set(id, arr);
+						childrenCache = m;
+					})
+					.catch((err) =>
+						console.error('[CommandPalette] composed children failed:', err)
+					)
+					.finally(() => {
+						const s = new Set(loadingParents);
+						s.delete(id);
+						loadingParents = s;
+					});
+			}
+		};
+		walk(registry.commands);
+	});
+
 	const scored = $derived.by<ScoredCommand[]>(() => {
 		const base = levelCommands.map((c) => ({ command: c, path: [] as Command[] }));
 		// Only fold in cross-level composed entries when at the root with an
 		// active query — they'd be noisy otherwise.
 		const composed =
-			path.length === 0 && query.trim()
+			path.length === 0 && cleanQuery
 				? flattenTree(registry.commands)
 				: [];
 		const all = [...base, ...composed];
@@ -238,20 +410,16 @@
 					: entry.command.id
 		});
 
-		if (!query.trim()) {
+		if (!cleanQuery) {
 			return all.map((e) => decorate(e, 0));
 		}
-		const q = query.trim();
+		const q = cleanQuery;
 		// Drop common filler words from the *required* set so "set theme to
 		// green" still requires set/theme/green to all match somewhere — but
 		// "to" itself isn't required (and isn't enough on its own to pull a
 		// row in either).
-		const STOP_WORDS = new Set([
-			'a', 'an', 'the', 'to', 'of', 'in', 'on', 'for', 'and', 'or',
-			'with', 'at', 'by', 'is', 'it'
-		]);
 		const allTokens = q.split(/\s+/).filter(Boolean);
-		const meaningful = allTokens.filter((t) => !STOP_WORDS.has(t.toLowerCase()));
+		const meaningful = allTokens.filter((t) => !STOP_WORDS_SET.has(t.toLowerCase()));
 		const required = meaningful.length > 0 ? meaningful : allTokens;
 		return all
 			.map((e) => {
@@ -331,6 +499,8 @@
 			indicatorReady = false;
 			path = [];
 			prevDepth = -1;
+			childrenCache = new Map();
+			loadingParents = new Set();
 			lockScroll();
 			setTimeout(() => inputEl?.focus(), 0);
 		} else {
@@ -391,9 +561,6 @@
 			activeIndex = (activeIndex - 1 + flat.length) % flat.length;
 			scrollActiveIntoView();
 		} else if (e.key === 'Enter') {
-			e.preventDefault();
-			run(flat[activeIndex]);
-		} else if (e.key === 'ArrowRight' && flat[activeIndex]?.children) {
 			e.preventDefault();
 			run(flat[activeIndex]);
 		} else if (e.key === 'Escape') {
@@ -529,38 +696,119 @@
 						{/each}
 					</div>
 				{/if}
-				<input
-					bind:this={inputEl}
-					bind:value={query}
-					{placeholder}
-					class="cp-input"
-					type="text"
-					autocomplete="off"
-					spellcheck="false"
-				/>
+				<div
+					class="cp-input-stage"
+					onclick={() => inputEl?.focus()}
+					role="presentation"
+				>
+					<div bind:this={displayEl} class="cp-input-display" aria-hidden="true">
+						{#if cleanQuery.length === 0 && !inputFocused}
+							<span class="cp-input-placeholder">{placeholder}</span>
+						{:else}
+							{#each querySegments as seg, i (i)}
+								{#if seg.chipIdx >= 0}
+									{@const chipCmd = chainCommands[seg.chipIdx]}
+									<span class="cp-input-chip" data-cp-seg={i}>
+										{#if chipCmd?.image}
+											<img class="cp-input-chip-image" src={chipCmd.image} alt="" />
+										{:else if chipCmd?.icon}
+											{@const cic = resolveIcon(chipCmd.icon)}
+											<Icon {...cic} size={12} />
+										{/if}<span class="cp-input-chip-text">{seg.text}</span>
+									</span>
+								{:else}
+									<span class="cp-input-text" data-cp-seg={i}>{seg.text}</span>
+								{/if}
+							{/each}
+						{/if}
+						{#if inputFocused && caretH > 0}
+							<span
+								class="cp-input-caret"
+								class:in-chip={caretInsideChip}
+								class:busy={caretBusy}
+								style:transform="translate({caretX}px, {caretY}px)"
+								style:height="{caretH}px"
+							></span>
+						{/if}
+					</div>
+					<input
+						bind:this={inputEl}
+						value={query}
+						class="cp-input"
+						type="text"
+						autocomplete="off"
+						spellcheck="false"
+						onfocus={() => {
+							inputFocused = true;
+							syncCaret();
+						}}
+						onblur={() => (inputFocused = false)}
+						oninput={(e) => {
+							const raw = (e.currentTarget as HTMLInputElement).value;
+							query = raw.replace(/\s+/g, ' ').replace(/^\s+/, '');
+							syncCaret();
+						}}
+						onkeydown={(e) => {
+							// Backspace at a chip-gap whitespace deletes both the
+							// space and the char before it — one keystroke = one
+							// visible deletion (whitespace is invisible between
+							// chips, so a plain backspace would feel like a no-op).
+							if (
+								e.key === 'Backspace' &&
+								inputEl &&
+								inputEl.selectionStart === inputEl.selectionEnd &&
+								(inputEl.selectionStart ?? 0) >= 2
+							) {
+								const pos = inputEl.selectionStart!;
+								const prev = query[pos - 1];
+								const beforePrev = query[pos - 2];
+								const after = query[pos];
+								if (
+									/\s/.test(prev) &&
+									beforePrev !== undefined &&
+									!/\s/.test(beforePrev) &&
+									(after === undefined || !/\s/.test(after))
+								) {
+									e.preventDefault();
+									const next = query.slice(0, pos - 2) + query.slice(pos);
+									query = next;
+									requestAnimationFrame(() => {
+										if (!inputEl) return;
+										inputEl.setSelectionRange(pos - 2, pos - 2);
+										syncCaret();
+									});
+									return;
+								}
+							}
+							// Snap caret past whitespace runs so the gap between
+							// two pills only costs one keystroke each direction.
+							const dir =
+								e.key === 'ArrowLeft' ? -1 : e.key === 'ArrowRight' ? 1 : 0;
+							requestAnimationFrame(() => {
+								if (!inputEl) return;
+								let pos = inputEl.selectionStart ?? 0;
+								if (dir === -1) {
+									while (pos > 0 && /\s/.test(query[pos - 1])) pos--;
+								} else if (dir === 1) {
+									while (pos < query.length && /\s/.test(query[pos])) pos++;
+								}
+								if (pos !== inputEl.selectionStart) {
+									inputEl.setSelectionRange(pos, pos);
+								}
+								syncCaret();
+							});
+						}}
+						onclick={syncCaret}
+						onselect={syncCaret}
+					/>
+				</div>
+				{#if loadingParents.size > 0}
+					<span class="cp-search-busy" title="Loading more matches…">
+						<Spinner size={12} />
+					</span>
+				{/if}
 				<Kbd size="sm">esc</Kbd>
 			</div>
-
-			{#if querySegments.some((s) => s.chipIdx >= 0)}
-				<div class="cp-parsed" aria-hidden="true">
-					{#each querySegments as seg, i (i)}
-						{#if seg.chipIdx >= 0}
-							{@const chipCmd = chainCommands[seg.chipIdx]}
-							<span class="cp-parsed-chip">
-								{#if chipCmd?.image}
-									<img class="cp-parsed-chip-image" src={chipCmd.image} alt="" />
-								{:else if chipCmd?.icon}
-									{@const cic = resolveIcon(chipCmd.icon)}
-									<Icon {...cic} size={12} />
-								{/if}
-								{seg.text.trim()}
-							</span>
-						{:else if seg.text.trim()}
-							<span class="cp-parsed-fill">{seg.text.trim()}</span>
-						{/if}
-					{/each}
-				</div>
-			{/if}
 
 			<div bind:this={resultsEl} class="cp-results">
 				<div
@@ -716,32 +964,48 @@
 		opacity: 0.6;
 	}
 
-	.cp-input {
+	.cp-search-busy {
+		display: inline-flex;
+		align-items: center;
+		opacity: 0.65;
+	}
+
+	.cp-input-stage {
 		flex: 1 1 auto;
 		min-width: 0;
-		background: transparent;
-		border: none;
-		outline: none;
-		color: var(--glow-fg);
-		font: inherit;
-		font-size: 0.95rem;
-
-		&::placeholder {
-			color: rgba($fg, 0.45);
-		}
-	}
-
-	.cp-parsed {
+		position: relative;
 		display: flex;
-		flex-wrap: wrap;
 		align-items: center;
-		gap: 0.5rem;
-		padding: 0.45rem 0.85rem;
-		border-bottom: 1px solid rgba($fg, 0.08);
-		font-size: 0.75rem;
+		min-height: 1.5rem;
+		cursor: text;
 	}
 
-	.cp-parsed-chip {
+	.cp-input-display {
+		position: relative;
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		font-size: 0.95rem;
+		min-width: 0;
+		min-height: 1.5rem;
+		white-space: pre;
+	}
+
+	.cp-input-chip-text {
+		// Trim visual whitespace inside chips without changing the underlying
+		// character count (we still need offsets for caret measurement).
+		white-space: pre;
+	}
+
+	.cp-input-placeholder {
+		color: rgba($fg, 0.45);
+	}
+
+	.cp-input-text {
+		color: var(--glow-fg);
+	}
+
+	.cp-input-chip {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.3rem;
@@ -749,19 +1013,54 @@
 		border-radius: 999px;
 		background: var(--glow-primary-soft);
 		color: var(--glow-primary);
+		font-size: 0.8rem;
 		font-weight: 500;
+		line-height: 1;
 	}
 
-	.cp-parsed-chip-image {
+	.cp-input-chip-image {
 		width: 14px;
 		height: 14px;
 		border-radius: 50%;
 		object-fit: cover;
 	}
 
-	.cp-parsed-fill {
-		color: rgba($fg, 0.45);
-		font-style: italic;
+	.cp-input-caret {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 1.5px;
+		background: var(--glow-fg);
+		pointer-events: none;
+		animation: cp-caret-blink 1s steps(1) infinite;
+		will-change: transform;
+
+		&.busy {
+			animation: none;
+			opacity: 1;
+		}
+	}
+
+	.cp-input-caret.in-chip {
+		background: var(--glow-primary);
+	}
+
+	@keyframes cp-caret-blink {
+		50% {
+			opacity: 0;
+		}
+	}
+
+	.cp-input {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		background: transparent;
+		border: none;
+		outline: none;
+		font: inherit;
+		color: transparent;
+		caret-color: transparent;
 	}
 
 	.cp-results {

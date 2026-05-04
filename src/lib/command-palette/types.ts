@@ -28,8 +28,9 @@ export type Command = {
 	keywords?: string[];
 	/** Reactive visibility predicate. Re-evaluated on every render. */
 	when?: () => boolean;
-	/** Action invoked when the command is selected. May be async. */
-	perform?: (ctx: CommandContext) => void | Promise<void>;
+	/** Action invoked when the command is selected. May return anything;
+	 *  Promise return values are awaited and gate the loading indicator. */
+	perform?: (ctx: CommandContext) => unknown;
 	/**
 	 * Nested commands — selecting this command drills the palette into a
 	 * sub-list. Either an array, or a thunk that returns one (sync or async,
