@@ -723,10 +723,10 @@
 		// Card.sectioned has overflow: hidden + border-radius, so the image
 		// inherits the rounded top corners naturally.
 
-		// Overlay: image fits at the top of the card with its natural aspect
-		// ratio (object-fit: contain + top anchor). The card is taller than
-		// the image; the extra space below carries the sampled colour and
-		// hosts the caption.
+		// Overlay: image fills the card. Anchor at the top so any letterboxing
+		// from `fit: 'contain'` falls into the caption strip below.
+		// `object-fit` defers to the value set inline by <Media> (driven by the
+		// `fit` field on `mediaConfig`), defaulting to `cover` when unspecified.
 		&.overlay {
 			position: absolute;
 			inset: 0;
@@ -735,7 +735,6 @@
 
 			:global(img),
 			:global(video) {
-				object-fit: contain !important;
 				object-position: center top;
 			}
 		}

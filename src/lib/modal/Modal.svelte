@@ -186,7 +186,7 @@
 		&.size-small  { max-width: 400px; }
 		&.size-medium { max-width: 600px; }
 		&.size-large  { max-width: 800px; }
-		&.size-full   { max-width: 95vw; }
+		&.size-full   { max-width: 95vw; height: calc(100vh - 4rem); }
 
 		@media (max-width: 640px) {
 			max-width: 100%;
