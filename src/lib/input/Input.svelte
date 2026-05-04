@@ -85,6 +85,7 @@
 		value?: string[];
 		placeholder?: string;
 		clearable?: boolean;
+		shortcut?: string;
 		onChange?: (value: string[]) => void;
 		onSearch?: (query: string) => Promise<SelectOption[]> | SelectOption[];
 		searchDebounce?: number;
@@ -298,6 +299,7 @@
 			placeholder={p.placeholder}
 			disabled={p.disabled}
 			clearable={p.clearable}
+			shortcut={p.shortcut}
 			onChange={p.onChange}
 			onSearch={p.onSearch}
 			searchDebounce={p.searchDebounce}

@@ -4,6 +4,7 @@
 	import Popover from '../popover/Popover.svelte';
 	import type { SelectOption } from './types.js';
 	import { fuzzyFilter, debounce } from './search-utils.js';
+	import { registerShortcut } from '../util/shortcut.svelte.js';
 
 	interface Props {
 		id?: string;
@@ -12,6 +13,7 @@
 		placeholder?: string;
 		disabled?: boolean;
 		clearable?: boolean;
+		shortcut?: string;
 		onChange?: (value: string[]) => void;
 		onSearch?: (query: string) => Promise<SelectOption[]> | SelectOption[];
 		searchDebounce?: number;
@@ -26,12 +28,18 @@
 		placeholder = 'Select...',
 		disabled = false,
 		clearable = false,
+		shortcut,
 		onChange,
 		onSearch,
 		searchDebounce = 300,
 		maxResults = 0,
 		minSearchLength = 0
 	}: Props = $props();
+
+	$effect(() => registerShortcut(shortcut, () => {
+		if (disabled) return;
+		isOpen = true;
+	}));
 	let isOpen = $state(false);
 	let searchQuery = $state('');
 	let isLoading = $state(false);
