@@ -837,7 +837,7 @@ $effect(() =>
 <div style="margin-top: 1.5rem;"></div>
 <Card title="Mounting the palette">
 	<Text size="sm" variant="secondary" style="margin-bottom: 0.75rem;">
-		Mount once at the app root. Cmd/Ctrl+K toggles by default; pass <Code>hotkey={'{false}'}</Code> to
+		Mount once at the app root. Spacebar toggles by default; pass <Code>hotkey={'{false}'}</Code> to
 		disable.
 	</Text>
 	<CodeBlock

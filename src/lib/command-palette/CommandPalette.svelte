@@ -28,7 +28,7 @@
 		registry = defaultRegistry,
 		placeholder = 'Type a command or search…',
 		emptyText = 'No matching commands',
-		hotkey = 'k'
+		hotkey = ' '
 	}: Props = $props();
 
 	let query = $state('');
@@ -728,9 +728,27 @@
 	$effect(() => {
 		if (typeof window === 'undefined' || hotkey === false || !hotkey) return;
 		const wanted = hotkey.toLowerCase();
+		// Bare keys (no modifier) like space must not fire while the user is
+		// typing in an editable field; modifier-based hotkeys (cmd/ctrl + k)
+		// are safe in any context.
+		const isBareKey = wanted === ' ' || wanted === 'spacebar' || wanted === 'space';
 		const onKey = (e: KeyboardEvent) => {
-			if (!(e.metaKey || e.ctrlKey)) return;
-			if (e.key.toLowerCase() !== wanted) return;
+			if (isBareKey) {
+				if (e.metaKey || e.ctrlKey || e.altKey) return;
+				if (e.key !== ' ' && e.key.toLowerCase() !== wanted) return;
+				const t = e.target as HTMLElement | null;
+				if (
+					t &&
+					(t.isContentEditable ||
+						t.tagName === 'INPUT' ||
+						t.tagName === 'TEXTAREA' ||
+						t.tagName === 'SELECT')
+				)
+					return;
+			} else {
+				if (!(e.metaKey || e.ctrlKey)) return;
+				if (e.key.toLowerCase() !== wanted) return;
+			}
 			e.preventDefault();
 			open = !open;
 		};
