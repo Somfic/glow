@@ -314,6 +314,10 @@
 		_path: Command[];
 		/** Stable key — embeds the path so the same leaf at different paths doesn't collide. */
 		_keyId: string;
+		/** True when the query targets the leaf itself (rather than a parent
+		 *  or a more general field). Bubbles these rows to a top "Close match"
+		 *  group so multiple actions on the same target cluster together. */
+		_closeMatch: boolean;
 	};
 
 	/**
@@ -400,10 +404,15 @@
 				: [];
 		const all = [...base, ...composed];
 
-		const decorate = (entry: { command: Command; path: Command[] }, score: number): ScoredCommand => ({
+		const decorate = (
+			entry: { command: Command; path: Command[] },
+			score: number,
+			closeMatch = false
+		): ScoredCommand => ({
 			...entry.command,
 			_score: score,
 			_path: entry.path,
+			_closeMatch: closeMatch,
 			_keyId:
 				entry.path.length > 0
 					? entry.path.map((p) => p.id).join('/') + '/' + entry.command.id
@@ -460,7 +469,23 @@
 					if (required.includes(tok)) continue;
 					total += scoreToken(tok) * 0.2;
 				}
-				return decorate(e, total);
+				// Detect "the user is targeting this leaf": every required
+				// token's best fuzzy hit is on the leaf label itself, not on
+				// any ancestor or general haystack. So typing "bob" surfaces
+				// the 3 Bob Chen rows as a "Close match" cluster.
+				let closeMatch = required.length > 0;
+				for (const tok of required) {
+					const leafHit = fuzzyScore(tok, c.label);
+					const pathHit = Math.max(
+						0,
+						...e.path.map((p) => fuzzyScore(tok, p.label))
+					);
+					if (!(leafHit > 0 && leafHit >= pathHit)) {
+						closeMatch = false;
+						break;
+					}
+				}
+				return decorate(e, total, closeMatch);
 			})
 			.filter((e) => e._score > 0)
 			.sort((a, b) => b._score - a._score);
@@ -468,17 +493,33 @@
 
 	type Section = { name: string; items: ScoredCommand[]; startIndex: number };
 
+	const CLOSE_MATCH_KEY = 'Close match';
 	const sections = $derived.by<Section[]>(() => {
 		const buckets = new Map<string, ScoredCommand[]>();
 		for (const c of scored) {
-			const key = c.group ?? 'Other';
+			const key = c._closeMatch
+				? CLOSE_MATCH_KEY
+				: c.group ??
+					(c._path.length > 0
+						? c._path.map((p) => p.label).join(' ')
+						: path.length > 0
+							? path.map((p) => p.label).join(' ')
+							: 'Other');
 			const list = buckets.get(key);
 			if (list) list.push(c);
 			else buckets.set(key, [c]);
 		}
+		// Close-match section always renders first.
+		const ordered: [string, ScoredCommand[]][] = [];
+		const close = buckets.get(CLOSE_MATCH_KEY);
+		if (close) ordered.push([CLOSE_MATCH_KEY, close]);
+		for (const [name, items] of buckets) {
+			if (name === CLOSE_MATCH_KEY) continue;
+			ordered.push([name, items]);
+		}
 		const out: Section[] = [];
 		let cursor = 0;
-		for (const [name, items] of buckets) {
+		for (const [name, items] of ordered) {
 			out.push({ name, items, startIndex: cursor });
 			cursor += items.length;
 		}
@@ -846,7 +887,7 @@
 					<div class="cp-empty">{emptyText}</div>
 				{:else}
 					{#each sections as section (section.name)}
-						{#if sections.length > 1 || section.name !== 'Other'}
+						{#if section.name !== CLOSE_MATCH_KEY && (sections.length > 1 || section.name !== 'Other')}
 							<div class="cp-section-label">{section.name}</div>
 						{/if}
 						{#each section.items as cmd, i (cmd._keyId)}
@@ -877,25 +918,27 @@
 									<span class="cp-item-icon cp-item-icon-empty"></span>
 								{/if}
 								<span class="cp-item-text">
-									<span class="cp-item-label">
-										{#if cmd._path.length > 0}
-											{#each cmd._path as crumb (crumb.id)}
-												<span class="cp-item-crumb">
-													{#if crumb.icon}
-														{@const pic = resolveIcon(crumb.icon)}
-														<Icon {...pic} size={11} />
-													{/if}
-													{crumb.label}
-												</span>
-												<span class="cp-item-crumb-sep"><Icon name="ChevronRight" size={11} /></span>
-											{/each}
-										{/if}
-										{cmd.label}
-									</span>
+									<span class="cp-item-label">{cmd.label}</span>
 									{#if cmd.description}
 										<span class="cp-item-desc">{cmd.description}</span>
 									{/if}
 								</span>
+								{#if cmd._path.length > 0}
+									<span class="cp-item-path">
+										{#each cmd._path as crumb, i (crumb.id)}
+											{#if i > 0}
+												<span class="cp-item-crumb-sep"><Icon name="ChevronRight" size={11} /></span>
+											{/if}
+											<span class="cp-item-crumb">
+												{#if crumb.icon}
+													{@const pic = resolveIcon(crumb.icon)}
+													<Icon {...pic} size={11} />
+												{/if}
+												{crumb.label}
+											</span>
+										{/each}
+									</span>
+								{/if}
 								{#if cmd.badge != null && !loading}
 									<span class="cp-item-badge">
 										{#if typeof cmd.badge === 'object'}
@@ -1190,6 +1233,13 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		min-width: 0;
+	}
+
+	.cp-item-path {
+		flex: 0 0 auto;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
 	}
 
 	.cp-item-crumb {
