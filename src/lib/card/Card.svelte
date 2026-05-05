@@ -503,6 +503,17 @@
 		&.sectioned {
 			padding: 0;
 			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+
+			.card-body {
+				flex: 1 1 auto;
+				min-height: 0;
+			}
+
+			.card-footer {
+				flex: 0 0 auto;
+			}
 		}
 
 		&.has-accent {

@@ -1,3 +1,4 @@
+import type { Snippet } from 'svelte';
 import type { IconProp } from '../icon/Icon.svelte';
 
 export type CommandContext = {
@@ -37,6 +38,11 @@ export type Command = {
 	 * for dynamic / lazy-loaded children). When set, `perform` is ignored.
 	 */
 	children?: Command[] | (() => Command[] | Promise<Command[]>);
+	/** Telescope-style preview snippet shown in the right pane when this row
+	 *  is highlighted. The snippet receives the command itself so a single
+	 *  snippet definition can drive previews for many similar rows. The pane
+	 *  only appears for rows that opt in. */
+	preview?: Snippet<[Command]>;
 };
 
 export type CommandGroup = { name: string; commands: Command[] };

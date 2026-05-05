@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tick } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { quartOut } from 'svelte/easing';
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
@@ -6,6 +7,7 @@
 	import Spinner from '../spinner/Spinner.svelte';
 	import Skeleton from '../skeleton/Skeleton.svelte';
 	import Pill from '../pill/Pill.svelte';
+	import Card from '../card/Card.svelte';
 	import { fuzzyScore } from '../input/search-utils.js';
 	import { portal } from '../util/portal.js';
 	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
@@ -532,6 +534,16 @@
 		if (activeIndex > flat.length - 1) activeIndex = Math.max(0, flat.length - 1);
 	});
 
+	// As the user types (or clears) the query, snap the highlight back to
+	// the top result — without this the previous activeIndex sticks even as
+	// the result list reshuffles underneath it. Also scroll the results
+	// container to the top so the new top result is in view.
+	$effect(() => {
+		void query;
+		activeIndex = 0;
+		if (resultsEl) resultsEl.scrollTo({ top: 0, behavior: 'smooth' });
+	});
+
 	$effect(() => {
 		if (open) {
 			query = '';
@@ -553,14 +565,41 @@
 		open = false;
 	}
 
-	function popLevel() {
+	/** Jump to a crumb level (-1 = root, 0..path.length-1 = a path entry).
+	 *  After the level resolves, snap selection back to the parent we
+	 *  popped from so the row that sent us deeper stays visually in focus. */
+	async function jumpToCrumb(level: number) {
+		if (level >= path.length - 1) return;
+		const fromId = path[level + 1].id;
+		path = level < 0 ? [] : path.slice(0, level + 1);
+		query = '';
+		activeIndex = 0;
+		inputEl?.focus();
+		await tick();
+		const idx = levelCommands.findIndex((c) => c.id === fromId);
+		if (idx >= 0) {
+			activeIndex = idx;
+			scrollActiveIntoView();
+		}
+	}
+
+	async function popLevel() {
 		if (path.length === 0) {
 			close();
 			return;
 		}
+		const fromId = path[path.length - 1].id;
 		path = path.slice(0, -1);
 		query = '';
 		activeIndex = 0;
+		// After the level resolves, snap selection back to the parent we
+		// just popped from.
+		await tick();
+		const idx = levelCommands.findIndex((c) => c.id === fromId);
+		if (idx >= 0) {
+			activeIndex = idx;
+			scrollActiveIntoView();
+		}
 	}
 
 	async function run(cmd: Command | undefined) {
@@ -716,14 +755,16 @@
 		<div
 			bind:this={listEl}
 			class="cp-panel"
+			class:has-preview={!!flat[activeIndex]?.preview}
 			transition:fly={{ y: -8, duration: 160 }}
 			onkeydown={onKeydown}
 		>
+			<div class="cp-main">
 			<div class="cp-search">
 				<span class="cp-search-icon"><Icon name="Search" size={16} /></span>
 				{#if path.length > 0}
 					<div class="cp-crumbs">
-						<button type="button" class="cp-crumb cp-crumb-root" onclick={() => { path = []; query = ''; activeIndex = 0; inputEl?.focus(); }}>
+						<button type="button" class="cp-crumb cp-crumb-root" onclick={() => jumpToCrumb(-1)}>
 							<Icon name="House" size={12} />
 						</button>
 						{#each path as crumb, i (crumb.id)}
@@ -732,7 +773,7 @@
 								type="button"
 								class="cp-crumb"
 								class:current={i === path.length - 1}
-								onclick={() => { path = path.slice(0, i + 1); query = ''; activeIndex = 0; inputEl?.focus(); }}
+								onclick={() => jumpToCrumb(i)}
 							>{crumb.label}</button>
 						{/each}
 					</div>
@@ -962,6 +1003,31 @@
 				{/key}
 				</div>
 			</div>
+			</div>
+			{#if flat[activeIndex]?.preview}
+				{@const activeCmd = flat[activeIndex]!}
+				{@const previewSnippet = activeCmd.preview!}
+				<div
+					class="cp-preview"
+					transition:fly={{ x: 24, duration: 220, opacity: 0, easing: quartOut }}
+				>
+					<Card
+						title={activeCmd.label}
+						icon={activeCmd.icon}
+						class="cp-preview-card"
+						footer={activeCmd.description ? previewFooter : undefined}
+					>
+						{#key activeCmd._keyId}
+							<div class="cp-preview-content" in:fade={{ duration: 120 }}>
+								{@render previewSnippet(activeCmd)}
+							</div>
+						{/key}
+					</Card>
+					{#snippet previewFooter()}
+						<div class="cp-preview-desc">{activeCmd.description}</div>
+					{/snippet}
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}
@@ -984,14 +1050,60 @@
 	.cp-panel {
 		width: 100%;
 		max-width: 640px;
-		background: var(--glow-bg-surface, #1a1a1a);
 		color: var(--glow-fg, #fff);
+		display: flex;
+		flex-direction: row;
+		gap: 0.75rem;
+		transition: max-width var(--glow-dur-base) cubic-bezier(0.22, 1, 0.36, 1);
+
+		&.has-preview {
+			max-width: 1056px; // 640 + 0.75rem gap + 400 preview
+		}
+	}
+
+	%cp-floating {
+		background: var(--glow-bg-surface, #1a1a1a);
 		border: 1px solid rgba($fg, 0.12);
 		border-radius: $radius;
 		box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+		overflow: hidden;
+	}
+
+	.cp-main {
+		@extend %cp-floating;
+		flex: 0 0 640px;
 		display: flex;
 		flex-direction: column;
-		overflow: hidden;
+		min-width: 0;
+		min-height: 0;
+	}
+
+	.cp-preview {
+		flex: 0 0 400px;
+		min-width: 0;
+		max-height: 60vh;
+		display: flex;
+		flex-direction: column;
+
+		:global(.card.cp-preview-card) {
+			flex: 1 1 auto;
+			min-height: 0;
+		}
+
+		:global(.card.cp-preview-card > .card-header) {
+			min-height: 3rem;
+			box-sizing: border-box;
+		}
+
+		:global(.card.cp-preview-card > .card-body) {
+			overflow-y: auto;
+		}
+	}
+
+	.cp-preview-desc {
+		font-size: 0.8rem;
+		color: rgba($fg, 0.65);
+		line-height: 1.4;
 	}
 
 	.cp-search {
@@ -999,7 +1111,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 0.85rem;
-		border-bottom: 1px solid rgba($fg, 0.08);
+		min-height: 3rem;
+		box-sizing: border-box;
+		background: rgba(255, 255, 255, 0.02);
+		border-bottom: 1px solid var(--glow-border-color);
 	}
 
 	.cp-search-icon {
@@ -1221,7 +1336,7 @@
 		min-width: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 1px;
+		gap: 0;
 	}
 
 	.cp-item-label {
@@ -1229,6 +1344,7 @@
 		align-items: center;
 		gap: 0.3rem;
 		font-size: 0.9rem;
+		line-height: 1.2;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -1266,6 +1382,7 @@
 
 	.cp-item-desc {
 		font-size: 0.75rem;
+		line-height: 1.2;
 		color: rgba($fg, 0.55);
 		overflow: hidden;
 		text-overflow: ellipsis;

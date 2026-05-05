@@ -80,10 +80,10 @@
 				icon: 'FileStack',
 				keywords: ['scaffold', 'boilerplate'],
 				children: [
-					{ id: 'file.new.markdown', label: 'Markdown', icon: 'FileText', perform: () => toast.info('New markdown file') },
-					{ id: 'file.new.svelte', label: 'Svelte component', icon: 'Component', perform: () => toast.info('New Svelte component') },
-					{ id: 'file.new.api', label: 'API endpoint', icon: 'Server', perform: () => toast.info('New API endpoint') },
-					{ id: 'file.new.test', label: 'Test file', icon: 'TestTube', perform: () => toast.info('New test file') }
+					{ id: 'file.new.markdown', label: 'Markdown', icon: 'FileText', preview: tplMarkdownPreview, perform: () => toast.info('New markdown file') },
+					{ id: 'file.new.svelte', label: 'Svelte component', icon: 'Component', preview: tplSveltePreview, perform: () => toast.info('New Svelte component') },
+					{ id: 'file.new.api', label: 'API endpoint', icon: 'Server', preview: tplApiPreview, perform: () => toast.info('New API endpoint') },
+					{ id: 'file.new.test', label: 'Test file', icon: 'TestTube', preview: tplTestPreview, perform: () => toast.info('New test file') }
 				]
 			},
 			{
@@ -105,17 +105,18 @@
 				children: async () => {
 					await new Promise((r) => setTimeout(r, 350));
 					return [
-						{ name: 'README.md', icon: 'FileText' as const, when: '2h ago' },
-						{ name: 'package.json', icon: 'Braces' as const, when: '5h ago' },
-						{ name: 'CommandPalette.svelte', icon: 'Component' as const, when: 'yesterday' },
-						{ name: 'theme.scss', icon: 'Palette' as const, when: 'yesterday' },
+						{ name: 'README.md', icon: 'FileText' as const, when: '2h ago', preview: readmePreview },
+						{ name: 'package.json', icon: 'Braces' as const, when: '5h ago', preview: packagePreview },
+						{ name: 'CommandPalette.svelte', icon: 'Component' as const, when: 'yesterday', preview: sveltePreview },
+						{ name: 'theme.scss', icon: 'Palette' as const, when: 'yesterday', preview: scssPreview },
 						{ name: 'budget-q3.xlsx', icon: 'Sheet' as const, when: '3 days ago' },
-						{ name: 'launch-photo.jpg', icon: 'Image' as const, when: 'last week' }
+						{ name: 'launch-photo.jpg', icon: 'Image' as const, when: 'last week', preview: photoPreview }
 					].map((f) => ({
 						id: `file.recent.${f.name}`,
 						label: f.name,
 						description: `Opened ${f.when}`,
 						icon: f.icon,
+						preview: f.preview,
 						perform: () => toast.info(`Opened ${f.name}`)
 					}));
 				}
@@ -432,6 +433,7 @@
 					label: t.name,
 					description: `${t.role} · ${t.email}`,
 					image: t.avatar,
+					preview: personPreview,
 					perform: () => toast.info(`Invited ${t.name}`)
 				}))
 			},
@@ -646,6 +648,125 @@
 		return off;
 	});
 </script>
+
+{#snippet readmePreview(_cmd: Command)}
+	<pre style="font-family: ui-monospace, monospace; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; opacity: 0.9; margin: 0;"># Glow UI
+
+A reactive Svelte 5 component library focused on
+high-fidelity primitives, theming, and motion.
+
+## Install
+npm install glow
+
+## Quick start
+import {'{ Button }'} from 'glow'</pre>
+{/snippet}
+
+{#snippet packagePreview(_cmd: Command)}
+	<pre style="font-family: ui-monospace, monospace; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; opacity: 0.9; margin: 0;">{'{'}
+  "name": "glow",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {'{'}
+    "dev": "vite dev",
+    "build": "vite build"
+  {'}'},
+  "peerDependencies": {'{'}
+    "svelte": "^5.0.0"
+  {'}'}
+{'}'}</pre>
+{/snippet}
+
+{#snippet sveltePreview(_cmd: Command)}
+	<pre style="font-family: ui-monospace, monospace; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; opacity: 0.9; margin: 0;">&lt;script lang="ts"&gt;
+  import {'{ Icon }'} from '$lib';
+  import {'{ commands }'} from './registry';
+
+  let open = $state(false);
+  let query = $state('');
+&lt;/script&gt;
+
+&lt;CommandPalette bind:open /&gt;</pre>
+{/snippet}
+
+{#snippet scssPreview(_cmd: Command)}
+	<pre style="font-family: ui-monospace, monospace; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; opacity: 0.9; margin: 0;">$primary: #8B6DED;
+$radius: 12px;
+
+$dur-instant: 100ms;
+$dur-fast:    150ms;
+$dur-base:    220ms;</pre>
+{/snippet}
+
+{#snippet photoPreview(_cmd: Command)}
+	<img
+		src="https://picsum.photos/seed/launch/600/360"
+		alt=""
+		style="width: 100%; border-radius: 8px; display: block;"
+	/>
+{/snippet}
+
+{#snippet tplMarkdownPreview(_cmd: Command)}
+	<pre style="font-family: ui-monospace, monospace; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; opacity: 0.9; margin: 0;">---
+title: Untitled
+date: 2026-05-05
+tags: []
+---
+
+# Untitled
+
+Start writing here.</pre>
+{/snippet}
+
+{#snippet tplSveltePreview(_cmd: Command)}
+	<pre style="font-family: ui-monospace, monospace; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; opacity: 0.9; margin: 0;">&lt;script lang="ts"&gt;
+  type Props = {'{ label: string }'};
+  let {'{ label }'}: Props = $props();
+&lt;/script&gt;
+
+&lt;button&gt;{'{label}'}&lt;/button&gt;
+
+&lt;style&gt;
+  button {'{ padding: 0.5rem 1rem; }'}
+&lt;/style&gt;</pre>
+{/snippet}
+
+{#snippet tplApiPreview(_cmd: Command)}
+	<pre style="font-family: ui-monospace, monospace; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; opacity: 0.9; margin: 0;">import {'{ json }'} from '@sveltejs/kit';
+import type {'{ RequestHandler }'} from './$types';
+
+export const GET: RequestHandler = async () =&gt; {'{'}
+  return json({'{ ok: true }'});
+{'}'};
+
+export const POST: RequestHandler = async ({'{ request }'}) =&gt; {'{'}
+  const body = await request.json();
+  return json({'{ received: body }'});
+{'}'};</pre>
+{/snippet}
+
+{#snippet tplTestPreview(_cmd: Command)}
+	<pre style="font-family: ui-monospace, monospace; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; opacity: 0.9; margin: 0;">import {'{ describe, it, expect }'} from 'vitest';
+
+describe('subject', () =&gt; {'{'}
+  it('does the thing', () =&gt; {'{'}
+    expect(true).toBe(true);
+  {'}'});
+{'}'});</pre>
+{/snippet}
+
+{#snippet personPreview(cmd: Command)}
+	{#if cmd.image}
+		<div style="display: flex; justify-content: center; padding: 0.5rem 0 1rem;">
+			<img src={cmd.image} alt="" style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover;" />
+		</div>
+	{/if}
+	<div style="font-size: 0.85rem; opacity: 0.75; line-height: 1.7;">
+		<div>Joined: 14 Mar 2024</div>
+		<div>Last active: 2h ago</div>
+		<div>Workspaces: 3</div>
+	</div>
+{/snippet}
 
 <svelte:head><title>Command Palette | Glow UI</title></svelte:head>
 
