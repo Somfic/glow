@@ -43,6 +43,19 @@ export { default as Toast } from "./toast/Toast.svelte";
 export { default as ToastContainer } from "./toast/ToastContainer.svelte";
 export { toast, showToast, dismissToast, toasts } from "./toast/toast.svelte.js";
 export type { Toast as ToastType, ToastVariant, ToastOptions } from "./toast/toast.svelte.js";
+export { default as Split } from "./split/Split.svelte";
+export type { SplitDirection, SplitPane } from "./split/types.js";
+export { default as NotificationCenter } from "./notification-center/NotificationCenter.svelte";
+export {
+	notifications,
+	useNotifications,
+	NotificationCenter as NotificationCenterRegistry
+} from "./notification-center/notificationCenter.svelte.js";
+export type {
+	Notification,
+	NotificationCategory,
+	NotificationAction
+} from "./notification-center/types.js";
 export { tooltip } from "./tooltip/tooltip.svelte.js";
 export type { TooltipOptions, TooltipParams, TooltipPosition } from "./tooltip/tooltip.svelte.js";
 export { default as Heading } from "./typography/Heading.svelte";

@@ -93,11 +93,7 @@
 				{#each shellCommands as command}
 					<!-- svelte-ignore a11y_click_events_have_key_events -->
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<div
-						class="shell-line"
-						use:cursor={{ state: 'copy' }}
-						onclick={() => copyLine(command)}
-					>
+					<div class="shell-line" use:cursor={{ state: 'copy' }} onclick={() => copyLine(command)}>
 						<span class="shell-prompt">$</span>
 						<span class="shell-command">{command}</span>
 						<button
@@ -124,7 +120,7 @@
 				{/each}
 			</div>
 		{:else if isHighlighting}
-			<div class="code-loading">Loading syntax highlighting...</div>
+			<div class="code-loading">{code}</div>
 		{:else}
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 			<div class="highlighted-code" tabindex="0">

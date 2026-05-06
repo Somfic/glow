@@ -45,6 +45,7 @@
 				label: 'Navigation',
 				items: [
 					{ label: 'Tabs', href: '/components/tabs', icon: 'PanelTop' },
+					{ label: 'Split', href: '/components/split', icon: 'Columns2' },
 					{ label: 'Table of Contents', href: '/components/toc', icon: 'BookOpen' },
 					{ label: 'Dropdown Menu', href: '/components/dropdown', icon: 'ChevronDown' },
 					{ label: 'Context Menu', href: '/components/context-menu', icon: 'MousePointer' }
@@ -57,6 +58,7 @@
 				{ label: 'Command Palette', href: '/components/command-palette', icon: 'Command' },
 					{ label: 'Drawer', href: '/components/drawer', icon: 'PanelRight' },
 					{ label: 'Toast', href: '/components/toast', icon: 'Bell' },
+				{ label: 'Notification Center', href: '/components/notification-center', icon: 'BellRing' },
 					{ label: 'Tooltip', href: '/components/tooltip', icon: 'Info' },
 					{ label: 'Banner', href: '/components/banner', icon: 'Flag' }
 				]

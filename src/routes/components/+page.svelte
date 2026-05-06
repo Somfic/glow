@@ -29,6 +29,7 @@
 			category: 'Navigation',
 			items: [
 				{ name: 'Tabs', href: '/components/tabs', description: 'Tab navigation' },
+				{ name: 'Split', href: '/components/split', description: 'Resizable pane container' },
 				{ name: 'Table of Contents', href: '/components/toc', description: 'Sticky navigation for long content' },
 				{ name: 'Popover Menu', href: '/components/popover-menu', description: 'Rich popover menus: items, toggles, submenus, custom snippets' }
 			]
@@ -40,6 +41,7 @@
 				{ name: 'Command Palette', href: '/components/command-palette', description: 'Modular, extendable command launcher' },
 				{ name: 'Drawer', href: '/components/drawer', description: 'Slide-in side panels' },
 				{ name: 'Toast', href: '/components/toast', description: 'Toast notifications' },
+				{ name: 'Notification Center', href: '/components/notification-center', description: 'Persistent, browsable inbox' },
 				{ name: 'Tooltip', href: '/components/tooltip', description: 'Hover tooltips' },
 				{ name: 'Banner', href: '/components/banner', description: 'Alert banners' },
 				{ name: 'Spinner', href: '/components/spinner', description: 'Loading spinners' }
