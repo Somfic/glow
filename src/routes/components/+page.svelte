@@ -11,6 +11,7 @@
 			items: [
 				{ name: 'Button', href: '/components/buttons', description: 'Buttons and button groups' },
 				{ name: 'Input', href: '/components/inputs', description: 'Form inputs and controls' },
+				{ name: 'File Upload', href: '/components/file-upload', description: 'Drag-drop file picker with previews' },
 				{ name: 'Settings', href: '/components/settings', description: 'Section, Field, FieldRow, SettingsShell' }
 			]
 		},

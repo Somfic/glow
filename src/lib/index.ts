@@ -43,6 +43,7 @@ export { default as Toast } from "./toast/Toast.svelte";
 export { default as ToastContainer } from "./toast/ToastContainer.svelte";
 export { toast, showToast, dismissToast, toasts } from "./toast/toast.svelte.js";
 export type { Toast as ToastType, ToastVariant, ToastOptions } from "./toast/toast.svelte.js";
+export { default as FileUpload } from "./file-upload/FileUpload.svelte";
 export { default as Split } from "./split/Split.svelte";
 export type { SplitDirection, SplitPane } from "./split/types.js";
 export { default as NotificationCenter } from "./notification-center/NotificationCenter.svelte";

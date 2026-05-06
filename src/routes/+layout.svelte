@@ -27,7 +27,8 @@
 				label: 'Form & Input',
 				items: [
 					{ label: 'Button', href: '/components/buttons', icon: 'MousePointerClick' },
-					{ label: 'Input', href: '/components/inputs', icon: 'TextCursorInput' }
+					{ label: 'Input', href: '/components/inputs', icon: 'TextCursorInput' },
+					{ label: 'File Upload', href: '/components/file-upload', icon: 'CloudUpload' }
 				]
 			},
 			{
