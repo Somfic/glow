@@ -89,6 +89,8 @@
 		selected?: boolean;
 		/** Action-mode click handler. Renders the card as a button when set (and `href` isn't). */
 		onclick?: () => void;
+		/** Overlay-only: sample the image and cast a directional coloured glow around the card. */
+		glow?: boolean;
 	};
 
 	let {
@@ -121,7 +123,8 @@
 		bottomRight,
 		loading = false,
 		selected = false,
-		onclick
+		onclick,
+		glow = false
 	}: Props = $props();
 
 	const mediaConfig = $derived<MediaConfig | undefined>(
@@ -130,12 +133,17 @@
 	const isOverlay = $derived(!!mediaConfig && mediaLayout === 'overlay');
 	const isClickable = $derived(!disabled && (!!href || !!onclick));
 
-	// Sampled colour for the ambient bottom glow on overlay-mode cards.
-	// Re-runs when the media source changes; gracefully no-ops on CORS errors.
-	let bottomColor = $state<string>('');
+	// Sampled edge colours for the optional ambient glow on overlay cards.
+	// We grab a thin strip at each of the four edges of the image and average
+	// it, then expose the four averages as CSS variables so the shadow stack
+	// can throw a directional, image-derived halo around the card.
+	let glowTop = $state('');
+	let glowRight = $state('');
+	let glowBottom = $state('');
+	let glowLeft = $state('');
 	$effect(() => {
-		if (!isOverlay || !mediaConfig?.src) {
-			bottomColor = '';
+		if (!glow || !isOverlay || !mediaConfig?.src) {
+			glowTop = glowRight = glowBottom = glowLeft = '';
 			return;
 		}
 		const src = mediaConfig.src;
@@ -146,26 +154,67 @@
 			if (cancelled) return;
 			try {
 				const canvas = document.createElement('canvas');
-				const W = 32;
-				const H = 32;
+				const W = 48;
+				const H = 48;
 				canvas.width = W;
 				canvas.height = H;
 				const ctx = canvas.getContext('2d', { willReadFrequently: true });
 				if (!ctx) return;
 				ctx.drawImage(img, 0, 0, W, H);
-				// Bottom 25% — strongest signal for "what colour spills out the bottom".
-				const sliceH = Math.max(1, Math.floor(H * 0.25));
-				const pixels = ctx.getImageData(0, H - sliceH, W, sliceH).data;
-				let r = 0;
-				let g = 0;
-				let b = 0;
-				const n = pixels.length / 4;
-				for (let i = 0; i < pixels.length; i += 4) {
-					r += pixels[i];
-					g += pixels[i + 1];
-					b += pixels[i + 2];
-				}
-				bottomColor = `rgb(${Math.round(r / n)}, ${Math.round(g / n)}, ${Math.round(b / n)})`;
+
+				const avg = (x: number, y: number, w: number, h: number) => {
+					const px = ctx.getImageData(x, y, w, h).data;
+					let r = 0;
+					let g = 0;
+					let b = 0;
+					const n = px.length / 4;
+					for (let i = 0; i < px.length; i += 4) {
+						r += px[i];
+						g += px[i + 1];
+						b += px[i + 2];
+					}
+					r /= n;
+					g /= n;
+					b /= n;
+					// Push saturation up and pull lightness down so the glow reads as
+					// a punchier, deeper version of the edge tone rather than the
+					// muddy average pixel value.
+					const max = Math.max(r, g, b);
+					const min = Math.min(r, g, b);
+					const lN = (max + min) / 510;
+					let s = 0;
+					let hh = 0;
+					if (max !== min) {
+						const d = max - min;
+						s = lN > 0.5 ? d / (510 - max - min) : d / (max + min);
+						if (max === r) hh = ((g - b) / d) % 6;
+						else if (max === g) hh = (b - r) / d + 2;
+						else hh = (r - g) / d + 4;
+						hh *= 60;
+						if (hh < 0) hh += 360;
+					}
+					const sB = Math.min(1, s * 1.7 + 0.2);
+					const lB = Math.max(0, Math.min(1, lN * 0.65));
+					const c = (1 - Math.abs(2 * lB - 1)) * sB;
+					const x2 = c * (1 - Math.abs(((hh / 60) % 2) - 1));
+					const m = lB - c / 2;
+					let r2 = 0;
+					let g2 = 0;
+					let b2 = 0;
+					if (hh < 60) [r2, g2, b2] = [c, x2, 0];
+					else if (hh < 120) [r2, g2, b2] = [x2, c, 0];
+					else if (hh < 180) [r2, g2, b2] = [0, c, x2];
+					else if (hh < 240) [r2, g2, b2] = [0, x2, c];
+					else if (hh < 300) [r2, g2, b2] = [x2, 0, c];
+					else [r2, g2, b2] = [c, 0, x2];
+					return `rgb(${Math.round((r2 + m) * 255)}, ${Math.round((g2 + m) * 255)}, ${Math.round((b2 + m) * 255)})`;
+				};
+
+				const strip = Math.max(2, Math.floor(H * 0.2));
+				glowTop = avg(0, 0, W, strip);
+				glowBottom = avg(0, H - strip, W, strip);
+				glowLeft = avg(0, 0, strip, H);
+				glowRight = avg(W - strip, 0, strip, H);
 			} catch {
 				// CORS or readback failure — leave glow off.
 			}
@@ -176,7 +225,7 @@
 		};
 	});
 
-	// A header band renders whenever there's anything to show there: a header
+// A header band renders whenever there's anything to show there: a header
 	// snippet, a title, or actions. Collapsible always shows the header (it's
 	// the toggle).
 	const hasHeader = $derived(
@@ -206,14 +255,14 @@
 		return `aspect-ratio: ${w} / ${(h * heightMultiplier).toFixed(3)}`;
 	});
 
+	const glowStyle = $derived(
+		glow && (glowTop || glowBottom || glowLeft || glowRight)
+			? `--card-glow-top: ${glowTop}; --card-glow-right: ${glowRight}; --card-glow-bottom: ${glowBottom}; --card-glow-left: ${glowLeft}`
+			: ''
+	);
+
 	const rootStyle = $derived(
-		[
-			accentStyle,
-			bottomColor ? `--card-bottom-color: ${bottomColor}` : '',
-			overlayCardAspect
-		]
-			.filter(Boolean)
-			.join('; ')
+		[accentStyle, overlayCardAspect, glowStyle].filter(Boolean).join('; ')
 	);
 
 	// Internal open state for the uncontrolled case. Same trick as before:
@@ -319,6 +368,8 @@
 		{#if isOverlay}
 			<!-- Overlay: corner slots float on the image; the content row is
 			     positioned at the bottom on top of the image. -->
+			{#if topLeft || topRight}<div class="overlay-band top" aria-hidden="true"></div>{/if}
+			{#if bottomLeft || bottomRight}<div class="overlay-band bottom" aria-hidden="true"></div>{/if}
 			{#if topLeft}<div class="overlay-slot top-left">{@render topLeft()}</div>{/if}
 			{#if topRight}<div class="overlay-slot top-right">{@render topRight()}</div>{/if}
 			{#if bottomLeft}<div class="overlay-slot bottom-left">{@render bottomLeft()}</div>{/if}
@@ -414,6 +465,7 @@
 		class:active
 		class:selected
 		class:overlay={isOverlay}
+		class:glow={glow && isOverlay}
 		data-variant={variant}
 		data-depth={depth}
 		{href}
@@ -433,6 +485,7 @@
 		class:active
 		class:selected
 		class:overlay={isOverlay}
+		class:glow={glow && isOverlay}
 		data-variant={variant}
 		data-depth={depth}
 		{disabled}
@@ -450,6 +503,7 @@
 		class:selected
 		class:collapsible
 		class:overlay={isOverlay}
+		class:glow={glow && isOverlay}
 		data-variant={variant}
 		data-depth={depth}
 		style={rootStyle}
@@ -482,7 +536,7 @@
 		// `data-depth` attribute. Top-level cards float with a soft shadow and
 		// full radius; nested cards flatten and shrink their radius so the
 		// inner card sits cleanly inside the outer.
-		&[data-depth='1'] {
+		&[data-depth='1']:not(.overlay) {
 			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.08);
 		}
 		&[data-depth='2'] {
@@ -538,13 +592,7 @@
 			background: rgba($primary, 0.05);
 		}
 
-		// Overlay cards are image-led — a coloured border is visually noisy on
-		// top of media. Use a soft shadow lift instead.
-		&:is(a, button).overlay:hover:not(.disabled) {
-			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-		}
-
-		&:is(a, button):focus-visible {
+&:is(a, button):focus-visible {
 			outline: 2px solid $primary;
 			outline-offset: 2px;
 		}
@@ -757,9 +805,21 @@
 	.card.overlay {
 		position: relative;
 		padding: 0;
-		background: var(--card-bottom-color, var(--glow-bg-surface));
-		transition: background $dur-base $ease-out, box-shadow $dur-base $ease-out;
-		box-shadow: 0 28px 64px -22px var(--card-bottom-color, transparent);
+	}
+
+	// Optional ambient glow — four directional shadows, each coloured from the
+	// matching edge of the image. Gives the card an image-derived halo that
+	// reads as light spilling out of the artwork.
+	.card.overlay.glow {
+		// Shadow goes on the card itself — a pseudo-element inside would be
+		// clipped by `overflow: hidden`. `color-mix` fades the saturated
+		// sampled colours so the halo reads as subtle ambient spill.
+		transition: box-shadow $dur-base $ease-out;
+		box-shadow:
+			0 -10px 22px -8px color-mix(in srgb, var(--card-glow-top, transparent) 22%, transparent),
+			10px 0 22px -8px color-mix(in srgb, var(--card-glow-right, transparent) 22%, transparent),
+			0 10px 22px -8px color-mix(in srgb, var(--card-glow-bottom, transparent) 22%, transparent),
+			-10px 0 22px -8px color-mix(in srgb, var(--card-glow-left, transparent) 22%, transparent);
 	}
 
 	// Media row — title cluster + actions. Used by both inline (sits below
@@ -835,19 +895,64 @@
 	.overlay-slot {
 		position: absolute;
 		z-index: 3;
-		opacity: 0;
-		transform: translateY(4px);
-		transition: opacity $dur-fast $ease-out, transform $dur-fast $ease-out;
+		// Reveal via transform only — never opacity, because an ancestor with
+		// opacity < 1 forces an isolated compositing group and the
+		// backdrop-filter on frosted children stops sampling the image during
+		// the fade. Instead we park each slot outside its corner of the card;
+		// `.card.sectioned { overflow: hidden }` clips them away until hover.
+		// After the slide-out completes we flip to `visibility: hidden` so the
+		// browser can skip painting the frosted children entirely.
+		visibility: hidden;
+		transition: transform $dur-base $ease-out, visibility 0s linear $dur-base;
 
-		&.top-left  { top: 0.5rem; left: 0.5rem; }
-		&.top-right { top: 0.5rem; right: 0.5rem; }
-		&.bottom-left  { bottom: 0.5rem; left: 0.5rem; }
-		&.bottom-right { bottom: 0.5rem; right: 0.5rem; }
+		&.top-left  { top: 0.5rem; left: 0.5rem;
+			transform: translateY(calc(-100% - 0.5rem));
+		}
+		&.top-right { top: 0.5rem; right: 0.5rem;
+			transform: translateY(calc(-100% - 0.5rem));
+		}
+		&.bottom-left  { bottom: 0.5rem; left: 0.5rem;
+			transform: translateY(calc(100% + 0.5rem));
+		}
+		&.bottom-right { bottom: 0.5rem; right: 0.5rem;
+			transform: translateY(calc(100% + 0.5rem));
+		}
 
-		.card.overlay:hover &,
-		.card.overlay:focus-within & {
-			opacity: 1;
+		.card.overlay:hover & {
 			transform: translateY(0);
+			visibility: visible;
+			transition: transform $dur-base $ease-out, visibility 0s linear 0s;
+		}
+	}
+
+	// Shared gradient band rendered once per top/bottom row of slots — keeps
+	// the darkening identical whether one or both corner slots are present
+	// (instead of two pseudo gradients stacking and doubling the alpha).
+	.overlay-band {
+		position: absolute;
+		left: 0;
+		right: 0;
+		height: 30%;
+		z-index: 2;
+		pointer-events: none;
+		visibility: hidden;
+		transition: transform $dur-base $ease-out, visibility 0s linear $dur-base;
+
+		&.top {
+			top: 0;
+			background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, transparent 100%);
+			transform: translateY(-100%);
+		}
+		&.bottom {
+			bottom: 0;
+			background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, transparent 100%);
+			transform: translateY(100%);
+		}
+
+		.card.overlay:hover & {
+			transform: translateY(0);
+			visibility: visible;
+			transition: transform $dur-base $ease-out, visibility 0s linear 0s;
 		}
 	}
 

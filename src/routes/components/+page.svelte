@@ -40,6 +40,7 @@
 			items: [
 				{ name: 'Modal', href: '/components/modal', description: 'Dialogs and modals' },
 				{ name: 'Command Palette', href: '/components/command-palette', description: 'Modular, extendable command launcher' },
+				{ name: 'Command Popover', href: '/components/command-popover', description: 'Inline anchored picker for slash-commands and autocomplete' },
 				{ name: 'Drawer', href: '/components/drawer', description: 'Slide-in side panels' },
 				{ name: 'Toast', href: '/components/toast', description: 'Toast notifications' },
 				{ name: 'Notification Center', href: '/components/notification-center', description: 'Persistent, browsable inbox' },

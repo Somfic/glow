@@ -224,7 +224,7 @@
 <Card title="Inline media" subtitle="Image at top, title and actions below">
 	<Grid min="280px" gap="md">
 		<Card
-			title="Dolomites,"
+			title="Dolomites"
 			subtitle="Italy"
 			media={{
 				src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
@@ -233,7 +233,7 @@
 			actions={[{ label: 'Directions', icon: 'Navigation', variant: 'primary', onclick: () => {} }]}
 		/>
 		<Card
-			title="Yosemite,"
+			title="Yosemite"
 			subtitle="USA"
 			media={{
 				src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&h=400&fit=crop',
@@ -250,9 +250,10 @@
 >
 	<Grid min="280px" gap="md">
 		<Card
-			title="Dolomites,"
+			title="Dolomites"
 			subtitle="Italy"
 			mediaLayout="overlay"
+			glow
 			media={{
 				src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
 				aspectRatio: '16 / 9'
@@ -260,8 +261,9 @@
 			actions={[{ label: 'Directions', icon: 'Navigation', variant: 'ghost', onclick: () => {} }]}
 		/>
 		<Card
-			title="Yosemite,"
+			title="Yosemite"
 			subtitle="USA"
+			glow
 			mediaLayout="overlay"
 			media={{
 				src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&h=400&fit=crop',
@@ -280,7 +282,6 @@
 				src: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&h=300&fit=crop',
 				aspectRatio: '4 / 3'
 			}}
-			onclick={() => {}}
 		>
 			{#snippet topLeft()}<Pill label="New" color="#22c55e" />{/snippet}
 			{#snippet topRight()}
@@ -288,6 +289,9 @@
 					<Button icon="Heart" variant="ghost" />
 					<Button icon="Trash" variant="ghost" />
 				</ButtonGroup>
+			{/snippet}
+			{#snippet bottomLeft()}
+				<p>Karel van Abbr</p>
 			{/snippet}
 		</Card>
 		<Card
@@ -297,7 +301,6 @@
 				aspectRatio: '4 / 3',
 				progress: 0.65
 			}}
-			onclick={() => {}}
 		>
 			{#snippet bottomRight()}<Pill label="65%" color="#8b5cf6" />{/snippet}
 		</Card>
