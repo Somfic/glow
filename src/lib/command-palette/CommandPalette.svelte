@@ -1,18 +1,17 @@
 <script lang="ts">
-	import { tick } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { quartOut } from 'svelte/easing';
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import Kbd from '../typography/Kbd.svelte';
 	import Spinner from '../spinner/Spinner.svelte';
 	import Skeleton from '../skeleton/Skeleton.svelte';
-	import Pill from '../pill/Pill.svelte';
 	import Card from '../card/Card.svelte';
-	import { fuzzyScore } from '../input/search-utils.js';
 	import { portal } from '../util/portal.js';
 	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
 	import { commands as defaultRegistry, CommandRegistry } from './registry.svelte.js';
-	import type { Command } from './types.js';
+	import { useCommandList, CLOSE_MATCH_KEY, type ScoredCommand } from './useCommandList.svelte.js';
+	import CommandRow from './CommandRow.svelte';
+	import type { Command, CommandContext } from './types.js';
 
 	type Props = {
 		open?: boolean;
@@ -32,7 +31,6 @@
 	}: Props = $props();
 
 	let query = $state('');
-	let activeIndex = $state(0);
 	let inputEl = $state<HTMLInputElement | null>(null);
 	let inputFocused = $state(false);
 	/** Mirrors the real input's `selectionStart` so we can place the visible
@@ -52,7 +50,6 @@
 			caretBusy = false;
 		}, 500);
 	}
-	let caretEl = $state<HTMLSpanElement | null>(null);
 	function syncCaret() {
 		if (inputEl) inputCaret = inputEl.selectionStart ?? query.length;
 		bumpCaret();
@@ -65,10 +62,6 @@
 	let indicatorTop = $state(0);
 	let indicatorHeight = $state(0);
 	let indicatorReady = $state(false);
-	/** Drill-in stack: each entry is the parent command we drilled into. */
-	let path = $state<Command[]>([]);
-	/** Resolved children for the current level. */
-	let levelCommands = $state<Command[]>([]);
 	/** Slide direction: +1 = drilling deeper, -1 = popping back. */
 	let direction = $state(1);
 	let prevDepth = -1;
@@ -79,13 +72,37 @@
 	/** Normalised query — collapses internal whitespace and trims edges so
 	 *  scoring, chipize and the visible input display all see a clean form. */
 	const cleanQuery = $derived(query.replace(/\s+/g, ' ').trim());
-	/** True while async children for the current level are being fetched. */
-	let loadingChildren = $state(false);
-	/** Memoized async-children results keyed by parent command id. Persists
-	 *  for the lifetime of one palette session and clears on (re)open. */
-	let childrenCache = $state<Map<string, Command[]>>(new Map());
-	/** Ids of async-children parents currently being resolved. */
-	let loadingParents = $state<Set<string>>(new Set());
+
+	function close() {
+		open = false;
+	}
+
+	async function handleSelect(cmd: ScoredCommand) {
+		if (!cmd.perform || loadingId) return;
+		const ctx: CommandContext = { query, close };
+		const result = cmd.perform(ctx);
+		if (result instanceof Promise) {
+			loadingId = cmd.id;
+			try {
+				await result;
+				close();
+			} catch (err) {
+				console.error('[CommandPalette] command threw:', err);
+			} finally {
+				loadingId = null;
+			}
+		} else {
+			close();
+		}
+	}
+
+	const engine = useCommandList({
+		registry: () => registry,
+		query: () => query,
+		enableDrillIn: true,
+		onSelect: handleSelect,
+		onClose: close
+	});
 
 	type QuerySegment = { text: string; chipIdx: number; start: number };
 
@@ -93,7 +110,7 @@
 	 *  Index 0 is the group (null — group is just a label, no command), then each
 	 *  ancestor in `_path`, then the leaf. Recomputed when the active result changes. */
 	const chainCommands = $derived.by<(Command | null)[]>(() => {
-		const active = flat[activeIndex];
+		const active = engine.flat[engine.activeIndex];
 		if (!active) return [];
 		const out: (Command | null)[] = [];
 		if (active.group) out.push(null);
@@ -111,12 +128,8 @@
 	 */
 	const querySegments = $derived.by<QuerySegment[]>(() => {
 		if (!query) return [];
-		const active = flat[activeIndex];
+		const active = engine.flat[engine.activeIndex];
 		if (!active) return [{ text: query, chipIdx: -1, start: 0 }];
-		// Chain layout: [group?, ...path, leaf]. The group entry is special —
-		// it qualifies the action but isn't its own "level", so it's allowed
-		// to fold into adjacent chips. Path/leaf entries are real levels and
-		// each gets its own chip.
 		const groupLabel = active.group ?? null;
 		const groupIdx = groupLabel ? 0 : -1;
 		const chain = [
@@ -146,12 +159,8 @@
 				}
 			}
 		}
-		// Two chipped segments merge only when they share a chain index OR
-		// when one of them is the group qualifier. Different real levels
-		// ("Invite teammate" vs "Bob Chen") stay as separate chips.
 		const canMerge = (a: number, b: number): boolean =>
 			a === b || a === groupIdx || b === groupIdx;
-		// Bridge whitespace between two mergeable chipped neighbours.
 		for (let i = 1; i < matched.length - 1; i++) {
 			const prev = matched[i - 1];
 			const next = matched[i + 1];
@@ -182,25 +191,21 @@
 		return out;
 	});
 
+	// Slide direction + query reset + scroll top whenever drill depth changes.
 	$effect.pre(() => {
-		const depth = path.length;
+		const depth = engine.path.length;
 		if (prevDepth !== -1 && depth !== prevDepth) {
 			direction = depth > prevDepth ? 1 : -1;
-			// Reset scroll on level change so the new level doesn't render
-			// scrolled to the previous level's position. Done in `pre` so the
-			// scrollTop reset lands before the slide-in transition starts.
+			query = '';
 			if (resultsEl) resultsEl.scrollTop = 0;
+			setTimeout(() => inputEl?.focus(), 0);
 		}
 		prevDepth = depth;
 	});
 
-	function visibleAt(level: Command[]): Command[] {
-		return level.filter((c) => !c.when || c.when());
-	}
-
 	$effect(() => {
-		// Measure the caret position relative to the display, so we can paint
-		// it as an absolute element that doesn't displace any text.
+		// Measure caret position relative to the display, paint it as an absolute
+		// element that doesn't displace any text.
 		void inputCaret;
 		void inputFocused;
 		void querySegments;
@@ -213,7 +218,6 @@
 			const display = displayEl;
 			if (!display) return;
 			const wrapRect = display.getBoundingClientRect();
-			// Empty query → caret at display origin.
 			if (cleanQuery.length === 0) {
 				caretX = 0;
 				caretY = 0;
@@ -221,11 +225,6 @@
 				caretInsideChip = false;
 				return;
 			}
-			// Find the segment that owns the caret position. Whitespace-only
-			// segments aren't rendered, so when the caret lands inside one
-			// (e.g. just after deleting a trailing chip), step backwards to
-			// the nearest *visible* segment so the caret snaps to its end
-			// instead of getting stuck at the deleted location.
 			let ownerIdx =
 				inputCaret === 0
 					? -1
@@ -240,7 +239,6 @@
 				ownerIdx--;
 			}
 			if (ownerIdx === -1) {
-				// Before any segment / nothing visible to anchor to.
 				caretX = 0;
 				caretY = 0;
 				caretH = display.clientHeight;
@@ -250,15 +248,11 @@
 			const seg = querySegments[ownerIdx];
 			const segEl = display.querySelector<HTMLElement>(`[data-cp-seg="${ownerIdx}"]`);
 			if (!segEl) return;
-			// Use the LAST text node inside the segment — chips have an icon
-			// + text, plain segments are pure text. Either way the trailing
-			// text node holds the rendered characters.
 			let textNode: Text | null = null;
 			const walker = document.createTreeWalker(segEl, NodeFilter.SHOW_TEXT);
 			let n: Node | null;
 			while ((n = walker.nextNode())) textNode = n as Text;
 			if (!textNode) {
-				// Empty seg (whitespace-only that we hide) — fall back to seg box.
 				const r = segEl.getBoundingClientRect();
 				caretX = r.left - wrapRect.left;
 				caretY = r.top - wrapRect.top;
@@ -281,279 +275,19 @@
 		});
 	});
 
-	$effect(() => {
-		// Re-resolve the current level whenever the path or registry changes.
-		const parent = path[path.length - 1];
-		if (!parent) {
-			levelCommands = visibleAt(registry.commands);
-			return;
-		}
-		const kids = parent.children;
-		if (!kids) {
-			levelCommands = [];
-			return;
-		}
-		if (Array.isArray(kids)) {
-			levelCommands = visibleAt(kids);
-			loadingChildren = false;
-		} else {
-			levelCommands = [];
-			loadingChildren = true;
-			Promise.resolve(kids())
-				.then((arr) => {
-					levelCommands = visibleAt(arr);
-				})
-				.catch((err) => console.error('[CommandPalette] children failed:', err))
-				.finally(() => {
-					loadingChildren = false;
-				});
-		}
-	});
-
-	type ScoredCommand = Command & {
-		_score: number;
-		/** Ancestor path for composed (cross-level) entries; empty for normal level rows. */
-		_path: Command[];
-		/** Stable key — embeds the path so the same leaf at different paths doesn't collide. */
-		_keyId: string;
-		/** True when the query targets the leaf itself (rather than a parent
-		 *  or a more general field). Bubbles these rows to a top "Close match"
-		 *  group so multiple actions on the same target cluster together. */
-		_closeMatch: boolean;
-	};
-
-	/**
-	 * Walk the tree starting at `cmds`, emitting an entry for every leaf that
-	 * lives at least one level deep. Async children get expanded only when
-	 * their resolved value is cached — uncached async branches are skipped
-	 * here and triggered separately by `prewarmAsyncChildren`.
-	 */
-	function flattenTree(
-		cmds: Command[],
-		pathSoFar: Command[] = []
-	): { command: Command; path: Command[] }[] {
-		const out: { command: Command; path: Command[] }[] = [];
-		for (const c of cmds) {
-			if (c.when && !c.when()) continue;
-			if (c.children) {
-				const kids = Array.isArray(c.children)
-					? c.children
-					: childrenCache.get(c.id);
-				if (kids) {
-					out.push(...flattenTree(kids, [...pathSoFar, c]));
-				}
-			} else if (pathSoFar.length > 0) {
-				out.push({ command: c, path: pathSoFar });
-			}
-		}
-		return out;
-	}
-
-	const STOP_WORDS_SET = new Set([
-		'a', 'an', 'the', 'to', 'of', 'in', 'on', 'for', 'and', 'or',
-		'with', 'at', 'by', 'is', 'it'
-	]);
-
-	/** Walk the tree once the user starts typing at the root and prefetch
-	 *  every async-children branch so their leaves can participate in the
-	 *  search. Each branch is fetched at most once per palette session
-	 *  (memoized in `childrenCache`). */
-	$effect(() => {
-		if (path.length !== 0) return;
-		if (cleanQuery.length === 0) return;
-		const cache = childrenCache;
-		const loading = loadingParents;
-		const walk = (cmds: Command[]) => {
-			for (const c of cmds) {
-				if (c.when && !c.when()) continue;
-				if (!c.children) continue;
-				if (Array.isArray(c.children)) {
-					walk(c.children);
-					continue;
-				}
-				if (cache.has(c.id) || loading.has(c.id)) continue;
-				const id = c.id;
-				const fn = c.children;
-				const next = new Set(loadingParents);
-				next.add(id);
-				loadingParents = next;
-				Promise.resolve(fn())
-					.then((arr) => {
-						const m = new Map(childrenCache);
-						m.set(id, arr);
-						childrenCache = m;
-					})
-					.catch((err) =>
-						console.error('[CommandPalette] composed children failed:', err)
-					)
-					.finally(() => {
-						const s = new Set(loadingParents);
-						s.delete(id);
-						loadingParents = s;
-					});
-			}
-		};
-		walk(registry.commands);
-	});
-
-	const scored = $derived.by<ScoredCommand[]>(() => {
-		const base = levelCommands.map((c) => ({ command: c, path: [] as Command[] }));
-		// Only fold in cross-level composed entries when at the root with an
-		// active query — they'd be noisy otherwise.
-		const composed =
-			path.length === 0 && cleanQuery
-				? flattenTree(registry.commands)
-				: [];
-		const all = [...base, ...composed];
-
-		const decorate = (
-			entry: { command: Command; path: Command[] },
-			score: number,
-			closeMatch = false
-		): ScoredCommand => ({
-			...entry.command,
-			_score: score,
-			_path: entry.path,
-			_closeMatch: closeMatch,
-			_keyId:
-				entry.path.length > 0
-					? entry.path.map((p) => p.id).join('/') + '/' + entry.command.id
-					: entry.command.id
-		});
-
-		if (!cleanQuery) {
-			return all.map((e) => decorate(e, 0));
-		}
-		const q = cleanQuery;
-		// Drop common filler words from the *required* set so "set theme to
-		// green" still requires set/theme/green to all match somewhere — but
-		// "to" itself isn't required (and isn't enough on its own to pull a
-		// row in either).
-		const allTokens = q.split(/\s+/).filter(Boolean);
-		const meaningful = allTokens.filter((t) => !STOP_WORDS_SET.has(t.toLowerCase()));
-		const required = meaningful.length > 0 ? meaningful : allTokens;
-		return all
-			.map((e) => {
-				const c = e.command;
-				const labelChain = [...e.path.map((p) => p.label), c.label].join(' ');
-				const ancestorMeta = e.path
-					.flatMap((p) => [p.description ?? '', ...(p.keywords ?? [])])
-					.filter(Boolean)
-					.join(' ');
-				const haystack = [
-					labelChain,
-					c.group ?? '',
-					ancestorMeta,
-					c.description ?? '',
-					...(c.keywords ?? [])
-				].join(' ');
-				const scoreToken = (tok: string) =>
-					Math.max(
-						fuzzyScore(tok, c.label),
-						fuzzyScore(tok, labelChain) * 0.95,
-						fuzzyScore(tok, haystack) * 0.6
-					);
-				// Every meaningful token must hit somewhere — no half-matches.
-				let matched = 0;
-				let total = 0;
-				for (const tok of required) {
-					const s = scoreToken(tok);
-					if (s > 0) {
-						matched++;
-						total += s;
-					}
-				}
-				if (matched < required.length) return decorate(e, 0);
-				// Stop-words don't gate the result but do contribute small
-				// score nudges if they happen to match (so "in" ranks higher
-				// for results that contain it).
-				for (const tok of allTokens) {
-					if (required.includes(tok)) continue;
-					total += scoreToken(tok) * 0.2;
-				}
-				// Detect "the user is targeting this leaf": every required
-				// token's best fuzzy hit is on the leaf label itself, not on
-				// any ancestor or general haystack. So typing "bob" surfaces
-				// the 3 Bob Chen rows as a "Close match" cluster.
-				let closeMatch = required.length > 0;
-				for (const tok of required) {
-					const leafHit = fuzzyScore(tok, c.label);
-					const pathHit = Math.max(
-						0,
-						...e.path.map((p) => fuzzyScore(tok, p.label))
-					);
-					if (!(leafHit > 0 && leafHit >= pathHit)) {
-						closeMatch = false;
-						break;
-					}
-				}
-				return decorate(e, total, closeMatch);
-			})
-			.filter((e) => e._score > 0)
-			.sort((a, b) => b._score - a._score);
-	});
-
-	type Section = { name: string; items: ScoredCommand[]; startIndex: number };
-
-	const CLOSE_MATCH_KEY = 'Close match';
-	const sections = $derived.by<Section[]>(() => {
-		const buckets = new Map<string, ScoredCommand[]>();
-		for (const c of scored) {
-			const key = c._closeMatch
-				? CLOSE_MATCH_KEY
-				: c.group ??
-					(c._path.length > 0
-						? c._path.map((p) => p.label).join(' ')
-						: path.length > 0
-							? path.map((p) => p.label).join(' ')
-							: 'Other');
-			const list = buckets.get(key);
-			if (list) list.push(c);
-			else buckets.set(key, [c]);
-		}
-		// Close-match section always renders first.
-		const ordered: [string, ScoredCommand[]][] = [];
-		const close = buckets.get(CLOSE_MATCH_KEY);
-		if (close) ordered.push([CLOSE_MATCH_KEY, close]);
-		for (const [name, items] of buckets) {
-			if (name === CLOSE_MATCH_KEY) continue;
-			ordered.push([name, items]);
-		}
-		const out: Section[] = [];
-		let cursor = 0;
-		for (const [name, items] of ordered) {
-			out.push({ name, items, startIndex: cursor });
-			cursor += items.length;
-		}
-		return out;
-	});
-
-	const flat = $derived(scored);
-
-	$effect(() => {
-		if (activeIndex > flat.length - 1) activeIndex = Math.max(0, flat.length - 1);
-	});
-
-	// As the user types (or clears) the query, snap the highlight back to
-	// the top result — without this the previous activeIndex sticks even as
-	// the result list reshuffles underneath it. Also scroll the results
-	// container to the top so the new top result is in view.
+	// Scroll results to top on every query change so the new top result is in view.
 	$effect(() => {
 		void query;
-		activeIndex = 0;
 		if (resultsEl) resultsEl.scrollTo({ top: 0, behavior: 'smooth' });
 	});
 
 	$effect(() => {
 		if (open) {
 			query = '';
-			activeIndex = 0;
 			loadingId = null;
 			indicatorReady = false;
-			path = [];
+			engine.reset();
 			prevDepth = -1;
-			childrenCache = new Map();
-			loadingParents = new Set();
 			lockScroll();
 			setTimeout(() => inputEl?.focus(), 0);
 		} else {
@@ -561,123 +295,34 @@
 		}
 	});
 
-	function close() {
-		open = false;
-	}
-
-	/** Jump to a crumb level (-1 = root, 0..path.length-1 = a path entry).
-	 *  After the level resolves, snap selection back to the parent we
-	 *  popped from so the row that sent us deeper stays visually in focus. */
-	async function jumpToCrumb(level: number) {
-		if (level >= path.length - 1) return;
-		const fromId = path[level + 1].id;
-		path = level < 0 ? [] : path.slice(0, level + 1);
+	function jumpToCrumb(level: number) {
+		engine.jumpToCrumb(level);
 		query = '';
-		activeIndex = 0;
 		inputEl?.focus();
-		await tick();
-		const idx = levelCommands.findIndex((c) => c.id === fromId);
-		if (idx >= 0) {
-			activeIndex = idx;
-			scrollActiveIntoView();
-		}
-	}
-
-	async function popLevel() {
-		if (path.length === 0) {
-			close();
-			return;
-		}
-		const fromId = path[path.length - 1].id;
-		path = path.slice(0, -1);
-		query = '';
-		activeIndex = 0;
-		// After the level resolves, snap selection back to the parent we
-		// just popped from.
-		await tick();
-		const idx = levelCommands.findIndex((c) => c.id === fromId);
-		if (idx >= 0) {
-			activeIndex = idx;
-			scrollActiveIntoView();
-		}
-	}
-
-	async function run(cmd: Command | undefined) {
-		if (!cmd || loadingId) return;
-		// Drill-in: command is a tree node.
-		if (cmd.children) {
-			path = [...path, cmd];
-			query = '';
-			activeIndex = 0;
-			setTimeout(() => inputEl?.focus(), 0);
-			return;
-		}
-		if (!cmd.perform) return;
-		const result = cmd.perform({ query, close });
-		if (result instanceof Promise) {
-			loadingId = cmd.id;
-			try {
-				await result;
-				close();
-			} catch (err) {
-				console.error('[CommandPalette] command threw:', err);
-			} finally {
-				loadingId = null;
-			}
-		} else {
-			close();
-		}
+		requestAnimationFrame(() => scrollActiveIntoView());
 	}
 
 	function onKeydown(e: KeyboardEvent) {
-		if (e.key === 'ArrowDown') {
-			e.preventDefault();
-			if (flat.length === 0) return;
-			activeIndex = (activeIndex + 1) % flat.length;
-			scrollActiveIntoView();
-		} else if (e.key === 'ArrowUp') {
-			e.preventDefault();
-			if (flat.length === 0) return;
-			activeIndex = (activeIndex - 1 + flat.length) % flat.length;
-			scrollActiveIntoView();
-		} else if (e.key === 'Enter') {
-			e.preventDefault();
-			run(flat[activeIndex]);
-		} else if (e.key === 'Escape') {
-			e.preventDefault();
-			popLevel();
-		} else if (e.key === 'Backspace' && query === '' && path.length > 0) {
-			e.preventDefault();
-			popLevel();
-		} else if (e.key === 'Home') {
-			e.preventDefault();
-			activeIndex = 0;
-			scrollActiveIntoView();
-		} else if (e.key === 'End') {
-			e.preventDefault();
-			activeIndex = flat.length - 1;
-			scrollActiveIntoView();
-		}
+		if (loadingId) return;
+		const handled = engine.handleKey(e);
+		if (handled) requestAnimationFrame(() => scrollActiveIntoView());
 	}
 
 	function scrollActiveIntoView() {
 		queueMicrotask(() => {
 			if (!resultsEl) return;
-			// Edges: scroll all the way so the container's own padding is
-			// visible above/below the first/last row.
-			if (activeIndex === 0) {
+			const idx = engine.activeIndex;
+			const len = engine.flat.length;
+			if (idx === 0) {
 				resultsEl.scrollTo({ top: 0, behavior: 'smooth' });
 				return;
 			}
-			if (activeIndex === flat.length - 1) {
+			if (idx === len - 1) {
 				resultsEl.scrollTo({ top: resultsEl.scrollHeight, behavior: 'smooth' });
 				return;
 			}
-			const activeEl = resultsEl.querySelector<HTMLElement>(`[data-cp-index="${activeIndex}"]`);
+			const activeEl = resultsEl.querySelector<HTMLElement>(`[data-cp-index="${idx}"]`);
 			if (!activeEl) return;
-			// Keep one row of breathing room above AND below the active item.
-			// Scroll only when the buffer would be eaten — symmetric in both
-			// directions.
 			const wrapRect = resultsEl.getBoundingClientRect();
 			const itemRect = activeEl.getBoundingClientRect();
 			const buffer = itemRect.height;
@@ -696,16 +341,13 @@
 	}
 
 	$effect(() => {
-		// Re-run when activeIndex / flat / level change.
-		void activeIndex;
-		void flat.length;
-		void path.length;
-		void loadingChildren;
+		void engine.activeIndex;
+		void engine.flat.length;
+		void engine.path.length;
+		void engine.loadingChildren;
 		if (!levelEl) return;
-		// Defer the DOM read by a frame so freshly-rendered items (e.g. just
-		// after async children resolve) are laid out before we measure them.
 		const lvl = levelEl;
-		const idx = activeIndex;
+		const idx = engine.activeIndex;
 		requestAnimationFrame(() => {
 			const el = lvl.querySelector<HTMLElement>(`[data-cp-index="${idx}"]`);
 			if (!el) {
@@ -719,7 +361,6 @@
 	});
 
 	$effect(() => {
-		// Sync results-wrap height to the natural level height (clamped).
 		if (!resultsEl) return;
 		const max = window.innerHeight * 0.5;
 		resultsEl.style.height = Math.min(levelHeight, max) + 'px';
@@ -728,9 +369,6 @@
 	$effect(() => {
 		if (typeof window === 'undefined' || hotkey === false || !hotkey) return;
 		const wanted = hotkey.toLowerCase();
-		// Bare keys (no modifier) like space must not fire while the user is
-		// typing in an editable field; modifier-based hotkeys (cmd/ctrl + k)
-		// are safe in any context.
 		const isBareKey = wanted === ' ' || wanted === 'spacebar' || wanted === 'space';
 		const onKey = (e: KeyboardEvent) => {
 			if (isBareKey) {
@@ -773,24 +411,24 @@
 		<div
 			bind:this={listEl}
 			class="cp-panel"
-			class:has-preview={!!flat[activeIndex]?.preview}
+			class:has-preview={!!engine.flat[engine.activeIndex]?.preview}
 			transition:fly={{ y: -8, duration: 160 }}
 			onkeydown={onKeydown}
 		>
 			<div class="cp-main">
 			<div class="cp-search">
 				<span class="cp-search-icon"><Icon name="Search" size={16} /></span>
-				{#if path.length > 0}
+				{#if engine.path.length > 0}
 					<div class="cp-crumbs">
 						<button type="button" class="cp-crumb cp-crumb-root" onclick={() => jumpToCrumb(-1)}>
 							<Icon name="House" size={12} />
 						</button>
-						{#each path as crumb, i (crumb.id)}
+						{#each engine.path as crumb, i (crumb.id)}
 							<span class="cp-crumb-sep"><Icon name="ChevronRight" size={12} /></span>
 							<button
 								type="button"
 								class="cp-crumb"
-								class:current={i === path.length - 1}
+								class:current={i === engine.path.length - 1}
 								onclick={() => jumpToCrumb(i)}
 							>{crumb.label}</button>
 						{/each}
@@ -849,10 +487,6 @@
 							syncCaret();
 						}}
 						onkeydown={(e) => {
-							// Backspace at a chip-gap whitespace deletes both the
-							// space and the char before it — one keystroke = one
-							// visible deletion (whitespace is invisible between
-							// chips, so a plain backspace would feel like a no-op).
 							if (
 								e.key === 'Backspace' &&
 								inputEl &&
@@ -880,8 +514,6 @@
 									return;
 								}
 							}
-							// Snap caret past whitespace runs so the gap between
-							// two pills only costs one keystroke each direction.
 							const dir =
 								e.key === 'ArrowLeft' ? -1 : e.key === 'ArrowRight' ? 1 : 0;
 							requestAnimationFrame(() => {
@@ -902,7 +534,7 @@
 						onselect={syncCaret}
 					/>
 				</div>
-				{#if loadingParents.size > 0}
+				{#if engine.loadingParents.size > 0}
 					<span class="cp-search-busy" title="Loading more matches…">
 						<Spinner size={12} />
 					</span>
@@ -917,7 +549,7 @@
 					bind:clientWidth={panelWidth}
 					style:height="{levelHeight}px"
 				>
-				{#if flat.length > 0}
+				{#if engine.flat.length > 0}
 					<div
 						class="cp-indicator"
 						class:ready={indicatorReady}
@@ -925,7 +557,7 @@
 						style:height="{indicatorHeight}px"
 					></div>
 				{/if}
-				{#key path.length}
+				{#key engine.path.length}
 					<div
 						class="cp-level"
 						bind:this={levelEl}
@@ -933,7 +565,7 @@
 						in:fly={{ x: direction * (panelWidth || 320), duration: 220, opacity: 1, easing: quartOut }}
 						out:fly={{ x: -direction * (panelWidth || 320), duration: 220, opacity: 1, easing: quartOut }}
 					>
-				{#if loadingChildren}
+				{#if engine.loadingChildren}
 					{#each Array(4) as _, i (i)}
 						<div class="cp-item cp-item-skeleton">
 							<span class="cp-item-icon"><Skeleton shape="circle" width={16} /></span>
@@ -942,78 +574,33 @@
 							</span>
 						</div>
 					{/each}
-				{:else if flat.length === 0}
+				{:else if engine.flat.length === 0}
 					<div class="cp-empty">{emptyText}</div>
 				{:else}
-					{#each sections as section (section.name)}
-						{#if section.name !== CLOSE_MATCH_KEY && (sections.length > 1 || section.name !== 'Other')}
+					{#each engine.sections as section (section.name)}
+						{#if section.name !== CLOSE_MATCH_KEY && (engine.sections.length > 1 || section.name !== 'Other')}
 							<div class="cp-section-label">{section.name}</div>
 						{/if}
 						{#each section.items as cmd, i (cmd._keyId)}
 							{@const idx = section.startIndex + i}
-							{@const active = idx === activeIndex}
-							<!-- svelte-ignore a11y_mouse_events_have_key_events -->
-							{@const loading = loadingId === cmd.id}
-							<button
-								type="button"
-								class="cp-item"
-								class:active
-								class:loading
-								data-cp-index={idx}
-								disabled={loadingId !== null && !loading}
-								onclick={() => run(cmd)}
-								onmousemove={() => {
-									if (!loadingId) activeIndex = idx;
+							<CommandRow
+								{cmd}
+								{idx}
+								active={idx === engine.activeIndex}
+								loading={loadingId === cmd.id}
+								busy={loadingId !== null && loadingId !== cmd.id}
+								paintActive={false}
+								onSelect={() => {
+									if (cmd.children) {
+										engine.pushLevel(cmd);
+									} else {
+										handleSelect(cmd);
+									}
 								}}
-							>
-								{#if loading}
-									<span class="cp-item-icon"><Spinner size={14} /></span>
-								{:else if cmd.image}
-									<img class="cp-item-image" src={cmd.image} alt="" />
-								{:else if cmd.icon}
-									{@const ic = resolveIcon(cmd.icon)}
-									<span class="cp-item-icon"><Icon {...ic} size={ic.size ?? 16} /></span>
-								{:else}
-									<span class="cp-item-icon cp-item-icon-empty"></span>
-								{/if}
-								<span class="cp-item-text">
-									<span class="cp-item-label">{cmd.label}</span>
-									{#if cmd.description}
-										<span class="cp-item-desc">{cmd.description}</span>
-									{/if}
-								</span>
-								{#if cmd._path.length > 0}
-									<span class="cp-item-path">
-										{#each cmd._path as crumb, i (crumb.id)}
-											{#if i > 0}
-												<span class="cp-item-crumb-sep"><Icon name="ChevronRight" size={11} /></span>
-											{/if}
-											<span class="cp-item-crumb">
-												{#if crumb.icon}
-													{@const pic = resolveIcon(crumb.icon)}
-													<Icon {...pic} size={11} />
-												{/if}
-												{crumb.label}
-											</span>
-										{/each}
-									</span>
-								{/if}
-								{#if cmd.badge != null && !loading}
-									<span class="cp-item-badge">
-										{#if typeof cmd.badge === 'object'}
-											<Pill icon={cmd.badge.icon} label={cmd.badge.label} />
-										{:else}
-											<Pill label={String(cmd.badge)} />
-										{/if}
-									</span>
-								{/if}
-								{#if cmd.shortcut && !loading}
-									<span class="cp-item-shortcut"><Kbd size="sm">{cmd.shortcut}</Kbd></span>
-								{/if}
-								{#if cmd.children}
-									<span class="cp-item-chevron"><Icon name="ChevronRight" size={14} /></span>
-								{/if}
-							</button>
+								onHover={() => {
+									if (!loadingId) engine.activeIndex = idx;
+								}}
+							/>
 						{/each}
 					{/each}
 				{/if}
@@ -1022,8 +609,8 @@
 				</div>
 			</div>
 			</div>
-			{#if flat[activeIndex]?.preview}
-				{@const activeCmd = flat[activeIndex]!}
+			{#if engine.flat[engine.activeIndex]?.preview}
+				{@const activeCmd = engine.flat[engine.activeIndex]!}
 				{@const previewSnippet = activeCmd.preview!}
 				<div
 					class="cp-preview"
@@ -1168,8 +755,6 @@
 	}
 
 	.cp-input-chip-text {
-		// Trim visual whitespace inside chips without changing the underlying
-		// character count (we still need offsets for caret measurement).
 		white-space: pre;
 	}
 
@@ -1292,34 +877,16 @@
 		padding: 0.55rem 0.6rem 0.3rem;
 	}
 
+	// Skeleton row used during async children loading. Keeps the `.cp-item-*`
+	// class names so existing skeleton CSS still applies — these aren't real
+	// CommandRow instances.
 	.cp-item {
-		position: relative;
-		z-index: 1;
 		display: flex;
 		align-items: center;
 		gap: 0.65rem;
 		width: 100%;
 		padding: 0.55rem 0.65rem;
-		border: none;
-		background: transparent;
-		color: inherit;
-		font: inherit;
-		text-align: left;
 		border-radius: 6px;
-		cursor: pointer;
-		transition: color var(--glow-dur-instant) $ease-out;
-
-		&.active {
-			color: var(--glow-primary);
-
-			.cp-item-icon {
-				opacity: 1;
-			}
-		}
-
-		&:disabled {
-			cursor: progress;
-		}
 	}
 
 	.cp-item-skeleton {
@@ -1335,91 +902,12 @@
 		opacity: 0.85;
 	}
 
-	.cp-item-icon-empty {
-		visibility: hidden;
-	}
-
-	.cp-item-image {
-		flex: 0 0 auto;
-		width: 20px;
-		height: 20px;
-		border-radius: 50%;
-		object-fit: cover;
-	}
-
-
-
 	.cp-item-text {
 		flex: 1 1 auto;
 		min-width: 0;
 		display: flex;
 		flex-direction: column;
 		gap: 0;
-	}
-
-	.cp-item-label {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.3rem;
-		font-size: 0.9rem;
-		line-height: 1.2;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		min-width: 0;
-	}
-
-	.cp-item-path {
-		flex: 0 0 auto;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.3rem;
-	}
-
-	.cp-item-crumb {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.25rem;
-		font-size: 0.75rem;
-		padding: 0.05rem 0.4rem;
-		border-radius: 4px;
-		background: rgba($fg, 0.08);
-		color: rgba($fg, 0.65);
-		font-weight: 500;
-	}
-
-	.cp-item-crumb-sep {
-		display: inline-flex;
-		opacity: 0.4;
-	}
-
-	.cp-item.active .cp-item-crumb {
-		background: var(--glow-primary-soft);
-		color: var(--glow-primary);
-	}
-
-	.cp-item-desc {
-		font-size: 0.75rem;
-		line-height: 1.2;
-		color: rgba($fg, 0.55);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.cp-item-shortcut {
-		flex: 0 0 auto;
-	}
-
-	.cp-item-badge {
-		flex: 0 0 auto;
-		display: inline-flex;
-	}
-
-	.cp-item-chevron {
-		flex: 0 0 auto;
-		display: inline-flex;
-		opacity: 0.45;
 	}
 
 	.cp-crumbs {

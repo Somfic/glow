@@ -27,6 +27,19 @@ export type Command = {
 	badge?: string | number | { icon: IconProp; label?: string };
 	/** Extra terms folded into fuzzy search (synonyms, aliases). */
 	keywords?: string[];
+	/** Custom relevance score against the current query. When set, replaces the
+	 *  engine's built-in fuzzy scoring for this command — return 0 to hide it,
+	 *  higher is better. Useful when an external completion source (carapace,
+	 *  language servers, search APIs) has already ranked candidates and the
+	 *  engine should defer to that ordering. The function is only called when
+	 *  the query is non-empty. */
+	score?: (query: string) => number;
+	/** Describes the positional argument(s) this command accepts after its name.
+	 *  Hosts can use this to render arg pills, prompt for the value, or hand off
+	 *  to an external completion source. Mirrors carapace's arg-action concept.
+	 *  Args are required by default (the command can't be run without them);
+	 *  set `optional: true` for slots that may be omitted. */
+	arg?: { type: string; name?: string; optional?: boolean };
 	/** Reactive visibility predicate. Re-evaluated on every render. */
 	when?: () => boolean;
 	/** Action invoked when the command is selected. May return anything;

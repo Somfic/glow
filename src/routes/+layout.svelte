@@ -57,6 +57,7 @@
 				items: [
 					{ label: 'Modal', href: '/components/modal', icon: 'MessageSquare' },
 				{ label: 'Command Palette', href: '/components/command-palette', icon: 'Command' },
+					{ label: 'Command Popover', href: '/components/command-popover', icon: 'TextCursor' },
 					{ label: 'Drawer', href: '/components/drawer', icon: 'PanelRight' },
 					{ label: 'Toast', href: '/components/toast', icon: 'Bell' },
 				{ label: 'Notification Center', href: '/components/notification-center', icon: 'BellRing' },

@@ -37,7 +37,18 @@ export { default as Modal } from "./modal/Modal.svelte";
 export { default as Drawer } from "./drawer/Drawer.svelte";
 export { useModal, useDrawer, ModalController } from "./modal/modal.svelte.js";
 export { default as CommandPalette } from "./command-palette/CommandPalette.svelte";
+export { default as CommandPopover } from "./command-palette/CommandPopover.svelte";
+export { default as CommandInput } from "./command-palette/CommandInput.svelte";
+export type { Anchor as CommandPopoverAnchor, AnchorPoint as CommandPopoverAnchorPoint } from "./command-palette/CommandPopover.svelte";
 export { commands, useCommandRegistry, CommandRegistry } from "./command-palette/registry.svelte.js";
+export {
+	useCommandList,
+	CLOSE_MATCH_KEY,
+	type ScoredCommand,
+	type Section as CommandListSection,
+	type UseCommandList,
+	type UseCommandListOptions
+} from "./command-palette/useCommandList.svelte.js";
 export type { Command, CommandContext, CommandGroup } from "./command-palette/types.js";
 export { default as Toast } from "./toast/Toast.svelte";
 export { default as ToastContainer } from "./toast/ToastContainer.svelte";
