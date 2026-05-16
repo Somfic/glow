@@ -56,6 +56,7 @@
 		controls = false,
 		playsinline = true,
 		lazy = true,
+		active = true,
 		startTime = 0,
 		onclick,
 		onVideoReady,
@@ -75,7 +76,14 @@
 		loop?: boolean;
 		controls?: boolean;
 		playsinline?: boolean;
+		/** Defer loading/playing the heavy `src` (and pause the video) until the
+		 *  element is on (or near) screen. The lightweight `fallback` still
+		 *  renders so the layout stays populated. Default: true. */
 		lazy?: boolean;
+		/** External priority gate. When false the video is paused and nothing
+		 *  loads/plays, regardless of viewport — flip it false to deprioritise
+		 *  background media (e.g. a grid behind an open dialog). Default: true. */
+		active?: boolean;
 		startTime?: number;
 		onclick?: () => void;
 		onVideoReady?: (video: HTMLVideoElement) => void;
@@ -95,6 +103,56 @@
 	]);
 	let hlsInstances: [Hls | null, Hls | null] = [null, null];
 	let preloader: HTMLImageElement | null = null;
+
+	// Viewport / priority gating. `inView` is driven by an IntersectionObserver
+	// when `lazy`; otherwise it's pinned true. `canLoad` is the single gate that
+	// the load/play logic checks — heavy media only loads & plays when the
+	// element is near the viewport AND not externally deprioritised.
+	let rootEl: HTMLDivElement | undefined = $state();
+	let inView = $state(false);
+	let loadedSrc = $state<string | undefined>(undefined);
+	let prevActiveLayer = 0;
+	const canLoad = $derived(inView && active);
+
+	$effect(() => {
+		const el = rootEl;
+		const useLazy = lazy;
+		if (!el) return;
+		if (!useLazy || typeof IntersectionObserver === 'undefined') {
+			inView = true;
+			return;
+		}
+		const io = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) inView = entry.isIntersecting;
+			},
+			{ rootMargin: '300px' }
+		);
+		io.observe(el);
+		return () => io.disconnect();
+	});
+
+	// Pause / clear a layer's video and reset it so the element unmounts. Used
+	// to tear down the outgoing layer after a crossfade (and on destroy) so a
+	// stale video never keeps playing hidden underneath.
+	function releaseLayer(layerIndex: 0 | 1) {
+		cleanupHls(layerIndex);
+		const videoEl = videoEls[layerIndex];
+		if (videoEl) {
+			try {
+				videoEl.pause();
+			} catch {
+				/* ignore */
+			}
+			videoEl.removeAttribute('src');
+			try {
+				videoEl.load();
+			} catch {
+				/* ignore */
+			}
+		}
+		layers[layerIndex] = { src: '', type: 'image', loaded: false };
+	}
 
 	function resolveType(url: string): 'image' | 'video' {
 		if (type !== 'auto') return type;
@@ -172,6 +230,7 @@
 
 	function handleVideoLoaded(layerIndex: 0 | 1) {
 		layers[layerIndex].loaded = true;
+		loadedSrc = layers[layerIndex].src;
 		activeLayer = layerIndex;
 		initialLoad = false;
 
@@ -199,9 +258,16 @@
 
 	$effect(() => {
 		const currentSrc = src;
+		const gateOpen = canLoad;
 		if (!currentSrc) return;
+		// Hold off all loading until the element is on-screen and not
+		// deprioritised. Re-runs automatically when the gate opens.
+		if (!gateOpen) return;
 
 		untrack(() => {
+			// Already showing this src — nothing to (re)load. Prevents a
+			// redundant crossfade when the gate merely toggles off and back on.
+			if (currentSrc === loadedSrc) return;
 			mediaError = false;
 			const resolvedType = resolveType(currentSrc);
 
@@ -215,6 +281,7 @@
 							await tick();
 							await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 							layers[0].loaded = true;
+							loadedSrc = currentSrc;
 							initialLoad = false;
 							activeLayer = 0;
 						})
@@ -235,6 +302,7 @@
 							await tick();
 							await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 							layers[next].loaded = true;
+							loadedSrc = currentSrc;
 							activeLayer = next;
 						})
 						.catch(() => {
@@ -248,8 +316,9 @@
 		});
 	});
 
-	// Initialize video elements when they bind
+	// Initialize video elements when they bind (only once the gate is open).
 	$effect(() => {
+		if (!canLoad) return;
 		for (const i of [0, 1] as const) {
 			if (videoEls[i] && layers[i].type === 'video' && layers[i].src && !layers[i].loaded) {
 				initializeVideo(i);
@@ -257,9 +326,41 @@
 		}
 	});
 
+	// Pause/resume in response to the gate: leaving the viewport or being
+	// deprioritised pauses the video (kills decode + most network); returning
+	// resumes it when autoplay is on.
+	$effect(() => {
+		const playing = canLoad;
+		const wantAutoplay = autoplay;
+		const els = videoEls;
+		for (const i of [0, 1] as const) {
+			const videoEl = els[i];
+			if (!videoEl) continue;
+			if (!playing) {
+				videoEl.pause();
+			} else if (wantAutoplay && layers[i].loaded) {
+				videoEl.play().catch(() => {});
+			}
+		}
+	});
+
+	// After a crossfade settles, tear down the now-hidden outgoing layer so a
+	// stale video can't keep playing underneath the active one.
+	$effect(() => {
+		const cur = activeLayer;
+		untrack(() => {
+			if (cur === prevActiveLayer) return;
+			const old = prevActiveLayer as 0 | 1;
+			prevActiveLayer = cur;
+			setTimeout(() => {
+				if (activeLayer !== old && layers[old].src) releaseLayer(old);
+			}, 450);
+		});
+	});
+
 	onDestroy(() => {
-		cleanupHls(0);
-		cleanupHls(1);
+		releaseLayer(0);
+		releaseLayer(1);
 		if (preloader) {
 			preloader.onload = null;
 			preloader.onerror = null;
@@ -271,7 +372,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="media" class:clickable={!!onclick} {onclick}>
+<div class="media" class:clickable={!!onclick} {onclick} bind:this={rootEl}>
 	{#if !src && !fallback}
 		<div class="fallback" style:background={gradientFor(alt)}></div>
 	{:else if initialLoad && !mediaError && !fallback}
