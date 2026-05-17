@@ -47,6 +47,7 @@
 				items: [
 					{ label: 'Tabs', href: '/components/tabs', icon: 'PanelTop' },
 					{ label: 'Split', href: '/components/split', icon: 'Columns2' },
+					{ label: 'Sortable', href: '/components/sortable', icon: 'GripVertical' },
 					{ label: 'Table of Contents', href: '/components/toc', icon: 'BookOpen' },
 					{ label: 'Dropdown Menu', href: '/components/dropdown', icon: 'ChevronDown' },
 					{ label: 'Context Menu', href: '/components/context-menu', icon: 'MousePointer' }
