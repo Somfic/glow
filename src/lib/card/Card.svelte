@@ -15,7 +15,9 @@
 	setContext(CARD_DEPTH_KEY, depth);
 
 	type MediaConfig = {
-		src: string;
+		/** Optional. When omitted, `<Media>` renders its deterministic gradient
+		 *  fallback seeded from `alt` — handy for placeholders / mock data. */
+		src?: string;
 		/** Image shown beneath the main media until it finishes loading
 		 *  (e.g. a thumbnail behind a video that's still buffering). */
 		fallback?: string;
@@ -30,6 +32,11 @@
 		loop?: boolean;
 		controls?: boolean;
 		poster?: string;
+		/** Defer loading/playing until on-screen (default true in `<Media>`). */
+		lazy?: boolean;
+		/** External priority gate — false pauses the video / blocks loading
+		 *  (default true). E.g. set false for a grid behind an open dialog. */
+		active?: boolean;
 	};
 
 	type Props = {
@@ -76,11 +83,14 @@
 		 * are layered on top with a fade gradient. Like a movie-poster card.
 		 */
 		mediaLayout?: 'inline' | 'overlay';
-		/** Corner snippets — only used in `mediaLayout="overlay"`. Show on hover. */
+		/** Corner snippets — only used in `mediaLayout="overlay"`. Show on hover by default. */
 		topLeft?: Snippet;
 		topRight?: Snippet;
 		bottomLeft?: Snippet;
 		bottomRight?: Snippet;
+		/** Keep the corner snippets visible always, not only on hover. Useful for
+		 *  the "currently active" tile in a row of selectable cards. */
+		persistentSlots?: boolean;
 
 		// State
 		/** Show a loading overlay (with spinner) over the body / media. */
@@ -121,6 +131,7 @@
 		topRight,
 		bottomLeft,
 		bottomRight,
+		persistentSlots = false,
 		loading = false,
 		selected = false,
 		onclick,
@@ -359,6 +370,8 @@
 				loop={mediaConfig.loop}
 				controls={mediaConfig.controls}
 				poster={mediaConfig.poster}
+				lazy={mediaConfig.lazy}
+				active={mediaConfig.active}
 			/>
 			{#if mediaConfig.progress != null && mediaConfig.progress > 0}
 				<div class="media-progress"><div class="media-progress-fill" style:width="{Math.min(mediaConfig.progress, 1) * 100}%"></div></div>
@@ -465,6 +478,7 @@
 		class:active
 		class:selected
 		class:overlay={isOverlay}
+		class:persistent-slots={persistentSlots}
 		class:glow={glow && isOverlay}
 		data-variant={variant}
 		data-depth={depth}
@@ -485,6 +499,7 @@
 		class:active
 		class:selected
 		class:overlay={isOverlay}
+		class:persistent-slots={persistentSlots}
 		class:glow={glow && isOverlay}
 		data-variant={variant}
 		data-depth={depth}
@@ -503,6 +518,7 @@
 		class:selected
 		class:collapsible
 		class:overlay={isOverlay}
+		class:persistent-slots={persistentSlots}
 		class:glow={glow && isOverlay}
 		data-variant={variant}
 		data-depth={depth}
@@ -918,7 +934,9 @@
 			transform: translateY(calc(100% + 0.5rem));
 		}
 
-		.card.overlay:hover & {
+		.card.overlay:hover &,
+		.card.overlay:focus-within &,
+		.card.overlay.persistent-slots & {
 			transform: translateY(0);
 			visibility: visible;
 			transition: transform $dur-base $ease-out, visibility 0s linear 0s;
@@ -949,7 +967,9 @@
 			transform: translateY(100%);
 		}
 
-		.card.overlay:hover & {
+		.card.overlay:hover &,
+		.card.overlay:focus-within &,
+		.card.overlay.persistent-slots & {
 			transform: translateY(0);
 			visibility: visible;
 			transition: transform $dur-base $ease-out, visibility 0s linear 0s;
