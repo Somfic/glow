@@ -376,7 +376,7 @@
 
 	.brand-name {
 		font-size: $text-sm;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		letter-spacing: 0.02em;
 		padding: 2px 8px;
 		border-radius: 4px;
@@ -447,7 +447,7 @@
 	}
 
 	.stat-title {
-		font-weight: 700;
+		font-weight: $weight-bold;
 	}
 
 	.stat-sub {
@@ -472,7 +472,7 @@
 
 	.stat-value {
 		font-size: 1rem;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		color: var(--glow-fg);
 		font-variant-numeric: tabular-nums;
 

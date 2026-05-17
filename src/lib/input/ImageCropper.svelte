@@ -164,7 +164,7 @@
 	}
 
 	.cropper-title {
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		color: var(--glow-fg);
 	}
 

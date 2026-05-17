@@ -99,7 +99,7 @@
 	.shell-title {
 		margin: 0;
 		font-size: $text-lg;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		color: var(--glow-text-primary);
 		line-height: 1.2;
 	}

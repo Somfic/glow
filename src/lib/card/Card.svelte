@@ -644,7 +644,7 @@
 	}
 
 	.header-title {
-		font-weight: 700;
+		font-weight: $weight-bold;
 		color: var(--glow-text-primary);
 		line-height: 1.2;
 		min-width: 0;
@@ -656,7 +656,7 @@
 	.header-subtitle {
 		font-size: $text-xs;
 		color: var(--glow-text-muted);
-		font-weight: 400;
+		font-weight: $weight-medium;
 		line-height: 1.2;
 		min-width: 0;
 		overflow: hidden;
@@ -696,7 +696,7 @@
 		border-right: 0;
 		font-family: inherit;
 		font-size: inherit;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		color: var(--glow-text-primary);
 		cursor: pointer;
 		text-align: left;

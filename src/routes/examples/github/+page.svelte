@@ -242,6 +242,8 @@
 {/snippet}
 
 <style lang="scss">
+	@use '$lib/style/theme.scss' as *;
+
 	// Widen the page content area for this route only. The :global rule only
 	// applies while this component is mounted.
 	:global(.page.sidebar-mode .content) {
@@ -308,7 +310,7 @@
 	:global(.sidebar-title) {
 		margin: 0;
 		font-size: 0.95rem;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		padding-bottom: 0.4rem;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 	}

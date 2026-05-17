@@ -47,7 +47,7 @@
 		/>
 		<Card title="Children" description="Slot anything in via children.">
 			<Flex gap="sm">
-				<Text size="sm">Custom body content goes here.</Text>
+				<Text size="sm" variant="secondary">Custom body content goes here.</Text>
 				<Flex direction="horizontal" gap="xs"><Pill label="alpha" /> <Pill label="beta" /></Flex>
 			</Flex>
 		</Card>

@@ -434,7 +434,7 @@
 
 	.fu-headline {
 		font-size: 0.95rem;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		letter-spacing: -0.005em;
 		color: var(--glow-fg);
 	}
@@ -569,7 +569,7 @@
 
 	.fu-name {
 		font-size: 0.825rem;
-		font-weight: 500;
+		font-weight: $weight-medium;
 		color: var(--glow-fg);
 		overflow: hidden;
 		text-overflow: ellipsis;

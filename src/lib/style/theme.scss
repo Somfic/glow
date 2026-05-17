@@ -1,5 +1,5 @@
 @use 'sass:color' as color;
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
 
 // ============================================================================
 // Token sources
@@ -73,7 +73,8 @@ $dur-glacial: 500ms;  // page-level reveals
 // re-emitted (and scoped) into every component's stylesheet.
 
 // Typography
-$font-family: 'Nunito', 'Zalando Sans', sans-serif;
+$font-family: 'Avenir', 'Avenir Next', 'Nunito Sans', sans-serif;
+$font-family-header: 'Nunito', 'Zalando Sans', sans-serif;
 
 // Font sizes
 $text-xs: 0.75rem;      // 12px
@@ -89,6 +90,14 @@ $h3: 1.75rem;           // 28px
 $h4: 1.5rem;            // 24px
 $h5: 1.25rem;           // 20px
 $h6: 1.125rem;          // 18px
+
+// Font weights — every `font-weight:` in the codebase should resolve to one
+// of these tokens. 400 and 900 are intentionally absent; map legacy 400s to
+// $weight-medium and 900s to $weight-bold.
+$weight-normal:   400;
+$weight-medium:   500;
+$weight-semibold: 600;
+$weight-bold:     700;
 
 // Text colors
 $text-primary: $fg;

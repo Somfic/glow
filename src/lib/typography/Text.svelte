@@ -5,7 +5,7 @@
 		as = 'p',
 		size = 'base',
 		variant = 'primary',
-		weight = 'normal',
+		weight = 'semibold',
 		align,
 		style,
 		class: className,
@@ -94,19 +94,19 @@
 		}
 
 		&.weight-normal {
-			font-weight: 400;
+			font-weight: $weight-medium;
 		}
 
 		&.weight-medium {
-			font-weight: 500;
+			font-weight: $weight-medium;
 		}
 
 		&.weight-semibold {
-			font-weight: 600;
+			font-weight: $weight-semibold;
 		}
 
 		&.weight-bold {
-			font-weight: 700;
+			font-weight: $weight-bold;
 		}
 
 		&.align-left {

@@ -303,7 +303,7 @@
 	.month-label {
 		flex: 1;
 		text-align: center;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		font-size: $text-sm;
 		color: var(--glow-fg);
 		background: transparent;

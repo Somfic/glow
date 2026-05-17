@@ -219,7 +219,7 @@ input[type='range'] {
 	.range-value {
 		min-width: 3ch;
 		text-align: center;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		color: var(--glow-fg);
 		font-size: 0.875rem;
 		font-variant-numeric: tabular-nums;

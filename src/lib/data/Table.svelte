@@ -389,7 +389,7 @@
 				text-transform: uppercase;
 				letter-spacing: 0.05em;
 				color: var(--glow-text-muted);
-				font-weight: 600;
+				font-weight: $weight-semibold;
 			}
 
 			tbody tr {
@@ -415,7 +415,7 @@
 
 	.table-header-cell {
 		padding: 0.75rem 1rem;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		color: var(--glow-text-secondary);
 		white-space: nowrap;
 		user-select: none;

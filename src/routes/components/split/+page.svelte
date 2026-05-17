@@ -216,7 +216,9 @@
 	</div>
 {/snippet}
 
-<style>
+<style lang="scss">
+	@use '$lib/style/theme.scss' as *;
+
 	.demo-pane {
 		height: 100%;
 		display: flex;
@@ -232,7 +234,7 @@
 	.demo-pane-header {
 		padding: 0.6rem 0.85rem;
 		font-size: 0.75rem;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
 		color: rgba(238, 238, 238, 0.55);
@@ -257,7 +259,7 @@
 	}
 	.demo-label {
 		font-size: 0.65rem;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: rgba(238, 238, 238, 0.5);

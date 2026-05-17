@@ -217,7 +217,7 @@
 	.cursor-content {
 		color: #1e1f29;
 		font-size: 0.75rem;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		white-space: nowrap;
 		opacity: 0;
 		animation: fadeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s forwards;

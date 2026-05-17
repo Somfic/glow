@@ -420,7 +420,7 @@
 
 	.ci-arg-type {
 		font-size: 0.78em;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		opacity: 0.7;
 		letter-spacing: 0.02em;
 	}

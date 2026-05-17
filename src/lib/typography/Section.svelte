@@ -85,6 +85,8 @@
 </section>
 
 <style lang="scss">
+	@use '../style/theme.scss' as *;
+
 	.glow-section {
 		display: flex;
 		flex-direction: column;
@@ -149,7 +151,7 @@
 
 	:global(.section-title) {
 		font-size: 1rem;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		line-height: 1.2;
 	}
 

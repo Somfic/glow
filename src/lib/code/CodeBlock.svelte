@@ -229,7 +229,7 @@
 
 	.shell-prompt {
 		color: #22c55e;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		user-select: none;
 		flex-shrink: 0;
 	}

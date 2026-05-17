@@ -85,15 +85,15 @@
 							<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
 								<div style="padding: 1rem; background: rgba(139, 109, 237, 0.1); border-radius: 8px;">
 									<div style="font-size: 0.75rem; color: rgba(238, 238, 238, 0.7);">Total Users</div>
-									<div style="font-size: 1.5rem; font-weight: 600; margin-top: 0.25rem;">1,234</div>
+									<div class="stat-value">1,234</div>
 								</div>
 								<div style="padding: 1rem; background: rgba(34, 197, 94, 0.1); border-radius: 8px;">
 									<div style="font-size: 0.75rem; color: rgba(238, 238, 238, 0.7);">Revenue</div>
-									<div style="font-size: 1.5rem; font-weight: 600; margin-top: 0.25rem;">$12.5k</div>
+									<div class="stat-value">$12.5k</div>
 								</div>
 								<div style="padding: 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 8px;">
 									<div style="font-size: 0.75rem; color: rgba(238, 238, 238, 0.7);">Active</div>
-									<div style="font-size: 1.5rem; font-weight: 600; margin-top: 0.25rem;">842</div>
+									<div class="stat-value">842</div>
 								</div>
 							</div>
 						</div>
@@ -237,3 +237,13 @@
 			<li><Text>🎯 Bindable active state</Text></li>
 		</ul>
 	</Card>
+
+<style lang="scss">
+	@use '$lib/style/theme.scss' as *;
+
+	:global(.stat-value) {
+		font-size: 1.5rem;
+		font-weight: $weight-semibold;
+		margin-top: 0.25rem;
+	}
+</style>

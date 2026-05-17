@@ -775,7 +775,7 @@
 		background: var(--glow-primary-soft);
 		color: var(--glow-primary);
 		font-size: 0.8rem;
-		font-weight: 500;
+		font-weight: $weight-medium;
 		line-height: 1;
 	}
 

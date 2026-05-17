@@ -211,7 +211,7 @@
 
 	.sidebar-logo {
 		font-size: $text-lg;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		color: var(--glow-fg);
 		flex-shrink: 0;
 		// Sized like the item icons (16px) so column alignment is exact.
@@ -230,7 +230,7 @@
 	.sidebar-title {
 		flex: 1;
 		min-width: 0;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		font-size: $text-lg;
 		color: var(--glow-fg);
 		white-space: nowrap;
@@ -294,7 +294,7 @@
 		text-transform: uppercase;
 		font-size: $text-xs;
 		color: var(--glow-text-muted);
-		font-weight: 700;
+		font-weight: $weight-bold;
 		letter-spacing: 0.05em;
 		padding: 1.5rem 1rem 0.5rem $icon-x;
 		white-space: nowrap;

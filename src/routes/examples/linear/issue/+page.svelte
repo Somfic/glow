@@ -262,6 +262,8 @@ UpdateDelay = 500
 </div>
 
 <style lang="scss">
+	@use '$lib/style/theme.scss' as *;
+
 	.linear-app {
 		display: grid;
 		grid-template-columns: 240px 1fr 320px;
@@ -376,7 +378,7 @@ UpdateDelay = 500
 
 	.sync-link {
 		color: inherit;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		text-decoration: none;
 	}
 
@@ -388,7 +390,7 @@ UpdateDelay = 500
 
 	:global(.issue-title) {
 		font-size: 1.75rem !important;
-		font-weight: 700 !important;
+		font-weight: $weight-bold !important;
 		line-height: 1.2 !important;
 		margin: 0 !important;
 	}

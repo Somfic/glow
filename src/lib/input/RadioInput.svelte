@@ -134,7 +134,7 @@
 		font: inherit;
 		font-size: 1rem;
 		line-height: 1;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		cursor: pointer;
 		transition: color 0.15s ease;
 		white-space: nowrap;

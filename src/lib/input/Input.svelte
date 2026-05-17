@@ -464,7 +464,7 @@
 	.input-label {
 		display: inline-flex;
 		align-items: center;
-		font-weight: 500;
+		font-weight: $weight-medium;
 		margin-left: calc(1rem + $border-width);
 		font-size: 0.75rem;
 		color: var(--glow-text-muted);

@@ -327,7 +327,7 @@
 	.nc-empty-headline {
 		margin: 0;
 		font-size: 1.05rem;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		letter-spacing: -0.01em;
 		color: var(--glow-fg);
 	}
@@ -360,7 +360,7 @@
 
 	.nc-section-name {
 		font-size: 0.65rem;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: rgba($fg, 0.55);
@@ -374,7 +374,7 @@
 
 	.nc-section-count {
 		font-size: 0.7rem;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		font-variant-numeric: tabular-nums;
 		padding: 0.1rem 0.45rem;
 		border-radius: 999px;
@@ -492,7 +492,7 @@
 		min-width: 0;
 		margin: 0;
 		font-size: 0.875rem;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		line-height: 1.3;
 		letter-spacing: -0.005em;
 		color: var(--glow-fg);
@@ -527,7 +527,7 @@
 
 	.nc-source {
 		font-size: 0.7rem;
-		font-weight: 500;
+		font-weight: $weight-medium;
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
 		color: color-mix(in oklab, var(--cat-color) 80%, var(--glow-fg));

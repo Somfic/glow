@@ -275,7 +275,7 @@
 		border-radius: $radius $radius 0 0;
 		color: var(--glow-text-secondary);
 		font-size: $text-sm;
-		font-weight: 500;
+		font-weight: $weight-medium;
 		font-family: $font-family;
 		cursor: pointer;
 		transition: color 0.15s, background 0.15s;
@@ -296,7 +296,7 @@
 
 			&::after {
 				content: attr(data-label) / '';
-				font-weight: 700;
+				font-weight: $weight-bold;
 				height: 0;
 				visibility: hidden;
 				overflow: hidden;
@@ -307,7 +307,7 @@
 
 		&.active {
 			color: var(--glow-primary);
-			font-weight: 700;
+			font-weight: $weight-bold;
 			z-index: 1;
 		}
 

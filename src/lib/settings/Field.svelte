@@ -235,7 +235,7 @@
 
 	.label {
 		font-size: var(--glow-field-label-size);
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		color: var(--glow-text-primary);
 		line-height: 1.25;
 		cursor: pointer;

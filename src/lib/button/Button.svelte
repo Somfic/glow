@@ -182,7 +182,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.4em;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		cursor: pointer;
 		transition: background-color 150ms ease;
 
@@ -236,7 +236,7 @@
 			min-width: 1.4em;
 			padding: 0 0.45em;
 			font-size: 0.85em;
-			font-weight: 600;
+			font-weight: $weight-semibold;
 			background: rgba(255, 255, 255, 0.08);
 			border-radius: 999px;
 			margin-left: 0.15em;

@@ -110,7 +110,7 @@
 		overflow: visible;
 		flex-shrink: 0;
 		color: rgba(255, 255, 255, 0.9);
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		user-select: none;
 
 		transition: transform 0.15s ease;

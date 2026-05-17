@@ -185,7 +185,7 @@
 
 	.title {
 		font-size: $text-xs;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
 		color: var(--glow-text-secondary);

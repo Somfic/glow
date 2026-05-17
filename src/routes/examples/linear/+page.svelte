@@ -426,6 +426,8 @@
 <ContextMenu items={issueMenu} bind:open={ctxOpen} bind:x={ctxX} bind:y={ctxY} />
 
 <style lang="scss">
+	@use '$lib/style/theme.scss' as *;
+
 	.linear-app {
 		display: grid;
 		grid-template-columns: 240px 1fr;
@@ -515,7 +517,7 @@
 
 	:global(.page-title) {
 		font-size: 1rem !important;
-		font-weight: 600 !important;
+		font-weight: $weight-semibold !important;
 	}
 
 	.filterbar {

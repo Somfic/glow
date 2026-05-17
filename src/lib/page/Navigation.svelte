@@ -50,7 +50,7 @@
 
 			&.is-active {
 				background-color: var(--glow-primary);
-				font-weight: 700;
+				font-weight: $weight-bold;
 
 				&:hover {
 					background-color: var(--glow-primary-hover);

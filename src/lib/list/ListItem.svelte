@@ -147,7 +147,7 @@
 
 	.title {
 		font-size: 0.875rem;
-		font-weight: 500;
+		font-weight: $weight-medium;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;

@@ -31,7 +31,7 @@
 		border-radius: 4px;
 		color: rgba($fg, 0.7);
 		line-height: 1;
-		font-weight: 500;
+		font-weight: $weight-medium;
 	}
 
 	.size-sm {

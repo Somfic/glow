@@ -217,7 +217,7 @@
 		border-radius: 4px;
 		background: rgba($fg, 0.08);
 		color: rgba($fg, 0.65);
-		font-weight: 500;
+		font-weight: $weight-medium;
 	}
 
 	.cp-row-crumb-sep {

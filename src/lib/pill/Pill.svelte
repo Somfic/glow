@@ -149,7 +149,7 @@
 		color: rgba($fg, 0.85);
 		border: 1px solid rgba($fg, 0.1);
 		border-radius: 999px;
-		font-weight: 500;
+		font-weight: $weight-medium;
 		white-space: nowrap;
 		transition: all 0.15s ease;
 		letter-spacing: 0.01em;

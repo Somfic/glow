@@ -495,7 +495,7 @@
 
 	.slider-label {
 		font-size: 0.75rem;
-		font-weight: 500;
+		font-weight: $weight-medium;
 		color: rgba($fg, 0.7);
 		margin-left: 0.5em;
 	}

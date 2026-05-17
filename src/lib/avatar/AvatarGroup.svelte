@@ -72,7 +72,7 @@
 		border-radius: 50%;
 		background: var(--glow-bg-surface-element);
 		color: var(--glow-text-secondary);
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		margin-left: var(--overlap);
 		box-shadow: 0 0 0 2px $bg-base;
 		flex-shrink: 0;

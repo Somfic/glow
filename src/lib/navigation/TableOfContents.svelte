@@ -187,7 +187,7 @@
 
 	.toc-title {
 		font-size: $text-sm;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		color: var(--glow-text-secondary);
 		margin-bottom: 1rem;
 		text-transform: uppercase;
@@ -225,7 +225,7 @@
 
 		.toc-item.active & {
 			color: var(--glow-primary);
-			font-weight: 500;
+			font-weight: $weight-medium;
 		}
 
 		&:hover {

@@ -128,7 +128,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-size: $text-xs;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		color: var(--glow-text-secondary);
@@ -141,7 +141,7 @@
 		gap: 0.5rem;
 		font-size: $text-sm;
 		color: var(--glow-text-secondary);
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		padding: var(--glow-field-padding-y) var(--glow-field-padding-x);
 		text-decoration: none;
 

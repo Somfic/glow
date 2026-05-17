@@ -400,7 +400,9 @@
 	/>
 </Card>
 
-<style>
+<style lang="scss">
+	@use '$lib/style/theme.scss' as *;
+
 	.demo-input {
 		width: 100%;
 		padding: 0.65rem 0.85rem;
@@ -431,6 +433,6 @@
 
 	.shell-marker {
 		color: var(--glow-primary);
-		font-weight: 600;
+		font-weight: $weight-semibold;
 	}
 </style>

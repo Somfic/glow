@@ -384,6 +384,7 @@ const trackColumns: TableColumn<Track>[] = [
 {/snippet}
 
 <style lang="scss">
+	@use '$lib/style/theme.scss' as *;
 
 	.spotify-app {
 		flex: 1 1 auto;
@@ -528,7 +529,7 @@ const trackColumns: TableColumn<Track>[] = [
 	:global(.hero-title) {
 		font-size: 5rem !important;
 		line-height: 1 !important;
-		font-weight: 900 !important;
+		font-weight: $weight-bold !important;
 		letter-spacing: -0.04em;
 	}
 
@@ -569,7 +570,7 @@ const trackColumns: TableColumn<Track>[] = [
 		background: rgba(255, 255, 255, 0.5);
 		color: black;
 		font-size: 10px;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		border-radius: 2px;
 	}
 

@@ -183,7 +183,7 @@
 		font-size: $text-xs;
 		color: var(--glow-text-muted);
 		line-height: 1.35;
-		font-weight: 400;
+		font-weight: $weight-medium;
 	}
 
 	.shortcut {

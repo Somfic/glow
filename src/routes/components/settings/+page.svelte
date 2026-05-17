@@ -574,7 +574,7 @@
 		flex: 1;
 		min-width: 0;
 		font-size: $text-xs;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		color: $text-secondary;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -594,7 +594,7 @@
 	.prompt-tab {
 		font-family: $font-family;
 		font-size: $text-xs;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
 		padding: 0.375rem 0.625rem;
@@ -625,7 +625,7 @@
 
 	.composition-label {
 		font-size: $text-xs;
-		font-weight: 700;
+		font-weight: $weight-bold;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
 		color: $text-muted;
@@ -665,7 +665,7 @@
 	.aspect-btn {
 		font-family: $font-family;
 		font-size: $text-xs;
-		font-weight: 600;
+		font-weight: $weight-semibold;
 		padding: 0.5rem 0.75rem;
 		min-width: 3rem;
 		background: rgba($fg, 0.04);
