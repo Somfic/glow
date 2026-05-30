@@ -19,9 +19,30 @@ export interface SortableOptions {
 	handle?: string;
 	/** Disable dragging entirely (e.g. a read-only mode). */
 	disabled?: boolean;
+	/**
+	 * Opt into cross-container dragging. Every `use:sortable` that shares the
+	 * same non-empty `group` string can exchange items: dragging a row out of
+	 * one container and over another in the same group moves it (and its
+	 * backing item) into that container's `items` array, live, mid-drag.
+	 * Containers in a group may mix axes (e.g. horizontal tier rows feeding a
+	 * vertical pool). When omitted, the container only reorders within itself —
+	 * behaviour is unchanged.
+	 */
+	group?: string;
 	/** Fired after a successful reorder with the old and new index. */
 	onReorder?: (from: number, to: number) => void;
 }
+
+/** A sortable container participating in a cross-container `group`. Registered
+ *  module-side so any instance can find its peers and read their live arrays. */
+interface GroupMember {
+	node: HTMLElement;
+	getItems: () => unknown[];
+	isVertical: () => boolean;
+}
+
+/** group name → members. Populated by grouped instances on mount. */
+const groups = new Map<string, Set<GroupMember>>();
 
 /** Pixels the pointer must travel before a press becomes a drag — lets plain
  *  clicks/taps on row contents still register even though the whole row is a
@@ -59,6 +80,37 @@ export const sortable = ((node: HTMLElement, options: SortableOptions) => {
 	injectStyles();
 	let opts = options;
 
+	const isVertical = () => (opts.direction ?? 'vertical') === 'vertical';
+
+	// --- cross-container group membership --------------------------------
+	const member: GroupMember = {
+		node,
+		getItems: () => opts.items,
+		isVertical
+	};
+	let joinedGroup: string | undefined;
+	function syncGroup(): void {
+		if (opts.group === joinedGroup) return;
+		if (joinedGroup) groups.get(joinedGroup)?.delete(member);
+		joinedGroup = opts.group;
+		if (joinedGroup) {
+			let set = groups.get(joinedGroup);
+			if (!set) groups.set(joinedGroup, (set = new Set()));
+			set.add(member);
+		}
+	}
+	syncGroup();
+	/** Peer containers in this instance's group whose pointer-axis rect the
+	 *  given point falls inside, the deepest/nearest first. */
+	function memberAt(x: number, y: number): GroupMember | null {
+		if (!joinedGroup) return null;
+		for (const m of groups.get(joinedGroup) ?? []) {
+			const r = m.node.getBoundingClientRect();
+			if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return m;
+		}
+		return null;
+	}
+
 	type Drag = {
 		pointerId: number;
 		index: number;
@@ -66,18 +118,28 @@ export const sortable = ((node: HTMLElement, options: SortableOptions) => {
 		startX: number;
 		startY: number;
 		active: boolean;
-		/** Children captured at gesture start, in DOM order (1:1 with items). */
+		/** Children of the *current* container, in DOM order (1:1 with items). */
 		children: HTMLElement[];
-		/** Original (pre-transform) rects of `children`, captured on activate. */
+		/** Original (pre-transform) rects of `children`, captured per container. */
 		rects: DOMRect[];
 		/** One slot = dragged item size + gap, along the active axis. */
 		slot: number;
 		/** Current target index the dragged item would drop into. */
 		to: number;
+		/** Container the dragged element currently lives in (changes on transfer). */
+		container: HTMLElement;
+		/** Backing array the dragged item currently lives in. */
+		sourceItems: unknown[];
+		/** Axis of the current container. */
+		vertical: boolean;
+		/** Containers we applied drag styling to, for cleanup on drop. */
+		touched: Set<HTMLElement>;
+		/** Group mode only: pointer offset within the grabbed card, so it stays
+		 *  glued to the cursor continuously across every container it crosses. */
+		grabDX: number;
+		grabDY: number;
 	};
 	let drag: Drag | null = null;
-
-	const isVertical = () => (opts.direction ?? 'vertical') === 'vertical';
 
 	/** Walk up from an event target to the direct child of `node`. */
 	function directChild(target: EventTarget | null): HTMLElement | null {
@@ -111,16 +173,24 @@ export const sortable = ((node: HTMLElement, options: SortableOptions) => {
 			children,
 			rects: [],
 			slot: 0,
-			to: index
+			to: index,
+			container: node,
+			sourceItems: opts.items,
+			vertical: isVertical(),
+			touched: new Set([node]),
+			grabDX: 0,
+			grabDY: 0
 		};
 		window.addEventListener('pointermove', onPointerMove);
 		window.addEventListener('pointerup', onPointerUp);
 		window.addEventListener('pointercancel', onPointerUp);
 	}
 
-	function activate(): void {
+	/** Re-measure rects + slot for the current container's children, and
+	 *  (re)apply lift/transition styling. Used on activate and after every
+	 *  cross-container transfer. */
+	function bindContainer(): void {
 		if (!drag) return;
-		drag.active = true;
 		drag.rects = drag.children.map((c) => c.getBoundingClientRect());
 		const r = drag.rects[drag.index];
 		const nb = drag.rects[drag.index + 1];
@@ -130,13 +200,14 @@ export const sortable = ((node: HTMLElement, options: SortableOptions) => {
 		// distance keeps it correct whether the neighbour is below or above
 		// (e.g. dragging the last item up). Lists generally use a uniform row
 		// size, so one slot shifts every crossed sibling cleanly.
-		if (isVertical()) {
-			drag.slot = nb ? nb.top - r.top : pv ? r.top - pv.top : r.height;
+		if (drag.vertical) {
+			drag.slot = nb ? nb.top - r.top : pv ? r.top - pv.top : r.height || 1;
 		} else {
-			drag.slot = nb ? nb.left - r.left : pv ? r.left - pv.left : r.width;
+			drag.slot = nb ? nb.left - r.left : pv ? r.left - pv.left : r.width || 1;
 		}
-		node.classList.add('glow-sortable-dragging');
-		node.style.touchAction = 'none';
+		drag.container.classList.add('glow-sortable-dragging');
+		drag.container.style.touchAction = 'none';
+		drag.touched.add(drag.container);
 		drag.el.classList.add('glow-sortable-lifted');
 		drag.el.style.transition = 'none';
 		for (const c of drag.children) {
@@ -144,8 +215,94 @@ export const sortable = ((node: HTMLElement, options: SortableOptions) => {
 		}
 	}
 
+	function activate(): void {
+		if (!drag) return;
+		drag.active = true;
+		bindContainer();
+		// Anchor the card to where it was grabbed, so in group mode it tracks
+		// the cursor 1:1 across every container instead of snapping to slots.
+		const r0 = drag.rects[drag.index];
+		drag.grabDX = drag.startX - r0.left;
+		drag.grabDY = drag.startY - r0.top;
+	}
+
+	/** Move the lifted card to follow the pointer. In group mode it's anchored
+	 *  to the cursor in viewport space (continuous across containers); in
+	 *  single-container mode it stays axis-locked, exactly as before. */
+	function positionEl(e: PointerEvent): void {
+		if (!drag) return;
+		if (joinedGroup) {
+			const base = drag.rects[drag.index];
+			const x = e.clientX - drag.grabDX - base.left;
+			const y = e.clientY - drag.grabDY - base.top;
+			drag.el.style.transform = `translate(${x}px, ${y}px)`;
+		} else {
+			const dx = e.clientX - drag.startX;
+			const dy = e.clientY - drag.startY;
+			drag.el.style.transform = drag.vertical ? `translateY(${dy}px)` : `translateX(${dx}px)`;
+		}
+	}
+
+	/** Move the dragged item from its current array into `target` at the
+	 *  pointer's insertion point, then re-bind the drag to `target`'s freshly
+	 *  rendered DOM so the gesture continues seamlessly in the new container. */
+	let transferring = false;
+	async function transfer(target: GroupMember, e: PointerEvent): Promise<void> {
+		if (!drag) return;
+		transferring = true;
+		const d = drag;
+		const tVert = target.isVertical();
+		const tItems = target.getItems();
+
+		// Insertion index = siblings whose midpoint the pointer is past, on the
+		// target's axis. (The dragged element isn't in the target yet.)
+		const tChildren = Array.from(target.node.children).filter(
+			(c): c is HTMLElement => c instanceof HTMLElement
+		);
+		const pos = tVert ? e.clientY : e.clientX;
+		let j = tChildren.length;
+		for (let i = 0; i < tChildren.length; i++) {
+			const rc = tChildren[i].getBoundingClientRect();
+			const mid = tVert ? rc.top + rc.height / 2 : rc.left + rc.width / 2;
+			if (pos < mid) {
+				j = i;
+				break;
+			}
+		}
+		// The array — not the DOM — is the source of truth for item count, so a
+		// consumer's empty-state placeholder child can't push the index past it.
+		j = Math.min(j, tItems.length);
+
+		// Settle any open gap in the old container before the node leaves it.
+		for (const c of d.children) c.style.transform = '';
+
+		const [moved] = d.sourceItems.splice(d.index, 1);
+		tItems.splice(j, 0, moved);
+		await tick();
+		if (drag !== d) return; // gesture ended mid-transfer
+
+		d.container = target.node;
+		d.sourceItems = tItems;
+		d.vertical = tVert;
+		d.index = j;
+		d.to = j;
+		d.children = Array.from(target.node.children).filter(
+			(c): c is HTMLElement => c instanceof HTMLElement
+		);
+		const fresh = d.children[j];
+		if (!fresh) {
+			transferring = false;
+			return;
+		}
+		d.el = fresh;
+		bindContainer();
+		// Keep the card glued to the cursor — no snap into the new row.
+		positionEl(e);
+		transferring = false;
+	}
+
 	function onPointerMove(e: PointerEvent): void {
-		if (!drag || e.pointerId !== drag.pointerId) return;
+		if (!drag || e.pointerId !== drag.pointerId || transferring) return;
 		const dx = e.clientX - drag.startX;
 		const dy = e.clientY - drag.startY;
 
@@ -160,16 +317,26 @@ export const sortable = ((node: HTMLElement, options: SortableOptions) => {
 		}
 		e.preventDefault();
 
-		// Follow the pointer along the active axis only.
-		drag.el.style.transform = isVertical() ? `translateY(${dy}px)` : `translateX(${dx}px)`;
+		// Cross-container: if the pointer is over a different container in the
+		// same group, hand the item (and its data) over and re-bind there.
+		if (joinedGroup) {
+			const over = memberAt(e.clientX, e.clientY);
+			if (over && over.node !== drag.container) {
+				void transfer(over, e);
+				return;
+			}
+		}
+
+		// Follow the pointer (pointer-anchored in group mode, axis-locked else).
+		positionEl(e);
 
 		// Target index = how many sibling midpoints the pointer has crossed.
-		const pos = isVertical() ? e.clientY : e.clientX;
+		const pos = drag.vertical ? e.clientY : e.clientX;
 		let to = drag.index;
 		for (let i = 0; i < drag.rects.length; i++) {
 			if (i === drag.index) continue;
 			const rc = drag.rects[i];
-			const mid = isVertical() ? rc.top + rc.height / 2 : rc.left + rc.width / 2;
+			const mid = drag.vertical ? rc.top + rc.height / 2 : rc.left + rc.width / 2;
 			if (i < drag.index && pos < mid) {
 				to = Math.min(to, i);
 			} else if (i > drag.index && pos > mid) {
@@ -194,7 +361,7 @@ export const sortable = ((node: HTMLElement, options: SortableOptions) => {
 			if (index < to && i > index && i <= to) shift = -slot;
 			else if (index > to && i >= to && i < index) shift = slot;
 			c.style.transform = shift
-				? isVertical()
+				? drag.vertical
 					? `translateY(${shift}px)`
 					: `translateX(${shift}px)`
 				: '';
@@ -205,6 +372,7 @@ export const sortable = ((node: HTMLElement, options: SortableOptions) => {
 		if (!drag || e.pointerId !== drag.pointerId) return;
 		const d = drag;
 		drag = null;
+		transferring = false;
 		window.removeEventListener('pointermove', onPointerMove);
 		window.removeEventListener('pointerup', onPointerUp);
 		window.removeEventListener('pointercancel', onPointerUp);
@@ -223,19 +391,23 @@ export const sortable = ((node: HTMLElement, options: SortableOptions) => {
 		// FLIP "first": current visual positions (lifted/shifted) keyed by node.
 		const first = animate ? new Map(d.children.map((c) => [c, c.getBoundingClientRect()])) : null;
 
-		// Clear all drag styling — DOM returns to its original, untransformed
-		// order before we mutate the array.
-		node.classList.remove('glow-sortable-dragging');
-		node.style.touchAction = '';
+		// Clear all drag styling — every container the gesture passed through
+		// returns to its original, untransformed order before the array mutates.
+		for (const cont of d.touched) {
+			cont.classList.remove('glow-sortable-dragging');
+			cont.style.touchAction = '';
+		}
 		d.el.classList.remove('glow-sortable-lifted');
 		for (const c of d.children) {
 			c.style.transform = '';
 			c.style.transition = '';
 		}
 
+		// Final settle within the current container. Any cross-container moves
+		// already mutated their arrays live during the drag.
 		if (to !== from) {
-			const [moved] = opts.items.splice(from, 1);
-			opts.items.splice(to, 0, moved);
+			const [moved] = d.sourceItems.splice(from, 1);
+			d.sourceItems.splice(to, 0, moved);
 			opts.onReorder?.(from, to);
 		}
 
@@ -272,8 +444,10 @@ export const sortable = ((node: HTMLElement, options: SortableOptions) => {
 	return {
 		update(newOptions: SortableOptions) {
 			opts = newOptions;
+			syncGroup();
 		},
 		destroy() {
+			if (joinedGroup) groups.get(joinedGroup)?.delete(member);
 			node.removeEventListener('pointerdown', onPointerDown);
 			window.removeEventListener('pointermove', onPointerMove);
 			window.removeEventListener('pointerup', onPointerUp);

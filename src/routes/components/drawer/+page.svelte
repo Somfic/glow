@@ -11,6 +11,8 @@
 
 	let rightDrawer: Drawer;
 	let leftDrawer: Drawer;
+	let topDrawer: Drawer;
+	let bottomDrawer: Drawer;
 	let smallDrawer: Drawer;
 	let largeDrawer: Drawer;
 	let formDrawer: Drawer;
@@ -34,6 +36,19 @@
 	<div style="display: flex; gap: 0.5rem;">
 		<Button label="Open right drawer" onclick={() => rightDrawer.open()} />
 		<Button label="Open left drawer" variant="secondary" onclick={() => leftDrawer.open()} />
+	</div>
+</Card>
+
+<Card title="Sides" id="sides">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		Drawers can slide in from any edge. Horizontal drawers (left/right) are sized by
+		width; vertical drawers (top/bottom) are sized by height.
+	</Text>
+	<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+		<Button label="Left" variant="secondary" onclick={() => leftDrawer.open()} />
+		<Button label="Right" variant="secondary" onclick={() => rightDrawer.open()} />
+		<Button label="Top" variant="secondary" onclick={() => topDrawer.open()} />
+		<Button label="Bottom" variant="secondary" onclick={() => bottomDrawer.open()} />
 	</div>
 </Card>
 
@@ -96,8 +111,8 @@
 			{ prop: 'subtitle', type: 'string', default: '-', description: 'Secondary heading text' },
 			{ prop: 'icon', type: 'IconName', default: '-', description: 'Header icon' },
 			{ prop: 'actions', type: 'Action[]', default: '[]', description: 'Footer action buttons' },
-			{ prop: 'size', type: "'small' | 'medium' | 'large'", default: "'medium'", description: 'Drawer width (320/420/600px)' },
-			{ prop: 'side', type: "'left' | 'right'", default: "'right'", description: 'Which edge to slide from' },
+			{ prop: 'size', type: "'small' | 'medium' | 'large'", default: "'medium'", description: 'Extent (320/420/600px) — width for left/right, height for top/bottom' },
+			{ prop: 'side', type: "'left' | 'right' | 'top' | 'bottom'", default: "'right'", description: 'Which edge to slide from' },
 			{ prop: 'showCloseButton', type: 'boolean', default: 'true', description: 'Show close button in header' },
 			{ prop: 'closeOnBackdropClick', type: 'boolean', default: 'true', description: 'Close when clicking backdrop' },
 			{ prop: 'closeOnEscape', type: 'boolean', default: 'true', description: 'Close on Escape key' },
@@ -131,6 +146,14 @@
 
 <Drawer bind:this={leftDrawer} title="Left drawer" side="left" icon="PanelLeft">
 	<Text>This drawer slides in from the left. Useful for navigation or filter panels.</Text>
+</Drawer>
+
+<Drawer bind:this={topDrawer} title="Top drawer" side="top" icon="PanelTop">
+	<Text>This drawer slides down from the top. Useful for notifications or command bars.</Text>
+</Drawer>
+
+<Drawer bind:this={bottomDrawer} title="Bottom drawer" side="bottom" icon="PanelBottom">
+	<Text>This drawer slides up from the bottom. Useful for mobile-style sheets and quick actions.</Text>
 </Drawer>
 
 <Drawer bind:this={smallDrawer} title="Small drawer" size="small">

@@ -33,7 +33,7 @@
 		actions?: ButtonAction[];
 		footer?: Snippet;
 		size?: 'small' | 'medium' | 'large';
-		side?: 'left' | 'right';
+		side?: 'left' | 'right' | 'top' | 'bottom';
 		showCloseButton?: boolean;
 		closeOnBackdropClick?: boolean;
 		closeOnEscape?: boolean;
@@ -45,8 +45,11 @@
 	let drawerElement = $state<HTMLDivElement | null>(null);
 	let previousActiveElement: Element | null = null;
 
-	const widths = { small: 320, medium: 420, large: 600 };
-	let flyX = $derived((side === 'right' ? 1 : -1) * widths[size]);
+	const sizes = { small: 320, medium: 420, large: 600 };
+	let isVertical = $derived(side === 'top' || side === 'bottom');
+	// Slide along the axis the drawer enters from; the other axis stays 0.
+	let flyX = $derived(isVertical ? 0 : (side === 'right' ? 1 : -1) * sizes[size]);
+	let flyY = $derived(!isVertical ? 0 : (side === 'bottom' ? 1 : -1) * sizes[size]);
 
 	export function open() {
 		if (isOpen) return;
@@ -137,7 +140,7 @@
 			role="document"
 			tabindex="-1"
 			onkeydown={handleContentKeydown}
-			transition:fly={{ duration: 250, x: flyX }}
+			transition:fly={{ duration: 250, x: flyX, y: flyY }}
 		>
 			<Card
 				{title}
@@ -168,14 +171,19 @@
 
 	.drawer-container {
 		position: absolute;
-		top: 0.75rem;
-		bottom: 0.75rem;
 		display: flex;
 		flex-direction: column;
 		border-radius: $radius;
 
 		&:focus {
 			outline: none;
+		}
+
+		// Horizontal drawers (left/right): span full height, sized by width.
+		&.side-left,
+		&.side-right {
+			top: 0.75rem;
+			bottom: 0.75rem;
 		}
 
 		&.side-right {
@@ -188,17 +196,55 @@
 			box-shadow: 8px 0 30px rgba(0, 0, 0, 0.3);
 		}
 
-		&.size-small  { width: 320px; }
-		&.size-medium { width: 420px; }
-		&.size-large  { width: 600px; }
+		&.side-left.size-small,
+		&.side-right.size-small  { width: 320px; }
+		&.side-left.size-medium,
+		&.side-right.size-medium { width: 420px; }
+		&.side-left.size-large,
+		&.side-right.size-large  { width: 600px; }
+
+		// Vertical drawers (top/bottom): span full width, sized by height.
+		&.side-top,
+		&.side-bottom {
+			left: 0.75rem;
+			right: 0.75rem;
+		}
+
+		&.side-top {
+			top: 0.75rem;
+			box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+		}
+
+		&.side-bottom {
+			bottom: 0.75rem;
+			box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.3);
+		}
+
+		&.side-top.size-small,
+		&.side-bottom.size-small  { height: 320px; }
+		&.side-top.size-medium,
+		&.side-bottom.size-medium { height: 420px; }
+		&.side-top.size-large,
+		&.side-bottom.size-large  { height: 600px; }
 
 		@media (max-width: 640px) {
-			width: 100% !important;
 			border-radius: 0;
-			top: 0;
-			bottom: 0;
-			right: 0;
-			left: 0;
+
+			&.side-left,
+			&.side-right {
+				width: 100% !important;
+				top: 0;
+				bottom: 0;
+				right: 0;
+				left: 0;
+			}
+
+			&.side-top,
+			&.side-bottom {
+				height: 50% !important;
+				left: 0;
+				right: 0;
+			}
 		}
 	}
 
