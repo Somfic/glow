@@ -169,6 +169,36 @@
 		/>
 	</Card>
 
+	<Card title="Radio Input with Icons" id="radio-input-icons">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Options accept an <code>icon</code>. By default the icon sits beside the label; pass
+			<code>iconOnly</code> for a compact segmented control where each label becomes the
+			option's tooltip and accessible name.
+		</Text>
+		<Input
+			type="radio"
+			label="Alignment"
+			value="left"
+			options={[
+				{ label: 'Left', value: 'left', icon: 'TextAlignStart' },
+				{ label: 'Center', value: 'center', icon: 'TextAlignCenter' },
+				{ label: 'Right', value: 'right', icon: 'TextAlignEnd' }
+			]}
+		/>
+		<Input
+			type="radio"
+			label="Transcoding (icon only)"
+			value="none"
+			iconOnly={true}
+			style="margin-top: 1rem;"
+			options={[
+				{ label: 'None', value: 'none', icon: 'Ban' },
+				{ label: 'Audio', value: 'audio', icon: 'AudioLines' },
+				{ label: 'Audio + video', value: 'both', icon: 'Film' }
+			]}
+		/>
+	</Card>
+
 	<Card title="Select Input" id="select-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Searchable dropdown select with filtering. Options accept icons and descriptions

@@ -3,6 +3,10 @@ import type { IconProp } from '../icon/Icon.svelte';
 export type SelectOption = {
 	value: string;
 	label: string;
+	/** Optional leading icon. Rendered by RadioInput (and the menu `radio`
+	 *  entry); `label` still backs the accessible name when the icon shows
+	 *  without visible text. */
+	icon?: IconProp;
 };
 
 /** @deprecated Use SelectOption instead */

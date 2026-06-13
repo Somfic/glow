@@ -98,6 +98,8 @@
 		options: SelectOption[];
 		value?: string;
 		clearable?: boolean;
+		/** Render only each option's icon (label becomes its tooltip). */
+		iconOnly?: boolean;
 		onChange?: (value: string) => void;
 	};
 
@@ -314,6 +316,7 @@
 			value={p.value}
 			disabled={p.disabled}
 			clearable={p.clearable}
+			iconOnly={p.iconOnly}
 			onChange={p.onChange}
 		/>
 	{:else if props.type === 'select'}

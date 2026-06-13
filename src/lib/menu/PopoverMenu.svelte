@@ -55,6 +55,17 @@
 		render: Snippet;
 	};
 
+	/** A segmented single-select rendered inline in the menu (RadioInput).
+	 *  Selecting an option does not close the menu. */
+	export type PopoverMenuRadio = {
+		kind: 'radio';
+		options: import('../input/types.js').SelectOption[];
+		value?: string;
+		/** Render options as icons only (label becomes each option's tooltip). */
+		iconOnly?: boolean;
+		onChange: (value: string) => void;
+	};
+
 	/**
 	 * Tagged union of menu entries. The bare string 'divider' is sugar for a
 	 * visual separator so the common case stays terse.
@@ -64,6 +75,7 @@
 		| PopoverMenuToggle
 		| PopoverMenuSubmenu
 		| PopoverMenuCustom
+		| PopoverMenuRadio
 		| PopoverMenuHeader
 		| 'divider';
 
@@ -82,6 +94,7 @@
 	import Popover from '../popover/Popover.svelte';
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import ToggleInput from '../input/ToggleInput.svelte';
+	import RadioInput from '../input/RadioInput.svelte';
 	import { tooltip } from '../tooltip/tooltip.svelte.js';
 	import Self from './PopoverMenu.svelte';
 	import MenuItem from './MenuItem.svelte';
@@ -474,6 +487,16 @@
 			onclick={() => handleToggleRow(toggleEntry)}
 			trailing={toggleTrailing}
 		/>
+	{:else if entry.kind === 'radio'}
+		{@const radioEntry = entry}
+		<div class="radio-row" role="presentation" onclick={(e) => e.stopPropagation()}>
+			<RadioInput
+				options={radioEntry.options}
+				value={radioEntry.value}
+				iconOnly={radioEntry.iconOnly}
+				onChange={(v) => radioEntry.onChange(v)}
+			/>
+		</div>
 	{:else if entry.kind === 'submenu'}
 		<div class="submenu-row" class:open={openSubmenuIndex === key}>
 			<MenuItem
@@ -592,6 +615,16 @@
 		height: 1px;
 		background: var(--glow-border-color);
 		margin: 4px 0;
+	}
+
+	.radio-row {
+		padding: 4px 8px;
+
+		// Let the segmented control span the menu width.
+		:global(.radio-input) {
+			display: flex;
+			width: 100%;
+		}
 	}
 
 	.group-header {
@@ -803,9 +836,11 @@
 		display: flex;
 		flex-direction: column;
 		max-height: 80vh;
+		// Float off the window edges like the drawer (0.75rem inset) rather than
+		// sitting flush against them.
+		margin: 0 0.75rem 0.75rem;
 		background: var(--glow-bg-surface-element);
-		border-top-left-radius: 18px;
-		border-top-right-radius: 18px;
+		border-radius: 18px;
 		box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45);
 		padding-bottom: env(safe-area-inset-bottom);
 	}

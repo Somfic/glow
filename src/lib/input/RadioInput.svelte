@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { SelectOption } from './types.js';
+	import Icon, { resolveIcon } from '../icon/Icon.svelte';
+	import { tooltip } from '../tooltip/tooltip.svelte.js';
 
 	interface Props {
 		id?: string;
@@ -7,10 +9,21 @@
 		value?: string;
 		disabled?: boolean;
 		clearable?: boolean;
+		/** Show only each option's icon, with its label as tooltip/accessible
+		 *  name. Options without an icon still fall back to their label text. */
+		iconOnly?: boolean;
 		onChange?: (value: string) => void;
 	}
 
-	let { id, options, value = '', disabled = false, clearable = false, onChange }: Props = $props();
+	let {
+		id,
+		options,
+		value = '',
+		disabled = false,
+		clearable = false,
+		iconOnly = false,
+		onChange
+	}: Props = $props();
 
 	let internalValue = $state('');
 	let containerEl: HTMLDivElement;
@@ -25,7 +38,7 @@
 	// Calculate indicator position and width
 	let selectedIndex = $derived(options.findIndex((opt) => opt.value === internalValue));
 
-	$effect(() => {
+	function measureIndicator() {
 		if (!containerEl) return;
 
 		if (selectedIndex === -1) {
@@ -35,7 +48,7 @@
 		}
 
 		const buttons = containerEl.querySelectorAll('.radio-option');
-		const selectedButton = buttons[selectedIndex] as HTMLElement;
+		const selectedButton = buttons[selectedIndex] as HTMLElement | undefined;
 
 		if (!selectedButton) {
 			indicatorOpacity = 0;
@@ -45,11 +58,35 @@
 		const containerRect = containerEl.getBoundingClientRect();
 		const buttonRect = selectedButton.getBoundingClientRect();
 
+		// Not laid out yet (e.g. first open inside a popover that hasn't been
+		// positioned). Stay hidden; the ResizeObserver re-measures once it is.
+		if (buttonRect.width === 0) {
+			indicatorOpacity = 0;
+			return;
+		}
+
 		// Account for border width (1px from theme)
 		const borderWidth = 1;
 		indicatorLeft = buttonRect.left - containerRect.left - borderWidth;
 		indicatorWidth = buttonRect.width;
 		indicatorOpacity = 1;
+	}
+
+	// Re-measure on selection change (reactive on selectedIndex).
+	$effect(() => {
+		selectedIndex;
+		measureIndicator();
+	});
+
+	// Re-measure when the control is actually laid out or resized. This covers
+	// the first open inside a popover/menu, where the initial rects are zero
+	// until the container is positioned — the observer fires once on observe
+	// and again whenever the size settles.
+	$effect(() => {
+		if (!containerEl) return;
+		const ro = new ResizeObserver(() => measureIndicator());
+		ro.observe(containerEl);
+		return () => ro.disconnect();
 	});
 
 	let indicatorStyle = $derived(
@@ -73,14 +110,24 @@
 <div {id} bind:this={containerEl} class="radio-input" class:disabled>
 	<div class="indicator" style={indicatorStyle}></div>
 	{#each options as option}
+		{@const showIconOnly = iconOnly && !!option.icon}
 		<button
 			type="button"
 			class="radio-option"
 			class:selected={internalValue === option.value}
+			class:icon-only={showIconOnly}
 			{disabled}
+			aria-label={showIconOnly ? option.label : undefined}
+			use:tooltip={showIconOnly ? option.label : ''}
 			onclick={() => selectOption(option.value)}
 		>
-			{option.label}
+			{#if option.icon}
+				{@const ic = resolveIcon(option.icon)}
+				<Icon name={ic.name} size={ic.size ?? 16} color={ic.color} fill={ic.fill} />
+			{/if}
+			{#if !showIconOnly}
+				<span>{option.label}</span>
+			{/if}
 		</button>
 	{/each}
 </div>
@@ -127,6 +174,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		gap: 0.4em;
 		padding: 0 1em;
 		border: none;
 		background: transparent;
@@ -147,6 +195,11 @@
 
 		&.selected {
 			color: white;
+		}
+
+		&.icon-only {
+			// Square-ish hit area when there's no text to set the width.
+			padding: 0 0.7em;
 		}
 
 		&:disabled {

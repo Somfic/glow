@@ -110,6 +110,25 @@
 			]
 		}
 	]);
+
+	// === Inline radio entry (segmented single-select inside the menu) ===
+	let transcode = $state('audio');
+	let radioItems: PopoverMenuEntry[] = $derived([
+		{ kind: 'item', label: 'Play', icon: 'Play', onclick: () => {} },
+		'divider',
+		{ kind: 'header', label: 'Transcoding' },
+		{
+			kind: 'radio',
+			value: transcode,
+			iconOnly: true,
+			options: [
+				{ value: 'none', label: 'None', icon: 'Ban' },
+				{ value: 'audio', label: 'Audio', icon: 'AudioLines' },
+				{ value: 'both', label: 'Audio + video', icon: 'Film' }
+			],
+			onChange: (v) => (transcode = v)
+		}
+	]);
 </script>
 
 {#snippet codeCell(value)}
@@ -244,6 +263,20 @@
 	</PopoverMenu>
 </Card>
 
+<Card title="Inline radio" id="radio">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		A <code>radio</code> entry renders a segmented single-select inline in the menu — handy
+		for a small set of mutually exclusive modes. Selecting an option fires
+		<code>onChange</code> without closing the menu. Options accept icons; pass
+		<code>iconOnly</code> for a compact control with the labels as tooltips.
+	</Text>
+	<PopoverMenu items={radioItems}>
+		{#snippet trigger()}
+			<Button variant="secondary" icon="Settings2">{transcode}</Button>
+		{/snippet}
+	</PopoverMenu>
+</Card>
+
 <Card title="Right Aligned" id="right">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Use align="right" to anchor the menu to the right edge.
@@ -265,6 +298,7 @@
   | { kind: 'toggle';   label; description?; checked; disabled?; onChange }
   | { kind: 'submenu';  label; description?; icon?; items: PopoverMenuEntry[] }
   | { kind: 'custom';   render: Snippet }
+  | { kind: 'radio';    options: SelectOption[]; value?; iconOnly?; onChange }
   | 'divider';`}
 	/>
 </Card>
