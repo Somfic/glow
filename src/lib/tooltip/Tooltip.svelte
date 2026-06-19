@@ -13,9 +13,30 @@
 		y?: number;
 		position?: TooltipPosition;
 	} = $props();
+
+	let el = $state<HTMLDivElement>();
+
+	// The anchor x/y + CSS transform can place the tooltip past a viewport edge
+	// (e.g. a centered `top` tooltip on a trigger near the right edge). Measure
+	// the rendered box and shift it back on-screen. getBoundingClientRect already
+	// accounts for the transform, so nudging left/top corrects the visible box.
+	$effect(() => {
+		if (!el) return;
+		const margin = 8;
+		const r = el.getBoundingClientRect();
+		let dx = 0;
+		let dy = 0;
+		if (r.left < margin) dx = margin - r.left;
+		else if (r.right > window.innerWidth - margin) dx = window.innerWidth - margin - r.right;
+		if (r.top < margin) dy = margin - r.top;
+		else if (r.bottom > window.innerHeight - margin) dy = window.innerHeight - margin - r.bottom;
+		el.style.left = `${x + dx}px`;
+		el.style.top = `${y + dy}px`;
+	});
 </script>
 
 <div
+	bind:this={el}
 	class="tooltip {position}"
 	style="left: {x}px; top: {y}px;"
 	transition:fade={{ duration: 150 }}

@@ -90,7 +90,6 @@
 </script>
 
 <script lang="ts">
-	import { fade, fly } from 'svelte/transition';
 	import Popover from '../popover/Popover.svelte';
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import ToggleInput from '../input/ToggleInput.svelte';
@@ -100,9 +99,6 @@
 	import MenuItem from './MenuItem.svelte';
 	import type { ComboboxEntry, ComboboxOption, ComboboxGroup } from '../input/types.js';
 	import { fuzzyFilter } from '../input/search-utils.js';
-	import { portal } from '../util/portal.js';
-	import { onEscape } from '../util/escapeKey.js';
-	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
 
 	interface Props {
 		common?: PopoverMenuCommonItem[];
@@ -174,30 +170,6 @@
 
 	let searchQuery = $state('');
 	let searchInputEl = $state<HTMLInputElement | null>(null);
-
-	// Below this width the menu presents as a bottom sheet instead of an anchored
-	// popover, so it stays usable (and tappable) on phones. Tracks the viewport
-	// live so rotating / resizing swaps presentation.
-	let isMobile = $state(false);
-	$effect(() => {
-		const mq = window.matchMedia('(max-width: 640px)');
-		const sync = () => (isMobile = mq.matches);
-		sync();
-		mq.addEventListener('change', sync);
-		return () => mq.removeEventListener('change', sync);
-	});
-
-	// While the sheet is open, lock background scroll and close on Escape — the
-	// anchored Popover handles both itself, but the sheet path bypasses it.
-	$effect(() => {
-		if (_inline || !isMobile || !open) return;
-		lockScroll();
-		const cleanupEscape = onEscape(() => (open = false));
-		return () => {
-			unlockScroll();
-			cleanupEscape();
-		};
-	});
 
 	function isComboboxGroup(entry: ComboboxEntry): entry is ComboboxGroup {
 		return (entry as ComboboxGroup).kind === 'group';
@@ -565,33 +537,6 @@
 
 {#if _inline}
 	{@render body()}
-{:else if isMobile}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div
-		class="pm-sheet-trigger"
-		class:disabled
-		onclick={() => !disabled && (open = !open)}
-	>
-		{@render (trigger ?? builtInTrigger)()}
-	</div>
-	{#if open}
-		<div class="pm-sheet-root" use:portal>
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div
-				class="pm-sheet-backdrop"
-				transition:fade={{ duration: 150 }}
-				onclick={() => (open = false)}
-			></div>
-			<div class="pm-sheet" role="menu" transition:fly={{ duration: 260, y: 480 }}>
-				<div class="pm-sheet-handle" aria-hidden="true"></div>
-				<div class="pm-sheet-scroll">
-					{@render body()}
-				</div>
-			</div>
-		</div>
-	{/if}
 {:else}
 	<Popover trigger={trigger ?? builtInTrigger} {align} {offset} {disabled} bind:open>
 		{#snippet children()}
@@ -801,75 +746,5 @@
 		border-radius: $radius * 0.75;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 		z-index: 1;
-	}
-
-	// ── Mobile bottom sheet ──
-	// On small screens the menu opens as a sheet anchored to the bottom of the
-	// viewport rather than a popover anchored to the trigger.
-	.pm-sheet-trigger {
-		cursor: pointer;
-
-		&.disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
-			pointer-events: none;
-		}
-	}
-
-	.pm-sheet-root {
-		position: fixed;
-		inset: 0;
-		z-index: 10000;
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-end;
-	}
-
-	.pm-sheet-backdrop {
-		position: absolute;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.5);
-	}
-
-	.pm-sheet {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		max-height: 80vh;
-		// Float off the window edges like the drawer (0.75rem inset) rather than
-		// sitting flush against them.
-		margin: 0 0.75rem 0.75rem;
-		background: var(--glow-bg-surface-element);
-		border-radius: 18px;
-		box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45);
-		padding-bottom: env(safe-area-inset-bottom);
-	}
-
-	.pm-sheet-handle {
-		width: 36px;
-		height: 4px;
-		flex-shrink: 0;
-		margin: 10px auto 6px;
-		border-radius: 999px;
-		background: var(--glow-text-muted);
-		opacity: 0.4;
-	}
-
-	.pm-sheet-scroll {
-		overflow-y: auto;
-		-webkit-overflow-scrolling: touch;
-		padding: 0 6px 6px;
-
-		// Roomier, touch-friendly rows in sheet mode.
-		:global(.menu-item) {
-			padding: 12px 14px;
-			font-size: $text-base;
-			border-radius: 10px;
-		}
-
-		:global(.group-header) {
-			padding: 10px 14px 6px;
-			font-size: $text-sm;
-		}
 	}
 </style>

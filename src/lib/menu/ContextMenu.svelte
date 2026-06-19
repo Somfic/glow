@@ -41,6 +41,14 @@
 	let activeIndex = $state(-1);
 	let openSubmenuKey = $state<string | null>(null);
 
+	// In wrapper mode we remember which element was right-clicked and where in it
+	// the cursor landed, so the menu can follow that element as the page scrolls
+	// or it otherwise moves — rather than staying pinned to the original viewport
+	// coordinates. Null in headless mode (parent controls x/y directly).
+	let anchorEl: HTMLElement | null = null;
+	let anchorOffsetX = 0;
+	let anchorOffsetY = 0;
+
 	// Render position is decoupled from the bindable x/y inputs so internal
 	// flip/clamp doesn't fight the parent's binding via a feedback loop. The
 	// effect below seeds these from x/y when the menu opens, then mutates
@@ -63,6 +71,15 @@
 		if (disabled) return;
 		e.preventDefault();
 		e.stopPropagation();
+		// Anchor to the right-clicked element + the cursor's offset inside it, so
+		// the menu tracks the element if it later moves (e.g. on scroll). The
+		// zone wrapper is `display: contents` (no box → zero-size rect), so anchor
+		// to its rendered child element instead.
+		const zone = e.currentTarget as HTMLElement;
+		anchorEl = (zone.firstElementChild as HTMLElement) ?? zone;
+		const rect = anchorEl.getBoundingClientRect();
+		anchorOffsetX = e.clientX - rect.left;
+		anchorOffsetY = e.clientY - rect.top;
 		x = e.clientX;
 		y = e.clientY;
 		open = true;
@@ -144,23 +161,41 @@
 		submenuPositioned = true;
 	}
 
-	// Seed render position from cursor, then synchronously flip/clamp once
-	// the element is mounted. Re-run on resize.
+	// Seed render position from cursor, then synchronously flip/clamp once the
+	// element is mounted. A rAF loop keeps the menu following its anchor element
+	// (and re-flips on font-load/size changes); it only re-lays-out when the
+	// derived position or menu size actually changed, so it's cheap when idle.
 	$effect(() => {
 		if (open && menuElement) {
 			positioned = false;
 			renderX = x;
 			renderY = y;
-			// Synchronous measure — element is in the DOM and laid out by the
-			// time this effect runs. RAF is also scheduled for safety against
-			// async font loads / late-hydrating content shifting the size.
 			reposition();
-			const id = requestAnimationFrame(reposition);
+
+			let frame = 0;
+			let lastKey = '';
+			const track = () => {
+				if (anchorEl) {
+					const r = anchorEl.getBoundingClientRect();
+					x = r.left + anchorOffsetX;
+					y = r.top + anchorOffsetY;
+				}
+				const m = menuElement?.getBoundingClientRect();
+				const key = `${x},${y},${m?.width ?? 0},${m?.height ?? 0}`;
+				if (key !== lastKey) {
+					lastKey = key;
+					reposition();
+				}
+				frame = requestAnimationFrame(track);
+			};
+			frame = requestAnimationFrame(track);
+
 			const onResize = () => reposition();
 			window.addEventListener('resize', onResize);
 			return () => {
-				cancelAnimationFrame(id);
+				cancelAnimationFrame(frame);
 				window.removeEventListener('resize', onResize);
+				anchorEl = null;
 			};
 		}
 	});
