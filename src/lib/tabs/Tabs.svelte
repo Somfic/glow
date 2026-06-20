@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
@@ -23,6 +23,16 @@
 		activeTab?: string;
 		onChange?: (tabId: string) => void;
 	} = $props();
+
+	// Gate the height/indicator transitions until after the first paint, so the
+	// initial layout (panel height, active-tab indicator box) snaps into place
+	// instead of animating in on load.
+	let mounted = $state(false);
+	onMount(() => {
+		requestAnimationFrame(() => {
+			mounted = true;
+		});
+	});
 
 	let headerElement: HTMLDivElement | undefined = $state();
 	let panelHeight = $state(0);
@@ -128,7 +138,7 @@
 	const isFirstTabActive = $derived(activeTab === tabs[0]?.id);
 </script>
 
-<div class="tabs">
+<div class="tabs" class:mounted>
 	<div class="tabs-header" role="tablist" bind:this={headerElement}>
 		<div
 			class="tab-indicator"
@@ -229,8 +239,6 @@
 		// Skip the entrance animation on first paint to avoid an awkward
 		// slide-in from x=0; only animate on subsequent activeTab changes.
 		opacity: 0;
-		transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-			width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
 		&.ready {
 			opacity: 1;
@@ -263,6 +271,17 @@
 		&.first::before {
 			display: none;
 		}
+	}
+
+	// Only enable the indicator slide and panel-height animation once mounted,
+	// so the initial layout snaps in rather than transitioning on first paint.
+	.mounted .tab-indicator {
+		transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+			width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.mounted .tabs-content {
+		transition: border-radius 0.2s ease, height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.tab {
@@ -330,7 +349,6 @@
 		// what we want to display.
 		position: relative;
 		overflow: hidden;
-		transition: border-radius 0.2s ease, height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 
 		&.first-active {
 			border-radius: 0 $radius $radius $radius;

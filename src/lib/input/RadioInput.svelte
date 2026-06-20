@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import type { SelectOption } from './types.js';
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import { tooltip } from '../tooltip/tooltip.svelte.js';
@@ -27,6 +28,15 @@
 
 	let internalValue = $state('');
 	let containerEl: HTMLDivElement;
+
+	// Gate the indicator slide until after the first paint, so it snaps to the
+	// selected option's box on load instead of animating in from left: 0.
+	let mounted = $state(false);
+	onMount(() => {
+		requestAnimationFrame(() => {
+			mounted = true;
+		});
+	});
 	let indicatorLeft = $state(0);
 	let indicatorWidth = $state(0);
 	let indicatorOpacity = $state(0);
@@ -107,7 +117,7 @@
 	}
 </script>
 
-<div {id} bind:this={containerEl} class="radio-input" class:disabled>
+<div {id} bind:this={containerEl} class="radio-input" class:disabled class:mounted>
 	<div class="indicator" style={indicatorStyle}></div>
 	{#each options as option}
 		{@const showIconOnly = iconOnly && !!option.icon}
@@ -160,13 +170,19 @@
 		bottom: 0;
 		background-color: var(--glow-primary);
 		border-radius: calc($radius - $border-width);
+		// Only the opacity fade runs before mount; the slide is enabled once
+		// mounted so the indicator snaps to the selected option on first paint.
+		transition: opacity 0.2s ease;
+		z-index: 0;
+		pointer-events: none;
+		opacity: 0;
+	}
+
+	.mounted .indicator {
 		transition:
 			left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
 			width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
 			opacity 0.2s ease;
-		z-index: 0;
-		pointer-events: none;
-		opacity: 0;
 	}
 
 	.radio-option {
