@@ -8,7 +8,11 @@ void main(){ gl_Position = vec4(a_pos, 0.0, 1.0); }
 `;
 
 export const fragmentShader = /* glsl */ `#version 300 es
-precision mediump float;
+// highp is required: the fbm/pat coordinate accumulation quantizes badly under
+// mediump on GPUs that honor it (Intel/Mesa), producing banding and a seam at
+// uv.x=0.5. Apple GPUs promote mediump→highp, which is why it only shows there.
+// WebGL2 guarantees highp float in fragment shaders.
+precision highp float;
 
 uniform float u_time;
 uniform vec2  u_resolution;
