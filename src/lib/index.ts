@@ -85,7 +85,7 @@ export { default as CodeBlock } from "./code/CodeBlock.svelte";
 export { cursor } from "./cursor/cursor.svelte.js";
 export type { CursorConfig, CursorState } from "./cursor/cursor.svelte.js";
 export { default as CursorProvider } from "./cursor/CursorProvider.svelte";
-export { default as GradientMesh } from "./gradient/GradientMesh.svelte";
+export { default as Glow } from "./glow/Glow.svelte";
 export { default as Popover } from "./popover/Popover.svelte";
 export { default as PopoverMenu } from "./menu/PopoverMenu.svelte";
 export { default as ContextMenu } from "./menu/ContextMenu.svelte";

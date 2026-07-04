@@ -10,7 +10,7 @@
 	import Spacer from '$lib/layout/Spacer.svelte';
 	import Table from '$lib/data/Table.svelte';
 	import Card from '$lib/card/Card.svelte';
-	import GradientMesh from '$lib/gradient/GradientMesh.svelte';
+	import Glow from '$lib/glow/Glow.svelte';
 	import Media from '$lib/media/Media.svelte';
 	import ListItem from '$lib/list/ListItem.svelte';
 	import Section from '$lib/typography/Section.svelte';
@@ -181,7 +181,7 @@ const trackColumns: TableColumn<Track>[] = [
 	<!-- Main pane -->
 	<main class="main">
 		<div class="hero">
-			<GradientMesh colors={['#8b6ded', '#6c4be3', '#3b1d8f', '#1d1238']} intensity={0.4} speed={0.4}>
+			<Glow colors={['#1d1238', '#3b1d8f', '#6c4be3', '#8b6ded']} bgColor="#1d1238" rotation={62} zoom={11} speed={0.4}>
 				<Flex direction="horizontal" gap="lg" align="end" class="hero-row">
 					<div class="hero-cover">
 						<Media alt="Nummers die je leuk vindt" />
@@ -197,7 +197,7 @@ const trackColumns: TableColumn<Track>[] = [
 						</Flex>
 					</Flex>
 				</Flex>
-			</GradientMesh>
+			</Glow>
 		</div>
 
 		<div class="track-controls">

@@ -78,7 +78,7 @@
 				label: 'Visual Effects',
 				items: [
 					{ label: 'Cursor', href: '/components/cursor', icon: 'MousePointer' },
-					{ label: 'Gradient Mesh', href: '/components/gradient', icon: 'Sparkles' }
+					{ label: 'Glow', href: '/components/glow', icon: 'Flame' }
 				]
 			},
 			{

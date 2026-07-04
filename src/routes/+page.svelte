@@ -5,7 +5,7 @@
 	import ButtonGroup from '$lib/button/ButtonGroup.svelte';
 	import Card from "$lib/card/Card.svelte";
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
-	import GradientMesh from '$lib/gradient/GradientMesh.svelte';
+	import Glow from '$lib/glow/Glow.svelte';
 	import Flex from "$lib/layout/Flex.svelte";
 	import Grid from '$lib/layout/Grid.svelte';
 
@@ -32,9 +32,10 @@
 <svelte:head><title>Home | Glow UI</title></svelte:head>
 
 <div class="hero">
-		<GradientMesh
-			colors={['#8B6DED', '#FF006E', '#06FFA5', '#FFD60A']}
-			intensity={0.6}
+		<Glow
+			colors={['#1d1240', '#8B6DED', '#FF006E', '#06FFA5', '#FFD60A']}
+			rotation={48}
+			zoom={9}
 			speed={1.2}
 		>
 			<div class="hero-inner">
@@ -61,7 +62,7 @@
 					</Flex>
 				</Card>
 			</div>
-		</GradientMesh>
+		</Glow>
 	</div>
 
 	<Card title="Features">

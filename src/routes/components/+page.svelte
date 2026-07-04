@@ -60,7 +60,7 @@
 			category: 'Visual Effects',
 			items: [
 				{ name: 'Cursor', href: '/components/cursor', description: 'Custom cursor effects' },
-				{ name: 'Gradient Mesh', href: '/components/gradient', description: 'Animated gradient backgrounds' }
+				{ name: 'Glow', href: '/components/glow', description: 'Flowing sheets of light (WebGL shader)' }
 			]
 		}
 	];
