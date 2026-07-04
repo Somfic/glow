@@ -78,15 +78,18 @@
 		syncPlayback?.();
 	});
 
-	type RGB = [number, number, number];
-	type HSL = [number, number, number];
+	type RGB = [number, number, number]; // linear-light RGB (what the shader wants)
+	type Lab = [number, number, number]; // OKLab
 
 	// sRGB 0–1 channel → linear-light, matching Paper Design's colour handling.
 	function srgbToLinear(c: number): number {
 		return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
 	}
 
-	function hexToSrgb(hex: string): RGB {
+	// Colours are interpolated in OKLab — a perceptually-uniform space — so a
+	// morph between two muted colours stays muted instead of sweeping through the
+	// neon yellows/cyans that linear-RGB or HSL-hue interpolation produce.
+	function hexToOklab(hex: string): Lab {
 		const h = hex.replace('#', '');
 		const full =
 			h.length === 3
@@ -96,53 +99,37 @@
 						.join('')
 				: h;
 		const n = parseInt(full.slice(0, 6), 16);
-		return [((n >> 16) & 0xff) / 255, ((n >> 8) & 0xff) / 255, (n & 0xff) / 255];
+		const r = srgbToLinear(((n >> 16) & 0xff) / 255);
+		const g = srgbToLinear(((n >> 8) & 0xff) / 255);
+		const b = srgbToLinear((n & 0xff) / 255);
+		const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+		const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+		const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+		return [
+			0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+			1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+			0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s
+		];
 	}
 
-	function srgbToHsl([r, g, b]: RGB): HSL {
-		const max = Math.max(r, g, b);
-		const min = Math.min(r, g, b);
-		const l = (max + min) / 2;
-		const d = max - min;
-		if (d < 1e-6) return [0, 0, l];
-		const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-		let h: number;
-		if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
-		else if (max === g) h = (b - r) / d + 2;
-		else h = (r - g) / d + 4;
-		return [h / 6, s, l];
+	// OKLab → linear-light RGB, clamped to a sane non-negative range (the shader
+	// tonemaps from here, and out-of-gamut mixes can dip slightly negative).
+	function oklabToLinear([L, a, bb]: Lab): RGB {
+		const l_ = L + 0.3963377774 * a + 0.2158037573 * bb;
+		const m_ = L - 0.1055613458 * a - 0.0638541728 * bb;
+		const s_ = L - 0.0894841775 * a - 1.291485548 * bb;
+		const l = l_ * l_ * l_;
+		const m = m_ * m_ * m_;
+		const s = s_ * s_ * s_;
+		return [
+			Math.max(0, 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s),
+			Math.max(0, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s),
+			Math.max(0, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s)
+		];
 	}
 
-	function hue2rgb(p: number, q: number, t: number): number {
-		if (t < 0) t += 1;
-		if (t > 1) t -= 1;
-		if (t < 1 / 6) return p + (q - p) * 6 * t;
-		if (t < 1 / 2) return q;
-		if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-		return p;
-	}
-
-	function hslToSrgb([h, s, l]: HSL): RGB {
-		if (s <= 1e-6) return [l, l, l];
-		const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-		const p = 2 * l - q;
-		return [hue2rgb(p, q, h + 1 / 3), hue2rgb(p, q, h), hue2rgb(p, q, h - 1 / 3)];
-	}
-
-	// Interpolate hue along the shortest path around the wheel.
-	function lerpHue(a: number, b: number, t: number): number {
-		let d = b - a;
-		if (d > 0.5) d -= 1;
-		else if (d < -0.5) d += 1;
-		return (((a + d * t) % 1) + 1) % 1;
-	}
-
-	// Ease one HSL colour toward another. When an endpoint is desaturated its hue
-	// is meaningless, so borrow the other endpoint's hue to avoid a grey detour.
-	function lerpHsl(a: HSL, b: HSL, t: number): HSL {
-		const h0 = a[1] < 1e-4 ? b[0] : a[0];
-		const h1 = b[1] < 1e-4 ? a[0] : b[0];
-		return [lerpHue(h0, h1, t), a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+	function lerpLab(a: Lab, b: Lab, t: number): Lab {
+		return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 	}
 
 	function compile(gl: WebGL2RenderingContext, type: number, src: string): WebGLShader {
@@ -203,7 +190,7 @@
 		// ── Animated ("displayed") parameter state ───────────────────────────
 		// The shader always draws from these values. When `transition > 0`, prop
 		// changes ease toward their targets (see scheduleUpdate + loop) instead of
-		// snapping; colours ease in HSL.
+		// snapping; colours ease in OKLab.
 		type Nums = {
 			softness: number;
 			saturation: number;
@@ -227,42 +214,42 @@
 				ncols: Math.max(1, Math.min(5, colors.length))
 			};
 		}
-		// Up to 5 HSL stops; short arrays are padded with their last colour so
+		// Up to 5 OKLab stops; short arrays are padded with their last colour so
 		// palette() never reads garbage (and the tween has something to ease to).
-		function targetColorsHsl(): HSL[] {
+		function targetColorsLab(): Lab[] {
 			const list = colors.slice(0, 5);
-			const out: HSL[] = [];
+			const out: Lab[] = [];
 			for (let i = 0; i < 5; i++) {
 				const hex = list[i] ?? list[list.length - 1] ?? '#000000';
-				out.push(srgbToHsl(hexToSrgb(hex)));
+				out.push(hexToOklab(hex));
 			}
 			return out;
 		}
 
 		let dispNums: Nums = targetNums();
-		let dispColors: HSL[] = targetColorsHsl();
-		let dispBack: HSL = srgbToHsl(hexToSrgb(bgColor));
-		let dispShadow: HSL = srgbToHsl(hexToSrgb(shadowColor));
+		let dispColors: Lab[] = targetColorsLab();
+		let dispBack: Lab = hexToOklab(bgColor);
+		let dispShadow: Lab = hexToOklab(shadowColor);
 
 		type Tween = {
 			t0: number;
 			dur: number;
 			n0: Nums;
 			nT: Nums;
-			c0: HSL[];
-			cT: HSL[];
-			b0: HSL;
-			bT: HSL;
-			s0: HSL;
-			sT: HSL;
+			c0: Lab[];
+			cT: Lab[];
+			b0: Lab;
+			bT: Lab;
+			s0: Lab;
+			sT: Lab;
 		};
 		let tween: Tween | null = null;
 
 		const colorBuf = new Float32Array(20);
 		function pushColors() {
 			for (let i = 0; i < 5; i++) {
-				const [r, g, b] = hslToSrgb(dispColors[i]);
-				colorBuf.set([srgbToLinear(r), srgbToLinear(g), srgbToLinear(b), 1], i * 4);
+				const [r, g, b] = oklabToLinear(dispColors[i]);
+				colorBuf.set([r, g, b, 1], i * 4);
 			}
 			gl.uniform4fv(uColors, colorBuf);
 			gl.uniform1f(uNcols, dispNums.ncols);
@@ -270,10 +257,8 @@
 
 		function pushStatics() {
 			pushColors();
-			const [br, bg2, bb] = hslToSrgb(dispBack);
-			gl.uniform3f(uBack, srgbToLinear(br), srgbToLinear(bg2), srgbToLinear(bb));
-			const [sr, sg, sb] = hslToSrgb(dispShadow);
-			gl.uniform3f(uShadow, srgbToLinear(sr), srgbToLinear(sg), srgbToLinear(sb));
+			gl.uniform3fv(uBack, oklabToLinear(dispBack));
+			gl.uniform3fv(uShadow, oklabToLinear(dispShadow));
 			gl.uniform1f(uSoftness, dispNums.softness);
 			gl.uniform1f(uSaturation, dispNums.saturation);
 			gl.uniform1f(uNoise, dispNums.noise);
@@ -338,7 +323,8 @@
 		// the interpolated values into the disp* state.
 		function applyTween(p: number) {
 			if (!tween) return;
-			const e = p * p * (3 - 2 * p);
+			// ease-in-out cubic
+			const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
 			const { n0, nT, c0, cT, b0, bT, s0, sT } = tween;
 			dispNums = {
 				softness: lerp(n0.softness, nT.softness, e),
@@ -350,9 +336,9 @@
 				ribbonWidth: lerp(n0.ribbonWidth, nT.ribbonWidth, e),
 				ncols: lerp(n0.ncols, nT.ncols, e)
 			};
-			for (let i = 0; i < 5; i++) dispColors[i] = lerpHsl(c0[i], cT[i], e);
-			dispBack = lerpHsl(b0, bT, e);
-			dispShadow = lerpHsl(s0, sT, e);
+			for (let i = 0; i < 5; i++) dispColors[i] = lerpLab(c0[i], cT[i], e);
+			dispBack = lerpLab(b0, bT, e);
+			dispShadow = lerpLab(s0, sT, e);
 		}
 
 		// Re-target the displayed values from the current props: either snap
@@ -360,20 +346,20 @@
 		function scheduleUpdate() {
 			const dur = reduceMotion.matches ? 0 : transition;
 			const nT = targetNums();
-			const cT = targetColorsHsl();
-			const bT = srgbToHsl(hexToSrgb(bgColor));
-			const sT = srgbToHsl(hexToSrgb(shadowColor));
+			const cT = targetColorsLab();
+			const bT = hexToOklab(bgColor);
+			const sT = hexToOklab(shadowColor);
 			if (dur > 0) {
 				tween = {
 					t0: performance.now(),
 					dur,
 					n0: dispNums,
 					nT,
-					c0: dispColors.map((c) => [...c] as HSL),
+					c0: dispColors.map((c) => [...c] as Lab),
 					cT,
-					b0: [...dispBack] as HSL,
+					b0: [...dispBack] as Lab,
 					bT,
-					s0: [...dispShadow] as HSL,
+					s0: [...dispShadow] as Lab,
 					sT
 				};
 				sync(); // ensure the loop runs to drive the tween (even when frozen)
