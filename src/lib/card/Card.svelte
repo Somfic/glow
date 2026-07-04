@@ -236,6 +236,60 @@
 		};
 	});
 
+	// Sample a vibrant accent from the media image and tint the progress bar
+	// with it, so the bar always reads as the colour of the artwork it sits on
+	// (falls back to the theme primary on CORS/readback failure or a washed-out
+	// image). Only runs when a progress bar is actually drawn.
+	let progressAccent = $state('');
+	$effect(() => {
+		const src = mediaConfig?.src;
+		const hasProgress = mediaConfig?.progress != null && mediaConfig.progress > 0;
+		if (!src || !hasProgress) {
+			progressAccent = '';
+			return;
+		}
+		let cancelled = false;
+		const img = new Image();
+		img.crossOrigin = 'anonymous';
+		img.onload = () => {
+			if (cancelled) return;
+			try {
+				const canvas = document.createElement('canvas');
+				canvas.width = 32;
+				canvas.height = 32;
+				const ctx = canvas.getContext('2d', { willReadFrequently: true });
+				if (!ctx) return;
+				ctx.drawImage(img, 0, 0, 32, 32);
+				const data = ctx.getImageData(0, 0, 32, 32).data;
+				let vr = 0;
+				let vg = 0;
+				let vb = 0;
+				let vcount = 0;
+				for (let i = 0; i < data.length; i += 4) {
+					const br = data[i] + data[i + 1] + data[i + 2];
+					const max = Math.max(data[i], data[i + 1], data[i + 2]);
+					const min = Math.min(data[i], data[i + 1], data[i + 2]);
+					const sat = max > 0 ? (max - min) / max : 0;
+					if (sat > 0.2 && br > 80 && br < 600) {
+						vr += data[i];
+						vg += data[i + 1];
+						vb += data[i + 2];
+						vcount++;
+					}
+				}
+				progressAccent = vcount
+					? `rgb(${Math.round(vr / vcount)}, ${Math.round(vg / vcount)}, ${Math.round(vb / vcount)})`
+					: '';
+			} catch {
+				// CORS or readback failure — leave the bar at the theme primary.
+			}
+		};
+		img.src = src;
+		return () => {
+			cancelled = true;
+		};
+	});
+
 // A header band renders whenever there's anything to show there: a header
 	// snippet, a title, or actions. Collapsible always shows the header (it's
 	// the toggle).
@@ -374,7 +428,7 @@
 				active={mediaConfig.active}
 			/>
 			{#if mediaConfig.progress != null && mediaConfig.progress > 0}
-				<div class="media-progress"><div class="media-progress-fill" style:width="{Math.min(mediaConfig.progress, 1) * 100}%"></div></div>
+				<div class="media-progress"><div class="media-progress-fill" style:width="{Math.min(mediaConfig.progress, 1) * 100}%" style:--media-progress-color={progressAccent || undefined}></div></div>
 			{/if}
 		</div>
 
@@ -988,8 +1042,10 @@
 
 	.media-progress-fill {
 		height: 100%;
-		background: var(--glow-primary);
-		transition: width $dur-base $ease-out;
+		// `--media-progress-color` lets a consumer tint the bar (e.g. to the
+		// sampled accent of the poster); defaults to the theme primary.
+		background: var(--media-progress-color, var(--glow-primary));
+		transition: width $dur-base $ease-out, background $dur-base $ease-out;
 	}
 
 	// ── Loading overlay ──────────────────────────────────────────────────────
