@@ -59,7 +59,7 @@
 	 *  Selecting an option does not close the menu. */
 	export type PopoverMenuRadio = {
 		kind: 'radio';
-		options: import('../input/types.js').SelectOption[];
+		options: import('../input/types.js').RadioSelectOption<string>[];
 		value?: string;
 		/** Render options as icons only (label becomes each option's tooltip). */
 		iconOnly?: boolean;
@@ -197,9 +197,7 @@
 		const out: PopoverMenuEntry[] = [];
 		for (const entry of options) {
 			if (isComboboxGroup(entry)) {
-				const visible = matches
-					? entry.options.filter((o) => matches.has(o.value))
-					: entry.options;
+				const visible = matches ? entry.options.filter((o) => matches.has(o.value)) : entry.options;
 				if (visible.length === 0) continue;
 				// Skip group headers when filtering — flat hits are clearer.
 				if (!filterActive) out.push({ kind: 'header', label: entry.label });
@@ -299,7 +297,7 @@
 			// result when the user is typing in the search box and hasn't
 			// arrowed-down yet — the standard "type then Enter" pattern.
 			const targetIndex =
-				activeOptionIndex >= 0 ? activeOptionIndex : visibleOptionItems[0]?.index ?? -1;
+				activeOptionIndex >= 0 ? activeOptionIndex : (visibleOptionItems[0]?.index ?? -1);
 			if (targetIndex < 0) return;
 			e.preventDefault();
 			const target = optionEntries[targetIndex];
@@ -380,10 +378,7 @@
 						use:tooltip={{ content: entry.label, position: 'bottom' }}
 						onclick={() => handleCommonClick(entry)}
 					>
-						<Icon
-							{...resolveIcon(entry.icon)}
-							size={resolveIcon(entry.icon).size ?? 16}
-						/>
+						<Icon {...resolveIcon(entry.icon)} size={resolveIcon(entry.icon).size ?? 16} />
 					</button>
 				{/each}
 			</div>
@@ -466,7 +461,7 @@
 				options={radioEntry.options}
 				value={radioEntry.value}
 				iconOnly={radioEntry.iconOnly}
-				onChange={(v) => radioEntry.onChange(v)}
+				onChange={(v) => radioEntry.onChange(v ?? '')}
 			/>
 		</div>
 	{:else if entry.kind === 'submenu'}
@@ -485,7 +480,7 @@
 					<Self
 						items={entry.items}
 						options={entry.options}
-						value={value}
+						{value}
 						onChange={selectOption}
 						_inline
 						trigger={emptyTrigger}
@@ -678,7 +673,9 @@
 		font-family: $font-family;
 		cursor: pointer;
 		text-align: left;
-		transition: border-color 0.15s ease, box-shadow 0.15s ease;
+		transition:
+			border-color 0.15s ease,
+			box-shadow 0.15s ease;
 
 		&.full-width {
 			width: 100%;

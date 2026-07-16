@@ -1,12 +1,18 @@
+import type { TooltipParams } from '$lib/tooltip/tooltip.svelte';
 import type { IconProp } from '../icon/Icon.svelte';
 
-export type SelectOption = {
-	value: string;
+export type SelectOption<T = string> = {
+	value: T;
 	label: string;
 	/** Optional leading icon. Rendered by RadioInput (and the menu `radio`
 	 *  entry); `label` still backs the accessible name when the icon shows
 	 *  without visible text. */
 	icon?: IconProp;
+};
+
+export type RadioSelectOption<T> = SelectOption<T> & {
+	disabled?: boolean;
+	tooltip?: TooltipParams;
 };
 
 /** @deprecated Use SelectOption instead */
