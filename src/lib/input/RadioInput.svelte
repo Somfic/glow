@@ -1,32 +1,32 @@
-<script lang="ts">
+<script lang="ts" generics="T">
 	import { onMount } from 'svelte';
-	import type { SelectOption } from './types.js';
+	import type { RadioSelectOption } from './types.js';
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import { tooltip } from '../tooltip/tooltip.svelte.js';
 
-	interface Props {
+	type Props<T> = {
 		id?: string;
-		options: SelectOption[];
-		value?: string;
-		disabled?: boolean;
+		options: RadioSelectOption<T>[];
+		value?: T;
 		clearable?: boolean;
+		disabled?: boolean;
 		/** Show only each option's icon, with its label as tooltip/accessible
 		 *  name. Options without an icon still fall back to their label text. */
 		iconOnly?: boolean;
-		onChange?: (value: string) => void;
-	}
+		onChange?: (value: T | null) => void;
+	};
 
 	let {
 		id,
 		options,
-		value = '',
+		value,
 		disabled = false,
 		clearable = false,
 		iconOnly = false,
 		onChange
-	}: Props = $props();
+	}: Props<T> = $props();
 
-	let internalValue = $state('');
+	let internalValue: T | null = $state(null);
 	let containerEl: HTMLDivElement;
 
 	// Gate the indicator slide until after the first paint, so it snaps to the
@@ -42,7 +42,7 @@
 	let indicatorOpacity = $state(0);
 
 	$effect(() => {
-		internalValue = value ?? '';
+		internalValue = value ?? null;
 	});
 
 	// Calculate indicator position and width
@@ -103,13 +103,13 @@
 		`left: ${indicatorLeft}px; width: ${indicatorWidth}px; opacity: ${indicatorOpacity};`
 	);
 
-	function selectOption(optionValue: string) {
+	function selectOption(optionValue: T) {
 		if (disabled) return;
 
 		// If clearable and clicking the selected option, deselect it
 		if (clearable && internalValue === optionValue) {
-			internalValue = '';
-			onChange?.('');
+			internalValue = null;
+			onChange?.(null);
 		} else {
 			internalValue = optionValue;
 			onChange?.(optionValue);
@@ -126,9 +126,9 @@
 			class="radio-option"
 			class:selected={internalValue === option.value}
 			class:icon-only={showIconOnly}
-			{disabled}
+			disabled={disabled || option.disabled}
 			aria-label={showIconOnly ? option.label : undefined}
-			use:tooltip={showIconOnly ? option.label : ''}
+			use:tooltip={option.tooltip ?? (showIconOnly ? option.label : '')}
 			onclick={() => selectOption(option.value)}
 		>
 			{#if option.icon}

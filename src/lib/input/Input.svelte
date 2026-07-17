@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getContext, type Snippet } from 'svelte';
-	import type { SelectOption, ComboboxOption, ComboboxEntry } from './types.js';
+	import type { SelectOption, ComboboxOption, ComboboxEntry, RadioSelectOption } from './types.js';
 	import type { PopoverMenuEntry } from '../menu/PopoverMenu.svelte';
 	import Icon, { type IconProp } from '../icon/Icon.svelte';
 	import TextInput from './TextInput.svelte';
@@ -95,7 +95,7 @@
 
 	type RadioProps = BaseProps & {
 		type: 'radio';
-		options: SelectOption[];
+		options: RadioSelectOption<string>[];
 		value?: string;
 		clearable?: boolean;
 		/** Render only each option's icon (label becomes its tooltip). */
@@ -317,7 +317,7 @@
 			disabled={p.disabled}
 			clearable={p.clearable}
 			iconOnly={p.iconOnly}
-			onChange={p.onChange}
+			onChange={(v) => p.onChange?.(v ?? '')}
 		/>
 	{:else if props.type === 'select'}
 		{@const p = props as SelectProps}
@@ -380,12 +380,7 @@
 		/>
 	{:else if props.type === 'color'}
 		{@const p = props as ColorProps}
-		<ColorInput
-			id={inputId}
-			value={p.value}
-			disabled={p.disabled}
-			onChange={p.onChange}
-		/>
+		<ColorInput id={inputId} value={p.value} disabled={p.disabled} onChange={p.onChange} />
 	{:else if props.type === 'date'}
 		{@const p = props as DateProps}
 		<DateInput
