@@ -14,6 +14,9 @@ export const fragmentShader = /* glsl */ `#version 300 es
 // WebGL2 guarantees highp float in fragment shaders.
 precision highp float;
 
+// Baked value-noise lattice; see noiseLut.ts for what is in it and why.
+uniform sampler2D u_lut;
+
 uniform float u_time;
 uniform vec2  u_resolution;
 
@@ -39,10 +42,18 @@ float hash12(vec2 p){
   return fract((p3.x+p3.y)*p3.z);
 }
 
+// Bilinear interpolation of a random lattice — which is what a texture unit
+// does for free. The lattice is baked with the smoothstep already applied and
+// supersampled (see noiseLut.ts), so a plain bilinear fetch reproduces the
+// original interpolation and this costs one fetch instead of four hash12 calls.
+// The shader evaluates it ~195x per pixel, so it is the whole cost of the frame.
+//
+// The square stays here on purpose: vnoise squares the *interpolated* value,
+// and squaring does not commute with mixing, so it cannot be baked.
+// textureLod(..., 0.0) avoids implicit-derivative LOD selection, which is both
+// pointless (no mipmaps) and illegal in the non-uniform flow this is called from.
 float vnoise(vec2 p){
-  vec2 ip=floor(p), u=fract(p); u=u*u*(3.0-2.0*u);
-  float r=mix(mix(hash12(ip),          hash12(ip+vec2(1,0)), u.x),
-              mix(hash12(ip+vec2(0,1)), hash12(ip+vec2(1,1)), u.x), u.y);
+  float r=textureLod(u_lut, (p+128.0)*0.00390625+0.000244140625, 0.0).r;
   return r*r;
 }
 

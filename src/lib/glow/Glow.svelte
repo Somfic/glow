@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte';
 	import { fragmentShader, vertexShader } from './foldGradientShader.js';
+	import { createNoiseTexture } from './noiseLut.js';
 
 	let {
 		// Colour stops, darkest → hottest (up to 5 are used).
@@ -163,6 +164,19 @@
 			return;
 		}
 		gl.useProgram(program);
+
+		// The noise lattice the shader samples instead of hashing per pixel. The
+		// bake is ~12ms and is shared across every Glow on the page; the texture
+		// itself belongs to this GL context. Bound once to unit 0 and left there,
+		// since nothing else in this context ever uses a texture unit.
+		const lut = createNoiseTexture(gl);
+		if (!lut) {
+			console.warn('[Glow] could not allocate the noise LUT; rendering nothing.');
+			return;
+		}
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, lut);
+		gl.uniform1i(gl.getUniformLocation(program, 'u_lut'), 0);
 
 		// Full-screen triangle.
 		const buffer = gl.createBuffer();
@@ -469,6 +483,7 @@
 			reduceMotion.removeEventListener('change', sync);
 			gl.deleteBuffer(buffer);
 			gl.deleteProgram(program);
+			gl.deleteTexture(lut);
 		};
 	});
 </script>
