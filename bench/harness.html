@@ -1,0 +1,341 @@
+<!doctype html>
+<meta charset="utf8" />
+<title>Glow shader benchmark</title>
+<style>
+	body {
+		background: #111;
+		color: #ddd;
+		font:
+			13px/1.5 ui-monospace,
+			monospace;
+		margin: 0;
+		padding: 16px;
+	}
+	canvas {
+		display: block;
+		margin: 8px 0;
+		max-width: 100%;
+	}
+	pre {
+		white-space: pre-wrap;
+	}
+</style>
+<body>
+	<canvas id="c"></canvas>
+	<pre id="log"></pre>
+</body>
+<script type="module">
+	const canvas = document.getElementById('c');
+	const gl = canvas.getContext('webgl2', {
+		antialias: false,
+		premultipliedAlpha: false,
+		preserveDrawingBuffer: true,
+		powerPreference: 'high-performance'
+	});
+	const timerExt = gl.getExtension('EXT_disjoint_timer_query_webgl2');
+
+	// Render targets the harness owns. Variants draw into the bound framebuffer,
+	// which lets us read pixels back deterministically for the image comparison.
+	function makeTarget(w, h) {
+		const tex = gl.createTexture();
+		gl.bindTexture(gl.TEXTURE_2D, tex);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		const fbo = gl.createFramebuffer();
+		gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+		gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+		return { tex, fbo, w, h };
+	}
+
+	// Wait for a timer query result without spinning the CPU hot.
+	async function readQuery(q) {
+		for (let i = 0; i < 10000; i++) {
+			if (gl.getQueryParameter(q, gl.QUERY_RESULT_AVAILABLE)) {
+				const disjoint = gl.getParameter(timerExt.GPU_DISJOINT_EXT);
+				const ns = gl.getQueryParameter(q, gl.QUERY_RESULT);
+				gl.deleteQuery(q);
+				return disjoint ? null : ns / 1e6; // ms
+			}
+			await new Promise((r) => setTimeout(r, 0));
+		}
+		gl.deleteQuery(q);
+		return null;
+	}
+
+	function median(a) {
+		const s = [...a].sort((x, y) => x - y);
+		return s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2;
+	}
+	function pct(a, p) {
+		const s = [...a].sort((x, y) => x - y);
+		return s[Math.min(s.length - 1, Math.floor(s.length * p))];
+	}
+
+	// One measurement run: `frames` draws at deterministic animation times, each
+	// wrapped in its own GPU timer query. Returns per-frame GPU ms.
+	async function measure(inst, target, frames, warmup) {
+		gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+		for (let i = 0; i < warmup; i++) inst.render(i * 0.016);
+		// Force the warmup work to actually complete before timing starts.
+		gl.finish();
+		await new Promise((r) => setTimeout(r, 30));
+
+		const samples = [];
+		for (let i = 0; i < frames; i++) {
+			const q = gl.createQuery();
+			gl.beginQuery(timerExt.TIME_ELAPSED_EXT, q);
+			gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+			inst.render(2.0 + i * 0.016);
+			gl.endQuery(timerExt.TIME_ELAPSED_EXT);
+			const ms = await readQuery(q);
+			if (ms !== null && ms > 0) samples.push(ms);
+		}
+		return samples;
+	}
+
+	// Wall-clock throughput: how many frames fit in a fixed time budget, with a
+	// finish() at the end so we measure completed GPU work, not queue depth.
+	async function measureWall(inst, target, frames) {
+		// gl.finish() is a no-op under ANGLE/Metal; a 1-pixel readPixels is the
+		// cheapest call that genuinely blocks until the GPU has caught up.
+		const sync = () => {
+			const p = new Uint8Array(4);
+			gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, p);
+		};
+		gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+		inst.render(0);
+		sync();
+		const t0 = performance.now();
+		for (let i = 0; i < frames; i++) inst.render(2.0 + i * 0.016);
+		sync();
+		return (performance.now() - t0) / frames;
+	}
+
+	function readPixels(target) {
+		gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+		const px = new Uint8Array(target.w * target.h * 4);
+		gl.readPixels(0, 0, target.w, target.h, gl.RGBA, gl.UNSIGNED_BYTE, px);
+		return px;
+	}
+
+	// Image fidelity vs the baseline, so "faster" can be qualified as "faster and
+	// still looks like the original".
+	function compare(a, b) {
+		let se = 0,
+			maxd = 0,
+			n = 0;
+		for (let i = 0; i < a.length; i += 4) {
+			for (let c = 0; c < 3; c++) {
+				const d = a[i + c] - b[i + c];
+				se += d * d;
+				if (Math.abs(d) > maxd) maxd = Math.abs(d);
+				n++;
+			}
+		}
+		const rmse = Math.sqrt(se / n);
+		return { rmse, maxDelta: maxd, psnr: rmse === 0 ? Infinity : 20 * Math.log10(255 / rmse) };
+	}
+
+	// Bumping a version alongside the params lets already-constructed variant
+	// instances notice the change; module caching means a re-import will not.
+	function setParams(p) {
+		globalThis.__GLOW_PARAMS = p;
+		globalThis.__GLOW_PARAMS_V = (globalThis.__GLOW_PARAMS_V ?? 0) + 1;
+	}
+
+	window.__runBench = async function (opts) {
+		const { variants, resolutions, frames = 60, warmup = 10, compareAt, params } = opts;
+		// Must be set before the first variant import: singlepass.js reads it at
+		// module-evaluation time.
+		if (params) setParams(params);
+		const results = [];
+		let baselineRef = null;
+
+		for (const modPath of variants) {
+			const mod = (await import(modPath)).default;
+			const entry = { name: mod.name, description: mod.description, res: {} };
+			try {
+				for (const [w, h] of resolutions) {
+					canvas.width = w;
+					canvas.height = h;
+					const target = makeTarget(w, h);
+					const inst = mod.create(gl, w, h);
+					const gpu = await measure(inst, target, frames, warmup);
+					const wall = await measureWall(inst, target, frames);
+					entry.res[`${w}x${h}`] = {
+						pixels: w * h,
+						gpuMedian: gpu.length ? median(gpu) : null,
+						gpuP95: gpu.length ? pct(gpu, 0.95) : null,
+						gpuMin: gpu.length ? Math.min(...gpu) : null,
+						samples: gpu.length,
+						wallMs: wall
+					};
+					inst.dispose();
+					gl.deleteFramebuffer(target.fbo);
+					gl.deleteTexture(target.tex);
+				}
+
+				// Fidelity pass at a fixed size and fixed animation time.
+				const [cw, ch] = compareAt;
+				const target = makeTarget(cw, ch);
+				const inst = mod.create(gl, cw, ch);
+				gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+				// Several frames so temporal variants reach steady state.
+				for (let i = 0; i < 30; i++) inst.render(3.0 + i * 0.016);
+				gl.finish();
+				const px = readPixels(target);
+				if (baselineRef === null) baselineRef = px;
+				entry.fidelity = compare(px, baselineRef);
+				inst.dispose();
+				gl.deleteFramebuffer(target.fbo);
+				gl.deleteTexture(target.tex);
+			} catch (e) {
+				entry.error = String((e && e.stack) || e);
+			}
+			results.push(entry);
+			document.getElementById('log').textContent = JSON.stringify(results, null, 1);
+		}
+		return results;
+	};
+
+	// Renders one variant to a visible canvas and returns a PNG data URL, for
+	// eyeballing that an "optimization" did not change the look.
+	window.__snapshot = async function (modPath, w, h, t, params, opts) {
+		if (params) setParams(params);
+		const { format = 'image/png', quality = 0.9 } = opts || {};
+		const mod = (await import(modPath)).default;
+		canvas.width = w;
+		canvas.height = h;
+		const inst = mod.create(gl, w, h);
+		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+		for (let i = 0; i < 30; i++) inst.render(t + i * 0.016);
+		gl.finish();
+		const url = canvas.toDataURL(format, quality);
+		inst.dispose();
+		return url;
+	};
+
+	// Batch: snapshot many variants in ONE browser session. Launching Chrome per
+	// image dominates the cost when rendering a whole gallery.
+	window.__gallery = async function (opts) {
+		const { variants, w, h, t = 3.0, params, format, quality } = opts;
+		const out = [];
+		if (params) setParams(params);
+		for (const modPath of variants) {
+			try {
+				const mod = (await import(modPath)).default;
+				canvas.width = w;
+				canvas.height = h;
+				const inst = mod.create(gl, w, h);
+				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+				for (let i = 0; i < 30; i++) inst.render(t + i * 0.016);
+				gl.finish();
+				// Cost via GPU timer queries — the same path the benchmark uses. A
+				// wall-clock loop around render() is not trustworthy here: the driver
+				// queues frames, so it reports anything from near-zero to the full
+				// cost depending on where it happens to sync.
+				const target = makeTarget(w, h);
+				const gpu = await measure(inst, target, 20, 8);
+				gl.deleteFramebuffer(target.fbo);
+				gl.deleteTexture(target.tex);
+				const ms = gpu.length ? median(gpu) : null;
+				// measure() drew into its own FBO; restore the visible canvas image.
+				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+				canvas.width = w;
+				canvas.height = h;
+				inst.resize?.(w, h);
+				for (let i = 0; i < 30; i++) inst.render(t + i * 0.016);
+				gl.finish();
+				out.push({
+					name: mod.name,
+					description: mod.description,
+					url: canvas.toDataURL(format || 'image/png', quality ?? 0.9),
+					ms
+				});
+				inst.dispose();
+			} catch (e) {
+				out.push({ name: modPath, error: String((e && e.message) || e) });
+			}
+			document.getElementById('log').textContent = `rendered ${out.length}/${variants.length}`;
+		}
+		return out;
+	};
+
+
+	// Measures how fast a pattern's IMAGE changes, so different shaders can be
+	// given a common speed scale.
+	//
+	// Metric: half-decorrelation time. D(dt) = mean|I(t+dt) - I(t)| rises from 0
+	// and saturates once the two frames are unrelated; D_inf is that saturation
+	// level, measured against a far-away frame. The reported time is the dt at
+	// which D(dt) reaches half of D_inf.
+	//
+	// Dividing by D_inf is what makes this comparable across designs: a
+	// high-contrast pattern (halftone, dither) has large pixel differences for
+	// even small motion, and an absolute difference would wrongly call it fast.
+	window.__speedProbe = async function (opts) {
+		const { variants, w, h, dts, bases, params } = opts;
+		if (params) setParams(params);
+		const out = [];
+		const target = makeTarget(w, h);
+
+		const grab = (inst, t) => {
+			gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+			inst.render(t);
+			const px = new Uint8Array(w * h * 4);
+			gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, px);
+			return px;
+		};
+		const meanAbs = (a, b) => {
+			let s = 0, n = 0;
+			for (let i = 0; i < a.length; i += 4) {
+				for (let c = 0; c < 3; c++) { s += Math.abs(a[i + c] - b[i + c]); n++; }
+			}
+			return s / n;
+		};
+
+		for (const modPath of variants) {
+			try {
+				const mod = (await import(modPath)).default;
+				const inst = mod.create(gl, w, h);
+				const halves = [];
+				for (const t0 of bases) {
+					const ref = grab(inst, t0);
+					// Saturation level: two frames far enough apart to be unrelated.
+					const dInf = (meanAbs(ref, grab(inst, t0 + 400)) + meanAbs(ref, grab(inst, t0 + 931))) / 2;
+					if (dInf < 0.5) continue; // effectively static — no usable signal
+					const curve = dts.map((dt) => [dt, meanAbs(ref, grab(inst, t0 + dt)) / dInf]);
+					// First crossing of 0.5, linearly interpolated.
+					let half = null;
+					for (let i = 0; i < curve.length; i++) {
+						if (curve[i][1] >= 0.5) {
+							const [d1, v1] = curve[i];
+							const [d0, v0] = i ? curve[i - 1] : [0, 0];
+							half = v1 === v0 ? d1 : d0 + ((0.5 - v0) * (d1 - d0)) / (v1 - v0);
+							break;
+						}
+					}
+					if (half != null) halves.push(half);
+				}
+				halves.sort((a, b) => a - b);
+				out.push({
+					name: mod.name,
+					halfLife: halves.length ? halves[(halves.length - 1) >> 1] : null,
+					samples: halves.length
+				});
+				inst.dispose();
+			} catch (e) {
+				out.push({ name: modPath, error: String((e && e.message) || e) });
+			}
+			document.getElementById('log').textContent = `probed ${out.length}/${variants.length}`;
+		}
+		gl.deleteFramebuffer(target.fbo);
+		gl.deleteTexture(target.tex);
+		return out;
+	};
+
+	window.__ready = true;
+</script>

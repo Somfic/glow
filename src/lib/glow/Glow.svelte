@@ -2,8 +2,12 @@
 	import { onMount, type Snippet } from 'svelte';
 	import { fragmentShader, vertexShader } from './foldGradientShader.js';
 	import { createNoiseTexture } from './noiseLut.js';
+	import { PATTERN_SHADERS, PATTERN_TIME_SCALE, type PatternName } from './patterns.js';
 
 	let {
+		// Which background pattern to draw. All patterns share this component's
+		// uniforms, so colours/zoom/rotation/speed apply to every one of them.
+		pattern = 'fold' as PatternName,
 		// Colour stops, darkest → hottest (up to 5 are used).
 		colors = ['#700000', '#008cff', '#75daff', '#ff0026', '#ff3626'],
 		// Gap colour between the folded sheets.
@@ -14,8 +18,14 @@
 		saturation = 1, // 0–2, 0 = mono, 1 = natural
 		rotation = 52, // drape angle, degrees
 		zoom = 9, // 4–18, sheet size
-		ribbon = 0, // 0–1, discrete strip blending
-		ribbonWidth = 1, // strip width multiplier
+		ribbon = 0, // 0–1, discrete strip blending (fold only)
+		ribbonWidth = 1, // strip width multiplier (fold only)
+		// Universal 0–1 morph axis. Every pattern transforms into a distinctly
+		// different but related form as this goes 0 → 1, so one prop can signal a
+		// state change whatever pattern is in use. Animate it via `transition`.
+		// On `fold` it drives the same machinery as `ribbon`, so morph={0.85} is
+		// what ribbon={0.85} does today; the two add and clamp.
+		morph = 0,
 		noise = 0, // 0–1, ordered dithering strength
 		speed = 1, // animation speed (0 = frozen)
 		maxPixelCount = 1_440_000,
@@ -27,6 +37,7 @@
 		class: className = '',
 		children
 	}: {
+		pattern?: PatternName;
 		colors?: string[];
 		bgColor?: string;
 		shadowColor?: string;
@@ -36,6 +47,7 @@
 		zoom?: number;
 		ribbon?: number;
 		ribbonWidth?: number;
+		morph?: number;
 		noise?: number;
 		speed?: number;
 		maxPixelCount?: number;
@@ -57,6 +69,7 @@
 	// Static/appearance props → re-push uniforms + resize (redraws if paused).
 	$effect(() => {
 		void [
+			pattern,
 			colors,
 			bgColor,
 			shadowColor,
@@ -66,6 +79,7 @@
 			zoom,
 			ribbon,
 			ribbonWidth,
+			morph,
 			noise,
 			maxPixelCount,
 			dprCap
@@ -143,7 +157,8 @@
 		return sh;
 	}
 
-	onMount(() => {
+	// The entire GL lifecycle, startable on demand. Returns its own teardown.
+	function initGL(): (() => void) | void {
 		const glCtx = canvas.getContext('webgl2', {
 			antialias: false,
 			premultipliedAlpha: false,
@@ -153,30 +168,85 @@
 			console.warn('[Glow] WebGL2 is not available; rendering nothing.');
 			return;
 		}
+
 		const gl: WebGL2RenderingContext = glCtx;
 
-		const program = gl.createProgram()!;
-		gl.attachShader(program, compile(gl, gl.VERTEX_SHADER, vertexShader));
-		gl.attachShader(program, compile(gl, gl.FRAGMENT_SHADER, fragmentShader));
-		gl.linkProgram(program);
-		if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-			console.warn('[Glow] program link failed:', gl.getProgramInfoLog(program));
-			return;
-		}
-		gl.useProgram(program);
+		// Only `fold` is expensive enough to be worth recomputing half the rows per
+		// frame; the alternative patterns cost a fraction of it, where banding
+		// would trade temporal resolution for nothing.
+		const BANDED: ReadonlySet<string> = new Set(['fold', 'curl']);
+		// Likewise, only `fold` samples the baked noise lattice, so the 4 MB bake
+		// is skipped entirely unless it is the pattern in use.
+		const NEEDS_LUT: ReadonlySet<string> = new Set(['fold']);
 
-		// The noise lattice the shader samples instead of hashing per pixel. The
-		// bake is ~12ms and is shared across every Glow on the page; the texture
-		// itself belongs to this GL context. Bound once to unit 0 and left there,
-		// since nothing else in this context ever uses a texture unit.
-		const lut = createNoiseTexture(gl);
-		if (!lut) {
-			console.warn('[Glow] could not allocate the noise LUT; rendering nothing.');
-			return;
+		type Uniforms = Record<string, WebGLUniformLocation | null>;
+		type Compiled = { program: WebGLProgram; u: Uniforms };
+
+		// Programs are cached per pattern so switching back and forth does not
+		// recompile. Uniform locations are per-program, hence the per-entry map.
+		const compiled = new Map<string, Compiled>();
+		let lut: WebGLTexture | null = null;
+
+		function patternSource(name: string): string {
+			return name === 'fold'
+				? fragmentShader
+				: (PATTERN_SHADERS as Record<string, string>)[name] ?? fragmentShader;
 		}
-		gl.activeTexture(gl.TEXTURE0);
-		gl.bindTexture(gl.TEXTURE_2D, lut);
-		gl.uniform1i(gl.getUniformLocation(program, 'u_lut'), 0);
+
+		function getProgram(name: string): Compiled | null {
+			const hit = compiled.get(name);
+			if (hit) return hit;
+			let prog: WebGLProgram;
+			try {
+				prog = gl.createProgram()!;
+				gl.attachShader(prog, compile(gl, gl.VERTEX_SHADER, vertexShader));
+				gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, patternSource(name)));
+				gl.linkProgram(prog);
+				if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+					throw new Error(gl.getProgramInfoLog(prog) ?? 'link failed');
+				}
+			} catch (err) {
+				console.warn(`[Glow] pattern "${name}" failed to compile:`, err);
+				return null;
+			}
+			const u: Uniforms = {};
+			for (const n of [
+				'u_time', 'u_resolution', 'u_colors', 'u_ncols', 'u_back', 'u_shadow',
+				'u_softness', 'u_saturation', 'u_noise', 'u_rotation', 'u_folds',
+				'u_ribbon', 'u_ribbonWidth', 'u_morph', 'u_lut'
+			]) {
+				// Patterns use whichever uniforms they need; the rest come back null
+				// and the gl.uniform* calls against them are no-ops.
+				u[n] = gl.getUniformLocation(prog, n);
+			}
+			const entry = { program: prog, u };
+			compiled.set(name, entry);
+
+			if (u.u_lut && NEEDS_LUT.has(name)) {
+				// The bake is ~12 ms and its bytes are shared across every Glow on the
+				// page; the texture itself belongs to this GL context.
+				lut ??= createNoiseTexture(gl);
+				gl.useProgram(prog);
+				gl.uniform1i(u.u_lut, 0);
+			}
+			return entry;
+		}
+
+		// Start on whichever pattern was requested. Falling back to `fold` keeps a
+		// bad/unknown pattern name from rendering nothing at all.
+		let activeName = pattern;
+		let active = getProgram(pattern);
+		if (!active) {
+			active = getProgram('fold');
+			activeName = 'fold';
+		}
+		if (!active) return;
+		const program = active.program;
+		gl.useProgram(program);
+		if (lut) {
+			gl.activeTexture(gl.TEXTURE0);
+			gl.bindTexture(gl.TEXTURE_2D, lut);
+		}
 
 		// Trivial second pass: copies the field target to the canvas. Kept separate
 		// from the main program so the expensive shader never runs for the stripes
@@ -222,20 +292,10 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 		gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
-		const u = (name: string) => gl.getUniformLocation(program, name);
-		const uTime = u('u_time');
-		const uResolution = u('u_resolution');
-		const uColors = u('u_colors');
-		const uNcols = u('u_ncols');
-		const uBack = u('u_back');
-		const uShadow = u('u_shadow');
-		const uSoftness = u('u_softness');
-		const uSaturation = u('u_saturation');
-		const uNoise = u('u_noise');
-		const uRotation = u('u_rotation');
-		const uFolds = u('u_folds');
-		const uRibbon = u('u_ribbon');
-		const uRibbonWidth = u('u_ribbonWidth');
+		// Read through the active program every time: `pattern` can change at any
+		// point, and a uniform location from a different program is invalid.
+		const uTime = () => active!.u.u_time;
+		const uResolution = () => active!.u.u_resolution;
 
 		// ── Animated ("displayed") parameter state ───────────────────────────
 		// The shader always draws from these values. When `transition > 0`, prop
@@ -249,6 +309,7 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 			zoom: number;
 			ribbon: number;
 			ribbonWidth: number;
+			morph: number;
 			ncols: number;
 		};
 
@@ -261,6 +322,7 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 				zoom,
 				ribbon,
 				ribbonWidth,
+				morph,
 				ncols: Math.max(1, Math.min(5, colors.length))
 			};
 		}
@@ -301,21 +363,29 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 				const [r, g, b] = oklabToLinear(dispColors[i]);
 				colorBuf.set([r, g, b, 1], i * 4);
 			}
-			gl.uniform4fv(uColors, colorBuf);
-			gl.uniform1f(uNcols, dispNums.ncols);
+			const u = active!.u;
+			gl.useProgram(active!.program);
+			gl.uniform4fv(u.u_colors, colorBuf);
+			gl.uniform1f(u.u_ncols, dispNums.ncols);
 		}
 
 		function pushStatics() {
 			pushColors();
-			gl.uniform3fv(uBack, oklabToLinear(dispBack));
-			gl.uniform3fv(uShadow, oklabToLinear(dispShadow));
-			gl.uniform1f(uSoftness, dispNums.softness);
-			gl.uniform1f(uSaturation, dispNums.saturation);
-			gl.uniform1f(uNoise, dispNums.noise);
-			gl.uniform1f(uRotation, dispNums.rotation);
-			gl.uniform1f(uFolds, dispNums.zoom);
-			gl.uniform1f(uRibbon, dispNums.ribbon);
-			gl.uniform1f(uRibbonWidth, dispNums.ribbonWidth);
+			const u = active!.u;
+			gl.useProgram(active!.program);
+			gl.uniform3fv(u.u_back, oklabToLinear(dispBack));
+			gl.uniform3fv(u.u_shadow, oklabToLinear(dispShadow));
+			gl.uniform1f(u.u_softness, dispNums.softness);
+			gl.uniform1f(u.u_saturation, dispNums.saturation);
+			gl.uniform1f(u.u_noise, dispNums.noise);
+			gl.uniform1f(u.u_rotation, dispNums.rotation);
+			gl.uniform1f(u.u_folds, dispNums.zoom);
+			// `fold` has no u_morph of its own: its morph IS the ribbon transform, so
+			// the two add (and clamp) rather than fighting over the same machinery.
+			const foldRibbon = Math.min(1, Math.max(0, dispNums.ribbon + dispNums.morph));
+			gl.uniform1f(u.u_ribbon, activeName === 'fold' ? foldRibbon : dispNums.ribbon);
+			gl.uniform1f(u.u_ribbonWidth, dispNums.ribbonWidth);
+			gl.uniform1f(u.u_morph, dispNums.morph);
 		}
 
 		// ── temporal banding ────────────────────────────────────────────────
@@ -377,8 +447,8 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 				allocField(w, h);
 			}
 			gl.viewport(0, 0, canvas.width, canvas.height);
-			gl.useProgram(program);
-			gl.uniform2f(uResolution, canvas.width, canvas.height);
+			gl.useProgram(active!.program);
+			gl.uniform2f(uResolution(), canvas.width, canvas.height);
 		}
 
 		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -399,15 +469,18 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 			// Pass 1: the expensive shader, into the persistent field target.
 			gl.bindFramebuffer(gl.FRAMEBUFFER, fieldFbo);
 			gl.viewport(0, 0, w, h);
-			gl.useProgram(program);
-			gl.activeTexture(gl.TEXTURE0);
-			gl.bindTexture(gl.TEXTURE_2D, lut);
+			gl.useProgram(active!.program);
+			if (lut && active!.u.u_lut) {
+				gl.activeTexture(gl.TEXTURE0);
+				gl.bindTexture(gl.TEXTURE_2D, lut);
+			}
 			gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+			const aPos = gl.getAttribLocation(active!.program, 'a_pos');
 			gl.enableVertexAttribArray(aPos);
 			gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
-			gl.uniform1f(uTime, elapsed);
+			gl.uniform1f(uTime(), elapsed);
 
-			if (needsFullRedraw) {
+			if (needsFullRedraw || !BANDED.has(pattern)) {
 				gl.drawArrays(gl.TRIANGLES, 0, 3);
 				needsFullRedraw = false;
 			} else {
@@ -465,6 +538,7 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 				zoom: lerp(n0.zoom, nT.zoom, e),
 				ribbon: lerp(n0.ribbon, nT.ribbon, e),
 				ribbonWidth: lerp(n0.ribbonWidth, nT.ribbonWidth, e),
+				morph: lerp(n0.morph, nT.morph, e),
 				ncols: lerp(n0.ncols, nT.ncols, e)
 			};
 			for (let i = 0; i < 5; i++) dispColors[i] = lerpLab(c0[i], cT[i], e);
@@ -515,7 +589,10 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 			}
 			const dt = (now - last) / 1000;
 			last = now;
-			if (shouldAnimate()) elapsed += dt * speed; // advance by real time
+			// Each shader advances u_time at its own internal rate, so the time step
+			// is scaled per pattern to make `speed` mean the same rate of motion
+			// everywhere (see PATTERN_TIME_SCALE).
+			if (shouldAnimate()) elapsed += dt * speed * (PATTERN_TIME_SCALE[pattern] ?? 1);
 
 			if (tween) {
 				const p = tween.dur > 0 ? Math.min(1, (now - tween.t0) / tween.dur) : 1;
@@ -565,6 +642,22 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 		}
 
 		applyProps = () => {
+			// A pattern swap changes which program (and which uniform locations)
+			// everything below writes to, so it happens before anything is pushed.
+			if (pattern !== activeName) {
+				const next = getProgram(pattern);
+				if (next) {
+					active = next;
+					activeName = pattern;
+					gl.useProgram(next.program);
+					if (lut && next.u.u_lut) {
+						gl.activeTexture(gl.TEXTURE0);
+						gl.bindTexture(gl.TEXTURE_2D, lut);
+					}
+					// The persisted field still holds the previous pattern's pixels.
+					needsFullRedraw = true;
+				}
+			}
 			resize();
 			scheduleUpdate();
 		};
@@ -592,9 +685,11 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 		document.addEventListener('visibilitychange', onVisibility);
 		reduceMotion.addEventListener('change', sync);
 
-		// Initial paint + kick off the loop if appropriate.
-		pushStatics();
-		resize();
+		// Initial paint + kick off the loop if appropriate. This goes through
+		// applyProps so the first frame takes exactly the same path as a later
+		// prop change — the effect above cannot have run yet, because applyProps
+		// was still null when it fired.
+		applyProps();
 		sync();
 
 		return () => {
@@ -609,6 +704,36 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 			gl.deleteProgram(blitProgram);
 			if (fieldTex) gl.deleteTexture(fieldTex);
 			if (fieldFbo) gl.deleteFramebuffer(fieldFbo);
+			// Nothing may touch the dead context after this point.
+			applyProps = null;
+			syncPlayback = null;
+		};
+	}
+
+	onMount(() => {
+		// A WebGL context is a scarce, page-wide resource — browsers cap them at
+		// roughly 16 — so one is not created until this Glow is actually near the
+		// viewport. A page can then hold far more Glows than that cap, as long as
+		// the reader never has them all on screen at once.
+		//
+		// This is separate from the pause/resume observer inside initGL: that one
+		// stops the animation loop for an off-screen Glow that already exists,
+		// which does nothing for the context budget.
+		let teardown: (() => void) | void;
+		const gate = new IntersectionObserver(
+			(entries) => {
+				if (!entries.some((e) => e.isIntersecting) || teardown) return;
+				teardown = initGL();
+				// One-shot: once the context exists, initGL's own observer takes over.
+				gate.disconnect();
+			},
+			{ rootMargin: '250px' }
+		);
+		gate.observe(container);
+
+		return () => {
+			gate.disconnect();
+			teardown?.();
 		};
 	});
 </script>

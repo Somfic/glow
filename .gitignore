@@ -25,3 +25,16 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 /.claude
 /.direnv
+
+# Benchmark harness output — all regenerable, and large.
+#   bench/gallery + snapshots:  node bench/run.mjs --gallery pat- --size 900x375
+#   bench/gallery.html:         node bench/build-gallery.mjs
+# The harness SOURCE (run.mjs, harness.html, lib/, variants/, export-patterns.mjs)
+# is committed: export-patterns.mjs + bench/variants/pat-*.js are the build inputs
+# for src/lib/glow/patterns.ts, which cannot be regenerated without them.
+bench/gallery/
+bench/gallery.html
+bench/snapshot-*.png
+bench/speed-probe.json
+bench/.chrome-profile*
+bench/.bench.lock
