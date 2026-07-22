@@ -91,6 +91,19 @@ void main(){
   vec2 dir=normalize(vec2(0.66,0.75));
   vec2 perp=vec2(-dir.y,dir.x);
   float sm=0.045+(2.0-u_softness)*0.075;
+  // Jitter decorrelates each pixel's tap positions so the discrete taps do not
+  // show up as coherent comb/ripple banding.
+  //
+  // Keep this at FULL amplitude. It trades banding for noise, and for a fixed
+  // tap count the total error is roughly constant — the jitter only decides
+  // whether that error appears as incoherent speckle or as coherent ripples.
+  // Partial amplitudes are the worst of both: 0.25 was tried and produced a
+  // clearly visible diagonal moire. Reducing the error itself means raising K,
+  // not turning the jitter down.
+  //
+  // Must stay uniform across the 2x2 derivative quad: the tap loop takes
+  // dFdx/dFdy of the height field, and a per-lane jitter would make those
+  // derivatives measure the jitter instead of the surface.
   float jit=hash12(floor(gl_FragCoord.xy*0.5))-0.5;
 
   float asp=u_resolution.x/u_resolution.y;
@@ -124,7 +137,23 @@ void main(){
   vec3 HL=normalize(L+vec3(0.0,0.0,1.0));
 
   float lum=0.0, hue=0.0, wsum=0.0, bloom=0.0;
-  const int K=6;
+  // This loop is a Monte-Carlo estimate of a blur integral: it always spans
+  // fi in [-1,1] and normalizes by wsum, so K changes only how finely the
+  // integral is sampled, never the amount of blur.
+  //
+  // K=6 (13 taps) left enough residual sampling noise to read as speckle. How
+  // visible that is depends strongly on the palette: across a wide ramp
+  // (purple->pink->orange->yellow) a given error in the hue term swings the colour far
+  // more than across a set of near-identical teals, so the same noise is ~3x
+  // more visible. K was chosen against that worst case, not the default look.
+  //
+  // Measured against a converged K=48 render at that palette: K=6 scores RMSE
+  // 4.77, K=10 -> 2.02, K=16 -> 1.00, K=24 -> 0.56. Judged on a wide, short
+  // canvas (banding and grain are relative to pixel scale, and a square-ish
+  // crop hides both), K=24 is the first count with no visible speckle and no
+  // ripples. 49 taps only became affordable once vnoise became a texture fetch;
+  // this is still ~1.45x faster than the pre-LUT shader was at 13 taps.
+  const int K=24;
   float fscale=mix(1.0, 0.52, clamp(u_ribbon,0.0,1.0));
   for(int i=-K;i<=K;i++){
     float fi=(float(i)+jit)/float(K);

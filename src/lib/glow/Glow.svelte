@@ -178,6 +178,41 @@
 		gl.bindTexture(gl.TEXTURE_2D, lut);
 		gl.uniform1i(gl.getUniformLocation(program, 'u_lut'), 0);
 
+		// Trivial second pass: copies the field target to the canvas. Kept separate
+		// from the main program so the expensive shader never runs for the stripes
+		// that are being reused this frame.
+		const blitProgram = gl.createProgram()!;
+		gl.attachShader(
+			blitProgram,
+			compile(
+				gl,
+				gl.VERTEX_SHADER,
+				`#version 300 es\nin vec2 a_pos;\nvoid main(){ gl_Position = vec4(a_pos, 0.0, 1.0); }\n`
+			)
+		);
+		gl.attachShader(
+			blitProgram,
+			compile(
+				gl,
+				gl.FRAGMENT_SHADER,
+				`#version 300 es
+precision highp float;
+uniform sampler2D u_src;
+out vec4 fragColor;
+void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
+`
+			)
+		);
+		gl.linkProgram(blitProgram);
+		if (!gl.getProgramParameter(blitProgram, gl.LINK_STATUS)) {
+			console.warn('[Glow] blit program link failed:', gl.getProgramInfoLog(blitProgram));
+			return;
+		}
+		gl.useProgram(blitProgram);
+		gl.uniform1i(gl.getUniformLocation(blitProgram, 'u_src'), 0);
+		const blitPos = gl.getAttribLocation(blitProgram, 'a_pos');
+		gl.useProgram(program);
+
 		// Full-screen triangle.
 		const buffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -185,6 +220,7 @@
 		const aPos = gl.getAttribLocation(program, 'a_pos');
 		gl.enableVertexAttribArray(aPos);
 		gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+		gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
 		const u = (name: string) => gl.getUniformLocation(program, name);
 		const uTime = u('u_time');
@@ -282,6 +318,44 @@
 			gl.uniform1f(uRibbonWidth, dispNums.ribbonWidth);
 		}
 
+		// ── temporal banding ────────────────────────────────────────────────
+		// The shader is expensive per pixel, but the animation is slow: at speed 1
+		// the noise domain drifts ~0.0013 units per frame, which is under a fifth
+		// of an output pixel. So each frame recomputes only half the rows — 8 of 16
+		// interleaved stripes — into a persistent target, and the other half stay
+		// one frame (~16ms) old. Interleaving rather than splitting in two halves
+		// keeps any staleness spread out instead of concentrated at one seam.
+		//
+		// This costs nothing spatially: every pixel is still computed at full
+		// resolution with all taps. It is purely "compute it every other frame".
+		const BANDS = 16;
+		let fieldTex: WebGLTexture | null = null;
+		let fieldFbo: WebGLFramebuffer | null = null;
+		let frame = 0;
+		// Set whenever the persisted field is stale or invalid and a partial
+		// update would show wrong pixels: first frame, after a resize (the texture
+		// is reallocated empty), and during a parameter tween (the un-updated
+		// stripes would still hold the PREVIOUS colours and tear visibly).
+		let needsFullRedraw = true;
+
+		function allocField(w: number, h: number) {
+			if (!fieldTex) {
+				fieldTex = gl.createTexture();
+				fieldFbo = gl.createFramebuffer();
+			}
+			gl.bindTexture(gl.TEXTURE_2D, fieldTex);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.bindFramebuffer(gl.FRAMEBUFFER, fieldFbo);
+			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fieldTex, 0);
+			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+			// The old contents are gone, so the next frame must fill every stripe.
+			needsFullRedraw = true;
+		}
+
 		function resize() {
 			const rect = canvas.getBoundingClientRect();
 			const cssW = Math.max(1, rect.width);
@@ -298,8 +372,12 @@
 			if (canvas.width !== w || canvas.height !== h) {
 				canvas.width = w;
 				canvas.height = h;
+				allocField(w, h);
+			} else if (!fieldTex) {
+				allocField(w, h);
 			}
 			gl.viewport(0, 0, canvas.width, canvas.height);
+			gl.useProgram(program);
 			gl.uniform2f(uResolution, canvas.width, canvas.height);
 		}
 
@@ -315,7 +393,46 @@
 		let pageVisible = !document.hidden; // tab focused
 
 		function draw() {
+			const w = canvas.width;
+			const h = canvas.height;
+
+			// Pass 1: the expensive shader, into the persistent field target.
+			gl.bindFramebuffer(gl.FRAMEBUFFER, fieldFbo);
+			gl.viewport(0, 0, w, h);
+			gl.useProgram(program);
+			gl.activeTexture(gl.TEXTURE0);
+			gl.bindTexture(gl.TEXTURE_2D, lut);
+			gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+			gl.enableVertexAttribArray(aPos);
+			gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 			gl.uniform1f(uTime, elapsed);
+
+			if (needsFullRedraw) {
+				gl.drawArrays(gl.TRIANGLES, 0, 3);
+				needsFullRedraw = false;
+			} else {
+				// Alternate which half of the stripes is refreshed each frame.
+				gl.enable(gl.SCISSOR_TEST);
+				for (let i = frame & 1; i < BANDS; i += 2) {
+					const y0 = Math.floor((i * h) / BANDS);
+					const y1 = Math.floor(((i + 1) * h) / BANDS);
+					gl.scissor(0, y0, w, y1 - y0);
+					gl.drawArrays(gl.TRIANGLES, 0, 3);
+				}
+				gl.disable(gl.SCISSOR_TEST);
+			}
+			frame++;
+
+			// Pass 2: copy the field to the canvas. scale is 1:1, so this samples
+			// exact texel centres and is a straight copy, not a resample.
+			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+			gl.viewport(0, 0, w, h);
+			gl.useProgram(blitProgram);
+			gl.activeTexture(gl.TEXTURE0);
+			gl.bindTexture(gl.TEXTURE_2D, fieldTex);
+			gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+			gl.enableVertexAttribArray(blitPos);
+			gl.vertexAttribPointer(blitPos, 2, gl.FLOAT, false, 0, 0);
 			gl.drawArrays(gl.TRIANGLES, 0, 3);
 		}
 
@@ -384,6 +501,7 @@
 				dispBack = bT;
 				dispShadow = sT;
 				pushStatics();
+				needsFullRedraw = true;
 				if (!running) draw();
 			}
 		}
@@ -403,6 +521,10 @@
 				const p = tween.dur > 0 ? Math.min(1, (now - tween.t0) / tween.dur) : 1;
 				applyTween(p);
 				pushStatics();
+				// Partial updates are invalid mid-tween: the stripes that are not
+				// refreshed still hold the previous frame's colours, which during a
+				// colour morph reads as banding rather than as staleness.
+				needsFullRedraw = true;
 				if (p >= 1) tween = null;
 			}
 
@@ -484,6 +606,9 @@
 			gl.deleteBuffer(buffer);
 			gl.deleteProgram(program);
 			gl.deleteTexture(lut);
+			gl.deleteProgram(blitProgram);
+			if (fieldTex) gl.deleteTexture(fieldTex);
+			if (fieldFbo) gl.deleteFramebuffer(fieldFbo);
 		};
 	});
 </script>
