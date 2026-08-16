@@ -85,6 +85,7 @@
 				label: 'Examples',
 				items: [
 					{ label: 'Form', href: '/examples/form', icon: 'ClipboardList' },
+					{ label: 'Sandbox', href: '/examples/sandbox', icon: 'ScanEye' },
 					{ label: 'Linear', href: '/examples/linear', icon: 'CircleDot' },
 					{ label: 'Spotify', href: '/examples/spotify', icon: 'Music' },
 					{ label: 'GitHub', href: '/examples/github', icon: 'Github' },
