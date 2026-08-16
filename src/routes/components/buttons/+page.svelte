@@ -15,6 +15,17 @@
 		await new Promise((resolve) => setTimeout(resolve, 2000));
 		alert('Action completed!');
 	}
+
+	// Progress demo: tick a percentage up while the async action runs
+	let uploadProgress = $state(0);
+
+	async function simulateUpload() {
+		uploadProgress = 0;
+		while (uploadProgress < 100) {
+			await new Promise((resolve) => setTimeout(resolve, 120));
+			uploadProgress = Math.min(100, uploadProgress + 5);
+		}
+	}
 </script>
 
 {#snippet codeCell(value)}
@@ -76,6 +87,37 @@
 	<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
 		<Button label="Click me (2s delay)" onclick={simulateAsync} />
 		<Button icon="Download" label="Download" variant="secondary" onclick={simulateAsync} />
+	</div>
+</Card>
+
+<Card title="Progress" id="button-progress">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		Pass <Code>progress</Code> (0-100) to draw a bar along the bottom of the button while it is loading,
+		and <Code>progressLabel</Code> to swap the label for live status text.
+	</Text>
+	<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+		<Button
+			label="Upload"
+			onclick={simulateUpload}
+			progress={uploadProgress}
+			progressLabel={`Uploading ${uploadProgress}%`}
+		/>
+		<Button
+			icon="Download"
+			label="Download"
+			variant="secondary"
+			onclick={simulateUpload}
+			progress={uploadProgress}
+			progressLabel={`${uploadProgress}%`}
+		/>
+		<Button
+			icon="Upload"
+			variant="outlined"
+			tooltip="Upload"
+			onclick={simulateUpload}
+			progress={uploadProgress}
+		/>
+		<Button label="Bar only" variant="ghost" onclick={simulateUpload} progress={uploadProgress} />
 	</div>
 </Card>
 
@@ -166,6 +208,18 @@
 				type: 'boolean',
 				default: 'false',
 				description: 'Disable button interactions'
+			},
+			{
+				prop: 'progress',
+				type: 'number',
+				default: '-',
+				description: 'Progress (0-100) shown as a bar at the bottom while loading'
+			},
+			{
+				prop: 'progressLabel',
+				type: 'string',
+				default: '-',
+				description: 'Label shown inside the button while loading, in place of the label'
 			},
 			{
 				prop: 'tooltip',

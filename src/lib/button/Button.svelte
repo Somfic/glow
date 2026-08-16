@@ -36,6 +36,10 @@
 		onclick?: () => void | Promise<void>;
 		disabled?: boolean;
 		loading?: boolean;
+		/** 0-100. While loading, renders a progress bar along the bottom of the button. */
+		progress?: number;
+		/** Text shown inside the button while loading, in place of the label. */
+		progressLabel?: string;
 		image?: string;
 		selected?: boolean;
 		fullWidth?: boolean;
@@ -74,6 +78,8 @@
 		onclick,
 		disabled = false,
 		loading: manualLoading = false,
+		progress,
+		progressLabel,
 		selected = false,
 		fullWidth = false,
 		tooltip: tooltipText,
@@ -91,6 +97,15 @@
 	let promiseLoading = $state(false);
 	let loading = $derived(promiseLoading || manualLoading);
 	let isActiveCursorButton = $state(false);
+
+	let clampedProgress = $derived(
+		progress === undefined ? undefined : Math.min(100, Math.max(0, progress))
+	);
+	// The bar sits on the bottom edge, so it has nowhere to go on a circle.
+	let showProgress = $derived(loading && clampedProgress !== undefined && shape !== 'circle');
+	// While loading with a progress label, the label takes over the content in flow
+	// (instead of the centred spinner over hidden content).
+	let showProgressLabel = $derived(loading && !!progressLabel);
 
 	// Only update cursor loading if this button is the active one
 	$effect(() => {
@@ -131,15 +146,23 @@
 	}
 </script>
 
+{#snippet tail()}
+	{#if label}<span class="label">{label}</span>{:else if children}{@render children()}{/if}
+	{#if count !== undefined}<span class="count">{count}</span>{/if}
+	{#if shortcut}<Kbd size="sm">{shortcut}</Kbd>{/if}
+{/snippet}
+
 <button
 	class={[isBare ? 'bare' : variant, `size-${size}`, `shape-${shape}`, className].filter(Boolean).join(' ')}
 	{style}
 	class:selected
-	class:loading={loading && !icon}
+	class:loading={loading && !icon && !showProgressLabel}
 	class:full-width={fullWidth}
 	class:icon-only={isIconOnly}
+	class:has-progress={showProgress}
 	onclick={handleClick}
 	disabled={disabled || loading}
+	aria-busy={loading}
 	use:cursor={disabled || loading
 		? { state: 'default' }
 		: icon
@@ -155,18 +178,48 @@
 		{:else}
 			<Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? '1em'} />
 		{/if}
-		{#if label}<span class="label">{label}</span>{:else if children}{@render children()}{/if}
-		{#if count !== undefined}<span class="count">{count}</span>{/if}
-		{#if shortcut}<Kbd size="sm">{shortcut}</Kbd>{/if}
+		{#if showProgressLabel}
+			<span class="swap">
+				<span class="swap-item ghost" aria-hidden="true">{@render tail()}</span>
+				<span class="swap-item"><span class="label">{progressLabel}</span></span>
+			</span>
+		{:else}
+			{@render tail()}
+		{/if}
+	{:else if showProgressLabel}
+		<!-- Keep the idle content in place (invisible) so the button never shrinks
+		     below its original width while the progress label is showing. -->
+		<span class="swap">
+			<span class="swap-item ghost" aria-hidden="true">
+				{#if image}
+					<img src={image} alt="" class="button-image" />
+				{/if}
+				{@render tail()}
+			</span>
+			<span class="swap-item">
+				<span class="spinner"></span>
+				<span class="label">{progressLabel}</span>
+			</span>
+		</span>
 	{:else}
 		{#if loading}<span class="spinner"></span>{/if}
 		<span class="content" class:hidden={loading}>
 			{#if image}
 				<img src={image} alt="" class="button-image" />
 			{/if}
-			{#if label}<span class="label">{label}</span>{:else if children}{@render children()}{/if}
-			{#if count !== undefined}<span class="count">{count}</span>{/if}
-			{#if shortcut}<Kbd size="sm">{shortcut}</Kbd>{/if}
+			{@render tail()}
+		</span>
+	{/if}
+	{#if showProgress}
+		<span
+			class="progress-track"
+			role="progressbar"
+			aria-valuemin={0}
+			aria-valuemax={100}
+			aria-valuenow={clampedProgress}
+			aria-valuetext={progressLabel}
+		>
+			<span class="progress-fill" style="width: {clampedProgress}%"></span>
 		</span>
 	{/if}
 </button>
@@ -254,6 +307,26 @@
 
 		.label {
 			transform: translateY(0.03em);
+		}
+
+		// Stacks the idle content and the progress content in one grid cell, so the
+		// button sizes to whichever is wider and never shrinks mid-load.
+		.swap {
+			display: inline-grid;
+			align-items: center;
+			justify-items: center;
+		}
+
+		.swap-item {
+			grid-area: 1 / 1;
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4em;
+			white-space: nowrap;
+
+			&.ghost {
+				visibility: hidden;
+			}
 		}
 
 		&.loading .spinner {
@@ -381,6 +454,34 @@
 			height: 1.5em;
 			border-radius: 50%;
 			object-fit: cover;
+		}
+
+		// Clip the bar to the button's own (inner) border radius so it can sit
+		// flush against the bottom edge without poking out of the corners.
+		&.has-progress {
+			overflow: hidden;
+		}
+
+		.progress-track {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			height: 3px;
+			background: color-mix(in srgb, currentColor 18%, transparent);
+			overflow: hidden;
+			pointer-events: none;
+		}
+
+		&.size-lg .progress-track {
+			height: 4px;
+		}
+
+		.progress-fill {
+			display: block;
+			height: 100%;
+			background: currentColor;
+			transition: width 200ms ease;
 		}
 
 		.spinner {
