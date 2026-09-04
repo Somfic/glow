@@ -91,14 +91,19 @@
 
 	.cursor-dot {
 		position: relative;
-		background: rgba(255, 255, 255, 0.95);
+		// The cursor is the inverse of the page: a near-`--glow-fg` blob with
+		// content painted in the contrasting colour. Hardcoding white made it
+		// invisible on a light theme.
+		background: color-mix(in oklab, var(--glow-fg) 95%, transparent);
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		box-shadow:
+			// Drop shadow stays dark in both themes — that is what shadows do.
 			0 2px 8px rgba(0, 0, 0, 0.2),
-			0 0 0 1px rgba(255, 255, 255, 0.1);
+			// Hairline halo softening the blob's edge, so it tracks the blob.
+			0 0 0 1px color-mix(in oklab, var(--glow-fg) 10%, transparent);
 		transform: translate(-50%, -50%);
 		transition:
 			width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -113,8 +118,8 @@
 		.variant-secondary &,
 		.variant-ghost &,
 		.variant-danger & {
-			background: rgba(255, 255, 255, 0.1); // Subtle transparent background
-			border: 2px solid rgba(255, 255, 255, 0.9); // White outline
+			background: color-mix(in oklab, var(--glow-fg) 10%, transparent); // Subtle transparent background
+			border: 2px solid color-mix(in oklab, var(--glow-fg) 90%, transparent); // Outline in the page's foreground
 			// Override with smoother transitions (no bounce)
 			transition:
 				width 0.25s ease-out,
@@ -171,10 +176,10 @@
 			width: 3px !important;
 			height: 20px; // Default, overridden by inline style
 			border-radius: 2px !important;
-			background: rgba(255, 255, 255, 0.95) !important;
+			background: color-mix(in oklab, var(--glow-fg) 95%, transparent) !important;
 			box-shadow:
 				0 0 8px color-mix(in oklab, var(--glow-primary) 60%, transparent),
-				0 0 4px rgba(255, 255, 255, 0.8) !important;
+				0 0 4px color-mix(in oklab, var(--glow-fg) 80%, transparent) !important;
 			padding: 0 !important;
 		}
 
@@ -183,10 +188,10 @@
 			// width set via inline style
 			height: 3px !important;
 			border-radius: 2px !important;
-			background: rgba(255, 255, 255, 0.95) !important;
+			background: color-mix(in oklab, var(--glow-fg) 95%, transparent) !important;
 			box-shadow:
 				0 0 8px color-mix(in oklab, var(--glow-primary) 60%, transparent),
-				0 0 4px rgba(255, 255, 255, 0.8) !important;
+				0 0 4px color-mix(in oklab, var(--glow-fg) 80%, transparent) !important;
 			padding: 0 !important;
 		}
 	}
@@ -195,7 +200,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #1e1f29;
+		@include contrast-color(var(--glow-fg), $fallback: #1e1f29);
 		opacity: 0;
 		animation: fadeIn 0.2s ease forwards;
 		transition: color 0.2s ease;
@@ -215,7 +220,7 @@
 	}
 
 	.cursor-content {
-		color: #1e1f29;
+		@include contrast-color(var(--glow-fg), $fallback: #1e1f29);
 		font-size: 0.75rem;
 		font-weight: $weight-semibold;
 		white-space: nowrap;
@@ -245,7 +250,8 @@
 	.cursor-spinner {
 		width: 14px;
 		height: 14px;
-		border: 2px solid #1e1f29;
+		@include contrast-color(var(--glow-fg), $fallback: #1e1f29);
+		border: 2px solid currentColor;
 		border-top-color: transparent;
 		border-radius: 50%;
 		animation: spin 0.6s linear infinite;

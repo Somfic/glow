@@ -76,7 +76,7 @@
 	class="avatar"
 	class:grouped
 	class:clickable={!!onclick}
-	style="width: {px}px; height: {px}px; background-color: {!src || imageError ? bgColor : 'transparent'}; font-size: {fontSize}px;"
+	style="--avatar-bg: {bgColor}; width: {px}px; height: {px}px; background-color: {!src || imageError ? 'var(--avatar-bg)' : 'transparent'}; font-size: {fontSize}px;"
 	use:tooltip={{ content: name, position: 'top', delay: 0, useCursor: false }}
 	onclick={onclick}
 	role={onclick ? 'button' : undefined}
@@ -109,7 +109,10 @@
 		border-radius: 50%;
 		overflow: visible;
 		flex-shrink: 0;
-		color: rgba(255, 255, 255, 0.9);
+		// Initials sit on one of the fixed palette colours, not on a theme
+		// surface, so contrast against that. Flat white was 2.0:1 on the amber
+		// entry — the palette spans light and dark, so the label has to follow.
+		@include contrast-color(var(--avatar-bg), $fallback: rgba(255, 255, 255, 0.9));
 		font-weight: $weight-semibold;
 		user-select: none;
 
