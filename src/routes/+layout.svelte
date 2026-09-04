@@ -83,6 +83,7 @@
 					{ label: 'Command Popover', href: '/components/command-popover', icon: 'TextCursor' },
 					{ label: 'Drawer', href: '/components/drawer', icon: 'PanelRight' },
 					{ label: 'Toast', href: '/components/toast', icon: 'Bell' },
+					{ label: 'Confirm', href: '/components/confirm', icon: 'CircleQuestionMark' },
 					{ label: 'Notification Center', href: '/components/notification-center', icon: 'BellRing' },
 					{ label: 'Tooltip', href: '/components/tooltip', icon: 'Info' },
 					{ label: 'Banner', href: '/components/banner', icon: 'Flag' },

@@ -63,6 +63,7 @@
 				{ name: 'Command Popover', href: '/components/command-popover', description: 'Inline anchored picker for slash-commands and autocomplete' },
 				{ name: 'Drawer', href: '/components/drawer', description: 'Slide-in side panels' },
 				{ name: 'Toast', href: '/components/toast', description: 'Toast notifications' },
+				{ name: 'Confirm', href: '/components/confirm', description: 'Promise-returning confirm, alert and prompt dialogs' },
 				{ name: 'Notification Center', href: '/components/notification-center', description: 'Persistent, browsable inbox' },
 				{ name: 'Tooltip', href: '/components/tooltip', description: 'Hover tooltips, including inside the cursor' },
 				{ name: 'Banner', href: '/components/banner', description: 'Alert banners' },
