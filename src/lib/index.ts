@@ -139,6 +139,8 @@ export type {
 	DataGroup
 } from "./data/types.js";
 export { default as TableOfContents } from "./navigation/TableOfContents.svelte";
+export { default as Breadcrumb } from "./breadcrumb/Breadcrumb.svelte";
+export type { BreadcrumbItem, BreadcrumbItemState } from "./breadcrumb/Breadcrumb.svelte";
 export { default as Tabs } from "./tabs/Tabs.svelte";
 export { default as Sidebar } from "./sidebar/Sidebar.svelte";
 export type { SidebarItem, SidebarGroup } from "./sidebar/Sidebar.svelte";

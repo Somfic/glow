@@ -50,6 +50,7 @@
 				{ name: 'Sortable', href: '/components/sortable', description: 'Drag-to-reorder action with handles and groups' },
 				{ name: 'Tier List', href: '/components/tierlist', description: 'Cross-container dragging, built from Sortable' },
 				{ name: 'Table of Contents', href: '/components/toc', description: 'Sticky navigation for long content' },
+				{ name: 'Breadcrumb', href: '/components/breadcrumb', description: 'The trail to the current page, collapsing to a menu when it runs out of room' },
 				{ name: 'Popover', href: '/components/popover', description: 'The anchoring primitive — flips, clamps, and portals' },
 				{ name: 'Popover Menu', href: '/components/popover-menu', description: 'Rich menus: items, toggles, submenus, custom snippets' },
 				{ name: 'Context Menu', href: '/components/context-menu', description: 'The same menu entries, opened by right-click' }
