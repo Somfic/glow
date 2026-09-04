@@ -15,7 +15,7 @@
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
-import { basename, join } from "node:path";
+import { join } from "node:path";
 import { ROOT } from "../glow/docs.mjs";
 
 const TAG = "media-assets";
@@ -31,9 +31,12 @@ if (!existsSync(dir)) {
 	process.exit(1);
 }
 
-const pngs = readdirSync(dir).filter((f) => f.endsWith(".png")).sort();
-if (!pngs.length) {
-	console.error(`no PNGs in ${dir} — run tools/scripts/shots.mjs first`);
+// GIFs as well as PNGs: a still cannot show an interaction, and
+// tools/scripts/demo.mjs writes its recordings into the same directory.
+const MEDIA = /\.(png|gif)$/;
+const shots = readdirSync(dir).filter((f) => MEDIA.test(f)).sort();
+if (!shots.length) {
+	console.error(`no PNGs or GIFs in ${dir} — run tools/scripts/shots.mjs or demo.mjs first`);
 	process.exit(1);
 }
 
@@ -62,7 +65,7 @@ if (!dryRun) {
 }
 
 const lines = [];
-for (const png of pngs) {
+for (const png of shots) {
 	const asset = `${branch}-${png}`;
 	const url = `https://github.com/${repo}/releases/download/${TAG}/${asset}`;
 	if (!dryRun) {
@@ -73,7 +76,7 @@ for (const png of pngs) {
 		sh("gh", ["release", "upload", TAG, staged, "--clobber"]);
 		if (staged !== join(dir, png)) execFileSync("rm", [staged]);
 	}
-	const label = basename(png, ".png");
+	const label = png.replace(MEDIA, "");
 	lines.push(`![${label}](${url})`);
 	console.log(`${dryRun ? "would upload" : "uploaded"}  ${asset}`);
 }

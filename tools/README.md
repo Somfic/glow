@@ -6,6 +6,7 @@ and to take the picture that shows it working.
 ```sh
 node tools/scripts/shots.mjs --cards accordion   # shots of one component
 node tools/scripts/shots.mjs                     # every route, both themes
+node tools/scripts/demo.mjs <component>          # → .shots/*.gif (needs ffmpeg)
 node tools/scripts/publish-shots.mjs             # upload them, print markdown
 node tools/scripts/layers.test.mjs               # the portalled components
 ```
@@ -104,6 +105,49 @@ committing PNGs puts binaries in the history of every branch that takes one. So
 they go to assets on one long-lived, non-code release, `media-assets`, prefixed
 with the branch name so two branches shooting the same component don't
 overwrite each other. `.shots/` is gitignored.
+
+## GIFs in a pull request
+
+A still cannot show an interaction. Anything whose point is what happens when
+you click, hover, drag or wait wants a GIF next to its screenshots.
+
+```sh
+node tools/scripts/demo.mjs modal        # → .shots/modal-dark.gif
+node tools/scripts/publish-shots.mjs     # uploads .gif as well as .png
+```
+
+The demo lives in `tools/demos/<name>.mjs` — one file per component, so
+parallel branches each add a file instead of all editing one. It exports the
+`route` it drives and a default function:
+
+```js
+export const route = "/components/modal";
+
+export default async function demo({ r, at, page }) {
+	await r.say("A modal, opened from a button");
+	await r.shot(6);                       // hold: the same frame, six times
+	await r.click(...(await at(".card[id] button")));
+	await r.shot(10);                      // shoot *through* the transition
+	await page.keyboard.press("Escape");
+	await r.shot(10);
+}
+```
+
+`r` is `recorder()` from the harness — `say`, `point`, `click`, `shot`, and the
+drawn pointer, because a real cursor doesn't appear in a screenshot and a demo
+without one is a series of things happening for no visible reason. `at(sel)`
+gives the centre of a match as `[x, y]`, which is what `point`/`click` want.
+
+Two differences from `shots.mjs`, both deliberate: this runs with **motion on**
+(`reducedMotion: "no-preference"`), since the animation is usually the subject;
+and at `deviceScaleFactor: 1`, because a retina GIF is four times the bytes of a
+format that is already the wrong tool for fine detail.
+
+Frames are taken one at a time rather than by Playwright's video recorder,
+whose timing is not linear — see the note at the top of `harness/record.mjs`.
+That is why holding a beat means shooting the same frame N times, and why you
+catch a transition by shooting through it rather than waiting for it to finish.
+Needs `ffmpeg` on PATH.
 
 ## Writing another one
 
