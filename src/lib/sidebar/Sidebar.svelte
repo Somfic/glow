@@ -256,6 +256,13 @@
 		.collapsed & {
 			opacity: 0;
 			width: 0;
+			// `width: 0` alone doesn't stop the glyph rendering — it just
+			// overflows the box, invisible but still hit-testable and
+			// selectable, directly on top of the collapse toggle that sits
+			// next to it. Clip it, and make it inert.
+			overflow: hidden;
+			pointer-events: none;
+			user-select: none;
 		}
 	}
 
@@ -272,6 +279,10 @@
 
 		.collapsed & {
 			opacity: 0;
+			// Faded-out text is still a selection target, and this box spans
+			// the header next to the toggle.
+			pointer-events: none;
+			user-select: none;
 		}
 	}
 
@@ -360,6 +371,8 @@
 			max-height: 0;
 			padding-top: 0;
 			padding-bottom: 0;
+			pointer-events: none;
+			user-select: none;
 		}
 	}
 
@@ -422,6 +435,7 @@
 			max-width: 0;
 			// Pull leftward so the gap collapses cleanly without leaving an empty cell.
 			margin-left: -0.5rem;
+			user-select: none;
 		}
 	}
 </style>
