@@ -34,6 +34,11 @@
 		// When > 0, prop changes ease to their new values over this many ms
 		// (colours morph in HSL) instead of snapping. 0 = instant.
 		transition = 0,
+		// Fade the canvas up over this many ms once the first shader frame is
+		// actually on screen. Compiling the programs, baking the noise lattice
+		// and the first draw take a few frames, so without this the canvas sits
+		// transparent and then snaps to a fully-drawn gradient. 0 = no fade.
+		fadeIn = 400,
 		class: className = '',
 		children
 	}: {
@@ -54,12 +59,19 @@
 		dprCap?: number;
 		fps?: number;
 		transition?: number;
+		fadeIn?: number;
 		class?: string;
 		children?: Snippet;
 	} = $props();
 
 	let canvas: HTMLCanvasElement;
 	let container: HTMLDivElement;
+
+	// Drives the fade. Flipped by initGL once a drawn frame has been composited,
+	// never on mount — an unpainted canvas is transparent, and revealing it
+	// early is exactly the pop-in this avoids. Stays false when WebGL2 is
+	// missing, so a canvas that will never draw also never appears.
+	let ready = $state(false);
 
 	// Assigned in onMount; called from the reactive effects below so prop changes
 	// update the running GL context without tearing it down and re-creating it.
@@ -407,6 +419,17 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 		// is reallocated empty), and during a parameter tween (the un-updated
 		// stripes would still hold the PREVIOUS colours and tear visibly).
 		let needsFullRedraw = true;
+		let presented = false;
+
+		// A draw call only queues work; the pixels are not on screen when it
+		// returns. One rAF reaches the end of the frame that submitted the draw,
+		// the second runs after the compositor has shown it — so the transition
+		// starts from a canvas that genuinely has something in it.
+		function markPresented() {
+			if (presented) return;
+			presented = true;
+			requestAnimationFrame(() => requestAnimationFrame(() => (ready = true)));
+		}
 
 		function allocField(w: number, h: number) {
 			if (!fieldTex) {
@@ -507,6 +530,8 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 			gl.enableVertexAttribArray(blitPos);
 			gl.vertexAttribPointer(blitPos, 2, gl.FLOAT, false, 0, 0);
 			gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+			markPresented();
 		}
 
 		// Only animate when someone can actually see it and motion is wanted.
@@ -739,7 +764,12 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 </script>
 
 <div class="glow {className}" bind:this={container}>
-	<canvas bind:this={canvas} class="glow-canvas"></canvas>
+	<canvas
+		bind:this={canvas}
+		class="glow-canvas"
+		class:ready
+		style="--glow-fade-dur: {fadeIn}ms"
+	></canvas>
 	{#if children}
 		<div class="glow-content">
 			{@render children()}
@@ -762,6 +792,20 @@ void main(){ fragColor = texelFetch(u_src, ivec2(gl_FragCoord.xy), 0); }
 		height: 100%;
 		display: block;
 		pointer-events: none;
+		opacity: 0;
+		transition: opacity var(--glow-fade-dur, 400ms) var(--glow-ease-out, cubic-bezier(0.4, 0, 0.2, 1));
+
+		&.ready {
+			opacity: 1;
+		}
+	}
+
+	// The library collapses --glow-dur-* globally, but this duration is a prop,
+	// so it has to be honoured here.
+	@media (prefers-reduced-motion: reduce) {
+		.glow-canvas {
+			transition-duration: 1ms;
+		}
 	}
 
 	.glow-content {
