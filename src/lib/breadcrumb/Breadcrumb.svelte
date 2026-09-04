@@ -355,6 +355,16 @@
 		}
 	}
 
+	// <Popover> wraps its trigger in plain block divs, so the inline-flex button
+	// inside sits on a line box and picks up the strut's descender space beneath
+	// it — enough to push the dots ~1.4px above the chevrons either side. Making
+	// the wrappers flex removes the line box entirely.
+	.collapsed :global(.popover),
+	.collapsed :global(.popover-trigger) {
+		display: flex;
+		align-items: center;
+	}
+
 	.ellipsis {
 		display: inline-flex;
 		align-items: center;
