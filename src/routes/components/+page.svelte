@@ -68,7 +68,8 @@
 				{ name: 'Tooltip', href: '/components/tooltip', description: 'Hover tooltips, including inside the cursor' },
 				{ name: 'Banner', href: '/components/banner', description: 'Alert banners' },
 				{ name: 'Spinner', href: '/components/spinner', description: 'Loading spinners' },
-				{ name: 'Skeleton', href: '/components/skeleton', description: 'Shimmering placeholders that hold a layout in place' }
+				{ name: 'Skeleton', href: '/components/skeleton', description: 'Shimmering placeholders that hold a layout in place' },
+				{ name: 'Progress', href: '/components/progress', description: 'Linear and circular progress, determinate or not' }
 			]
 		},
 		{
