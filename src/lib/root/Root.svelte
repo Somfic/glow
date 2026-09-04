@@ -11,6 +11,7 @@
 	import ThemeProvider from '../style/ThemeProvider.svelte';
 	import { theme as themeStore, type ThemeMode } from '../style/theme.svelte.js';
 	import ToastContainer, { type ToastPosition } from '../toast/ToastContainer.svelte';
+	import ConfirmDialog from '../confirm/ConfirmDialog.svelte';
 	import CursorProvider from '../cursor/CursorProvider.svelte';
 
 	type Density = 'compact' | 'default' | 'spacious';
@@ -110,6 +111,7 @@
 		{@render children()}
 	</div>
 	<ToastContainer position={toastPosition} />
+	<ConfirmDialog />
 	{#if cursor}
 		<CursorProvider />
 	{/if}

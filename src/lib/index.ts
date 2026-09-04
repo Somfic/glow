@@ -55,6 +55,16 @@ export { default as Toast } from "./toast/Toast.svelte";
 export { default as ToastContainer, type ToastPosition } from "./toast/ToastContainer.svelte";
 export { toast, showToast, dismissToast, toasts } from "./toast/toast.svelte.js";
 export type { Toast as ToastType, ToastVariant, ToastOptions } from "./toast/toast.svelte.js";
+export { default as ConfirmDialog } from "./confirm/ConfirmDialog.svelte";
+export { confirm, alert, prompt, dialog, dialogs, settleDialog } from "./confirm/confirm.svelte.js";
+export type {
+	ConfirmOptions,
+	AlertOptions,
+	PromptOptions,
+	ConfirmVariant,
+	DialogKind,
+	DialogRequest
+} from "./confirm/confirm.svelte.js";
 export { default as FileUpload } from "./file-upload/FileUpload.svelte";
 export { default as Split } from "./split/Split.svelte";
 export type { SplitDirection, SplitPane } from "./split/types.js";
