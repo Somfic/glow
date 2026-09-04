@@ -35,6 +35,7 @@
 				{ name: 'Table', href: '/components/table', description: 'Data tables with sorting, selection, and pagination' },
 				{ name: 'Data', href: '/components/data', description: 'Key-value pairs for detail panels' },
 				{ name: 'Virtual List', href: '/components/virtual-list', description: 'Windowed rendering and infinite scroll for long lists' },
+				{ name: 'Empty State', href: '/components/empty-state', description: 'The placeholder for a list with nothing in it yet, and the nudge to fill it' },
 				{ name: 'List Item', href: '/components/list', description: 'One list row: title, subtitle, leading and trailing slots' },
 				{ name: 'Pagination', href: '/components/pagination', description: 'Page controls with a range readout and size picker' },
 				{ name: 'Pill', href: '/components/pill', description: 'Tags, labels, and status indicators' },
