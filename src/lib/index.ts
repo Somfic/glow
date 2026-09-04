@@ -15,6 +15,7 @@ export { default as RadioInput } from "./input/RadioInput.svelte";
 export { default as CheckboxInput } from "./input/CheckboxInput.svelte";
 export { default as ToggleInput } from "./input/ToggleInput.svelte";
 export { default as RangeInput } from "./input/RangeInput.svelte";
+export { default as RatingInput } from "./input/RatingInput.svelte";
 export { default as ColorInput } from "./input/ColorInput.svelte";
 export { default as DateInput } from "./input/DateInput.svelte";
 export { default as TimeInput } from "./input/TimeInput.svelte";

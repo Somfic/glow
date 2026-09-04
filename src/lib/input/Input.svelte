@@ -16,6 +16,7 @@
 	import ColorInput from './ColorInput.svelte';
 	import DateInput from './DateInput.svelte';
 	import TimeInput from './TimeInput.svelte';
+	import RatingInput from './RatingInput.svelte';
 	import { FIELD_CONTEXT_KEY, type FieldContext } from '../settings/fieldContext.js';
 
 	type BaseProps = {
@@ -187,6 +188,24 @@
 		onChange?: (value: string) => void;
 	};
 
+	type RatingProps = BaseProps & {
+		type: 'rating';
+		value?: number;
+		/** Number of icons. Default 5. */
+		max?: number;
+		/** `0.5` for half-icon ratings. Default 1. */
+		step?: number;
+		/** Icon drawn per unit. Default `'Star'`. */
+		icon?: IconProp;
+		/** Show the score beside the icons. */
+		showValue?: boolean;
+		/** Icon size in pixels. Default 20. */
+		size?: number;
+		/** Render the score without accepting input. */
+		readonly?: boolean;
+		onChange?: (value: number) => void;
+	};
+
 	type Props =
 		| TextProps
 		| PasswordProps
@@ -200,7 +219,8 @@
 		| RangeProps
 		| ColorProps
 		| DateProps
-		| TimeProps;
+		| TimeProps
+		| RatingProps;
 
 	let props: Props = $props();
 
@@ -226,6 +246,11 @@
 		if (props.type === 'multiselect' || props.type === 'radio' || props.type === 'select') {
 			const element = document.getElementById(inputId);
 			element?.click();
+		}
+		// Rating is non-native too, but clicking it would commit whichever icon the
+		// pointer happened to be over — focus it and let the arrow keys decide.
+		if (props.type === 'rating') {
+			document.getElementById(inputId)?.focus();
 		}
 	}
 </script>
@@ -376,6 +401,21 @@
 			disabled={p.disabled}
 			showValue={p.showValue}
 			thumb={p.thumb}
+			onChange={p.onChange}
+		/>
+	{:else if props.type === 'rating'}
+		{@const p = props as RatingProps}
+		<RatingInput
+			id={inputId}
+			value={p.value}
+			max={p.max}
+			step={p.step}
+			icon={p.icon}
+			label={p.label ?? 'Rating'}
+			disabled={p.disabled}
+			readonly={p.readonly}
+			size={p.size}
+			showValue={p.showValue}
 			onChange={p.onChange}
 		/>
 	{:else if props.type === 'color'}
