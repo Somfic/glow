@@ -38,3 +38,7 @@ bench/snapshot-*.png
 bench/speed-probe.json
 bench/.chrome-profile*
 bench/.bench.lock
+
+# Screenshots from tools/scripts/shots.mjs — regenerable, and binary.
+.shots/
+.frames/

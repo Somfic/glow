@@ -12,7 +12,9 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "shots": "node tools/scripts/shots.mjs",
+    "test:layers": "node tools/scripts/layers.test.mjs"
   },
   "files": [
     "dist",
@@ -72,6 +74,7 @@
     "svelte"
   ],
   "devDependencies": {
-    "@sveltejs/adapter-static": "^3.0.10"
+    "@sveltejs/adapter-static": "^3.0.10",
+    "playwright-core": "^1.62.1"
   }
 }
