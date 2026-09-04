@@ -213,7 +213,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 0.625rem;
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--glow-border-color);
 		border-radius: 8px;
 		background: var(--glow-bg-surface-element);
 		color: var(--glow-fg-secondary);

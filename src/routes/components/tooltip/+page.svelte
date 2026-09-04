@@ -172,17 +172,17 @@
 <style>
 	.demo-btn {
 		padding: 0.5rem 1rem;
-		border: 1px solid #30313c;
+		border: 1px solid var(--glow-border-color);
 		border-radius: 8px;
-		background: #1e1f29;
-		color: #eee;
+		background: var(--glow-bg-surface-element);
+		color: var(--glow-text-primary);
 		cursor: pointer;
 		font-size: 0.875rem;
 		transition: background 0.15s;
 	}
 
 	.demo-btn:hover {
-		background: #2a2b37;
+		background: color-mix(in oklab, var(--glow-bg-surface-element), var(--glow-fg) 8%);
 	}
 
 	.demo-icon {

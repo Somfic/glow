@@ -409,7 +409,7 @@
 		font-size: 0.95rem;
 		font-family: inherit;
 		color: var(--glow-fg);
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--glow-fg-soft);
 		border: 1px solid var(--glow-border-color);
 		border-radius: 8px;
 		outline: none;
@@ -426,7 +426,7 @@
 		gap: 0.5rem;
 		padding: 0.4rem 0.75rem;
 		font-family: ui-monospace, monospace;
-		background: rgba(0, 0, 0, 0.35);
+		background: var(--glow-bg-base);
 		border: 1px solid var(--glow-border-color);
 		border-radius: 8px;
 	}

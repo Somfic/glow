@@ -254,7 +254,7 @@
 
 	:global(.topbar) {
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		border-bottom: 1px solid var(--glow-border-color);
 	}
 
 	.search {
@@ -263,7 +263,7 @@
 	}
 
 .tabs-wrap {
-		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		border-bottom: 1px solid var(--glow-border-color);
 	}
 
 	.code-grid {
@@ -312,7 +312,7 @@
 		font-size: 0.95rem;
 		font-weight: $weight-semibold;
 		padding-bottom: 0.4rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		border-bottom: 1px solid var(--glow-border-color);
 	}
 
 	.lang-bar {

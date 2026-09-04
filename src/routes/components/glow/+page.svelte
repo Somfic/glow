@@ -39,7 +39,7 @@
 		<Glow rotation={52} zoom={9}>
 			<div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 2rem;">
 				<div
-					style="background: rgba(10, 12, 20, 0.55); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px; padding: 2rem; max-width: 520px;"
+					style="background: color-mix(in srgb, var(--glow-bg-base) 60%, transparent); backdrop-filter: blur(12px); border: 1px solid var(--glow-border-color); border-radius: 16px; padding: 2rem; max-width: 520px;"
 				>
 					<Heading level={3} id="glow-hero">Sheets of light</Heading>
 					<Text>
@@ -199,9 +199,9 @@
 		width: 150px;
 	}
 	.pal button {
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--glow-fg-soft);
 		color: inherit;
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		border: 1px solid var(--glow-border-color);
 		border-radius: 6px;
 		padding: 0.35rem 0.7rem;
 		font: inherit;
@@ -209,7 +209,7 @@
 		text-transform: capitalize;
 		cursor: pointer;
 	}
-	.pal button:hover { border-color: rgba(255, 255, 255, 0.28); }
+	.pal button:hover { border-color: var(--glow-border-strong); }
 	.pal button.on { border-color: currentColor; }
 
 	.patterns {

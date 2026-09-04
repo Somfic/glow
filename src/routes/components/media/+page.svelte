@@ -55,13 +55,13 @@
 	<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
 		<div>
 			<Text variant="secondary" size="sm" style="margin-bottom: 0.5rem;">contain</Text>
-			<div style="width: 100%; height: 250px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+			<div style="width: 100%; height: 250px; border-radius: 12px; overflow: hidden; border: 1px solid var(--glow-border-color);">
 				<Media src={sources[0]} fit="contain" />
 			</div>
 		</div>
 		<div>
 			<Text variant="secondary" size="sm" style="margin-bottom: 0.5rem;">cover</Text>
-			<div style="width: 100%; height: 250px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+			<div style="width: 100%; height: 250px; border-radius: 12px; overflow: hidden; border: 1px solid var(--glow-border-color);">
 				<Media src={sources[0]} fit="cover" />
 			</div>
 		</div>

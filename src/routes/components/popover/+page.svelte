@@ -250,7 +250,7 @@
 		background: var(--glow-bg-surface);
 		border: 1px solid var(--glow-border-color);
 		border-radius: 10px;
-		box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+		box-shadow: var(--glow-shadow-lg);
 	}
 
 	.panel.wide {

@@ -331,7 +331,7 @@
 		padding: 0 0.75rem;
 		border-radius: 6px;
 		background: var(--glow-bg-surface-element);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--glow-border-color);
 		color: var(--glow-fg-secondary);
 		font-size: 0.8125rem;
 		font-variant-numeric: tabular-nums;
@@ -346,7 +346,7 @@
 	}
 
 	.track {
-		border: 1px dashed rgba(255, 255, 255, 0.15);
+		border: 1px dashed var(--glow-border-strong);
 		border-radius: 8px;
 		padding: 0.5rem;
 		height: 3.5rem;

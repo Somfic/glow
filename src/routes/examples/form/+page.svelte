@@ -284,6 +284,6 @@
 	:global(.form-actions) {
 		margin-top: 1.5rem;
 		padding-top: 1.5rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.06);
+		border-top: 1px solid var(--glow-border-color);
 	}
 </style>

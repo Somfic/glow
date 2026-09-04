@@ -275,7 +275,7 @@
 <style lang="scss">
 	.frame {
 		height: 400px;
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--glow-border-color);
 		border-radius: 10px;
 		overflow: hidden;
 	}
@@ -297,6 +297,6 @@
 
 	.mixed-row.tall {
 		background: var(--glow-bg-surface);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--glow-border-color);
 	}
 </style>

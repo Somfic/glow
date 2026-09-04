@@ -166,11 +166,26 @@
 	</Text>
 	<CodeBlock
 		language="css"
-		code={`--glow-border-color:        color-mix(in oklab, var(--glow-bg-base), var(--glow-fg) 16%);
---glow-primary-hover:       color-mix(in oklab, var(--glow-primary), white 15%);
---glow-primary-active:      color-mix(in oklab, var(--glow-primary), black 10%);
+		code={`/* Borders: two tiers, the strong one clears 3:1 for control outlines. */
+--glow-border-color:        color-mix(in oklab, var(--glow-bg-base), var(--glow-fg) 21%);
+--glow-border-strong:       color-mix(in oklab, var(--glow-bg-surface), var(--glow-fg) 45%);
+
+/* Neutral state washes for transparent-at-rest controls. */
+--glow-state-hover:         color-mix(in oklab, var(--glow-fg) 10%, transparent);
+--glow-state-selected:      color-mix(in oklab, var(--glow-fg) 13%, transparent);
+--glow-state-active:        color-mix(in oklab, var(--glow-fg) 16%, transparent);
+
+/* Accents move toward --glow-fg, so they lighten in dark mode and darken in
+   light mode without either theme having to say which way is "up". */
+--glow-primary-hover:       color-mix(in oklab, var(--glow-primary), var(--glow-fg) 15%);
+--glow-primary-active:      color-mix(in oklab, var(--glow-primary), var(--glow-fg) 26%);
 --glow-primary-soft:        color-mix(in oklab, var(--glow-primary) 10%, transparent);
 --glow-secondary:           color-mix(in oklab, var(--glow-primary) 10%, var(--glow-bg-surface));
+
+/* Surface tones for stacked/nested containers, and the disabled tier. */
+--glow-surface-2:           color-mix(in oklab, var(--glow-bg-surface), var(--glow-fg) 4%);
+--glow-fg-disabled:         color-mix(in oklab, var(--glow-fg) 38%, transparent);
+
 --glow-text-secondary:      color-mix(in oklab, var(--glow-fg) 70%, transparent);
 --glow-text-muted:          color-mix(in oklab, var(--glow-fg) 50%, transparent);`}
 	/>
@@ -282,7 +297,7 @@
 <style lang="scss">
 	.panel {
 		padding: 0.875rem;
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--glow-border-color);
 		border-radius: 12px;
 	}
 

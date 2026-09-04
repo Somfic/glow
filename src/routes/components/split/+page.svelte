@@ -228,8 +228,11 @@
 	.demo-pane.sidebar {
 		background: var(--glow-bg-surface);
 	}
+	// Intentionally dark in both themes; pin the ink so it does not inherit
+	// a near-black --glow-fg in light mode.
 	.demo-pane.terminal {
 		background: #0d0d0d;
+		color: #e6e6e6;
 	}
 	.demo-pane-header {
 		padding: 0.6rem 0.85rem;

@@ -202,7 +202,7 @@
 	.list {
 		display: flex;
 		flex-direction: column;
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--glow-border-color);
 		border-radius: 10px;
 		overflow: hidden;
 	}

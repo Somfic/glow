@@ -324,7 +324,7 @@ type SidebarConfig = {
 		transform: translate(0);
 		height: 300px;
 		overflow: hidden;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		border: 1px solid var(--glow-border-color);
 		border-radius: 12px;
 		background: var(--glow-bg-base);
 		margin-bottom: 1rem;
@@ -355,7 +355,7 @@ type SidebarConfig = {
 		align-items: center;
 		justify-content: center;
 		height: 80px;
-		border: 1px dashed rgba(255, 255, 255, 0.2);
+		border: 1px dashed var(--glow-border-strong);
 		border-radius: 8px;
 		color: var(--glow-fg-secondary);
 		font-size: 0.875rem;

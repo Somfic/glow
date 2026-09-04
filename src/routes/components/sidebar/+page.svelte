@@ -203,7 +203,7 @@ type SidebarGroup = {
 		transform: translate(0);
 		height: 420px;
 		overflow: hidden;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		border: 1px solid var(--glow-border-color);
 		border-radius: 12px;
 		background: var(--glow-bg);
 

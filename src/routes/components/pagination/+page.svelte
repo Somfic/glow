@@ -159,7 +159,7 @@
 
 <style lang="scss">
 	.rows {
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--glow-border-color);
 		border-radius: 10px;
 		overflow: hidden;
 		margin-bottom: 1rem;
@@ -171,7 +171,7 @@
 		padding: 0.5rem 0.75rem;
 
 		&:not(:last-child) {
-			border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+			border-bottom: 1px solid var(--glow-border-color);
 		}
 	}
 </style>

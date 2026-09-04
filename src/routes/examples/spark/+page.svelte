@@ -371,7 +371,7 @@
 		height: 28px;
 		border-radius: 6px;
 		background: var(--glow-primary);
-		color: #1a1a1a;
+		@include contrast-color(var(--glow-primary));
 	}
 
 	.brand-name {
@@ -380,7 +380,7 @@
 		letter-spacing: 0.02em;
 		padding: 2px 8px;
 		border-radius: 4px;
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--glow-fg-soft);
 		border: 1px solid var(--glow-border-color);
 	}
 

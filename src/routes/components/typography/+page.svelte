@@ -427,7 +427,7 @@ That's it.`;
 <style lang="scss">
 	.md-demo {
 		padding: 1rem 1.25rem;
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid var(--glow-border-color);
 		border-radius: 10px;
 		background: var(--glow-bg-surface-element);
 		margin-bottom: 1rem;

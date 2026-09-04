@@ -162,10 +162,13 @@ bun add glow-ui`}
 	}
 
 	// Frosted-glass treatment on the hero card. Scoped to this page only.
+	// Derived from the seeds rather than hardcoded: the card's text follows
+	// --glow-fg, so a fixed dark slab left near-black text on a near-black
+	// panel in light mode.
 	:global(.hero-card) {
-		background: rgba(30, 31, 41, 0.8) !important;
+		background: color-mix(in srgb, var(--glow-bg-surface-element) 80%, transparent) !important;
 		backdrop-filter: blur(10px);
-		border-color: rgba(255, 255, 255, 0.1);
+		border-color: color-mix(in srgb, var(--glow-fg) 12%, transparent);
 		max-width: 600px;
 		text-align: center;
 	}

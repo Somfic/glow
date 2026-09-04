@@ -275,7 +275,7 @@
 		height: 130px;
 		padding: 1rem;
 		overflow: hidden;
-		border: 1px dashed rgba(255, 255, 255, 0.2);
+		border: 1px dashed var(--glow-border-strong);
 		border-radius: 10px;
 	}
 
@@ -290,6 +290,6 @@
 		background: var(--glow-bg-surface);
 		border: 1px solid var(--glow-border-color);
 		border-radius: 10px;
-		box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+		box-shadow: var(--glow-shadow-lg);
 	}
 </style>
