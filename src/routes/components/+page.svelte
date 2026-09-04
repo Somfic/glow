@@ -15,6 +15,7 @@
 				{ name: 'Sidebar', href: '/components/sidebar', description: 'Fixed navigation rail with groups and a collapsed mode' },
 				{ name: 'Layout', href: '/components/layout', description: 'Flex, Grid, Spacer, and Divider primitives' },
 				{ name: 'Card', href: '/components/card', description: 'Content cards' },
+				{ name: 'Accordion', href: '/components/accordion', description: 'Collapsible sections, single or multiple open at a time' },
 				{ name: 'Split', href: '/components/split', description: 'Resizable pane container' },
 				{ name: 'Theme', href: '/components/theme', description: 'Light/dark and accent theming via design tokens' }
 			]
