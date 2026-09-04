@@ -281,6 +281,36 @@
 		/>
 	</Card>
 
+	<Card title="Rating Input" id="rating-input">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Star rating with a configurable <Code>max</Code>. Arrow keys adjust by one
+			<Code>step</Code>, <Code>Home</Code> clears back to unrated and <Code>End</Code> jumps to
+			the maximum.
+		</Text>
+		<Input type="rating" label="Rating Input" value={3} showValue={true} />
+		<Input type="rating" label="Ten point scale" max={10} value={7} showValue={true} />
+	</Card>
+
+	<Card title="Half-star ratings" id="rating-half">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Pass <Code>{`step={0.5}`}</Code> and each icon splits in two — the half the pointer is
+			over is the value it commits. The control is a <Code>role="slider"</Code> rather than a
+			radio group precisely because 2.5 is not a choice a radio group can name.
+		</Text>
+		<Input type="rating" label="Half steps" step={0.5} value={3.5} showValue={true} />
+	</Card>
+
+	<Card title="Rating icons and states" id="rating-states">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Any <Code>icon</Code> works in place of the star. <Code>readonly</Code> renders a score
+			without accepting input — for someone else's rating — while <Code>disabled</Code> dims
+			the whole control.
+		</Text>
+		<Input type="rating" label="Heat" icon="Flame" value={4} size={22} />
+		<Input type="rating" label="Read-only" icon="Heart" value={4} readonly showValue={true} />
+		<Input type="rating" label="Disabled" value={2} disabled />
+	</Card>
+
 	<Card title="Usage" id="usage">
 		<Heading level={3} id="text-usage">Text & Number Inputs</Heading>
 		<CodeBlock
@@ -328,6 +358,24 @@
 />`}
 		/>
 
+		<Heading level={3} id="rating-usage">Rating</Heading>
+		<CodeBlock
+			language="svelte"
+			code={`<script>
+  let score = $state(0);
+</script>
+
+<Input
+  type="rating"
+  label="How was it?"
+  max={5}
+  step={0.5}
+  icon="Star"
+  showValue={true}
+  bind:value={score}
+/>`}
+		/>
+
 		<Heading level={3} id="select-usage">Select & Multi-Select</Heading>
 		<CodeBlock
 			language="svelte"
@@ -369,7 +417,7 @@
 				{ key: 'description', label: 'Description' }
 			]}
 			data={[
-				{ prop: 'type', type: 'string', default: 'required', description: 'Input type (text, number, textarea, checkbox, toggle, range, color, multiselect, radio, select)' },
+				{ prop: 'type', type: 'string', default: 'required', description: 'Input type (text, number, textarea, checkbox, toggle, range, rating, color, multiselect, radio, select)' },
 				{ prop: 'label', type: 'string', default: '-', description: 'Input label text' },
 				{ prop: 'placeholder', type: 'string', default: '-', description: 'Placeholder text' },
 				{ prop: 'value', type: 'any', default: '-', description: 'Input value (bindable)' },
@@ -383,11 +431,12 @@
 
 	<Card title="Features" id="features">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-			<li><Text>📝 10 input types covering all common use cases</Text></li>
+			<li><Text>📝 14 input types covering all common use cases</Text></li>
 			<li><Text>🎯 Custom cursor states for interactive inputs</Text></li>
 			<li><Text>✅ Built-in validation (required, min/max)</Text></li>
 			<li><Text>🔍 Searchable select and multi-select</Text></li>
 			<li><Text>🎨 Color picker with OKLAB color space</Text></li>
+			<li><Text>⭐ Rating input with half-step support</Text></li>
 			<li><Text>🧹 Clearable option for quick reset</Text></li>
 			<li><Text>🎭 Icon support for text inputs</Text></li>
 			<li><Text>♿ Fully accessible with proper labels and ARIA</Text></li>
