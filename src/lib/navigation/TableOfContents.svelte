@@ -112,6 +112,19 @@
 		});
 	}
 
+	// The document is not always the scroller: a Page in sidebar mode scrolls
+	// its own panel so the scrollbar stays inside the rounded edge. Find
+	// whichever ancestor actually scrolls, and fall back to the window.
+	function scrollParent(el: HTMLElement): HTMLElement | null {
+		for (let node = el.parentElement; node; node = node.parentElement) {
+			const overflowY = getComputedStyle(node).overflowY;
+			if ((overflowY === 'auto' || overflowY === 'scroll') && node.scrollHeight > node.clientHeight) {
+				return node;
+			}
+		}
+		return null;
+	}
+
 	function scrollToHeading(id: string) {
 		const el = document.getElementById(id);
 		if (el) {
@@ -122,15 +135,21 @@
 			// Clear any existing timeout
 			if (scrollTimeout) clearTimeout(scrollTimeout);
 
-			// Calculate position to place heading at 1/6 from top of viewport
-			const elementPosition = el.getBoundingClientRect().top + window.scrollY;
-			const offsetPosition = elementPosition - window.innerHeight / 6;
-
-			// Scroll to the calculated position
-			window.scrollTo({
-				top: offsetPosition,
-				behavior: 'smooth'
-			});
+			// Place the heading 1/6 of the way down the scrollport.
+			const scroller = scrollParent(el);
+			if (scroller) {
+				const delta = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+				scroller.scrollTo({
+					top: scroller.scrollTop + delta - scroller.clientHeight / 6,
+					behavior: 'smooth'
+				});
+			} else {
+				const elementPosition = el.getBoundingClientRect().top + window.scrollY;
+				window.scrollTo({
+					top: elementPosition - window.innerHeight / 6,
+					behavior: 'smooth'
+				});
+			}
 
 			// Re-enable observer after scroll animation completes (~800ms for smooth scroll)
 			scrollTimeout = setTimeout(() => {

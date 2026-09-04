@@ -114,7 +114,16 @@
 	<div class="sidebar-header">
 		<span class="sidebar-logo" aria-hidden="true">✦</span>
 		<span class="sidebar-title">{title}</span>
-		<button class="collapse-toggle" onclick={toggleCollapse} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
+		<button
+			class="collapse-toggle"
+			onclick={toggleCollapse}
+			aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+			use:tooltip={{
+				content: collapsed ? 'Expand sidebar' : 'Collapse sidebar',
+				position: collapsed ? 'right' : 'bottom',
+				useCursor: false
+			}}
+		>
 			<Icon name={collapsed ? 'ChevronsRight' : 'ChevronsLeft'} size={16} />
 		</button>
 	</div>
@@ -190,7 +199,6 @@
 		width: $expanded-width;
 		height: 100vh;
 		background: var(--glow-bg-surface);
-		border-right: 1px solid var(--glow-border-color);
 		display: flex;
 		flex-direction: column;
 		z-index: 100;

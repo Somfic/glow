@@ -3,6 +3,7 @@
 	import { showToast } from '../toast/toast.svelte.js';
 	import { highlightCode, inferLanguageFromFilename } from './highlighter.js';
 	import { cursor } from '../cursor/cursor.svelte.js';
+	import { tooltip } from '../tooltip/tooltip.svelte.js';
 
 	let {
 		code,
@@ -85,7 +86,7 @@
 	<div class="code-content" style:max-height={maxHeight}>
 		{#if !isShellMode}
 			<div class="copy-button">
-				<Button icon="Copy" variant="ghost" onclick={copyCode} />
+				<Button icon="Copy" variant="ghost" onclick={copyCode} tooltip="Copy code" />
 			</div>
 		{/if}
 		{#if isShellMode}
@@ -103,6 +104,7 @@
 								copyLine(command);
 							}}
 							aria-label="Copy command"
+							use:tooltip={{ content: 'Copy command', position: 'left', useCursor: false }}
 						>
 							<svg
 								width="14"

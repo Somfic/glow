@@ -153,10 +153,20 @@ main {
     font-family: $font-family;
     font-size: $text-base;
     font-weight: $weight-semibold;
-    // Custom properties, not the frozen Sass seeds: `<Root>` mirrors its theme
-    // onto <html>, and the page canvas has to follow it into light mode.
-    background-color: var(--glow-bg-base);
     color: var(--glow-text-primary);
+}
+
+// Only the root paints the canvas. The browser propagates the root element's
+// background across the whole viewport, so repeating it on <body> buys nothing
+// visually — and it breaks negative-z-index layers, which paint above the
+// canvas but *below* body's own background. Page's sidebar shell is one such
+// layer, and body's square background was covering it (and filling the
+// rounded corners it is meant to show through).
+//
+// Custom properties, not the frozen Sass seeds: `<Root>` mirrors its theme
+// onto <html>, and the canvas has to follow it into light mode.
+html {
+    background-color: var(--glow-bg-base);
 }
 
 // Headings
