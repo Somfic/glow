@@ -87,7 +87,8 @@
 					{ label: 'Tooltip', href: '/components/tooltip', icon: 'Info' },
 					{ label: 'Banner', href: '/components/banner', icon: 'Flag' },
 					{ label: 'Spinner', href: '/components/spinner', icon: 'LoaderCircle' },
-					{ label: 'Skeleton', href: '/components/skeleton', icon: 'Blocks' }
+					{ label: 'Skeleton', href: '/components/skeleton', icon: 'Blocks' },
+					{ label: 'Progress', href: '/components/progress', icon: 'Gauge' }
 				]
 			},
 			{

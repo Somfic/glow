@@ -109,6 +109,12 @@ export { default as Avatar } from "./avatar/Avatar.svelte";
 export { default as AvatarGroup } from "./avatar/AvatarGroup.svelte";
 export { default as Spinner } from "./spinner/Spinner.svelte";
 export { default as Skeleton } from "./skeleton/Skeleton.svelte";
+export { default as Progress } from "./progress/Progress.svelte";
+export type {
+	ProgressVariant,
+	ProgressSize,
+	ProgressTone
+} from "./progress/Progress.svelte";
 
 export { default as Pagination } from "./pagination/Pagination.svelte";
 export { default as ListItem } from "./list/ListItem.svelte";
