@@ -311,6 +311,40 @@
 		<Input type="rating" label="Disabled" value={2} disabled />
 	</Card>
 
+	<Card title="PIN Input" id="pin-input">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			A segmented one-time-code field for 2FA and email verification. Pasting
+			<Code>123-456</Code> fills all six cells — separators are stripped to the allowed
+			character set first. <Code>onComplete</Code> fires the moment the last cell fills.
+		</Text>
+		<Input type="pin" label="Verification code" value="4821" />
+	</Card>
+
+	<Card title="PIN length, masking and character set" id="pin-variants">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			<Code>length</Code> sets the cell count, <Code>mask</Code> renders filled cells as dots
+			for a PIN rather than a code, and <Code>{`codeType="alphanumeric"`}</Code> widens the
+			accepted set from digits to letters and digits.
+		</Text>
+		<div style="display: flex; flex-direction: column; gap: 1rem;">
+			<Input type="pin" label="Four digit PIN" length={4} mask={true} value="1234" />
+			<Input type="pin" label="Alphanumeric code" codeType="alphanumeric" value="A7F2Q1" />
+		</div>
+	</Card>
+
+	<Card title="PIN states" id="pin-states">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			An <Code>error</Code> paints the cells in the danger colour and sets
+			<Code>aria-invalid</Code>. <Code>readonly</Code> shows a code without accepting edits;
+			<Code>disabled</Code> dims the whole row.
+		</Text>
+		<div style="display: flex; flex-direction: column; gap: 1rem;">
+			<Input type="pin" label="Wrong code" value="908231" error="That code has expired." />
+			<Input type="pin" label="Read-only" value="551204" readonly={true} />
+			<Input type="pin" label="Disabled" value="4400" length={4} disabled={true} />
+		</div>
+	</Card>
+
 	<Card title="Usage" id="usage">
 		<Heading level={3} id="text-usage">Text & Number Inputs</Heading>
 		<CodeBlock
@@ -376,6 +410,24 @@
 />`}
 		/>
 
+		<Heading level={3} id="pin-usage">PIN / one-time code</Heading>
+		<CodeBlock
+			language="svelte"
+			code={`<script>
+  let code = $state('');
+</script>
+
+<Input
+  type="pin"
+  label="Verification code"
+  name="otp"
+  length={6}
+  codeType="numeric"
+  bind:value={code}
+  onComplete={(c) => verify(c)}
+/>`}
+		/>
+
 		<Heading level={3} id="select-usage">Select & Multi-Select</Heading>
 		<CodeBlock
 			language="svelte"
@@ -417,7 +469,7 @@
 				{ key: 'description', label: 'Description' }
 			]}
 			data={[
-				{ prop: 'type', type: 'string', default: 'required', description: 'Input type (text, number, textarea, checkbox, toggle, range, rating, color, multiselect, radio, select)' },
+				{ prop: 'type', type: 'string', default: 'required', description: 'Input type (text, number, textarea, checkbox, toggle, range, rating, pin, color, multiselect, radio, select)' },
 				{ prop: 'label', type: 'string', default: '-', description: 'Input label text' },
 				{ prop: 'placeholder', type: 'string', default: '-', description: 'Placeholder text' },
 				{ prop: 'value', type: 'any', default: '-', description: 'Input value (bindable)' },
@@ -431,12 +483,13 @@
 
 	<Card title="Features" id="features">
 		<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-			<li><Text>📝 14 input types covering all common use cases</Text></li>
+			<li><Text>📝 15 input types covering all common use cases</Text></li>
 			<li><Text>🎯 Custom cursor states for interactive inputs</Text></li>
 			<li><Text>✅ Built-in validation (required, min/max)</Text></li>
 			<li><Text>🔍 Searchable select and multi-select</Text></li>
 			<li><Text>🎨 Color picker with OKLAB color space</Text></li>
 			<li><Text>⭐ Rating input with half-step support</Text></li>
+			<li><Text>🔢 PIN / one-time-code input with paste and SMS autofill</Text></li>
 			<li><Text>🧹 Clearable option for quick reset</Text></li>
 			<li><Text>🎭 Icon support for text inputs</Text></li>
 			<li><Text>♿ Fully accessible with proper labels and ARIA</Text></li>

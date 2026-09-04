@@ -17,6 +17,7 @@
 	import DateInput from './DateInput.svelte';
 	import TimeInput from './TimeInput.svelte';
 	import RatingInput from './RatingInput.svelte';
+	import PinInput, { type PinType } from './PinInput.svelte';
 	import { FIELD_CONTEXT_KEY, type FieldContext } from '../settings/fieldContext.js';
 
 	type BaseProps = {
@@ -206,6 +207,23 @@
 		onChange?: (value: number) => void;
 	};
 
+	type PinProps = BaseProps & {
+		type: 'pin';
+		value?: string;
+		/** Number of cells. Default 6. */
+		length?: number;
+		/** Character set the cells accept. Default `'numeric'`. */
+		codeType?: PinType;
+		/** Render filled cells as dots. */
+		mask?: boolean;
+		/** Name the whole code submits under inside a `<form>`. */
+		name?: string;
+		readonly?: boolean;
+		onChange?: (value: string) => void;
+		/** Fires when the user fills the last cell. */
+		onComplete?: (value: string) => void;
+	};
+
 	type Props =
 		| TextProps
 		| PasswordProps
@@ -220,7 +238,8 @@
 		| ColorProps
 		| DateProps
 		| TimeProps
-		| RatingProps;
+		| RatingProps
+		| PinProps;
 
 	let props: Props = $props();
 
@@ -417,6 +436,22 @@
 			size={p.size}
 			showValue={p.showValue}
 			onChange={p.onChange}
+		/>
+	{:else if props.type === 'pin'}
+		{@const p = props as PinProps}
+		<PinInput
+			id={inputId}
+			value={p.value}
+			length={p.length}
+			type={p.codeType}
+			mask={p.mask}
+			name={p.name}
+			label={p.label ?? 'Verification code'}
+			disabled={p.disabled}
+			readonly={p.readonly}
+			invalid={!!effectiveError}
+			onChange={p.onChange}
+			onComplete={p.onComplete}
 		/>
 	{:else if props.type === 'color'}
 		{@const p = props as ColorProps}
