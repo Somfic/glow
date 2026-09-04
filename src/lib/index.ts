@@ -159,6 +159,13 @@ export type {
 	DataItem,
 	DataGroup
 } from "./data/types.js";
+export { default as Timeline } from "./timeline/Timeline.svelte";
+export type {
+	TimelineProps,
+	TimelineItem,
+	TimelineVariant,
+	TimelineDensity
+} from "./timeline/Timeline.svelte";
 export { default as TableOfContents } from "./navigation/TableOfContents.svelte";
 export { default as Breadcrumb } from "./breadcrumb/Breadcrumb.svelte";
 export type { BreadcrumbItem, BreadcrumbItemState } from "./breadcrumb/Breadcrumb.svelte";
