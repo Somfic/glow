@@ -176,7 +176,7 @@
 		flex-direction: column;
 		width: 100%;
 		max-height: calc(100vh - 4rem);
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+		box-shadow: $shadow-xl;
 		border-radius: $radius;
 
 		&:focus {

@@ -32,6 +32,12 @@
 	--glow-color-warning: #f59e0b;
 	--glow-color-info: #3b82f6;
 
+	--glow-shadow-xs: #{$shadow-xs-dark};
+	--glow-shadow-sm: #{$shadow-sm-dark};
+	--glow-shadow-md: #{$shadow-md-dark};
+	--glow-shadow-lg: #{$shadow-lg-dark};
+	--glow-shadow-xl: #{$shadow-xl-dark};
+
 	@include derived-theme-tokens;
 }
 
@@ -46,10 +52,35 @@
 	--glow-color-warning: #d97706;
 	--glow-color-info: #2563eb;
 
+	--glow-shadow-xs: #{$shadow-xs-light};
+	--glow-shadow-sm: #{$shadow-sm-light};
+	--glow-shadow-md: #{$shadow-md-light};
+	--glow-shadow-lg: #{$shadow-lg-light};
+	--glow-shadow-xl: #{$shadow-xl-light};
+
 	// Re-run the recipes against the light seeds. Inheriting them from `:root`
 	// is not enough: custom properties are substituted per element, so the
 	// inherited values are already resolved against the *dark* seeds.
-	@include derived-theme-tokens;
+	//
+	// Light mode is not dark mode with the seeds swapped, and these arguments
+	// are the places it genuinely differs:
+	//   - The neutral washes run ~1.2x heavier. An alpha layer composites in
+	//     gamma sRGB, so the same percentage buys a smaller perceptual step
+	//     over white than over near-black.
+	//   - The strong border tier needs slightly less fg to clear 3:1, because
+	//     it is mixing into white rather than into a near-black surface.
+	//   - The disabled container is lighter, matching Atlassian's 6% light /
+	//     12% dark split — a 10% ink wash reads heavier over white.
+	// Notably absent: the accent hover/active direction. Those recipes mix
+	// toward --glow-fg, so they darken here and lighten in dark mode without
+	// needing to be told which theme they are in.
+	@include derived-theme-tokens(
+		$state-hover: 12%,
+		$state-selected: 16%,
+		$state-active: 20%,
+		$border-strong-mix: 42%,
+		$disabled-bg: 6%
+	);
 }
 
 // Settings / Field / Section spacing tokens.

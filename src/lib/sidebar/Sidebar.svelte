@@ -18,6 +18,7 @@
 	import type { Snippet } from 'svelte';
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import { tooltip } from '../tooltip/tooltip.svelte.js';
+	import { theme } from '../style/theme.svelte.js';
 
 	type Props = {
 		title?: string;
@@ -26,6 +27,12 @@
 		children?: Snippet;
 		open?: boolean;
 		collapsed?: boolean;
+		/**
+		 * Show a light/dark switch pinned to the bottom of the rail. Writes to
+		 * Glow's shared theme store, so it only takes effect if `<Root>` is
+		 * uncontrolled (i.e. no explicit `theme` prop).
+		 */
+		themeToggle?: boolean;
 		onclose?: () => void;
 		oncollapse?: (collapsed: boolean) => void;
 	};
@@ -37,6 +44,7 @@
 		children,
 		open = $bindable(false),
 		collapsed = $bindable(false),
+		themeToggle = false,
 		onclose,
 		oncollapse
 	}: Props = $props();
@@ -77,6 +85,13 @@
 		activePath = href;
 		onclose?.();
 	}
+
+	// Without a <Root>, nothing else would read the stored/system preference, so
+	// the switch has to do it — otherwise a reload silently reverts to dark.
+	// Idempotent, and a no-op once anything has set the theme explicitly.
+	$effect(() => {
+		if (themeToggle) theme.hydrate();
+	});
 
 	function toggleCollapse() {
 		collapsed = !collapsed;
@@ -127,6 +142,23 @@
 		{/each}
 	</nav>
 	{#if children}<div class="sidebar-children">{@render children()}</div>{/if}
+	{#if themeToggle}
+		{@const next = theme.isDark ? 'light' : 'dark'}
+		<div class="sidebar-footer">
+			<button
+				type="button"
+				class="sidebar-item theme-toggle"
+				onclick={() => theme.toggle()}
+				aria-label={`Switch to ${next} mode`}
+				use:tooltip={collapsed
+					? { content: `Switch to ${next} mode`, position: 'right', useCursor: false }
+					: { content: '' }}
+			>
+				<Icon name={theme.isDark ? 'Sun' : 'Moon'} size={16} />
+				<span class="sidebar-item-label">{theme.isDark ? 'Light mode' : 'Dark mode'}</span>
+			</button>
+		</div>
+	{/if}
 </aside>
 
 <style lang="scss">
@@ -272,6 +304,26 @@
 		padding-bottom: 1rem;
 	}
 
+	// Pinned to the bottom: `.sidebar-nav` is `flex: 1`, so anything after it
+	// is pushed down without needing `margin-top: auto`.
+	.sidebar-footer {
+		flex: 0 0 auto;
+		padding-bottom: 0.5rem;
+		border-top: 1px solid var(--glow-border-color);
+		padding-top: 0.5rem;
+	}
+
+	// Inherits .sidebar-item, so it lines up on the same icon column and picks
+	// up the same hover pill. Only the <button> resets are new.
+	.theme-toggle {
+		width: calc(100% - 1rem);
+		background: none;
+		border: none;
+		font-family: inherit;
+		cursor: pointer;
+		text-align: left;
+	}
+
 	.sidebar-children {
 		padding: 0 1rem 1rem;
 		opacity: 1;
@@ -345,7 +397,11 @@
 		transition: background-color 0.15s, color 0.15s;
 
 		&:hover {
-			background: var(--glow-fg-soft);
+			background: $tertiary-hover;
+		}
+
+		&:active {
+			background: $tertiary-active;
 		}
 
 		&.is-active {

@@ -278,7 +278,7 @@
 			}
 
 			&:active {
-				background: color-mix(in oklab, var(--glow-fg) 12%, transparent);
+				background: $tertiary-active;
 			}
 		}
 
@@ -340,7 +340,11 @@
 			// Text flips to black or white depending on how light the primary is, so
 			// a near-white (or consumer-retinted) primary stays readable.
 			@include contrast-color(var(--glow-primary));
-
+			// Interaction lays a sheet of that same contrast colour over the fill,
+			// so hover/press always move *away* from whatever the accent is. The
+			// -hover/-active tokens can't cover this case: they mix toward
+			// --glow-fg, and an accent already at --glow-fg has nowhere to go.
+			// Fallback for no relative-colour support is the tokens.
 			&:hover,
 			&.cursor-hover {
 				background-color: var(--glow-primary-hover);
@@ -349,6 +353,8 @@
 			&:active {
 				background-color: var(--glow-primary-active);
 			}
+
+			@include state-layer(var(--glow-primary));
 		}
 
 		&.secondary {
@@ -363,6 +369,8 @@
 			&:active {
 				background-color: var(--glow-secondary-active);
 			}
+
+			@include state-layer(var(--glow-secondary));
 		}
 
 		&.ghost {
@@ -386,6 +394,10 @@
 		&.outlined {
 			color: inherit;
 			background-color: $tertiary;
+			// The subtle border tier is ~1.4:1 against the surface, which reads as
+			// a hairline rather than an edge. An outlined button's border *is* its
+			// affordance, so it takes the tier that clears 3:1.
+			border: $border-strong;
 
 			&:hover,
 			&.cursor-hover {
@@ -427,19 +439,41 @@
 				background-color: color-mix(in oklab, var(--glow-color-danger) 18%, transparent);
 			}
 
+			// Was 7% — below the 10% resting tint, so pressing appeared to
+			// deselect the button. Pressed is the strongest step everywhere else.
 			&:active {
-				background-color: color-mix(in oklab, var(--glow-color-danger) 7%, transparent);
+				background-color: color-mix(in oklab, var(--glow-color-danger) 26%, transparent);
 			}
 		}
 
+		// Disabled paints explicit tiers rather than fading the whole element.
+		// `opacity` dims the border and any accent in lockstep and compounds with
+		// tokens that are already translucent, so a disabled ghost button used to
+		// end up at half of an already-8% wash.
 		&:disabled {
-			opacity: 0.5;
+			background-color: var(--glow-bg-disabled);
+			background-image: none;
+			border-color: var(--glow-border-disabled);
+			color: var(--glow-fg-disabled);
 			pointer-events: none;
+
+			.count {
+				background: var(--glow-bg-disabled);
+			}
 		}
 
 		&.selected {
 			outline: 2px solid var(--glow-primary);
 			outline-offset: 2px;
+
+			// A neutral fill only makes sense where there isn't one already —
+			// a selected primary button keeps its accent and just gains the ring.
+			&.ghost,
+			&.outlined,
+			&.dashed,
+			&.bare {
+				background-color: $tertiary-selected;
+			}
 		}
 
 		&.icon-only {

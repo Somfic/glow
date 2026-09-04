@@ -63,8 +63,17 @@
 		cursor: pointer;
 
 		&.disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
+			@include disabled-content;
+
+			.checkbox-label {
+				color: var(--glow-fg-disabled);
+			}
+
+			.checkbox-box {
+				background-color: var(--glow-bg-disabled);
+				border-color: var(--glow-border-disabled);
+				color: var(--glow-fg-disabled);
+			}
 		}
 	}
 

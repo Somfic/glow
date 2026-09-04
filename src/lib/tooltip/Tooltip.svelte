@@ -61,7 +61,7 @@
 		white-space: nowrap;
 		pointer-events: none;
 		backdrop-filter: blur(8px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+		box-shadow: $shadow-md;
 
 		&.top {
 			transform: translate(-50%, calc(-100% - 8px));

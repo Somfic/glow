@@ -206,8 +206,7 @@
 
 	.popover {
 		&.disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
+			@include disabled-content;
 			pointer-events: none;
 		}
 	}
@@ -220,7 +219,7 @@
 		background-color: var(--glow-bg-surface-element);
 		border: $border;
 		border-radius: $radius;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+		box-shadow: $shadow-md;
 		// When the content is taller than the space the popover was clamped to
 		// (max-height set inline), scroll instead of overflowing the viewport.
 		overflow-y: auto;
@@ -255,7 +254,7 @@
 		margin: 0 0.75rem 0.75rem;
 		background: var(--glow-bg-surface-element);
 		border-radius: 18px;
-		box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45);
+		box-shadow: $shadow-xl;
 		padding-bottom: env(safe-area-inset-bottom);
 	}
 

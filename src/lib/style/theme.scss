@@ -30,7 +30,7 @@ $bg-surface-element: #1e1f29;
 
 $fg: #eee;
 
-$primary: #e2ae4d;
+$primary: #8B6DED;
 
 // The hover/active/secondary ramps used to be `color.scale` over the seed above.
 // They are now `derived-theme-tokens` recipes in `global.scss`, which re-run per
@@ -38,13 +38,25 @@ $primary: #e2ae4d;
 // and friends.
 
 // --- Aliases over the runtime tokens ---------------------------------------
+// Neutral interaction washes for transparent-at-rest controls (ghost/outlined
+// buttons, menu rows, list items). Always in the order rest < hover < selected
+// < active: every design system surveyed makes pressed the strongest step, at
+// 1.4-2.5x hover. Reach for these rather than a fresh `color-mix` so the whole
+// library steps in unison.
 $tertiary: transparent;
-$tertiary-hover: color-mix(in oklab, var(--glow-fg) 8%, transparent);
-$tertiary-active: color-mix(in oklab, var(--glow-fg) 3%, transparent);
+$tertiary-hover: var(--glow-state-hover);
+$tertiary-selected: var(--glow-state-selected);
+$tertiary-active: var(--glow-state-active);
 
 $border-color: var(--glow-border-color);
 $border-width: 1px;
 $border: $border-width solid $border-color;
+// Stronger edge, mixed against the *surface* controls sit on rather than the
+// page. WCAG 1.4.11 covers control boundaries (it explicitly does not cover
+// hover), and the subtle tier lands near 1.4:1 -- nowhere near the 3:1 asked
+// of a control edge. Use on things that must read as interactive: inputs,
+// outlined buttons, segmented controls.
+$border-strong: $border-width solid var(--glow-border-strong);
 
 $radius: 12px;
 $radius-small: 18px;
@@ -74,6 +86,52 @@ $dur-fast:    150ms;  // small ui state changes
 $dur-base:    220ms;  // standard panel / popover / tab transitions
 $dur-slow:    320ms;  // larger pieces (drawer, modal, big slide)
 $dur-glacial: 500ms;  // page-level reveals
+
+// Elevation
+//
+// The two themes elevate by different means, and that asymmetry is the point:
+//   - Light mode has nowhere lighter to go, so height reads as *shadow*.
+//   - Dark mode barely registers a shadow against a near-black page, so height
+//     reads as *surface lightness* (see --glow-surface-1..4 below), with the
+//     shadow only anchoring the element.
+// Material 3 makes the same split explicit: its dark surface tones span
+// 4 -> 22 while light only moves 100 -> 90.
+//
+// Each level is two layers -- a tight contact shadow that pins the element to
+// what it sits on, plus a broad ambient one that gives it height. Shadows are
+// literals rather than recipes because they key off the theme, not the seeds:
+// no accent retint should change how high something floats.
+//
+// Light shadows are tinted with a desaturated navy instead of pure black;
+// black over white reads as grey haze, which is what makes naive light-mode
+// shadows look dirty.
+$shadow-xs-dark: 0 1px 2px rgba(0, 0, 0, 0.3);
+$shadow-sm-dark: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.26);
+$shadow-md-dark: 0 2px 4px rgba(0, 0, 0, 0.32), 0 6px 16px rgba(0, 0, 0, 0.32);
+$shadow-lg-dark: 0 4px 8px rgba(0, 0, 0, 0.34), 0 12px 32px rgba(0, 0, 0, 0.42);
+$shadow-xl-dark: 0 8px 16px rgba(0, 0, 0, 0.38), 0 24px 60px rgba(0, 0, 0, 0.5);
+
+$shadow-xs-light: 0 1px 2px rgba(15, 17, 26, 0.06);
+$shadow-sm-light: 0 1px 2px rgba(15, 17, 26, 0.06), 0 2px 6px rgba(15, 17, 26, 0.07);
+$shadow-md-light: 0 2px 4px rgba(15, 17, 26, 0.06), 0 6px 16px rgba(15, 17, 26, 0.09);
+$shadow-lg-light: 0 4px 8px rgba(15, 17, 26, 0.07), 0 12px 32px rgba(15, 17, 26, 0.12);
+$shadow-xl-light: 0 8px 16px rgba(15, 17, 26, 0.09), 0 24px 60px rgba(15, 17, 26, 0.18);
+
+// --- Aliases over the runtime elevation tokens ---
+// xs  hairline lift: toggle knobs, colour swatches, drag handles
+// sm  resting lift: pills, chips, small raised affordances
+// md  cards, tooltips, small popovers
+// lg  menus, dropdowns, toasts, notification panels
+// xl  modals, drawers, command palette -- things with a scrim behind them
+$shadow-xs: var(--glow-shadow-xs);
+$shadow-sm: var(--glow-shadow-sm);
+$shadow-md: var(--glow-shadow-md);
+$shadow-lg: var(--glow-shadow-lg);
+$shadow-xl: var(--glow-shadow-xl);
+
+// Focus ring. One token so the accent and the width stay consistent; 12 sites
+// had this open-coded.
+$focus-ring: 0 0 0 2px var(--glow-primary-soft-strong);
 
 // Runtime theme tokens declared as CSS custom properties live in
 // `global.scss` so they're emitted once at the document root rather than
@@ -125,15 +183,63 @@ $text-muted: var(--glow-text-muted);
 // ancestor, so `--glow-primary-hover` would stay frozen at the root's accent.
 // Anywhere seeds are (re)declared must re-include this — see `global.scss`.
 // ============================================================================
-@mixin derived-theme-tokens {
-	// Borders sit between bg and fg; same recipe works in both light and dark
-	// modes because oklab interpolates symmetrically. 21% is calibrated so the
-	// dark result lands on rgb(48 49 58) — the hand-picked #30313C this replaced.
-	--glow-border-color: color-mix(in oklab, var(--glow-bg-base), var(--glow-fg) 21%);
+@mixin derived-theme-tokens(
+	// Neutral interaction washes, as a percentage of --glow-fg over transparent.
+	// Light needs a slightly larger number than dark for the *same* perceived
+	// step: `color-mix(… , transparent)` produces an alpha layer, and the
+	// browser composites that in gamma sRGB, not oklab. (The opaque mixes
+	// further down really are oklab-symmetric — the two cases differ.)
+	// Measured: these land at ΔL* 10 / 13 / 16 in both themes.
+	$state-hover: 10%,
+	$state-selected: 13%,
+	$state-active: 16%,
+	// How far an accent fill travels when you interact with it. The direction is
+	// not a parameter: every accent recipe mixes toward --glow-fg, which lightens
+	// on a dark theme and darkens on a light one. Mixing toward white/black
+	// instead cannot work, because within a single theme --glow-primary is a
+	// light fill while --glow-secondary is a dark tint over the surface — they
+	// need opposite directions, and no per-theme constant supplies both.
+	// (Measured: white/black split the wrong way put dark secondary's pressed
+	// state at ΔL* +4.07 against a resting +6.98 — the press disappeared.)
+	$accent-hover-amount: 15%,
+	$accent-active-amount: 26%,
+	// Border tiers, as a percentage of fg mixed into the backdrop.
+	$border-subtle-mix: 21%,
+	$border-strong-mix: 45%,
+	// Disabled tiers. Material 3 uses 38% content over a 12% container; doing
+	// it with tokens rather than `opacity` on the whole control keeps the
+	// border and any accent from fading in lockstep, and avoids compounding
+	// with tokens that are already translucent.
+	$disabled-fg: 38%,
+	$disabled-bg: 10%,
+	$disabled-border: 12%
+) {
+	// Borders sit between bg and fg. 21% is calibrated so the dark result lands
+	// on rgb(48 49 58) — the hand-picked #30313C this replaced. The strong tier
+	// mixes into the *surface* instead: controls sit on surface, not on the
+	// page, and in dark mode surface is lighter than base, so a base-referenced
+	// border loses contrast exactly where it matters most.
+	--glow-border-color: color-mix(in oklab, var(--glow-bg-base), var(--glow-fg) #{$border-subtle-mix});
+	--glow-border-strong: color-mix(in oklab, var(--glow-bg-surface), var(--glow-fg) #{$border-strong-mix});
 
-	// Primary hover/active. White lightens in both modes; black darkens.
-	--glow-primary-hover: color-mix(in oklab, var(--glow-primary), white 15%);
-	--glow-primary-active: color-mix(in oklab, var(--glow-primary), black 10%);
+	// Neutral interaction washes. Ordered rest < hover < selected < active.
+	--glow-state-hover: color-mix(in oklab, var(--glow-fg) #{$state-hover}, transparent);
+	--glow-state-selected: color-mix(in oklab, var(--glow-fg) #{$state-selected}, transparent);
+	--glow-state-active: color-mix(in oklab, var(--glow-fg) #{$state-active}, transparent);
+
+	// Surface elevation ramp — a card nested inside a card steps one level.
+	// The single recipe works in both themes because it mixes toward fg:
+	// that lightens a dark surface and darkens a light one, which is the
+	// direction each theme wants.
+	--glow-surface-1: var(--glow-bg-surface);
+	--glow-surface-2: color-mix(in oklab, var(--glow-bg-surface), var(--glow-fg) 4%);
+	--glow-surface-3: color-mix(in oklab, var(--glow-bg-surface), var(--glow-fg) 7%);
+	--glow-surface-4: color-mix(in oklab, var(--glow-bg-surface), var(--glow-fg) 10%);
+
+	// Primary hover/active. Monotonic — pressed continues past hover rather than
+	// doubling back, so the three states always read in order.
+	--glow-primary-hover: color-mix(in oklab, var(--glow-primary), var(--glow-fg) #{$accent-hover-amount});
+	--glow-primary-active: color-mix(in oklab, var(--glow-primary), var(--glow-fg) #{$accent-active-amount});
 
 	// Soft / strong primary tints — for hover backgrounds, focus rings, etc.
 	// Replace ad-hoc `rgba($primary, 0.05/0.15/0.30)` with these.
@@ -143,10 +249,12 @@ $text-muted: var(--glow-text-muted);
 	// Secondary is a 10% wash of primary into the surface — derived too, so
 	// retinting `--glow-primary` repaints `selected` / `pill` backgrounds.
 	--glow-secondary: color-mix(in oklab, var(--glow-primary) 10%, var(--glow-bg-surface));
-	--glow-secondary-hover: color-mix(in oklab, var(--glow-secondary), white 15%);
-	--glow-secondary-active: color-mix(in oklab, var(--glow-secondary), black 10%);
+	--glow-secondary-hover: color-mix(in oklab, var(--glow-secondary), var(--glow-fg) #{$accent-hover-amount});
+	--glow-secondary-active: color-mix(in oklab, var(--glow-secondary), var(--glow-fg) #{$accent-active-amount});
 
-	// Foreground alpha variants — soft hover/disabled tints derived from fg.
+	// Foreground alpha variants — soft tints derived from fg. These predate the
+	// state scale above and are for *static* washes (zebra rows, inset wells).
+	// For hover/active, use --glow-state-* so the steps stay ordered.
 	--glow-fg-soft: color-mix(in oklab, var(--glow-fg) 5%, transparent);
 	--glow-fg-soft-strong: color-mix(in oklab, var(--glow-fg) 15%, transparent);
 
@@ -155,11 +263,51 @@ $text-muted: var(--glow-text-muted);
 	--glow-text-secondary: color-mix(in oklab, var(--glow-fg) 70%, transparent);
 	--glow-text-muted: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 
-	// Semantic hover variants — same recipe.
-	--glow-color-danger-hover: color-mix(in oklab, var(--glow-color-danger), white 12%);
-	--glow-color-success-hover: color-mix(in oklab, var(--glow-color-success), white 12%);
-	--glow-color-warning-hover: color-mix(in oklab, var(--glow-color-warning), white 12%);
-	--glow-color-info-hover: color-mix(in oklab, var(--glow-color-info), white 12%);
+	// Disabled tiers — content, container, edge.
+	--glow-fg-disabled: color-mix(in oklab, var(--glow-fg) #{$disabled-fg}, transparent);
+	--glow-bg-disabled: color-mix(in oklab, var(--glow-fg) #{$disabled-bg}, transparent);
+	--glow-border-disabled: color-mix(in oklab, var(--glow-fg) #{$disabled-border}, transparent);
+
+	// Semantic hover variants — same toward-fg rule as the accent.
+	--glow-color-danger-hover: color-mix(in oklab, var(--glow-color-danger), var(--glow-fg) 14%);
+	--glow-color-success-hover: color-mix(in oklab, var(--glow-color-success), var(--glow-fg) 14%);
+	--glow-color-warning-hover: color-mix(in oklab, var(--glow-color-warning), var(--glow-fg) 14%);
+	--glow-color-info-hover: color-mix(in oklab, var(--glow-color-info), var(--glow-fg) 14%);
+}
+
+// ============================================================================
+// Disabled
+//
+// Two shapes, because "disabled" means different things to a text row and to a
+// framed control. Both paint explicit tiers instead of setting `opacity` on the
+// whole element, for three reasons:
+//   - `opacity` fades the border, the accent and any focus ring in lockstep
+//     with the text, so nothing can be tuned independently.
+//   - It compounds with tokens that are already translucent: a disabled ghost
+//     button was 0.5 x an 8% wash, i.e. a 4% wash.
+//   - The library had drifted to six different values (0.3, 0.35, 0.4, 0.5,
+//     0.55 and 0.5-on-a-wrapper) for the same state.
+//
+// Tiers follow Material 3's 38%-content-over-a-12%-container, with the
+// container lighter in light mode (Atlassian's 6%/12% split) since an ink wash
+// reads heavier over white.
+// ============================================================================
+
+// For rows and labels that have no fill of their own — menu items, tabs,
+// pagination buttons, field rows. Icons inside follow via currentColor.
+@mixin disabled-content {
+	color: var(--glow-fg-disabled);
+	cursor: not-allowed;
+}
+
+// For anything with a frame: inputs, select triggers, segmented groups.
+// Clears `background-image` too, so a state layer can't survive into it.
+@mixin disabled-control {
+	background-color: var(--glow-bg-disabled);
+	background-image: none;
+	border-color: var(--glow-border-disabled);
+	color: var(--glow-fg-disabled);
+	cursor: not-allowed;
 }
 
 // Standard control box. Apply to anything that needs to sit next to a Button
@@ -228,5 +376,50 @@ $text-muted: var(--glow-text-muted);
 	@supports (color: oklch(from red calc(l) 0 0)) {
 		--glow-contrast-l: clamp(0, (l / #{$threshold} - 1) * -infinity, 1);
 		#{$property}: oklch(from #{$bg} var(--glow-contrast-l) 0 0 / 100%);
+	}
+}
+
+// ============================================================================
+// State layer for filled surfaces
+//
+// Material 3's model: instead of computing a lighter/darker variant of the
+// fill, lay a translucent sheet of the fill's own *contrast* colour over it.
+// Because the sheet is black over a light fill and white over a dark one, the
+// interaction always moves away from the fill — no matter what the fill is.
+//
+// This exists alongside --glow-primary-hover/-active, which mix toward
+// --glow-fg and are the right tool for a `color:` (links, text). Fills use
+// this instead, because the toward-fg recipe has one blind spot: an accent
+// that already sits at --glow-fg has nowhere to travel, so hover does nothing.
+// That is not hypothetical — a near-white accent on the dark theme is exactly
+// the case that motivated automatic contrast in the first place.
+//
+// Painted as a `background-image` gradient so it composites over whatever
+// `background-color` is set without needing a pseudo-element (which would be
+// clipped by `overflow: hidden` and would need its own stacking context).
+// Callers that already use background-image on the same element must instead
+// use the -hover/-active tokens.
+//
+// Percentages are of the contrast colour, matching M3's 8%/12% ladder but
+// slightly wider so the steps survive being seen through a saturated fill.
+// ============================================================================
+@mixin state-layer($bg, $hover: 10%, $active: 16%, $threshold: 0.62) {
+	@supports (color: oklch(from red calc(l) 0 0)) {
+		--glow-sl: #{oklch(from #{$bg} clamp(0, (l / $threshold - 1) * -infinity, 1) 0 0 / 100%)};
+
+		&:hover,
+		&.cursor-hover {
+			background-image: linear-gradient(
+				color-mix(in srgb, var(--glow-sl) #{$hover}, transparent),
+				color-mix(in srgb, var(--glow-sl) #{$hover}, transparent)
+			);
+		}
+
+		&:active {
+			background-image: linear-gradient(
+				color-mix(in srgb, var(--glow-sl) #{$active}, transparent),
+				color-mix(in srgb, var(--glow-sl) #{$active}, transparent)
+			);
+		}
 	}
 }

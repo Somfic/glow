@@ -204,7 +204,7 @@
 		background: var(--glow-bg-surface, #1a1a1a);
 		border: 1px solid color-mix(in oklab, var(--glow-fg) 12%, transparent);
 		border-radius: $radius;
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+		box-shadow: $shadow-lg;
 		color: var(--glow-fg, #fff);
 		overflow: hidden;
 		display: flex;

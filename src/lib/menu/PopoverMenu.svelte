@@ -644,8 +644,7 @@
 		}
 
 		&.disabled {
-			opacity: 0.4;
-			cursor: not-allowed;
+			@include disabled-content;
 			&:hover {
 				background: none;
 			}
@@ -683,12 +682,11 @@
 
 		&.open {
 			border-color: var(--glow-primary);
-			box-shadow: 0 0 0 2px color-mix(in oklab, var(--glow-primary) 30%, transparent);
+			box-shadow: $focus-ring;
 		}
 
 		&.disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
+			@include disabled-control;
 		}
 	}
 
@@ -741,7 +739,7 @@
 		background: var(--glow-bg-surface-element);
 		border: 1px solid var(--glow-border-color);
 		border-radius: $radius * 0.75;
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+		box-shadow: $shadow-lg;
 		z-index: 1;
 	}
 </style>

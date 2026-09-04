@@ -1,8 +1,7 @@
 <script lang="ts">
-	import '$lib/style/glow.scss';
 	import { page } from '$app/state';
+	import Root from '$lib/root/Root.svelte';
 	import Page from '$lib/page/Page.svelte';
-	import ToastContainer from '$lib/toast/ToastContainer.svelte';
 	import type { SidebarItem, SidebarGroup } from '$lib/sidebar/Sidebar.svelte';
 	import type { Snippet } from 'svelte';
 
@@ -16,8 +15,14 @@
 		bareRoutes.some((r) => page.url.pathname.startsWith(r))
 	);
 
-	const sidebarConfig: { title: string; topItems: SidebarItem[]; groups: SidebarGroup[] } = {
+	const sidebarConfig: {
+		title: string;
+		topItems: SidebarItem[];
+		groups: SidebarGroup[];
+		themeToggle: boolean;
+	} = {
 		title: 'Glow UI',
+		themeToggle: true,
 		topItems: [
 			{ label: 'Home', href: '/', icon: 'House' },
 			{ label: 'Components', href: '/components', icon: 'LayoutGrid' }
@@ -120,14 +125,18 @@
 	};
 </script>
 
-{#if isBareExample}
-	<Page title="Glow UI" layout="bare">
-		{@render children?.()}
-	</Page>
-{:else}
-	<Page title="Glow UI" {sidebarConfig}>
-		{@render children?.()}
-	</Page>
-{/if}
-
-<ToastContainer />
+<!-- Root supplies the stylesheet, the theme and the toast container, so the
+     layout no longer imports glow.scss or mounts ToastContainer itself. It has
+     no theme prop on purpose: that leaves the shared store in charge, which is
+     what makes the sidebar's switch work. -->
+<Root>
+	{#if isBareExample}
+		<Page title="Glow UI" layout="bare">
+			{@render children?.()}
+		</Page>
+	{:else}
+		<Page title="Glow UI" {sidebarConfig}>
+			{@render children?.()}
+		</Page>
+	{/if}
+</Root>

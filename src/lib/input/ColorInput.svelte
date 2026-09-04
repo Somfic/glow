@@ -378,7 +378,7 @@
 
 		&.open {
 			border-color: var(--glow-primary);
-			box-shadow: 0 0 0 2px color-mix(in oklab, var(--glow-primary) 30%, transparent);
+			box-shadow: $focus-ring;
 		}
 
 		&:hover:not(:disabled) {
@@ -395,7 +395,7 @@
 		height: 24px;
 		border-radius: 4px;
 		border: $border;
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+		box-shadow: $shadow-xs;
 		flex-shrink: 0;
 	}
 
@@ -436,7 +436,7 @@
 		cursor: crosshair;
 		user-select: none;
 		background: var(--glow-bg-surface);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		box-shadow: $shadow-sm;
 
 		// Ring overlay to cover pixelated edges
 		&::after {
@@ -538,12 +538,12 @@
 			transition:
 				transform 0.15s ease,
 				box-shadow 0.15s ease;
-			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+			box-shadow: $shadow-xs;
 			margin-top: -6px;
 
 			&:hover {
 				transform: scale(1.1);
-				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+				box-shadow: $shadow-sm;
 			}
 
 			&:active {
@@ -562,11 +562,11 @@
 			transition:
 				transform 0.15s ease,
 				box-shadow 0.15s ease;
-			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+			box-shadow: $shadow-xs;
 
 			&:hover {
 				transform: scale(1.1);
-				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+				box-shadow: $shadow-sm;
 			}
 
 			&:active {

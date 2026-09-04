@@ -44,9 +44,7 @@
 		color: var(--glow-fg);
 		font-size: $text-sm;
 		font-family: $font-family;
-		box-shadow:
-			0 8px 24px rgba(0, 0, 0, 0.35),
-			0 2px 8px rgba(0, 0, 0, 0.2);
+		box-shadow: $shadow-lg;
 		backdrop-filter: blur(12px);
 
 		&.info {

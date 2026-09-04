@@ -97,12 +97,11 @@
 		&:focus-within {
 			outline: none;
 			border-color: var(--glow-primary);
-			box-shadow: 0 0 0 2px color-mix(in oklab, var(--glow-primary) 30%, transparent);
+			box-shadow: $focus-ring;
 		}
 
 		&.disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
+			@include disabled-control;
 		}
 
 		input {

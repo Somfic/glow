@@ -8,6 +8,8 @@
 		title?: string;
 		topItems?: SidebarItem[];
 		groups?: SidebarGroup[];
+		/** Show a light/dark switch at the bottom of the rail. */
+		themeToggle?: boolean;
 	};
 
 	type Layout = 'contained' | 'full' | 'bare';
@@ -46,6 +48,7 @@
 		title={sidebarConfig.title}
 		topItems={sidebarConfig.topItems}
 		groups={sidebarConfig.groups}
+		themeToggle={sidebarConfig.themeToggle}
 		open={sidebarOpen}
 		bind:collapsed={sidebarCollapsed}
 		onclose={() => (sidebarOpen = false)}

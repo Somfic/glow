@@ -670,7 +670,7 @@
 		background: var(--glow-bg-surface, #1a1a1a);
 		border: 1px solid color-mix(in oklab, var(--glow-fg) 12%, transparent);
 		border-radius: $radius;
-		box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+		box-shadow: $shadow-xl;
 		overflow: hidden;
 	}
 

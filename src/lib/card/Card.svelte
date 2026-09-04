@@ -595,7 +595,14 @@
 	.card {
 		display: block;
 		padding: 1.5rem;
-		background: var(--glow-bg-surface);
+		// Both indirected through custom properties so the depth rules below can
+		// retarget them without restating `background`/`box-shadow`, and so the
+		// variant overrides further down (has-accent, hover, overlay) still win
+		// by simply setting `background` outright.
+		--card-surface: var(--glow-surface-1);
+		--card-elevation: none;
+		background: var(--card-surface);
+		box-shadow: var(--card-elevation);
 		border: 1px solid var(--glow-border-color);
 		// `--card-radius` exposes the resolved corner radius to descendants
 		// (e.g. the overlay caption's blur layer, which has to clip itself
@@ -610,25 +617,41 @@
 		position: relative;
 
 		// Elevation — auto-derived from nesting depth via the context-driven
-		// `data-depth` attribute. Top-level cards float with a soft shadow and
-		// full radius; nested cards flatten and shrink their radius so the
-		// inner card sits cleanly inside the outer.
+		// `data-depth` attribute. No `elevation` prop: a card knows how deep it
+		// is, and depth is what elevation means.
+		//
+		// Each level moves on two axes at once, because the two themes read
+		// height by different means. The shadow does the work in light mode,
+		// where there is nowhere lighter to go; the surface ramp does it in dark
+		// mode, where a shadow barely registers against a near-black page. Both
+		// are declared unconditionally — each theme's tokens simply make its own
+		// axis the visible one (--glow-shadow-* are near-invisible over a dark
+		// page, --glow-surface-* barely move over a white one).
+		//
+		// Radius tightens with depth so an inner card nests concentrically
+		// inside its parent's corner rather than fighting it.
 		&[data-depth='1']:not(.overlay) {
-			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.08);
+			--card-elevation: var(--glow-shadow-md);
 		}
 		&[data-depth='2'] {
+			--card-surface: var(--glow-surface-2);
 			--card-radius: calc(#{$radius} - 3px);
-			box-shadow: none;
 		}
 		&[data-depth='3'] {
+			--card-surface: var(--glow-surface-3);
 			--card-radius: calc(#{$radius} - 6px);
-			box-shadow: none;
 		}
 		&[data-depth='4'],
 		&[data-depth='5'],
 		&[data-depth='6'] {
+			--card-surface: var(--glow-surface-4);
 			--card-radius: calc(#{$radius} - 8px);
-			box-shadow: none;
+		}
+
+		// A clickable card lifts one level on hover — the shadow grows in light
+		// mode, the surface brightens in dark.
+		&:is(a, button):hover:not(.disabled):not(.overlay) {
+			--card-elevation: var(--glow-shadow-lg);
 		}
 
 		&.sectioned {
@@ -684,7 +707,10 @@
 		}
 
 		&.disabled {
-			opacity: 0.5;
+			--card-elevation: none;
+			background: var(--glow-bg-disabled);
+			border-color: var(--glow-border-disabled);
+			color: var(--glow-fg-disabled);
 			cursor: not-allowed;
 			pointer-events: none;
 		}
@@ -784,8 +810,7 @@
 		}
 
 		&:disabled {
-			cursor: not-allowed;
-			opacity: 0.5;
+			@include disabled-content;
 		}
 
 		// Hide the bottom rule when the body is closed — there's no body to

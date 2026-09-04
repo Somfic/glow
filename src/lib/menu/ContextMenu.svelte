@@ -450,7 +450,7 @@
 		-webkit-backdrop-filter: blur(20px) saturate(160%);
 		border: $border;
 		border-radius: 14px;
-		box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+		box-shadow: $shadow-lg;
 		padding: 6px;
 		min-width: 240px;
 		max-width: calc(100vw - 16px);
@@ -501,8 +501,7 @@
 		}
 
 		&.disabled {
-			opacity: 0.4;
-			cursor: not-allowed;
+			@include disabled-content;
 			&:hover {
 				background: none;
 			}
@@ -566,7 +565,7 @@
 		border: $border;
 		border-left: 0;
 		border-radius: 0 14px 14px 14px;
-		box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+		box-shadow: $shadow-lg;
 		clip-path: inset(0 -50px -50px 0);
 		padding: 6px;
 		min-width: 220px;

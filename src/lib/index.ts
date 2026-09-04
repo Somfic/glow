@@ -121,6 +121,7 @@ export { sortable, type SortableOptions } from "./sortable/sortable.js";
 
 // Theming
 export { default as ThemeProvider, type ThemeMode } from "./style/ThemeProvider.svelte";
+export { theme } from "./style/theme.svelte.js";
 export { default as Root } from "./root/Root.svelte";
 
 // Data display components

@@ -273,7 +273,7 @@
 
 		&.open {
 			border-color: var(--glow-primary);
-			box-shadow: 0 0 0 2px color-mix(in oklab, var(--glow-primary) 30%, transparent);
+			box-shadow: $focus-ring;
 		}
 
 		&:hover:not(:disabled) {
@@ -281,8 +281,7 @@
 		}
 
 		&:disabled {
-			cursor: not-allowed;
-			opacity: 0.5;
+			@include disabled-control;
 		}
 
 		&.placeholder .value-text {
@@ -377,8 +376,8 @@
 		}
 
 		&:disabled {
-			opacity: 0.35;
-			cursor: not-allowed;
+			@include disabled-content;
+			background: none;
 		}
 	}
 </style>

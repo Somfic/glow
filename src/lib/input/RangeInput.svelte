@@ -94,8 +94,7 @@
 		padding: 0.5em 0.75em;
 
 		&.disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
+			@include disabled-content;
 		}
 	}
 

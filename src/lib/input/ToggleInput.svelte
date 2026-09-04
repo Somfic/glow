@@ -48,8 +48,24 @@
 		cursor: pointer;
 
 		&.disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
+			@include disabled-content;
+
+			.toggle-label {
+				color: var(--glow-fg-disabled);
+			}
+
+			// Track and knob both flatten, checked or not — a live accent beside
+			// dead text reads as "still interactive".
+			.toggle,
+			.toggle.checked {
+				background-color: var(--glow-bg-disabled);
+			}
+
+			.toggle-slider,
+			.toggle.checked .toggle-slider {
+				background-color: var(--glow-fg-disabled);
+				box-shadow: none;
+			}
 		}
 	}
 
@@ -86,7 +102,7 @@
 		@include contrast-color(var(--glow-bg-surface), $property: background-color, $fallback: white);
 		border-radius: 50%;
 		transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+		box-shadow: $shadow-xs;
 	}
 
 	.toggle.checked .toggle-slider {

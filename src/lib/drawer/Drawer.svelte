@@ -188,12 +188,12 @@
 
 		&.side-right {
 			right: 0.75rem;
-			box-shadow: -8px 0 30px rgba(0, 0, 0, 0.3);
+			box-shadow: $shadow-xl;
 		}
 
 		&.side-left {
 			left: 0.75rem;
-			box-shadow: 8px 0 30px rgba(0, 0, 0, 0.3);
+			box-shadow: $shadow-xl;
 		}
 
 		&.side-left.size-small,
@@ -212,12 +212,12 @@
 
 		&.side-top {
 			top: 0.75rem;
-			box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+			box-shadow: $shadow-xl;
 		}
 
 		&.side-bottom {
 			bottom: 0.75rem;
-			box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.3);
+			box-shadow: $shadow-xl;
 		}
 
 		&.side-top.size-small,

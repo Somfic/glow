@@ -159,8 +159,7 @@
 		line-height: 1;
 
 		&.disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
+			@include disabled-control;
 		}
 	}
 

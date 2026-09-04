@@ -153,7 +153,7 @@
 		}
 
 		&.disabled {
-			opacity: 0.55;
+			@include disabled-content;
 			pointer-events: none;
 		}
 
