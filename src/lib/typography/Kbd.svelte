@@ -26,10 +26,10 @@
 		align-items: center;
 		justify-content: center;
 		font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-		background: rgba($fg, 0.08);
-		border: 1px solid rgba($fg, 0.15);
+		background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
+		border: 1px solid color-mix(in oklab, var(--glow-fg) 15%, transparent);
 		border-radius: 4px;
-		color: rgba($fg, 0.7);
+		color: color-mix(in oklab, var(--glow-fg) 70%, transparent);
 		line-height: 1;
 		font-weight: $weight-medium;
 	}

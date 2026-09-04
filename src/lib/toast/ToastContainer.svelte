@@ -1,19 +1,21 @@
-<script lang="ts">
-	import { fly, fade } from 'svelte/transition';
-	import { flip } from 'svelte/animate';
-	import Toast from './Toast.svelte';
-	import { toasts, dismissToast } from './toast.svelte.js';
-
-	type Position =
+<script lang="ts" module>
+	export type ToastPosition =
 		| 'top-right'
 		| 'top-left'
 		| 'bottom-right'
 		| 'bottom-left'
 		| 'top-center'
 		| 'bottom-center';
+</script>
+
+<script lang="ts">
+	import { fly, fade } from 'svelte/transition';
+	import { flip } from 'svelte/animate';
+	import Toast from './Toast.svelte';
+	import { toasts, dismissToast } from './toast.svelte.js';
 
 	type Props = {
-		position?: Position;
+		position?: ToastPosition;
 	};
 
 	let { position = 'top-right' }: Props = $props();

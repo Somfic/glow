@@ -273,11 +273,11 @@
 
 		&.open {
 			border-color: var(--glow-primary);
-			box-shadow: 0 0 0 2px rgba($primary, 0.3);
+			box-shadow: 0 0 0 2px color-mix(in oklab, var(--glow-primary) 30%, transparent);
 		}
 
 		&:hover:not(:disabled) {
-			background-color: rgba($fg, 0.05);
+			background-color: color-mix(in oklab, var(--glow-fg) 5%, transparent);
 		}
 
 		&:disabled {
@@ -286,7 +286,7 @@
 		}
 
 		&.placeholder .value-text {
-			color: rgba($fg, 0.5);
+			color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 		}
 
 		.value-text {
@@ -302,14 +302,14 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		color: rgba($fg, 0.6);
+		color: color-mix(in oklab, var(--glow-fg) 60%, transparent);
 		cursor: pointer;
 		border-radius: 999px;
 		padding: 2px;
 
 		&:hover {
 			color: var(--glow-fg);
-			background: rgba($fg, 0.08);
+			background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
 		}
 	}
 
@@ -336,7 +336,7 @@
 			width: 6px;
 		}
 		&::-webkit-scrollbar-thumb {
-			background: rgba($fg, 0.15);
+			background: color-mix(in oklab, var(--glow-fg) 15%, transparent);
 			border-radius: 3px;
 		}
 
@@ -364,12 +364,12 @@
 		transition: background-color 0.1s ease, color 0.1s ease;
 
 		&:hover:not(:disabled) {
-			background: rgba($fg, 0.06);
+			background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		}
 
 		&.selected {
 			background: var(--glow-primary);
-			color: white;
+			@include contrast-color(var(--glow-primary), $fallback: white);
 
 			&:hover {
 				background: var(--glow-primary);

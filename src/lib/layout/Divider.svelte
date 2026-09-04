@@ -26,7 +26,7 @@
 	@use '../style/theme.scss' as *;
 
 	.divider {
-		background: rgba(255, 255, 255, 0.08);
+		background: var(--glow-border-color);
 		flex: 0 0 auto;
 	}
 

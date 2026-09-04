@@ -4,11 +4,12 @@
 // ============================================================================
 // Theme tokens (color)
 //
-// Declared at the document root so any element below can override them on a
-// subtree:
-//   <div style="--glow-primary: #1db954">…spotify-green descendants…</div>
-// `<ThemeProvider>` (or any element with data-theme="light|dark") flips the
-// whole tree.
+// Declared at the document root. To retint a subtree, wrap it in `<Root>` or
+// `<ThemeProvider>` — both stamp `data-theme`, which re-runs the
+// `derived-theme-tokens` recipes below against the new seeds. A bare
+// `<div style="--glow-primary: …">` only moves the seed: custom properties are
+// substituted per element, so every derived token stays resolved against the
+// ancestor's accent.
 // ============================================================================
 // As much as possible derives from a small set of seeds:
 //   --glow-bg-base   — page background
@@ -31,39 +32,7 @@
 	--glow-color-warning: #f59e0b;
 	--glow-color-info: #3b82f6;
 
-	// Borders sit between bg and fg; same recipe works in both light and dark
-	// modes because oklab interpolates symmetrically.
-	--glow-border-color: color-mix(in oklab, var(--glow-bg-base), var(--glow-fg) 16%);
-
-	// Primary hover/active. White lightens in both modes; black darkens.
-	--glow-primary-hover: color-mix(in oklab, var(--glow-primary), white 15%);
-	--glow-primary-active: color-mix(in oklab, var(--glow-primary), black 10%);
-
-	// Soft / strong primary tints — for hover backgrounds, focus rings, etc.
-	// Replace ad-hoc `rgba($primary, 0.05/0.15/0.30)` with these.
-	--glow-primary-soft: color-mix(in oklab, var(--glow-primary) 10%, transparent);
-	--glow-primary-soft-strong: color-mix(in oklab, var(--glow-primary) 30%, transparent);
-
-	// Secondary is a 10% wash of primary into the surface — derived too, so
-	// retinting `--glow-primary` repaints `selected` / `pill` backgrounds.
-	--glow-secondary: color-mix(in oklab, var(--glow-primary) 10%, var(--glow-bg-surface));
-	--glow-secondary-hover: color-mix(in oklab, var(--glow-secondary), white 15%);
-	--glow-secondary-active: color-mix(in oklab, var(--glow-secondary), black 10%);
-
-	// Foreground alpha variants — soft hover/disabled tints derived from fg.
-	--glow-fg-soft: color-mix(in oklab, var(--glow-fg) 5%, transparent);
-	--glow-fg-soft-strong: color-mix(in oklab, var(--glow-fg) 15%, transparent);
-
-	// Text colours derive from fg via alpha mixing (so a custom fg flows through).
-	--glow-text-primary: var(--glow-fg);
-	--glow-text-secondary: color-mix(in oklab, var(--glow-fg) 70%, transparent);
-	--glow-text-muted: color-mix(in oklab, var(--glow-fg) 50%, transparent);
-
-	// Semantic hover variants — same recipe.
-	--glow-color-danger-hover: color-mix(in oklab, var(--glow-color-danger), white 12%);
-	--glow-color-success-hover: color-mix(in oklab, var(--glow-color-success), white 12%);
-	--glow-color-warning-hover: color-mix(in oklab, var(--glow-color-warning), white 12%);
-	--glow-color-info-hover: color-mix(in oklab, var(--glow-color-info), white 12%);
+	@include derived-theme-tokens;
 }
 
 [data-theme='light'] {
@@ -76,7 +45,11 @@
 	--glow-color-success: #16a34a;
 	--glow-color-warning: #d97706;
 	--glow-color-info: #2563eb;
-	// All other tokens derive from the seeds above via the recipes on `:root`.
+
+	// Re-run the recipes against the light seeds. Inheriting them from `:root`
+	// is not enough: custom properties are substituted per element, so the
+	// inherited values are already resolved against the *dark* seeds.
+	@include derived-theme-tokens;
 }
 
 // Settings / Field / Section spacing tokens.
@@ -149,8 +122,10 @@ main {
     font-family: $font-family;
     font-size: $text-base;
     font-weight: $weight-semibold;
-    background-color: $bg-base;
-    color: $text-primary;
+    // Custom properties, not the frozen Sass seeds: `<Root>` mirrors its theme
+    // onto <html>, and the page canvas has to follow it into light mode.
+    background-color: var(--glow-bg-base);
+    color: var(--glow-text-primary);
 }
 
 // Headings
@@ -201,7 +176,7 @@ h5 {
 h6 {
     font-size: $h6;
     margin-bottom: 0.5rem;
-    color: $text-secondary;
+    color: var(--glow-text-secondary);
 }
 
 // Paragraphs and text
@@ -249,7 +224,7 @@ i {
 // Small text
 small {
     font-size: $text-sm;
-    color: $text-secondary;
+    color: var(--glow-text-secondary);
 }
 
 // Scrollbars — overlay, macOS-style
@@ -258,7 +233,7 @@ small {
     scrollbar-color: transparent transparent;
 
     &:hover {
-        scrollbar-color: rgba($fg, 0.2) transparent;
+        scrollbar-color: color-mix(in oklab, var(--glow-fg) 20%, transparent) transparent;
     }
 }
 
@@ -279,9 +254,9 @@ small {
 }
 
 *:hover::-webkit-scrollbar-thumb {
-    background: rgba($fg, 0.15);
+    background: color-mix(in oklab, var(--glow-fg) 15%, transparent);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba($fg, 0.3);
+    background: color-mix(in oklab, var(--glow-fg) 30%, transparent);
 }

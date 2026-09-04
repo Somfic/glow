@@ -378,11 +378,11 @@
 
 		&.open {
 			border-color: var(--glow-primary);
-			box-shadow: 0 0 0 2px rgba($primary, 0.3);
+			box-shadow: 0 0 0 2px color-mix(in oklab, var(--glow-primary) 30%, transparent);
 		}
 
 		&:hover:not(:disabled) {
-			background-color: rgba($fg, 0.05);
+			background-color: color-mix(in oklab, var(--glow-fg) 5%, transparent);
 		}
 
 		&:disabled {
@@ -444,7 +444,7 @@
 			position: absolute;
 			inset: 0;
 			border-radius: 50%;
-			border: 4px solid $bg-surface-element;
+			border: 4px solid var(--glow-bg-surface-element);
 			pointer-events: none;
 		}
 	}
@@ -468,7 +468,7 @@
 	.chroma-ring {
 		position: absolute;
 		border-radius: 50%;
-		border: 1px dashed rgba($fg, 0.15);
+		border: 1px dashed color-mix(in oklab, var(--glow-fg) 15%, transparent);
 	}
 
 	.hc-cursor {
@@ -496,7 +496,7 @@
 	.slider-label {
 		font-size: 0.75rem;
 		font-weight: $weight-medium;
-		color: rgba($fg, 0.7);
+		color: color-mix(in oklab, var(--glow-fg) 70%, transparent);
 		margin-left: 0.5em;
 	}
 

@@ -161,8 +161,6 @@
 <style lang="scss">
 	@use '../style/theme.scss' as *;
 
-	$danger: #ef4444;
-
 	.image-upload {
 		display: inline-block;
 
@@ -193,12 +191,12 @@
 		justify-content: center;
 		gap: 0.25rem;
 		background: var(--glow-bg-surface);
-		border: 2px dashed $border-color;
+		border: 2px dashed var(--glow-border-color);
 		border-radius: $radius;
 		cursor: pointer;
 		overflow: hidden;
 		transition: border-color 150ms ease;
-		color: rgba($fg, 0.5);
+		color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 
 		&:hover:not(.disabled) {
 			border-color: var(--glow-primary);
@@ -255,13 +253,13 @@
 	}
 
 	.remove-btn:hover {
-		background: $danger !important;
+		background: var(--glow-color-danger) !important;
 	}
 
 	.spinner {
 		width: 1.5rem;
 		height: 1.5rem;
-		border: 2px solid $border-color;
+		border: 2px solid var(--glow-border-color);
 		border-top-color: var(--glow-primary);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;

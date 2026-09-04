@@ -120,7 +120,7 @@
 	}
 
 	.range-track {
-		background: rgba($fg, 0.15);
+		background: color-mix(in oklab, var(--glow-fg) 15%, transparent);
 	}
 
 	.range-fill {

@@ -247,11 +247,11 @@
 
 		&.open {
 			border-color: var(--glow-primary);
-			box-shadow: 0 0 0 2px rgba($primary, 0.3);
+			box-shadow: 0 0 0 2px color-mix(in oklab, var(--glow-primary) 30%, transparent);
 		}
 
 		&:hover:not(:disabled) {
-			background-color: rgba($fg, 0.05);
+			background-color: color-mix(in oklab, var(--glow-fg) 5%, transparent);
 		}
 
 		&:disabled {
@@ -260,7 +260,7 @@
 		}
 
 		&.placeholder .value-text {
-			color: rgba($fg, 0.5);
+			color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 		}
 
 		.value-text {
@@ -276,14 +276,14 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		color: rgba($fg, 0.6);
+		color: color-mix(in oklab, var(--glow-fg) 60%, transparent);
 		cursor: pointer;
 		border-radius: 999px;
 		padding: 2px;
 
 		&:hover {
 			color: var(--glow-fg);
-			background: rgba($fg, 0.08);
+			background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
 		}
 	}
 
@@ -313,7 +313,7 @@
 		cursor: pointer;
 
 		&:hover {
-			background: rgba($fg, 0.06);
+			background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		}
 	}
 
@@ -330,7 +330,7 @@
 		cursor: pointer;
 
 		&:hover {
-			background: rgba($fg, 0.06);
+			background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
 			color: var(--glow-fg);
 		}
 	}
@@ -361,7 +361,7 @@
 		height: 2rem;
 		font: inherit;
 		font-size: $text-sm;
-		color: rgba($fg, 0.45);
+		color: color-mix(in oklab, var(--glow-fg) 45%, transparent);
 		background: transparent;
 		border: 0;
 		border-radius: $radius * 0.5;
@@ -373,16 +373,16 @@
 		}
 
 		&:hover:not(:disabled) {
-			background: rgba($fg, 0.06);
+			background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		}
 
 		&.today {
-			outline: 2px solid rgba($primary, 0.45);
+			outline: 2px solid color-mix(in oklab, var(--glow-primary) 45%, transparent);
 		}
 
 		&.selected {
 			background: var(--glow-primary);
-			color: white;
+			@include contrast-color(var(--glow-primary), $fallback: white);
 
 			&:hover {
 				background: var(--glow-primary);

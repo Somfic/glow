@@ -74,7 +74,7 @@
 		color: var(--glow-text-secondary);
 		font-weight: $weight-semibold;
 		margin-left: var(--overlap);
-		box-shadow: 0 0 0 2px $bg-base;
+		box-shadow: 0 0 0 2px var(--glow-bg-base);
 		flex-shrink: 0;
 		transition: margin-left 0.25s ease;
 	}

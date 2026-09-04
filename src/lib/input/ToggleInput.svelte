@@ -57,7 +57,7 @@
 		position: relative;
 		width: 36px;
 		height: 20px;
-		background-color: rgba($fg, 0.2);
+		background-color: color-mix(in oklab, var(--glow-fg) 20%, transparent);
 		border: none;
 		border-radius: 10px;
 		cursor: pointer;
@@ -69,7 +69,7 @@
 		}
 
 		&:not(:disabled):hover {
-			background-color: rgba($fg, 0.25);
+			background-color: color-mix(in oklab, var(--glow-fg) 25%, transparent);
 
 			&.checked {
 				background-color: var(--glow-primary-hover);
@@ -83,7 +83,7 @@
 		left: 2px;
 		width: 16px;
 		height: 16px;
-		background-color: white;
+		@include contrast-color(var(--glow-bg-surface), $property: background-color, $fallback: white);
 		border-radius: 50%;
 		transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);

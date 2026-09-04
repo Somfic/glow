@@ -375,7 +375,7 @@
 		// A real dashed border so it follows `border-radius` cleanly at the
 		// corners. Background tints separately so the dash + fill animate
 		// independently on drag-over.
-		border: 1.5px dashed rgba($fg, 0.18);
+		border: 1.5px dashed color-mix(in oklab, var(--glow-fg) 18%, transparent);
 		background: color-mix(in oklab, var(--glow-bg-surface-element) 80%, transparent);
 		cursor: pointer;
 		text-align: center;
@@ -441,7 +441,7 @@
 
 	.fu-sub {
 		font-size: 0.825rem;
-		color: rgba($fg, 0.6);
+		color: color-mix(in oklab, var(--glow-fg) 60%, transparent);
 	}
 
 	.fu-hint {
@@ -449,7 +449,7 @@
 		font-size: 0.7rem;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
-		color: rgba($fg, 0.4);
+		color: color-mix(in oklab, var(--glow-fg) 40%, transparent);
 	}
 
 	/* ----- Decorative corner grabs -------------------------------------- */
@@ -515,11 +515,11 @@
 		padding: 0.45rem 0.6rem 0.45rem 0.45rem;
 		border-radius: 8px;
 		background: var(--glow-bg-surface-element);
-		border: 1px solid rgba($fg, 0.06);
+		border: 1px solid color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		transition: border-color var(--glow-dur-fast) $ease-out, background var(--glow-dur-fast) $ease-out;
 
 		&:hover {
-			border-color: rgba($fg, 0.12);
+			border-color: color-mix(in oklab, var(--glow-fg) 12%, transparent);
 		}
 	}
 
@@ -529,7 +529,7 @@
 		height: 40px;
 		border-radius: 6px;
 		overflow: hidden;
-		background: rgba($fg, 0.06);
+		background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -543,7 +543,7 @@
 	}
 
 	.fu-thumb-icon {
-		color: rgba($fg, 0.6);
+		color: color-mix(in oklab, var(--glow-fg) 60%, transparent);
 	}
 
 	.fu-thumb-tag {
@@ -579,7 +579,7 @@
 	.fu-size {
 		font-size: 0.7rem;
 		font-variant-numeric: tabular-nums;
-		color: rgba($fg, 0.5);
+		color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 	}
 
 	.fu-row-actions {
@@ -596,13 +596,13 @@
 		height: 24px;
 		border-radius: 6px;
 		background: transparent;
-		color: rgba($fg, 0.55);
+		color: color-mix(in oklab, var(--glow-fg) 55%, transparent);
 		border: none;
 		cursor: pointer;
 		transition: background var(--glow-dur-fast) $ease-out, color var(--glow-dur-fast) $ease-out;
 
 		&:hover {
-			background: rgba($fg, 0.1);
+			background: color-mix(in oklab, var(--glow-fg) 10%, transparent);
 			color: var(--glow-fg);
 		}
 	}

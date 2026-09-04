@@ -134,11 +134,11 @@
 		}
 
 		&.danger {
-			color: #ef4444;
+			color: var(--glow-color-danger);
 
 			&:hover:not(.disabled),
 			&.active:not(.disabled) {
-				background: rgba(#ef4444, 0.1);
+				background: color-mix(in oklab, var(--glow-color-danger) 10%, transparent);
 			}
 		}
 	}

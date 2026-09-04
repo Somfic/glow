@@ -96,7 +96,7 @@
 		transition: background 0.15s, color 0.15s;
 
 		&:hover:not(:disabled) {
-			background: rgba($fg, 0.08);
+			background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
 			color: var(--glow-fg);
 		}
 
@@ -123,7 +123,7 @@
 		cursor: pointer;
 
 		&:focus {
-			outline: 1px solid $primary;
+			outline: 1px solid var(--glow-primary);
 		}
 	}
 </style>

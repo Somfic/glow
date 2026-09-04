@@ -244,7 +244,7 @@
 
 		&.open {
 			border-color: var(--glow-primary);
-			box-shadow: 0 0 0 2px rgba($primary, 0.3);
+			box-shadow: 0 0 0 2px color-mix(in oklab, var(--glow-primary) 30%, transparent);
 		}
 
 		&:disabled {
@@ -267,19 +267,19 @@
 		border: none;
 		padding: 0.25em;
 		cursor: pointer;
-		color: rgba($fg, 0.5);
+		color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 		border-radius: $radius;
 
 		&:hover {
 			color: var(--glow-fg);
-			background: rgba($fg, 0.1);
+			background: color-mix(in oklab, var(--glow-fg) 10%, transparent);
 		}
 	}
 
 	.chevron {
 		display: flex;
 		align-items: center;
-		color: rgba($fg, 0.5);
+		color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 		transition: transform 0.2s ease;
 		padding: 0.25em;
 		border-radius: $radius;
@@ -287,7 +287,7 @@
 
 		&:hover {
 			color: var(--glow-fg);
-			background: rgba($fg, 0.1);
+			background: color-mix(in oklab, var(--glow-fg) 10%, transparent);
 		}
 	}
 
@@ -311,7 +311,7 @@
 		white-space: nowrap;
 
 		&.placeholder {
-			color: rgba($fg, 0.5);
+			color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 		}
 	}
 
@@ -361,7 +361,7 @@
 		outline: none;
 
 		&::placeholder {
-			color: rgba($fg, 0.5);
+			color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 		}
 	}
 
@@ -371,14 +371,14 @@
 		justify-content: center;
 		gap: 0.5em;
 		padding: 1em;
-		color: rgba($fg, 0.6);
+		color: color-mix(in oklab, var(--glow-fg) 60%, transparent);
 		font-size: 0.875rem;
 	}
 
 	.loading-spinner {
 		width: 14px;
 		height: 14px;
-		border: 2px solid rgba($fg, 0.2);
+		border: 2px solid color-mix(in oklab, var(--glow-fg) 20%, transparent);
 		border-top-color: var(--glow-primary);
 		border-radius: 50%;
 		animation: spin 0.6s linear infinite;
@@ -393,7 +393,7 @@
 	.no-results {
 		padding: 1em;
 		text-align: center;
-		color: rgba($fg, 0.5);
+		color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 		font-size: 0.875rem;
 	}
 </style>

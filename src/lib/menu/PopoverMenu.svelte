@@ -577,7 +577,7 @@
 
 		&:not(:first-child) {
 			margin-top: 4px;
-			border-top: 1px solid rgba($fg, 0.06);
+			border-top: 1px solid color-mix(in oklab, var(--glow-fg) 6%, transparent);
 			padding-top: 8px;
 		}
 	}
@@ -640,7 +640,7 @@
 		transition: background 0.1s;
 
 		&:hover {
-			background: rgba($fg, 0.06);
+			background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		}
 
 		&.disabled {
@@ -652,9 +652,9 @@
 		}
 
 		&.danger {
-			color: #ef4444;
+			color: var(--glow-color-danger);
 			&:hover {
-				background: rgba(#ef4444, 0.1);
+				background: color-mix(in oklab, var(--glow-color-danger) 10%, transparent);
 			}
 		}
 	}
@@ -683,7 +683,7 @@
 
 		&.open {
 			border-color: var(--glow-primary);
-			box-shadow: 0 0 0 2px rgba($primary, 0.3);
+			box-shadow: 0 0 0 2px color-mix(in oklab, var(--glow-primary) 30%, transparent);
 		}
 
 		&.disabled {
@@ -739,7 +739,7 @@
 		top: -4px;
 		left: calc(100% + 4px);
 		background: var(--glow-bg-surface-element);
-		border: 1px solid $border-color;
+		border: 1px solid var(--glow-border-color);
 		border-radius: $radius * 0.75;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 		z-index: 1;

@@ -80,9 +80,9 @@
 	}
 
 	.variant-neutral {
-		background: rgba($primary, 0.08);
-		border-color: rgba($primary, 0.2);
-		color: rgba($fg, 0.92);
+		background: color-mix(in oklab, var(--glow-primary) 8%, transparent);
+		border-color: color-mix(in oklab, var(--glow-primary) 20%, transparent);
+		color: color-mix(in oklab, var(--glow-fg) 92%, transparent);
 
 		.icon {
 			color: var(--glow-primary);

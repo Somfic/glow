@@ -1,20 +1,27 @@
-@use 'sass:color' as color;
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
 
 // ============================================================================
 // Token sources
 //
-// Every theme color exists in two forms:
-//   - Sass variable ($primary etc.) — used at build time for places that mix
-//     alpha into a color (`rgba($primary, 0.3)`) or run color math like
-//     `color.scale`. These stay frozen at the dark-theme defaults below.
-//   - CSS custom property (--glow-primary etc.) — read at runtime. Anywhere a
-//     color is used directly (background, color, border-color), prefer the
-//     custom property so consumers can override it on a parent: e.g.
-//     `<div style="--glow-primary: #1db954">` to repaint the whole subtree.
+// Colour reaches components as CSS custom properties only, so every one of them
+// follows the theme at runtime. Two kinds of name live here:
+//   - Seeds ($bg-base, $fg, $primary, …) are literal values, and their ONLY job
+//     is to be interpolated into the token declarations in `global.scss`. Change
+//     one to retune the dark default. Do not use them in component styles: a
+//     literal cannot follow `data-theme`.
+//   - Aliases ($border, $text-secondary, …) are thin wrappers over `var(--glow-*)`,
+//     kept because they read better in component styles and because `$border`
+//     bundles width+style+colour. They carry no colour of their own.
 //
-// `<ThemeProvider>` flips `data-theme="light|dark"` on its root, which selects
-// the appropriate set of CSS custom properties below.
+// For a tint of a token, mix it rather than reaching for `rgba()`:
+// `color-mix(in oklab, var(--glow-fg) 8%, transparent)`. `rgba()` needs a real
+// colour and silently fails on a `var()`.
+//
+// To retint a subtree, go through `<Root>` or `<ThemeProvider>` rather than a
+// bare `<div style="--glow-primary: …">`. Both stamp `data-theme`, which is what
+// re-runs the `derived-theme-tokens` recipes against the new seed; a bare inline
+// style moves the seed but leaves every hover/active/soft/secondary token
+// resolved against the ancestor's accent.
 // ============================================================================
 
 $bg-base: #090A13;
@@ -23,19 +30,19 @@ $bg-surface-element: #1e1f29;
 
 $fg: #eee;
 
-$primary: #f5f5f5;
-$primary-hover: color.scale($primary, $lightness: 15%);
-$primary-active: color.scale($primary, $lightness: -10%);
+$primary: #e2ae4d;
 
-$secondary: color.mix($primary, $bg-surface, 10%);
-$secondary-hover: color.scale($secondary, $lightness: 15%);
-$secondary-active: color.scale($secondary, $lightness: -10%);
+// The hover/active/secondary ramps used to be `color.scale` over the seed above.
+// They are now `derived-theme-tokens` recipes in `global.scss`, which re-run per
+// theme instead of freezing at the dark default — use `var(--glow-primary-hover)`
+// and friends.
 
+// --- Aliases over the runtime tokens ---------------------------------------
 $tertiary: transparent;
-$tertiary-hover: rgba($fg, 0.08);
-$tertiary-active: rgba($fg, 0.03);
+$tertiary-hover: color-mix(in oklab, var(--glow-fg) 8%, transparent);
+$tertiary-active: color-mix(in oklab, var(--glow-fg) 3%, transparent);
 
-$border-color: #30313C;
+$border-color: var(--glow-border-color);
 $border-width: 1px;
 $border: $border-width solid $border-color;
 
@@ -99,14 +106,61 @@ $weight-medium:   500;
 $weight-semibold: 600;
 $weight-bold:     700;
 
-// Text colors
-$text-primary: $fg;
-$text-secondary: rgba($fg, 0.7);
-$text-muted: rgba($fg, 0.5);
+// Text colors — aliases over the runtime tiers, which derive from --glow-fg.
+$text-primary: var(--glow-text-primary);
+$text-secondary: var(--glow-text-secondary);
+$text-muted: var(--glow-text-muted);
 
 // NOTE: density CSS custom properties (--glow-field-*, --glow-section-*) live
 // in global.scss so they're declared once at the document root rather than
 // re-emitted into every component's scoped style by the per-file `@use`.
+
+// ============================================================================
+// Derived theme tokens
+//
+// Every token here is a recipe over the seed tokens (--glow-bg-*, --glow-fg,
+// --glow-primary, --glow-color-*). It is a mixin rather than a one-off block
+// on `:root` because custom properties are substituted per element: an element
+// that changes a seed inherits the *already-resolved* derived values from its
+// ancestor, so `--glow-primary-hover` would stay frozen at the root's accent.
+// Anywhere seeds are (re)declared must re-include this — see `global.scss`.
+// ============================================================================
+@mixin derived-theme-tokens {
+	// Borders sit between bg and fg; same recipe works in both light and dark
+	// modes because oklab interpolates symmetrically. 21% is calibrated so the
+	// dark result lands on rgb(48 49 58) — the hand-picked #30313C this replaced.
+	--glow-border-color: color-mix(in oklab, var(--glow-bg-base), var(--glow-fg) 21%);
+
+	// Primary hover/active. White lightens in both modes; black darkens.
+	--glow-primary-hover: color-mix(in oklab, var(--glow-primary), white 15%);
+	--glow-primary-active: color-mix(in oklab, var(--glow-primary), black 10%);
+
+	// Soft / strong primary tints — for hover backgrounds, focus rings, etc.
+	// Replace ad-hoc `rgba($primary, 0.05/0.15/0.30)` with these.
+	--glow-primary-soft: color-mix(in oklab, var(--glow-primary) 10%, transparent);
+	--glow-primary-soft-strong: color-mix(in oklab, var(--glow-primary) 30%, transparent);
+
+	// Secondary is a 10% wash of primary into the surface — derived too, so
+	// retinting `--glow-primary` repaints `selected` / `pill` backgrounds.
+	--glow-secondary: color-mix(in oklab, var(--glow-primary) 10%, var(--glow-bg-surface));
+	--glow-secondary-hover: color-mix(in oklab, var(--glow-secondary), white 15%);
+	--glow-secondary-active: color-mix(in oklab, var(--glow-secondary), black 10%);
+
+	// Foreground alpha variants — soft hover/disabled tints derived from fg.
+	--glow-fg-soft: color-mix(in oklab, var(--glow-fg) 5%, transparent);
+	--glow-fg-soft-strong: color-mix(in oklab, var(--glow-fg) 15%, transparent);
+
+	// Text colours derive from fg via alpha mixing (so a custom fg flows through).
+	--glow-text-primary: var(--glow-fg);
+	--glow-text-secondary: color-mix(in oklab, var(--glow-fg) 70%, transparent);
+	--glow-text-muted: color-mix(in oklab, var(--glow-fg) 50%, transparent);
+
+	// Semantic hover variants — same recipe.
+	--glow-color-danger-hover: color-mix(in oklab, var(--glow-color-danger), white 12%);
+	--glow-color-success-hover: color-mix(in oklab, var(--glow-color-success), white 12%);
+	--glow-color-warning-hover: color-mix(in oklab, var(--glow-color-warning), white 12%);
+	--glow-color-info-hover: color-mix(in oklab, var(--glow-color-info), white 12%);
+}
 
 // Standard control box. Apply to anything that needs to sit next to a Button
 // and look the same height — inputs, selects, color pickers, etc.

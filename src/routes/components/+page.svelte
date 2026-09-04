@@ -5,34 +5,54 @@
 	import Grid from '$lib/layout/Grid.svelte';
 	import Flex from '$lib/layout/Flex.svelte';
 
+	// One entry per page under /components. Keep this in sync with the sidebar
+	// groups in +layout.svelte — between them they're the catalogue.
 	const components = [
+		{
+			category: 'Layout & Shell',
+			items: [
+				{ name: 'Page', href: '/components/page', description: 'The app shell — title, layout mode, top nav or sidebar' },
+				{ name: 'Sidebar', href: '/components/sidebar', description: 'Fixed navigation rail with groups and a collapsed mode' },
+				{ name: 'Layout', href: '/components/layout', description: 'Flex, Grid, Spacer, and Divider primitives' },
+				{ name: 'Card', href: '/components/card', description: 'Content cards' },
+				{ name: 'Split', href: '/components/split', description: 'Resizable pane container' },
+				{ name: 'Theme', href: '/components/theme', description: 'Light/dark and accent theming via design tokens' }
+			]
+		},
 		{
 			category: 'Form & Input',
 			items: [
 				{ name: 'Button', href: '/components/buttons', description: 'Buttons and button groups' },
-				{ name: 'Input', href: '/components/inputs', description: 'Form inputs and controls' },
+				{ name: 'Input', href: '/components/inputs', description: 'One component, thirteen input types' },
+				{ name: 'Settings & Fields', href: '/components/settings', description: 'Field, FieldRow, SettingsSection, SettingsShell' },
 				{ name: 'File Upload', href: '/components/file-upload', description: 'Drag-drop file picker with previews' },
-				{ name: 'Settings', href: '/components/settings', description: 'Section, Field, FieldRow, SettingsShell' }
+				{ name: 'Image Upload', href: '/components/image-upload', description: 'Avatar and thumbnail picker with an optional crop step' }
 			]
 		},
 		{
 			category: 'Data Display',
 			items: [
-				{ name: 'Table', href: '/components/table', description: 'Data tables with sorting and selection' },
-{ name: 'Data', href: '/components/data', description: 'Key-value pairs for detail panels' },
-				{ name: 'Card', href: '/components/card', description: 'Content cards' },
+				{ name: 'Table', href: '/components/table', description: 'Data tables with sorting, selection, and pagination' },
+				{ name: 'Data', href: '/components/data', description: 'Key-value pairs for detail panels' },
+				{ name: 'Virtual List', href: '/components/virtual-list', description: 'Windowed rendering and infinite scroll for long lists' },
+				{ name: 'List Item', href: '/components/list', description: 'One list row: title, subtitle, leading and trailing slots' },
+				{ name: 'Pagination', href: '/components/pagination', description: 'Page controls with a range readout and size picker' },
 				{ name: 'Pill', href: '/components/pill', description: 'Tags, labels, and status indicators' },
-				{ name: 'Avatar', href: '/components/avatar', description: 'User avatars with initials and status' },
-				{ name: 'Image', href: '/components/image', description: 'Smooth crossfade image transitions' }
+				{ name: 'Avatar', href: '/components/avatar', description: 'User avatars with initials and grouping' },
+				{ name: 'Media', href: '/components/media', description: 'Crossfading images and video with loading states' },
+				{ name: 'Lightbox', href: '/components/lightbox', description: 'Full-screen media overlay with a filmstrip' }
 			]
 		},
 		{
 			category: 'Navigation',
 			items: [
 				{ name: 'Tabs', href: '/components/tabs', description: 'Tab navigation' },
-				{ name: 'Split', href: '/components/split', description: 'Resizable pane container' },
+				{ name: 'Sortable', href: '/components/sortable', description: 'Drag-to-reorder action with handles and groups' },
+				{ name: 'Tier List', href: '/components/tierlist', description: 'Cross-container dragging, built from Sortable' },
 				{ name: 'Table of Contents', href: '/components/toc', description: 'Sticky navigation for long content' },
-				{ name: 'Popover Menu', href: '/components/popover-menu', description: 'Rich popover menus: items, toggles, submenus, custom snippets' }
+				{ name: 'Popover', href: '/components/popover', description: 'The anchoring primitive — flips, clamps, and portals' },
+				{ name: 'Popover Menu', href: '/components/popover-menu', description: 'Rich menus: items, toggles, submenus, custom snippets' },
+				{ name: 'Context Menu', href: '/components/context-menu', description: 'The same menu entries, opened by right-click' }
 			]
 		},
 		{
@@ -44,23 +64,31 @@
 				{ name: 'Drawer', href: '/components/drawer', description: 'Slide-in side panels' },
 				{ name: 'Toast', href: '/components/toast', description: 'Toast notifications' },
 				{ name: 'Notification Center', href: '/components/notification-center', description: 'Persistent, browsable inbox' },
-				{ name: 'Tooltip', href: '/components/tooltip', description: 'Hover tooltips' },
+				{ name: 'Tooltip', href: '/components/tooltip', description: 'Hover tooltips, including inside the cursor' },
 				{ name: 'Banner', href: '/components/banner', description: 'Alert banners' },
-				{ name: 'Spinner', href: '/components/spinner', description: 'Loading spinners' }
+				{ name: 'Spinner', href: '/components/spinner', description: 'Loading spinners' },
+				{ name: 'Skeleton', href: '/components/skeleton', description: 'Shimmering placeholders that hold a layout in place' }
 			]
 		},
 		{
 			category: 'Typography & Code',
 			items: [
-				{ name: 'Typography', href: '/components/typography', description: 'Text and headings' },
-				{ name: 'Code', href: '/components/code', description: 'Code blocks and syntax highlighting' }
+				{ name: 'Typography', href: '/components/typography', description: 'Heading, Text, Link, Kbd, Section, Markdown' },
+				{ name: 'Icon', href: '/components/icon', description: 'The full Lucide set, typed and searchable' },
+				{ name: 'Code', href: '/components/code', description: 'Inline code and syntax-highlighted blocks' }
 			]
 		},
 		{
 			category: 'Visual Effects',
 			items: [
-				{ name: 'Cursor', href: '/components/cursor', description: 'Custom cursor effects' },
+				{ name: 'Cursor', href: '/components/cursor', description: 'Context-aware custom cursor' },
 				{ name: 'Glow', href: '/components/glow', description: 'Flowing sheets of light (WebGL shader)' }
+			]
+		},
+		{
+			category: 'Utilities',
+			items: [
+				{ name: 'Actions & Helpers', href: '/components/utilities', description: 'useModal, registerShortcut, trapFocus, portal' }
 			]
 		}
 	];
@@ -69,19 +97,19 @@
 <svelte:head><title>Components | Glow UI</title></svelte:head>
 
 <Heading level={1}>Components</Heading>
-	<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
-		Explore all the components available in the Glow UI library.
-	</Text>
+<Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
+	Every component in the library has a page here, with live demos and a props table.
+</Text>
 
-	<Flex gap="lg">
-		{#each components as category}
-			<Flex gap="sm">
-				<Heading level={2}>{category.category}</Heading>
-				<Grid min="280px" gap="md">
-					{#each category.items as component}
-						<Card href={component.href} title={component.name} description={component.description} />
-					{/each}
-				</Grid>
-			</Flex>
-		{/each}
-	</Flex>
+<Flex gap="lg">
+	{#each components as category}
+		<Flex gap="sm">
+			<Heading level={2}>{category.category}</Heading>
+			<Grid min="280px" gap="md">
+				{#each category.items as component}
+					<Card href={component.href} title={component.name} description={component.description} />
+				{/each}
+			</Grid>
+		</Flex>
+	{/each}
+</Flex>

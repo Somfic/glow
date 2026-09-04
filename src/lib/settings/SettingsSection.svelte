@@ -137,14 +137,14 @@
 
 		&.bordered + :global(.section.bordered) {
 			padding-top: var(--glow-section-spacing);
-			border-top: 1px solid rgba($fg, 0.06);
+			border-top: 1px solid color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		}
 
 		&.card {
 			padding: 1rem 1.125rem;
 			border-radius: $radius * 0.75;
-			background: rgba($fg, 0.025);
-			border: 1px solid rgba($fg, 0.05);
+			background: color-mix(in oklab, var(--glow-fg) 2.5%, transparent);
+			border: 1px solid color-mix(in oklab, var(--glow-fg) 5%, transparent);
 		}
 	}
 

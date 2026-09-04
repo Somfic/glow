@@ -23,8 +23,8 @@
 		display: inline-block;
 		width: 1em;
 		height: 1em;
-		border: 2px solid rgba($fg, 0.2);
-		border-top-color: var(--spinner-color, #{$primary});
+		border: 2px solid color-mix(in oklab, var(--glow-fg) 20%, transparent);
+		border-top-color: var(--spinner-color, #{var(--glow-primary)});
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 		flex-shrink: 0;

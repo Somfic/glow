@@ -61,9 +61,9 @@
 		display: block;
 		background: linear-gradient(
 			90deg,
-			rgba($fg, 0.06) 0%,
-			rgba($fg, 0.14) 50%,
-			rgba($fg, 0.06) 100%
+			color-mix(in oklab, var(--glow-fg) 6%, transparent) 0%,
+			color-mix(in oklab, var(--glow-fg) 14%, transparent) 50%,
+			color-mix(in oklab, var(--glow-fg) 6%, transparent) 100%
 		);
 		background-size: 200% 100%;
 		animation: skeleton-shimmer 1.4s ease-in-out infinite;
@@ -87,7 +87,7 @@
 	@media (prefers-reduced-motion: reduce) {
 		.skeleton {
 			animation: none;
-			background: rgba($fg, 0.1);
+			background: color-mix(in oklab, var(--glow-fg) 10%, transparent);
 		}
 	}
 </style>

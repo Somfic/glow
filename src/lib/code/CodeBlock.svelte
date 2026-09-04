@@ -210,7 +210,7 @@
 		}
 
 		&:hover {
-			background: rgba($fg, 0.05);
+			background: color-mix(in oklab, var(--glow-fg) 5%, transparent);
 			margin-left: -0.5rem;
 			margin-right: -0.5rem;
 			padding-left: 0.5rem;
@@ -223,19 +223,19 @@
 		}
 
 		&:active {
-			background: rgba($fg, 0.1);
+			background: color-mix(in oklab, var(--glow-fg) 10%, transparent);
 		}
 	}
 
 	.shell-prompt {
-		color: #22c55e;
+		color: var(--glow-color-success);
 		font-weight: $weight-bold;
 		user-select: none;
 		flex-shrink: 0;
 	}
 
 	.shell-command {
-		color: rgba($fg, 0.95);
+		color: color-mix(in oklab, var(--glow-fg) 95%, transparent);
 		flex: 1;
 	}
 

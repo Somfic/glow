@@ -690,7 +690,7 @@ import {'{ Button }'} from 'glow'</pre>
 {/snippet}
 
 {#snippet scssPreview(_cmd: Command)}
-	<pre style="font-family: ui-monospace, monospace; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; opacity: 0.9; margin: 0;">$primary: #8B6DED;
+	<pre style="font-family: ui-monospace, monospace; font-size: 0.8rem; white-space: pre-wrap; line-height: 1.5; opacity: 0.9; margin: 0;">var(--glow-primary): #8B6DED;
 $radius: 12px;
 
 $dur-instant: 100ms;

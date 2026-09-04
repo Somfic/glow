@@ -194,7 +194,7 @@
 		padding: 0 1em;
 		border: none;
 		background: transparent;
-		color: rgba($fg, 0.7);
+		color: color-mix(in oklab, var(--glow-fg) 70%, transparent);
 		font: inherit;
 		font-size: 1rem;
 		line-height: 1;

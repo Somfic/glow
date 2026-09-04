@@ -202,7 +202,7 @@
 		max-width: min(480px, calc(100vw - 16px));
 		max-height: var(--cpp-max-height);
 		background: var(--glow-bg-surface, #1a1a1a);
-		border: 1px solid rgba($fg, 0.12);
+		border: 1px solid color-mix(in oklab, var(--glow-fg) 12%, transparent);
 		border-radius: $radius;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 		color: var(--glow-fg, #fff);
@@ -223,7 +223,7 @@
 	.cpp-empty {
 		padding: 0.75rem;
 		text-align: center;
-		color: rgba($fg, 0.55);
+		color: color-mix(in oklab, var(--glow-fg) 55%, transparent);
 		font-size: 0.8rem;
 	}
 
@@ -231,7 +231,7 @@
 		font-size: 0.65rem;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
-		color: rgba($fg, 0.5);
+		color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 		padding: 0.4rem 0.55rem 0.2rem;
 	}
 </style>

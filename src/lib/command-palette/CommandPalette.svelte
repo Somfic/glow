@@ -668,7 +668,7 @@
 
 	%cp-floating {
 		background: var(--glow-bg-surface, #1a1a1a);
-		border: 1px solid rgba($fg, 0.12);
+		border: 1px solid color-mix(in oklab, var(--glow-fg) 12%, transparent);
 		border-radius: $radius;
 		box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
 		overflow: hidden;
@@ -707,7 +707,7 @@
 
 	.cp-preview-desc {
 		font-size: 0.8rem;
-		color: rgba($fg, 0.65);
+		color: color-mix(in oklab, var(--glow-fg) 65%, transparent);
 		line-height: 1.4;
 	}
 
@@ -718,7 +718,7 @@
 		padding: 0.75rem 0.85rem;
 		min-height: 3rem;
 		box-sizing: border-box;
-		background: rgba(255, 255, 255, 0.02);
+		background: color-mix(in oklab, var(--glow-fg) 2%, transparent);
 		border-bottom: 1px solid var(--glow-border-color);
 	}
 
@@ -759,7 +759,7 @@
 	}
 
 	.cp-input-placeholder {
-		color: rgba($fg, 0.45);
+		color: color-mix(in oklab, var(--glow-fg) 45%, transparent);
 	}
 
 	.cp-input-text {
@@ -865,7 +865,7 @@
 	.cp-empty {
 		padding: 1.5rem;
 		text-align: center;
-		color: rgba($fg, 0.55);
+		color: color-mix(in oklab, var(--glow-fg) 55%, transparent);
 		font-size: 0.875rem;
 	}
 
@@ -873,7 +873,7 @@
 		font-size: 0.7rem;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
-		color: rgba($fg, 0.5);
+		color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 		padding: 0.55rem 0.6rem 0.3rem;
 	}
 
@@ -923,8 +923,8 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.25rem;
-		background: rgba($fg, 0.08);
-		color: rgba($fg, 0.7);
+		background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
+		color: color-mix(in oklab, var(--glow-fg) 70%, transparent);
 		border: none;
 		border-radius: 4px;
 		padding: 0.15rem 0.4rem;
@@ -935,7 +935,7 @@
 		transition: background var(--glow-dur-instant) $ease-out, color var(--glow-dur-instant) $ease-out;
 
 		&:hover {
-			background: rgba($fg, 0.14);
+			background: color-mix(in oklab, var(--glow-fg) 14%, transparent);
 			color: var(--glow-fg);
 		}
 

@@ -263,7 +263,7 @@
 	.split-handle {
 		position: relative;
 		flex: 0 0 auto;
-		background: rgba($fg, 0.08);
+		background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
 		border: none;
 		padding: 0;
 		z-index: 1;

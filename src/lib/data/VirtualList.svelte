@@ -218,7 +218,7 @@
 	.spinner {
 		width: 24px;
 		height: 24px;
-		border: 2px solid rgba($primary, 0.3);
+		border: 2px solid color-mix(in oklab, var(--glow-primary) 30%, transparent);
 		border-top-color: var(--glow-primary);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;

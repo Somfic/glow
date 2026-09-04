@@ -97,7 +97,7 @@
 		&:focus-within {
 			outline: none;
 			border-color: var(--glow-primary);
-			box-shadow: 0 0 0 2px rgba($primary, 0.3);
+			box-shadow: 0 0 0 2px color-mix(in oklab, var(--glow-primary) 30%, transparent);
 		}
 
 		&.disabled {
@@ -124,7 +124,7 @@
 			}
 
 			&::placeholder {
-				color: rgba($fg, 0.5);
+				color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 			}
 		}
 	}
@@ -149,12 +149,12 @@
 		border: none;
 		padding: 0.25em;
 		cursor: pointer;
-		color: rgba($fg, 0.5);
+		color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 		border-radius: $radius;
 
 		&:hover {
 			color: var(--glow-fg);
-			background: rgba($fg, 0.1);
+			background: color-mix(in oklab, var(--glow-fg) 10%, transparent);
 		}
 
 		:global(svg) {

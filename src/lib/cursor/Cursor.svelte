@@ -173,7 +173,7 @@
 			border-radius: 2px !important;
 			background: rgba(255, 255, 255, 0.95) !important;
 			box-shadow:
-				0 0 8px rgba($primary, 0.6),
+				0 0 8px color-mix(in oklab, var(--glow-primary) 60%, transparent),
 				0 0 4px rgba(255, 255, 255, 0.8) !important;
 			padding: 0 !important;
 		}
@@ -185,7 +185,7 @@
 			border-radius: 2px !important;
 			background: rgba(255, 255, 255, 0.95) !important;
 			box-shadow:
-				0 0 8px rgba($primary, 0.6),
+				0 0 8px color-mix(in oklab, var(--glow-primary) 60%, transparent),
 				0 0 4px rgba(255, 255, 255, 0.8) !important;
 			padding: 0 !important;
 		}

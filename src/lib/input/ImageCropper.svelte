@@ -204,7 +204,7 @@
 	}
 
 	:global(.cropper-view-box) {
-		outline: 2px solid $primary !important;
+		outline: 2px solid var(--glow-primary) !important;
 		outline-color: var(--glow-primary) !important;
 	}
 
@@ -225,7 +225,7 @@
 	}
 
 	:global(.cropper-dashed) {
-		border-color: rgba($fg, 0.3) !important;
+		border-color: color-mix(in oklab, var(--glow-fg) 30%, transparent) !important;
 	}
 
 	:global(.cropper-center) {

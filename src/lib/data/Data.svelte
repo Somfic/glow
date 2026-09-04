@@ -116,7 +116,7 @@
 
 	.divided .property-group + .property-group {
 		padding-top: 1rem;
-		border-top: 1px solid rgba($border-color, 0.5);
+		border-top: 1px solid color-mix(in oklab, var(--glow-border-color) 50%, transparent);
 		margin-left: calc(-1 * var(--pl-padding));
 		margin-right: calc(-1 * var(--pl-padding));
 		padding-left: var(--pl-padding);

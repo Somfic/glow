@@ -51,7 +51,7 @@ export {
 } from "./command-palette/useCommandList.svelte.js";
 export type { Command, CommandContext, CommandGroup } from "./command-palette/types.js";
 export { default as Toast } from "./toast/Toast.svelte";
-export { default as ToastContainer } from "./toast/ToastContainer.svelte";
+export { default as ToastContainer, type ToastPosition } from "./toast/ToastContainer.svelte";
 export { toast, showToast, dismissToast, toasts } from "./toast/toast.svelte.js";
 export type { Toast as ToastType, ToastVariant, ToastOptions } from "./toast/toast.svelte.js";
 export { default as FileUpload } from "./file-upload/FileUpload.svelte";
@@ -121,6 +121,7 @@ export { sortable, type SortableOptions } from "./sortable/sortable.js";
 
 // Theming
 export { default as ThemeProvider, type ThemeMode } from "./style/ThemeProvider.svelte";
+export { default as Root } from "./root/Root.svelte";
 
 // Data display components
 export { default as Table } from "./data/Table.svelte";

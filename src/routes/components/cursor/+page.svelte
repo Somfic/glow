@@ -9,6 +9,11 @@
 	import { tooltip } from '$lib/tooltip/tooltip.svelte.js';
 	import { cursor } from '$lib/cursor/cursor.svelte.js';
 	import Table from '$lib/data/Table.svelte';
+	import CursorProvider from '$lib/cursor/CursorProvider.svelte';
+
+	// The docs site doesn't mount CursorProvider globally, so the Setup demo
+	// below opts in on request rather than forcing it on every page.
+	let providerOn = $state(false);
 
 	// Async action for loading demo
 	async function simulateAsync() {
@@ -24,6 +29,49 @@
 		An innovative custom cursor system that morphs based on context, showing icons, tooltips, and
 		loading states directly in the cursor itself.
 	</Text>
+
+	<Card title="Setup" id="setup">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Nothing happens until <Code>CursorProvider</Code> is mounted once, near the root of your app.
+			It hides the native cursor (via a global <Code>cursor: none</Code> rule), runs the animation
+			loop, and reads the element under the cursor each frame to decide which state to show. It
+			takes no props, and it no-ops on touch devices — so a phone keeps its native behaviour.
+		</Text>
+		<CodeBlock
+			language="svelte"
+			code={`<!-- src/routes/+layout.svelte -->
+<script lang="ts">
+  import { CursorProvider, Page } from 'glow';
+
+  let { children } = $props();
+</script>
+
+<CursorProvider />
+
+<Page title="My App" {sidebarConfig}>
+  {@render children?.()}
+</Page>`}
+		/>
+		<Text variant="secondary" size="sm" style="margin: 1rem 0;">
+			These docs deliberately don't mount it globally, so the rest of the site keeps a normal
+			cursor. Turn it on here to try it — it affects the whole tab until you turn it back off, and
+			unmounting restores the native cursor.
+		</Text>
+		<div style="display: flex; gap: 1rem; align-items: center;">
+			<Button
+				variant={providerOn ? 'danger' : 'primary'}
+				label={providerOn ? 'Disable custom cursor' : 'Enable custom cursor'}
+				icon={providerOn ? 'MousePointerBan' : 'MousePointer2'}
+				onclick={() => (providerOn = !providerOn)}
+			/>
+			<Text size="sm" variant="secondary">
+				{providerOn ? 'Mounted — move around the page.' : 'Not mounted.'}
+			</Text>
+		</div>
+		{#if providerOn}
+			<CursorProvider />
+		{/if}
+	</Card>
 
 	<Card title="Interactive Demos" id="demos">
 		<div style="display: flex; flex-direction: column; gap: 1.5rem;">
@@ -48,7 +96,7 @@
 					<Button icon="Trash" label="Delete" variant="ghost" />
 					<Button icon="Info" />
 					<Button icon="Volleyball" />
-					<a href="#demo">plain link</a>
+					<a href="#demos">plain link</a>
 				</div>
 			</div>
 
@@ -148,8 +196,9 @@ bun run dev`}
 
 	<Card title="Usage" id="usage">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-			The cursor is automatically initialized and doesn't require manual setup. It responds to
-			various interactions throughout the application.
+			Once <Code>CursorProvider</Code> is mounted (see <a href="#setup">Setup</a>), most states are
+			inferred from the element under the cursor — no per-element wiring. Reach for the
+			<Code>cursor</Code> action only where you want to override that inference.
 		</Text>
 
 		<Heading level={3} id="custom-cursor-action">Custom Cursor States</Heading>

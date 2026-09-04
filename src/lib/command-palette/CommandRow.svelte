@@ -215,8 +215,8 @@
 		font-size: 0.75rem;
 		padding: 0.05rem 0.4rem;
 		border-radius: 4px;
-		background: rgba($fg, 0.08);
-		color: rgba($fg, 0.65);
+		background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
+		color: color-mix(in oklab, var(--glow-fg) 65%, transparent);
 		font-weight: $weight-medium;
 	}
 
@@ -233,7 +233,7 @@
 	.cp-row-desc {
 		font-size: 0.75rem;
 		line-height: 1.2;
-		color: rgba($fg, 0.55);
+		color: color-mix(in oklab, var(--glow-fg) 55%, transparent);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;

@@ -125,7 +125,7 @@
 		}
 
 		&.grouped {
-			box-shadow: 0 0 0 2px $bg-base;
+			box-shadow: 0 0 0 2px var(--glow-bg-base);
 		}
 	}
 

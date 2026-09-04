@@ -274,11 +274,11 @@
 
 			&:hover,
 			&.cursor-hover {
-				background: rgba(255, 255, 255, 0.08);
+				background: $tertiary-hover;
 			}
 
 			&:active {
-				background: rgba(255, 255, 255, 0.12);
+				background: color-mix(in oklab, var(--glow-fg) 12%, transparent);
 			}
 		}
 
@@ -400,36 +400,35 @@
 		}
 
 		&.dashed {
-			color: rgba($fg, 0.6);
+			color: color-mix(in oklab, var(--glow-fg) 60%, transparent);
 			background: transparent;
 			border-style: dashed;
-			border-color: rgba($fg, 0.2);
+			border-color: color-mix(in oklab, var(--glow-fg) 20%, transparent);
 
 			&:hover,
 			&.cursor-hover {
 				color: var(--glow-fg);
-				border-color: rgba($fg, 0.4);
-				background: rgba($fg, 0.04);
+				border-color: color-mix(in oklab, var(--glow-fg) 40%, transparent);
+				background: color-mix(in oklab, var(--glow-fg) 4%, transparent);
 			}
 
 			&:active {
-				background: rgba($fg, 0.08);
+				background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
 			}
 		}
 
 		&.danger {
-			$danger: #ef4444;
-			background-color: rgba($danger, 0.1);
-			color: $danger;
-			border-color: rgba($danger, 0.2);
+			background-color: color-mix(in oklab, var(--glow-color-danger) 10%, transparent);
+			color: var(--glow-color-danger);
+			border-color: color-mix(in oklab, var(--glow-color-danger) 20%, transparent);
 
 			&:hover,
 			&.cursor-hover {
-				background-color: rgba($danger, 0.18);
+				background-color: color-mix(in oklab, var(--glow-color-danger) 18%, transparent);
 			}
 
 			&:active {
-				background-color: rgba($danger, 0.07);
+				background-color: color-mix(in oklab, var(--glow-color-danger) 7%, transparent);
 			}
 		}
 
@@ -439,7 +438,7 @@
 		}
 
 		&.selected {
-			outline: 2px solid $primary;
+			outline: 2px solid var(--glow-primary);
 			outline-offset: 2px;
 		}
 

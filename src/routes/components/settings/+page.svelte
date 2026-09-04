@@ -528,7 +528,7 @@
 
 	.page-intro {
 		font-size: $text-base;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		margin: 0 0 2rem 0;
 		line-height: 1.6;
 
@@ -536,7 +536,7 @@
 			font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 			font-size: 0.9em;
 			padding: 0.1em 0.4em;
-			background: rgba($fg, 0.06);
+			background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
 			border-radius: 0.25em;
 		}
 	}
@@ -565,8 +565,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 0.75rem;
-		background: rgba($fg, 0.03);
-		border: 1px solid rgba($fg, 0.06);
+		background: color-mix(in oklab, var(--glow-fg) 3%, transparent);
+		border: 1px solid color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		border-radius: 0.5rem;
 	}
 
@@ -575,7 +575,7 @@
 		min-width: 0;
 		font-size: $text-xs;
 		font-weight: $weight-semibold;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -601,18 +601,18 @@
 		background: transparent;
 		border: 0;
 		border-radius: 0.4rem;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		cursor: pointer;
 		transition: all 0.12s ease;
 
 		&:hover {
-			color: $text-primary;
-			background: rgba($fg, 0.04);
+			color: var(--glow-text-primary);
+			background: color-mix(in oklab, var(--glow-fg) 4%, transparent);
 		}
 
 		&.active {
-			color: $primary;
-			background: rgba($primary, 0.12);
+			color: var(--glow-primary);
+			background: color-mix(in oklab, var(--glow-primary) 12%, transparent);
 		}
 	}
 
@@ -628,7 +628,7 @@
 		font-weight: $weight-bold;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 	}
 
 	.improve-row {
@@ -642,7 +642,7 @@
 		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 		font-size: $text-xs;
 		line-height: 1.5;
-		color: $text-muted;
+		color: var(--glow-text-muted);
 		white-space: pre-wrap;
 		word-break: break-word;
 		max-height: 220px;
@@ -668,22 +668,22 @@
 		font-weight: $weight-semibold;
 		padding: 0.5rem 0.75rem;
 		min-width: 3rem;
-		background: rgba($fg, 0.04);
-		border: 1px solid rgba($fg, 0.08);
+		background: color-mix(in oklab, var(--glow-fg) 4%, transparent);
+		border: 1px solid color-mix(in oklab, var(--glow-fg) 8%, transparent);
 		border-radius: 0.4rem;
-		color: $text-secondary;
+		color: var(--glow-text-secondary);
 		cursor: pointer;
 		transition: all 0.12s ease;
 
 		&:hover {
-			color: $text-primary;
-			border-color: rgba($fg, 0.15);
+			color: var(--glow-text-primary);
+			border-color: color-mix(in oklab, var(--glow-fg) 15%, transparent);
 		}
 
 		&.selected {
-			background: rgba($primary, 0.15);
-			color: $primary;
-			border-color: $primary;
+			background: color-mix(in oklab, var(--glow-primary) 15%, transparent);
+			color: var(--glow-primary);
+			border-color: var(--glow-primary);
 		}
 	}
 </style>

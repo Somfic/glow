@@ -101,6 +101,9 @@
 		onclick?: () => void;
 		/** Overlay-only: sample the image and cast a directional coloured glow around the card. */
 		glow?: boolean;
+		/** Stable id on the root element. Makes the card an anchor target (#id) and
+		 *  gives TableOfContents something to scroll to. */
+		id?: string;
 	};
 
 	let {
@@ -135,7 +138,8 @@
 		loading = false,
 		selected = false,
 		onclick,
-		glow = false
+		glow = false,
+		id
 	}: Props = $props();
 
 	const mediaConfig = $derived<MediaConfig | undefined>(
@@ -536,6 +540,7 @@
 		class:glow={glow && isOverlay}
 		data-variant={variant}
 		data-depth={depth}
+		{id}
 		{href}
 		aria-disabled={disabled}
 		tabindex={disabled ? -1 : 0}
@@ -557,6 +562,7 @@
 		class:glow={glow && isOverlay}
 		data-variant={variant}
 		data-depth={depth}
+		{id}
 		{disabled}
 		style={rootStyle}
 		onclick={onclick}
@@ -576,6 +582,7 @@
 		class:glow={glow && isOverlay}
 		data-variant={variant}
 		data-depth={depth}
+		{id}
 		style={rootStyle}
 	>
 		{@render body()}
@@ -659,11 +666,11 @@
 		// Hover/focus styles for any clickable variant (anchor or button).
 		&:is(a, button):hover:not(.disabled):not(.has-accent):not(.overlay) {
 			border-color: var(--glow-primary);
-			background: rgba($primary, 0.05);
+			background: color-mix(in oklab, var(--glow-primary) 5%, transparent);
 		}
 
 &:is(a, button):focus-visible {
-			outline: 2px solid $primary;
+			outline: 2px solid var(--glow-primary);
 			outline-offset: 2px;
 		}
 
@@ -694,7 +701,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
-		background: rgba(255, 255, 255, 0.02);
+		background: color-mix(in oklab, var(--glow-fg) 2%, transparent);
 	}
 
 	.card-header {

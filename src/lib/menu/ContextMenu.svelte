@@ -497,7 +497,7 @@
 		transition: background 0.1s;
 
 		&:hover {
-			background: rgba($fg, 0.06);
+			background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		}
 
 		&.disabled {

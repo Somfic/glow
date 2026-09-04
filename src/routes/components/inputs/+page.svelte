@@ -48,6 +48,21 @@
 		/>
 	</Card>
 
+
+	<Card title="Password Input" id="password-input">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Masked input with a reveal toggle. Set <Code>autocomplete</Code> so password managers behave —
+			<Code>current-password</Code> on sign-in, <Code>new-password</Code> on sign-up.
+		</Text>
+		<Input
+			type="password"
+			label="Password"
+			placeholder="••••••••"
+			autocomplete="current-password"
+			required={true}
+			clearable={true}
+		/>
+	</Card>
 	<Card title="Number Input" id="number-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Numeric input with min/max validation and step increments

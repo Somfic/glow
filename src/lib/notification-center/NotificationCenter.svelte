@@ -300,7 +300,7 @@
 			width: 6px;
 			height: 6px;
 			border-radius: 50%;
-			background: rgba($fg, 0.35);
+			background: color-mix(in oklab, var(--glow-fg) 35%, transparent);
 			animation: nc-pulse 1.6s ease-in-out infinite;
 
 			&:nth-child(2) {
@@ -335,7 +335,7 @@
 	.nc-empty-sub {
 		margin: 0;
 		font-size: 0.825rem;
-		color: rgba($fg, 0.5);
+		color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 	}
 
 	/* ----- List + sections -------------------------------------------- */
@@ -363,13 +363,13 @@
 		font-weight: $weight-bold;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: rgba($fg, 0.55);
+		color: color-mix(in oklab, var(--glow-fg) 55%, transparent);
 	}
 
 	.nc-section-rule {
 		flex: 1 1 auto;
 		height: 1px;
-		background: linear-gradient(to right, rgba($fg, 0.12), rgba($fg, 0.02));
+		background: linear-gradient(to right, color-mix(in oklab, var(--glow-fg) 12%, transparent), color-mix(in oklab, var(--glow-fg) 2%, transparent));
 	}
 
 	.nc-section-count {
@@ -378,8 +378,8 @@
 		font-variant-numeric: tabular-nums;
 		padding: 0.1rem 0.45rem;
 		border-radius: 999px;
-		background: rgba($fg, 0.08);
-		color: rgba($fg, 0.65);
+		background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
+		color: color-mix(in oklab, var(--glow-fg) 65%, transparent);
 		min-width: 1.4rem;
 		text-align: center;
 	}
@@ -394,7 +394,7 @@
 		padding: 0.75rem 0.85rem;
 		border-radius: 10px;
 		background: var(--glow-bg-surface-element);
-		border: 1px solid rgba($fg, 0.06);
+		border: 1px solid color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		transition:
 			background var(--glow-dur-fast) $ease-out,
 			border-color var(--glow-dur-fast) $ease-out,
@@ -403,7 +403,7 @@
 
 		&:hover {
 			transform: translateY(-1px);
-			border-color: rgba($fg, 0.12);
+			border-color: color-mix(in oklab, var(--glow-fg) 12%, transparent);
 			box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
 
 			.nc-toolbar {
@@ -414,7 +414,7 @@
 
 		&.unread {
 			background: color-mix(in oklab, var(--cat-color) 7%, var(--glow-bg-surface-element));
-			border-color: color-mix(in oklab, var(--cat-color) 20%, rgba($fg, 0.08));
+			border-color: color-mix(in oklab, var(--cat-color) 20%, color-mix(in oklab, var(--glow-fg) 8%, transparent));
 			box-shadow:
 				0 0 0 1px color-mix(in oklab, var(--cat-color) 12%, transparent),
 				0 6px 18px color-mix(in oklab, var(--cat-color) 8%, transparent);
@@ -437,7 +437,7 @@
 		align-items: center;
 		justify-content: center;
 		box-shadow:
-			0 0 0 1px rgba($fg, 0.08),
+			0 0 0 1px color-mix(in oklab, var(--glow-fg) 8%, transparent),
 			0 0 0 0 transparent;
 		transition: box-shadow var(--glow-dur-base) $ease-out;
 	}
@@ -462,12 +462,12 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 50%;
-		background: rgba($fg, 0.06);
+		background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		color: var(--cat-color);
 	}
 
 	.nc-icon-blank {
-		background: rgba($fg, 0.04);
+		background: color-mix(in oklab, var(--glow-fg) 4%, transparent);
 	}
 
 	/* ----- Body -------------------------------------------------------- */
@@ -521,7 +521,7 @@
 		font-size: 0.7rem;
 		font-variant-numeric: tabular-nums;
 		font-feature-settings: 'tnum';
-		color: rgba($fg, 0.45);
+		color: color-mix(in oklab, var(--glow-fg) 45%, transparent);
 		letter-spacing: 0.02em;
 	}
 
@@ -538,7 +538,7 @@
 		margin: 0.2rem 0 0;
 		font-size: 0.825rem;
 		line-height: 1.45;
-		color: rgba($fg, 0.72);
+		color: color-mix(in oklab, var(--glow-fg) 72%, transparent);
 	}
 
 	.nc-actions {
@@ -569,9 +569,9 @@
 		width: 22px;
 		height: 22px;
 		border-radius: 6px;
-		background: rgba($fg, 0.06);
-		color: rgba($fg, 0.65);
-		border: 1px solid rgba($fg, 0.04);
+		background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
+		color: color-mix(in oklab, var(--glow-fg) 65%, transparent);
+		border: 1px solid color-mix(in oklab, var(--glow-fg) 4%, transparent);
 		cursor: pointer;
 		transition:
 			background var(--glow-dur-fast) $ease-out,
@@ -579,9 +579,9 @@
 			border-color var(--glow-dur-fast) $ease-out;
 
 		&:hover {
-			background: rgba($fg, 0.14);
+			background: color-mix(in oklab, var(--glow-fg) 14%, transparent);
 			color: var(--glow-fg);
-			border-color: rgba($fg, 0.1);
+			border-color: color-mix(in oklab, var(--glow-fg) 10%, transparent);
 		}
 	}
 </style>

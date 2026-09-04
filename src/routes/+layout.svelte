@@ -24,11 +24,24 @@
 		],
 		groups: [
 			{
+				label: 'Layout & Shell',
+				items: [
+					{ label: 'Page', href: '/components/page', icon: 'LayoutTemplate' },
+					{ label: 'Sidebar', href: '/components/sidebar', icon: 'PanelLeft' },
+					{ label: 'Layout', href: '/components/layout', icon: 'LayoutDashboard' },
+					{ label: 'Card', href: '/components/card', icon: 'Square' },
+					{ label: 'Split', href: '/components/split', icon: 'Columns2' },
+					{ label: 'Theme', href: '/components/theme', icon: 'Palette' }
+				]
+			},
+			{
 				label: 'Form & Input',
 				items: [
 					{ label: 'Button', href: '/components/buttons', icon: 'MousePointerClick' },
 					{ label: 'Input', href: '/components/inputs', icon: 'TextCursorInput' },
-					{ label: 'File Upload', href: '/components/file-upload', icon: 'CloudUpload' }
+					{ label: 'Settings & Fields', href: '/components/settings', icon: 'SlidersHorizontal' },
+					{ label: 'File Upload', href: '/components/file-upload', icon: 'CloudUpload' },
+					{ label: 'Image Upload', href: '/components/image-upload', icon: 'ImagePlus' }
 				]
 			},
 			{
@@ -36,21 +49,24 @@
 				items: [
 					{ label: 'Table', href: '/components/table', icon: 'Table' },
 					{ label: 'Data', href: '/components/data', icon: 'ClipboardList' },
-					{ label: 'Card', href: '/components/card', icon: 'Square' },
+					{ label: 'Virtual List', href: '/components/virtual-list', icon: 'List' },
+					{ label: 'List Item', href: '/components/list', icon: 'Rows2' },
+					{ label: 'Pagination', href: '/components/pagination', icon: 'ChevronsRight' },
 					{ label: 'Pill', href: '/components/pill', icon: 'Tag' },
 					{ label: 'Avatar', href: '/components/avatar', icon: 'CircleUser' },
-					{ label: 'Media', href: '/components/media', icon: 'Image' }
+					{ label: 'Media', href: '/components/media', icon: 'Image' },
+					{ label: 'Lightbox', href: '/components/lightbox', icon: 'Maximize2' }
 				]
 			},
 			{
 				label: 'Navigation',
 				items: [
 					{ label: 'Tabs', href: '/components/tabs', icon: 'PanelTop' },
-					{ label: 'Split', href: '/components/split', icon: 'Columns2' },
 					{ label: 'Sortable', href: '/components/sortable', icon: 'GripVertical' },
 					{ label: 'Tier List', href: '/components/tierlist', icon: 'Rows3' },
 					{ label: 'Table of Contents', href: '/components/toc', icon: 'BookOpen' },
-					{ label: 'Dropdown Menu', href: '/components/dropdown', icon: 'ChevronDown' },
+					{ label: 'Popover', href: '/components/popover', icon: 'SquareArrowOutUpRight' },
+					{ label: 'Popover Menu', href: '/components/popover-menu', icon: 'ChevronDown' },
 					{ label: 'Context Menu', href: '/components/context-menu', icon: 'MousePointer' }
 				]
 			},
@@ -58,19 +74,22 @@
 				label: 'Feedback',
 				items: [
 					{ label: 'Modal', href: '/components/modal', icon: 'MessageSquare' },
-				{ label: 'Command Palette', href: '/components/command-palette', icon: 'Command' },
+					{ label: 'Command Palette', href: '/components/command-palette', icon: 'Command' },
 					{ label: 'Command Popover', href: '/components/command-popover', icon: 'TextCursor' },
 					{ label: 'Drawer', href: '/components/drawer', icon: 'PanelRight' },
 					{ label: 'Toast', href: '/components/toast', icon: 'Bell' },
-				{ label: 'Notification Center', href: '/components/notification-center', icon: 'BellRing' },
+					{ label: 'Notification Center', href: '/components/notification-center', icon: 'BellRing' },
 					{ label: 'Tooltip', href: '/components/tooltip', icon: 'Info' },
-					{ label: 'Banner', href: '/components/banner', icon: 'Flag' }
+					{ label: 'Banner', href: '/components/banner', icon: 'Flag' },
+					{ label: 'Spinner', href: '/components/spinner', icon: 'LoaderCircle' },
+					{ label: 'Skeleton', href: '/components/skeleton', icon: 'Blocks' }
 				]
 			},
 			{
 				label: 'Typography & Code',
 				items: [
 					{ label: 'Typography', href: '/components/typography', icon: 'Type' },
+					{ label: 'Icon', href: '/components/icon', icon: 'Shapes' },
 					{ label: 'Code', href: '/components/code', icon: 'Code' }
 				]
 			},
@@ -80,6 +99,10 @@
 					{ label: 'Cursor', href: '/components/cursor', icon: 'MousePointer' },
 					{ label: 'Glow', href: '/components/glow', icon: 'Flame' }
 				]
+			},
+			{
+				label: 'Utilities',
+				items: [{ label: 'Actions & Helpers', href: '/components/utilities', icon: 'Wrench' }]
 			},
 			{
 				label: 'Examples',

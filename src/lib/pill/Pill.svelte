@@ -145,9 +145,9 @@
 		line-height: 1;
 		max-height: 1rem;
 		box-sizing: border-box;
-		background: rgba($fg, 0.06);
-		color: rgba($fg, 0.85);
-		border: 1px solid rgba($fg, 0.1);
+		background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
+		color: color-mix(in oklab, var(--glow-fg) 85%, transparent);
+		border: 1px solid color-mix(in oklab, var(--glow-fg) 10%, transparent);
 		border-radius: 999px;
 		font-weight: $weight-medium;
 		white-space: nowrap;
@@ -157,7 +157,7 @@
 		&.has-color {
 			background: color-mix(in oklch, var(--pill-color) 15%, transparent);
 			border-color: color-mix(in oklch, var(--pill-color) 25%, transparent);
-			color: color-mix(in oklch, var(--pill-color) 70%, $fg);
+			color: color-mix(in oklch, var(--pill-color) 70%, var(--glow-fg));
 		}
 
 		&.variant-outlined {
@@ -171,12 +171,12 @@
 		&.interactive {
 			cursor: pointer;
 			text-decoration: none;
-			border: 1px solid rgba($fg, 0.1);
+			border: 1px solid color-mix(in oklab, var(--glow-fg) 10%, transparent);
 			font: inherit;
 
 			&:hover {
-				background: rgba($fg, 0.12);
-				border-color: rgba($fg, 0.2);
+				background: color-mix(in oklab, var(--glow-fg) 12%, transparent);
+				border-color: color-mix(in oklab, var(--glow-fg) 20%, transparent);
 			}
 
 			&.has-color:hover {
@@ -197,8 +197,8 @@
 			}
 
 			&.interactive:hover {
-				background: rgba($fg, 0.85);
-				border-color: rgba($fg, 0.85);
+				background: color-mix(in oklab, var(--glow-fg) 85%, transparent);
+				border-color: color-mix(in oklab, var(--glow-fg) 85%, transparent);
 			}
 		}
 	}
@@ -208,7 +208,7 @@
 		padding: 0;
 		overflow: hidden;
 		background: transparent;
-		border: 2px solid rgba($fg, 0.1);
+		border: 2px solid color-mix(in oklab, var(--glow-fg) 10%, transparent);
 		width: 2.75rem;
 		height: 2.75rem;
 	}
@@ -253,7 +253,7 @@
 		background: none;
 		border: none;
 		border-radius: 50%;
-		color: rgba($fg, 0.4);
+		color: color-mix(in oklab, var(--glow-fg) 40%, transparent);
 		cursor: pointer;
 		padding: 0.1em;
 		margin-right: -0.2em;
@@ -261,7 +261,7 @@
 
 		&:hover {
 			color: var(--glow-fg);
-			background: rgba($fg, 0.1);
+			background: color-mix(in oklab, var(--glow-fg) 10%, transparent);
 		}
 	}
 
@@ -287,6 +287,6 @@
 	}
 
 	.removable:hover {
-		border-color: rgba($fg, 0.2);
+		border-color: color-mix(in oklab, var(--glow-fg) 20%, transparent);
 	}
 </style>

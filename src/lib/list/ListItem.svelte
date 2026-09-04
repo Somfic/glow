@@ -121,12 +121,12 @@
 			transition: background 0.12s ease;
 
 			&:hover {
-				background: rgba($fg, 0.06);
+				background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
 			}
 		}
 
 		&.active {
-			background: rgba($fg, 0.08);
+			background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
 		}
 	}
 

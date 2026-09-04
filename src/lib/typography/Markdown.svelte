@@ -208,19 +208,19 @@
 		:global(blockquote) {
 			margin: 0;
 			padding: 0.5rem 0 0.5rem 1rem;
-			border-left: 3px solid rgba($fg, 0.2);
+			border-left: 3px solid color-mix(in oklab, var(--glow-fg) 20%, transparent);
 			color: var(--glow-text-secondary);
 			font-style: italic;
 		}
 
 		:global(hr) {
 			border: none;
-			border-top: 1px solid rgba($fg, 0.1);
+			border-top: 1px solid color-mix(in oklab, var(--glow-fg) 10%, transparent);
 			margin: 0;
 		}
 
 		:global(.md-code) {
-			background: rgba($fg, 0.08);
+			background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
 			padding: 0.1em 0.4em;
 			border-radius: 4px;
 			font-family: ui-monospace, 'SF Mono', Menlo, monospace;

@@ -202,7 +202,7 @@
 
 	.toc-item {
 		margin: 0;
-		border-left: 2px solid rgba($border-color, 0.5);
+		border-left: 2px solid color-mix(in oklab, var(--glow-border-color) 50%, transparent);
 		transition: border-color 0.15s;
 
 		&.active {
@@ -210,7 +210,7 @@
 		}
 
 		&:hover {
-			border-left-color: rgba($primary, 0.5);
+			border-left-color: color-mix(in oklab, var(--glow-primary) 50%, transparent);
 		}
 	}
 
@@ -230,7 +230,7 @@
 
 		&:hover {
 			color: var(--glow-fg);
-			background: rgba($fg, 0.05);
+			background: color-mix(in oklab, var(--glow-fg) 5%, transparent);
 		}
 
 		.toc-item.active &:hover {

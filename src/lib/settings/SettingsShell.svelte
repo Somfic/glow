@@ -85,7 +85,7 @@
 		align-items: flex-start;
 		gap: 1rem;
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid rgba($fg, 0.06);
+		border-bottom: 1px solid color-mix(in oklab, var(--glow-fg) 6%, transparent);
 	}
 
 	.title-cluster {

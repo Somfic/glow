@@ -1,10 +1,34 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
+	import Link from '$lib/typography/Link.svelte';
+	import Kbd from '$lib/typography/Kbd.svelte';
+	import Section from '$lib/typography/Section.svelte';
+	import Markdown from '$lib/typography/Markdown.svelte';
 	import Card from "$lib/card/Card.svelte";
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
 	import Code from '$lib/code/Code.svelte';
+
+	let advancedOpen = $state(false);
+
+	const markdownSource = `## Release notes
+
+Shipped **three** things this week, one of them _actually_ hard:
+
+- A new \`Markdown\` renderer
+- Fenced code blocks with highlighting
+- [Links](https://svelte.dev) and inline code
+
+> Blockquotes render too, for when a comment quotes another comment.
+
+\`\`\`ts
+const blocks = parseBlocks(source);
+\`\`\`
+
+---
+
+That's it.`;
 </script>
 
 {#snippet codeCell(value)}
@@ -89,6 +113,197 @@
 				information that should be present but not prominent.
 			</Text>
 		</div>
+	</Card>
+
+	<Card title="Link" id="link">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Anchors with three prominence variants and three underline modes. <Code>external</Code> adds
+			<Code>target="_blank"</Code>, the right <Code>rel</Code> for it, and a trailing
+			<Code>ExternalLink</Code> glyph so the reader knows they're leaving.
+		</Text>
+		<div style="display: flex; flex-direction: column; gap: 0.75rem;">
+			<Text>
+				A <Link href="/components/typography">default link</Link>, a
+				<Link href="/components/typography" variant="muted">muted link</Link>, and a
+				<Link href="/components/typography" variant="subtle">subtle link</Link> inline in a
+				sentence.
+			</Text>
+			<Text>
+				Underline <Link href="/components/typography" underline="always">always</Link>,
+				<Link href="/components/typography" underline="hover">on hover</Link> (the default), or
+				<Link href="/components/typography" underline="never">never</Link>.
+			</Text>
+			<Text>
+				With a leading icon: <Link href="/components/typography" icon="BookOpen">Read the docs</Link>
+			</Text>
+			<Text>
+				External: <Link href="https://svelte.dev" external>svelte.dev</Link>
+			</Text>
+		</div>
+		<CodeBlock
+			language="svelte"
+			code={`<Link href="/docs">Read the docs</Link>
+<Link href="/docs" variant="muted" underline="always">Muted</Link>
+<Link href="/docs" icon="BookOpen">With an icon</Link>
+<Link href="https://svelte.dev" external>Opens in a new tab</Link>`}
+		/>
+		<Table
+			variant="simple"
+			columns={[
+				{ key: 'prop', label: 'Prop', render: codeCell },
+				{ key: 'type', label: 'Type', render: codeCell },
+				{ key: 'default', label: 'Default' },
+				{ key: 'description', label: 'Description' }
+			]}
+			data={[
+				{ prop: 'href', type: 'string', default: '-', description: 'Destination. Omit for a click-only affordance.' },
+				{ prop: 'variant', type: "'default' | 'muted' | 'subtle'", default: "'default'", description: 'Prominence.' },
+				{ prop: 'underline', type: "'always' | 'hover' | 'never'", default: "'hover'", description: 'When the underline shows.' },
+				{ prop: 'external', type: 'boolean', default: 'false', description: 'Opens in a new tab with rel="noopener noreferrer" and a trailing glyph.' },
+				{ prop: 'icon', type: 'IconProp', default: '-', description: 'Leading icon.' },
+				{ prop: 'onclick', type: '(e: MouseEvent) => void', default: '-', description: 'Click handler.' }
+			]}
+		/>
+	</Card>
+
+	<Card title="Kbd" id="kbd">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			A keycap for documenting shortcuts. Sized in <Code>em</Code>, so it stays proportional to the
+			text it sits in.
+		</Text>
+		<div style="display: flex; flex-direction: column; gap: 0.75rem;">
+			<Text>
+				Press <Kbd>⌘</Kbd><Kbd>K</Kbd> to open the command palette, or <Kbd>Esc</Kbd> to dismiss it.
+			</Text>
+			<Text size="sm">
+				Small variant, for dense UI: <Kbd size="sm">⇧</Kbd><Kbd size="sm">Tab</Kbd>
+			</Text>
+		</div>
+		<CodeBlock
+			language="svelte"
+			code={`Press <Kbd>⌘</Kbd><Kbd>K</Kbd> to search.
+
+<!-- Dense contexts -->
+<Kbd size="sm">Esc</Kbd>`}
+		/>
+		<Table
+			variant="simple"
+			columns={[
+				{ key: 'prop', label: 'Prop', render: codeCell },
+				{ key: 'type', label: 'Type', render: codeCell },
+				{ key: 'default', label: 'Default' },
+				{ key: 'description', label: 'Description' }
+			]}
+			data={[{ prop: 'size', type: "'sm' | 'md'", default: "'md'", description: 'Keycap size.' }]}
+		/>
+	</Card>
+
+	<Card title="Section" id="section">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			A titled content block: heading, optional subtitle, icon, count badge, and a right-aligned
+			actions slot. Set <Code>collapsible</Code> and the whole header becomes a toggle.
+		</Text>
+		<Section title="Members" subtitle="People with access to this workspace" icon="Users" count={3}>
+			<Text size="sm" variant="secondary">Section content sits below the header.</Text>
+		</Section>
+
+		<div style="margin-top: 1.5rem;">
+			<Section title="Advanced" icon="Settings" collapsible bind:open={advancedOpen}>
+				<Text size="sm" variant="secondary">
+					Collapsed by clicking the header. Bound state: <Code>{advancedOpen ? 'open' : 'closed'}</Code>
+				</Text>
+			</Section>
+		</div>
+
+		<div style="margin-top: 1.5rem;">
+			<Section title="With actions" subtitle="The actions snippet renders before the chevron">
+				{#snippet actions()}
+					<Link href="/components/typography" variant="muted">Manage</Link>
+				{/snippet}
+				<Text size="sm" variant="secondary">Body.</Text>
+			</Section>
+		</div>
+
+		<CodeBlock
+			language="svelte"
+			code={`<script lang="ts">
+  import { Section } from 'glow-ui';
+
+  let open = $state(true);
+</script>
+
+<Section title="Members" subtitle="Who can access this" icon="Users" count={3}>
+  <MemberList />
+</Section>
+
+<Section title="Advanced" collapsible bind:open>
+  {#snippet actions()}
+    <Button variant="ghost" icon="RotateCcw" />
+  {/snippet}
+  <AdvancedSettings />
+</Section>`}
+		/>
+		<Table
+			variant="simple"
+			columns={[
+				{ key: 'prop', label: 'Prop', render: codeCell },
+				{ key: 'type', label: 'Type', render: codeCell },
+				{ key: 'default', label: 'Default' },
+				{ key: 'description', label: 'Description' }
+			]}
+			data={[
+				{ prop: 'title', type: 'string', default: 'required', description: 'Section heading.' },
+				{ prop: 'subtitle', type: 'string', default: '-', description: 'Supporting line under the title.' },
+				{ prop: 'icon', type: 'IconProp', default: '-', description: 'Icon before the title.' },
+				{ prop: 'level', type: '1 | 2 | 3 | 4 | 5 | 6', default: '3', description: 'Heading level used for the title.' },
+				{ prop: 'count', type: 'number', default: '-', description: 'Numeric badge next to the title.' },
+				{ prop: 'collapsible', type: 'boolean', default: 'false', description: 'Renders a chevron and makes the header a button.' },
+				{ prop: 'open', type: 'boolean', default: 'true', description: 'Bindable open state when collapsible.' },
+				{ prop: 'actions', type: 'Snippet', default: '-', description: 'Right-aligned slot, rendered before the chevron.' },
+				{ prop: 'onToggle', type: '(open: boolean) => void', default: '-', description: 'Fired when the header toggles.' }
+			]}
+		/>
+		<Text size="sm" variant="secondary" style="margin-top: 1rem;">
+			Not to be confused with <Code>SettingsSection</Code>, the form-layout container documented on
+			the <Link href="/components/settings">Settings</Link> page.
+		</Text>
+	</Card>
+
+	<Card title="Markdown" id="markdown">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			A small, dependency-free renderer for the subset of Markdown that shows up in user-authored
+			content: headings, paragraphs, lists, blockquotes, horizontal rules, inline emphasis, links,
+			inline code, and fenced code blocks (which render through
+			<Link href="/components/code">CodeBlock</Link>, syntax highlighting included). It is not a
+			full CommonMark implementation — no tables, footnotes, or reference links.
+		</Text>
+		<div class="md-demo">
+			<Markdown source={markdownSource} />
+		</div>
+		<CodeBlock
+			language="svelte"
+			code={`<script lang="ts">
+  import { Markdown } from 'glow-ui';
+
+  let { comment } = $props();
+</script>
+
+<Markdown source={comment.body} />`}
+		/>
+		<Table
+			variant="simple"
+			columns={[
+				{ key: 'prop', label: 'Prop', render: codeCell },
+				{ key: 'type', label: 'Type', render: codeCell },
+				{ key: 'default', label: 'Default' },
+				{ key: 'description', label: 'Description' }
+			]}
+			data={[
+				{ prop: 'source', type: 'string', default: 'required', description: 'Markdown text to render.' },
+				{ prop: 'class', type: 'string', default: '-', description: 'Extra class on the wrapper.' },
+				{ prop: 'style', type: 'string', default: '-', description: 'Inline style on the wrapper.' }
+			]}
+		/>
 	</Card>
 
 	<Card title="Usage" id="usage">
@@ -208,3 +423,13 @@
 			<li><Text>📱 Responsive and mobile-optimized</Text></li>
 		</ul>
 	</Card>
+
+<style lang="scss">
+	.md-demo {
+		padding: 1rem 1.25rem;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 10px;
+		background: var(--glow-bg-surface-element);
+		margin-bottom: 1rem;
+	}
+</style>

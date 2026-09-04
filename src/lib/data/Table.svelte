@@ -376,12 +376,12 @@
 		}
 
 		&.hoverable tbody tr:hover {
-			background: rgba($fg, 0.05);
+			background: color-mix(in oklab, var(--glow-fg) 5%, transparent);
 		}
 
 		&.simple {
 			thead {
-				background: rgba($fg, 0.02);
+				background: color-mix(in oklab, var(--glow-fg) 2%, transparent);
 			}
 
 			th {
@@ -393,7 +393,7 @@
 			}
 
 			tbody tr {
-				border-bottom: 1px solid rgba($border-color, 0.3);
+				border-bottom: 1px solid color-mix(in oklab, var(--glow-border-color) 30%, transparent);
 
 				&:last-child {
 					border-bottom: none;
@@ -424,7 +424,7 @@
 			cursor: pointer;
 
 			&:hover {
-				background: rgba($fg, 0.05);
+				background: color-mix(in oklab, var(--glow-fg) 5%, transparent);
 			}
 		}
 
@@ -450,11 +450,11 @@
 	}
 
 	.table-row {
-		border-bottom: 1px solid rgba($border-color, 0.5);
+		border-bottom: 1px solid color-mix(in oklab, var(--glow-border-color) 50%, transparent);
 		transition: background-color 0.15s;
 
 		&.selected {
-			background: rgba($primary, 0.1);
+			background: color-mix(in oklab, var(--glow-primary) 10%, transparent);
 		}
 
 		&:last-child {
@@ -467,15 +467,15 @@
 		align-items: center;
 		width: 100%;
 		height: 100%;
-		border-bottom: 1px solid rgba($border-color, 0.5);
+		border-bottom: 1px solid color-mix(in oklab, var(--glow-border-color) 50%, transparent);
 		transition: background-color 0.15s;
 
 		&.hoverable:hover {
-			background: rgba($fg, 0.05);
+			background: color-mix(in oklab, var(--glow-fg) 5%, transparent);
 		}
 
 		&.selected {
-			background: rgba($primary, 0.1);
+			background: color-mix(in oklab, var(--glow-primary) 10%, transparent);
 		}
 
 		.table-cell {
@@ -534,13 +534,13 @@
 		transition: all 0.15s;
 
 		&:hover {
-			background: rgba($fg, 0.1);
+			background: color-mix(in oklab, var(--glow-fg) 10%, transparent);
 			color: var(--glow-fg);
 		}
 
 		&.danger:hover {
-			background: rgba(#ef4444, 0.1);
-			color: #ef4444;
+			background: color-mix(in oklab, var(--glow-color-danger) 10%, transparent);
+			color: var(--glow-color-danger);
 		}
 	}
 
@@ -565,7 +565,7 @@
 	.spinner {
 		width: 24px;
 		height: 24px;
-		border: 2px solid rgba($primary, 0.3);
+		border: 2px solid color-mix(in oklab, var(--glow-primary) 30%, transparent);
 		border-top-color: var(--glow-primary);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;

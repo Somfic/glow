@@ -336,7 +336,7 @@
 		}
 
 		&:focus-visible {
-			outline: 2px solid $primary;
+			outline: 2px solid var(--glow-primary);
 			outline-offset: -2px;
 		}
 	}
