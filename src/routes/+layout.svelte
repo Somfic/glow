@@ -35,6 +35,7 @@
 					{ label: 'Sidebar', href: '/components/sidebar', icon: 'PanelLeft' },
 					{ label: 'Layout', href: '/components/layout', icon: 'LayoutDashboard' },
 					{ label: 'Card', href: '/components/card', icon: 'Square' },
+					{ label: 'Accordion', href: '/components/accordion', icon: 'ChevronsDownUp' },
 					{ label: 'Split', href: '/components/split', icon: 'Columns2' },
 					{ label: 'Theme', href: '/components/theme', icon: 'Palette' }
 				]
