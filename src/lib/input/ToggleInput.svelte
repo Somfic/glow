@@ -91,6 +91,9 @@
 
 	.toggle.checked .toggle-slider {
 		transform: translateX(16px);
+		// Unchecked, the knob keeps its white default against the dim track. Checked,
+		// it has to stand off --glow-primary, which may itself be near-white.
+		@include contrast-color(var(--glow-primary), $property: background-color, $fallback: white);
 	}
 
 	.toggle-label {

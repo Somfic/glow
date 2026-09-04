@@ -111,6 +111,9 @@
 	.checkbox.indeterminate .checkbox-box {
 		background-color: var(--glow-primary);
 		border-color: var(--glow-primary);
+		// The tick is drawn with currentColor, so it has to flip against the fill:
+		// a near-white primary would otherwise leave a white check on white.
+		@include contrast-color(var(--glow-primary), $fallback: white);
 
 		:global(svg) {
 			opacity: 1;

@@ -23,7 +23,7 @@ $bg-surface-element: #1e1f29;
 
 $fg: #eee;
 
-$primary: #8B6DED;
+$primary: #f5f5f5;
 $primary-hover: color.scale($primary, $lightness: 15%);
 $primary-active: color.scale($primary, $lightness: -10%);
 
@@ -129,4 +129,50 @@ $text-muted: rgba($fg, 0.5);
 	border: $border;
 	border-radius: $radius;
 	height: calc(2em + 2px);
+}
+
+// ============================================================================
+// Automatic foreground contrast
+//
+// Picks black or white text for whatever background it is handed, so a
+// control stays readable when its background is retinted at runtime: a
+// near-white `--glow-primary` gets black text, a dark one gets white.
+//
+// Pure CSS, no JS: relative colour syntax (`oklch(from <bg> …)`) re-exposes
+// the background's OKLCH lightness as the `l` keyword. `l / $threshold - 1`
+// is positive above the threshold and negative below it, multiplying by
+// `-infinity` turns that sign into a hard step, and `clamp()` pins the result
+// to the 0..1 that `oklch()` wants — 0 being black, 1 white. Chroma 0 keeps
+// the text neutral rather than a tinted near-black.
+//
+// The declarations have to live on the element that paints the text, never on
+// `:root`: custom properties are substituted per element, so a subtree that
+// overrides `--glow-primary` only gets a matching foreground if the
+// `oklch(from …)` is resolved down there. That is why this is a mixin and not
+// a `--glow-on-primary` token.
+//
+// Two details that look like nits but are not:
+//   - All three oklch channels must be spelled out. `oklch(from x <l> 0)` is
+//     invalid-at-computed-value-time, which for `color` silently inherits the
+//     parent's text colour rather than falling back to the declaration above.
+//   - `/ 100%` is required. Alpha otherwise carries over from $bg, so a
+//     translucent background would yield translucent, unreadable text.
+//
+// $bg        — the background to contrast against, e.g. `var(--glow-primary)`.
+//              Judged on $bg's own lightness, so a translucent $bg is measured
+//              without whatever sits behind it.
+// $property  — what to paint. `color` for text and currentColor-driven icons;
+//              `background-color` for a marker that has to stand off a fill,
+//              like a toggle knob.
+// $threshold — OKLCH lightness at which to flip. ~0.62 is roughly where black
+//              and white reach equal WCAG contrast.
+// $fallback  — value for browsers without relative colour syntax.
+// ============================================================================
+@mixin contrast-color($bg, $property: color, $threshold: 0.62, $fallback: var(--glow-fg)) {
+	#{$property}: $fallback;
+
+	@supports (color: oklch(from red calc(l) 0 0)) {
+		--glow-contrast-l: clamp(0, (l / #{$threshold} - 1) * -infinity, 1);
+		#{$property}: oklch(from #{$bg} var(--glow-contrast-l) 0 0 / 100%);
+	}
 }

@@ -290,7 +290,9 @@
 			padding: 0 0.45em;
 			font-size: 0.85em;
 			font-weight: $weight-semibold;
-			background: rgba(255, 255, 255, 0.08);
+			// currentColor, not white — on a light button the text is black and a
+			// white-alpha badge would wash out into the background.
+			background: color-mix(in srgb, currentColor 12%, transparent);
 			border-radius: 999px;
 			margin-left: 0.15em;
 		}
@@ -335,7 +337,9 @@
 
 		&.primary {
 			background-color: var(--glow-primary);
-			color: var(--glow-fg);
+			// Text flips to black or white depending on how light the primary is, so
+			// a near-white (or consumer-retinted) primary stays readable.
+			@include contrast-color(var(--glow-primary));
 
 			&:hover,
 			&.cursor-hover {
@@ -349,7 +353,7 @@
 
 		&.secondary {
 			background-color: var(--glow-secondary);
-			color: var(--glow-fg);
+			@include contrast-color(var(--glow-secondary));
 
 			&:hover,
 			&.cursor-hover {

@@ -210,7 +210,9 @@
 		}
 
 		&.selected {
-			color: white;
+			// Sits on top of .indicator, so contrast against that fill rather
+			// than against the track behind it.
+			@include contrast-color(var(--glow-primary), $fallback: white);
 		}
 
 		&.icon-only {
