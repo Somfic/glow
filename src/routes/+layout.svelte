@@ -72,6 +72,7 @@
 					{ label: 'Sortable', href: '/components/sortable', icon: 'GripVertical' },
 					{ label: 'Tier List', href: '/components/tierlist', icon: 'Rows3' },
 					{ label: 'Table of Contents', href: '/components/toc', icon: 'BookOpen' },
+					{ label: 'Breadcrumb', href: '/components/breadcrumb', icon: 'ChevronRight' },
 					{ label: 'Popover', href: '/components/popover', icon: 'SquareArrowOutUpRight' },
 					{ label: 'Popover Menu', href: '/components/popover-menu', icon: 'ChevronDown' },
 					{ label: 'Context Menu', href: '/components/context-menu', icon: 'MousePointer' }
