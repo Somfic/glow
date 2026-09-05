@@ -3,7 +3,7 @@
 
 	export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outlined' | 'dashed' | 'danger';
 
-	export type ButtonSize = 'md' | 'lg';
+	export type ButtonSize = 'sm' | 'md' | 'lg';
 
 	export type ButtonShape = 'default' | 'circle';
 
@@ -25,7 +25,7 @@
 	import Kbd from '../typography/Kbd.svelte';
 	import { registerShortcut } from '../util/shortcut.svelte.js';
 	import { cursor, setCursorLoading } from '../cursor/cursor.svelte.js';
-	import { tooltip } from '../tooltip/tooltip.svelte.js';
+	import { tooltip, type TooltipParams } from '../tooltip/tooltip.svelte.js';
 
 	type BaseProps = {
 		variant?: ButtonVariant;
@@ -43,7 +43,13 @@
 		image?: string;
 		selected?: boolean;
 		fullWidth?: boolean;
-		tooltip?: string;
+		/**
+		 * Accessible name. Only needed for an icon-only button, where there is
+		 * no label for a screen reader to read — a `tooltip` is not a name.
+		 */
+		ariaLabel?: string;
+		/** Tooltip text, or the same options object the `tooltip` action takes. */
+		tooltip?: TooltipParams;
 		class?: string;
 		style?: string;
 		children?: Snippet;
@@ -82,6 +88,7 @@
 		progressLabel,
 		selected = false,
 		fullWidth = false,
+		ariaLabel,
 		tooltip: tooltipText,
 		class: className,
 		style,
@@ -93,6 +100,15 @@
 	let isIconOnly = $derived(!!icon && !label && !children);
 	let isBare = $derived(isIconOnly && variantProp === undefined && !group?.defaultVariant);
 	let variant: ButtonVariant = $derived(variantProp ?? group?.defaultVariant ?? 'primary');
+
+	// A string stays a string for callers; an options object lets one override
+	// `position` (and `delay`) while still getting the button's own defaults for
+	// everything it doesn't name.
+	let tooltipParams: TooltipParams = $derived(
+		typeof tooltipText === 'object'
+			? { useCursor: false, position: 'top', ...tooltipText }
+			: { content: tooltipText ?? '', useCursor: false, position: 'top' }
+	);
 
 	let promiseLoading = $state(false);
 	let loading = $derived(promiseLoading || manualLoading);
@@ -162,13 +178,14 @@
 	class:has-progress={showProgress}
 	onclick={handleClick}
 	disabled={disabled || loading}
+	aria-label={ariaLabel}
 	aria-busy={loading}
 	use:cursor={disabled || loading
 		? { state: 'default' }
 		: icon
 			? { state: 'pointer', iconName: resolveIcon(icon).name, variant }
 			: { state: 'pointer', content: label, variant }}
-	use:tooltip={{ content: tooltipText ?? '', useCursor: false, position: 'top' }}
+	use:tooltip={tooltipParams}
 >
 	{#if icon}
 		{#if loading}
@@ -239,6 +256,19 @@
 		cursor: pointer;
 		transition: background-color 150ms ease;
 
+		// Everything below is in `em`, so a size is mostly a font-size. The
+		// paddings are not a straight scale though: lg buys relatively more
+		// horizontal room than md, so sm gives some back — otherwise a short
+		// label at 14px reads as a lozenge rather than a smaller button.
+		// Radius stays `$radius` at every step; there is one radius token and
+		// shrinking it here is what would break the family resemblance.
+		&.size-sm {
+			font-size: $text-sm;
+			padding: 0.45em 0.6em;
+			height: calc(2em + 2px);
+			gap: 0.3em;
+		}
+
 		&.size-lg {
 			font-size: 1.125rem;
 			padding: 0.6em 1.25em;
@@ -253,6 +283,13 @@
 			min-width: 0;
 			min-height: 0;
 
+			// Not 30px: a circle is roomier than the square at every step
+			// (md 34→40, lg 45→56), and 28px is where a lone icon stops
+			// clearing the 24×24 minimum target with any margin at all.
+			&.size-sm {
+				width: 32px;
+				height: 32px;
+			}
 			&.size-md {
 				width: 40px;
 				height: 40px;
@@ -508,6 +545,11 @@
 			background: color-mix(in srgb, currentColor 18%, transparent);
 			overflow: hidden;
 			pointer-events: none;
+		}
+
+		// 3px on a 30px button is a visible band rather than a hairline.
+		&.size-sm .progress-track {
+			height: 2px;
 		}
 
 		&.size-lg .progress-track {
