@@ -98,7 +98,7 @@ bun add glow-ui`}
   import { Button, Input, Table } from 'glow-ui';
 
   let name = $state('');
-</script>
+<\/script>
 
 <Input
   type="text"

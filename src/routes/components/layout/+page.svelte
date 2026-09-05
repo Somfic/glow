@@ -16,7 +16,7 @@
 	const justifies = ['start', 'center', 'end', 'between', 'around', 'evenly'] as const;
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -212,7 +212,7 @@
 		language="svelte"
 		code={`<script>
   import { Flex, Grid, Spacer, Divider } from 'glow';
-</script>
+<\/script>
 
 <!-- A toolbar: title on the left, actions pushed right -->
 <Flex direction="horizontal" gap="sm" align="center">

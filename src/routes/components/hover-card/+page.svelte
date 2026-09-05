@@ -34,7 +34,7 @@
 	}
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -249,7 +249,7 @@
   async function loadUser() {
     user = await (await fetch('/api/users/ada')).json();
   }
-</script>
+<\/script>
 
 <HoverCard onOpen={loadUser} width={320}>
   {#snippet trigger()}

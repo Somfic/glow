@@ -8,7 +8,7 @@
 	import Code from '$lib/code/Code.svelte';
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -59,7 +59,7 @@
 					language="svelte"
 					code={`<script>
   import { TableOfContents } from 'glow-ui';
-</script>
+<\/script>
 
 <div style="display: flex; gap: 2rem;">
   <main style="flex: 1;">
@@ -85,7 +85,7 @@
     { id: 'setup', text: 'Setup', level: 2 },
     { id: 'config', text: 'Configuration', level: 3 }
   ];
-</script>
+<\/script>
 
 <TableOfContents {headings} autoDetect={false} />`}
 				/>

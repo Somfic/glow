@@ -166,7 +166,7 @@
 	]);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -376,7 +376,7 @@
     'divider',
     { kind: 'item', label: 'Delete', icon: 'Trash2', danger: true, onclick: () => {} }
   ];
-</script>
+<\/script>
 
 <PopoverMenu {items}>
   {#snippet trigger()}

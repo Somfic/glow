@@ -60,7 +60,7 @@
 	];
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -120,7 +120,7 @@
     { label: 'Role', pill: { label: 'Admin', color: '#8B6DED' } },
     { label: 'Notes', value: undefined, muted: true }
   ];
-</script>
+<\/script>
 
 <Data {properties} />`}
 		/>

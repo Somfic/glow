@@ -34,7 +34,7 @@
 	}
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -171,7 +171,7 @@
     const name = await prompt({ title: 'Rename', value: current, required: true });
     if (name !== null) await api.rename(name);
   }
-</script>`}
+<\/script>`}
 	/>
 
 	<Heading level={3} id="usage-namespace">Without shadowing the globals</Heading>
@@ -194,7 +194,7 @@ if (await dialog.confirm('Discard draft?')) discard();`}
 		language="svelte"
 		code={`<script>
   import { ConfirmDialog } from 'glow-ui';
-</script>
+<\/script>
 
 <ConfirmDialog />`}
 	/>

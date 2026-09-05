@@ -45,7 +45,7 @@
 	const demoTitle = 'Page | Glow UI';
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -100,7 +100,7 @@
     { label: 'Docs', href: '/docs' },
     { label: 'Examples', href: '/examples' }
   ];
-</script>
+<\/script>
 
 <Page title="Dashboard" {navItems}>
   <h1>Dashboard</h1>
@@ -145,7 +145,7 @@
       }
     ]
   };
-</script>
+<\/script>
 
 <Page title="Acme" {sidebarConfig}>
   {@render children?.()}
@@ -268,7 +268,7 @@
   // Full-bleed routes want the bare shell; everything else gets the sidebar.
   const bareRoutes = ['/app', '/editor'];
   const isBare = $derived(bareRoutes.some((r) => page.url.pathname.startsWith(r)));
-</script>
+<\/script>
 
 {#if isBare}
   <Page title="My App" layout="bare">{@render children?.()}</Page>
@@ -299,7 +299,7 @@
   const scroll = scrollMemory(() => scroller);
   beforeNavigate(scroll.before);
   afterNavigate(scroll.after);
-</script>
+<\/script>
 
 <Page title="My App" {sidebarConfig} bind:scroller>
   {@render children?.()}

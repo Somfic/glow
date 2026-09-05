@@ -32,7 +32,7 @@
 	let name = $state('');
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -80,7 +80,7 @@
   import { useModal, Modal, Button } from 'glow';
 
   const dialog = useModal();          // useModal(true) starts open
-</script>
+<\/script>
 
 <Button label="Edit" onclick={dialog.show} />
 
@@ -133,7 +133,7 @@
 
   // Cleanup is the effect's return value.
   $effect(() => registerShortcut('k', () => (open = true)));
-</script>`}
+<\/script>`}
 	/>
 	<Text size="sm" variant="secondary">
 		<Code>Button</Code> uses this internally for its <Code>shortcut</Code> prop, and
@@ -173,7 +173,7 @@
   import { trapFocus } from 'glow';
 
   let container = $state<HTMLElement>();
-</script>
+<\/script>
 
 <div bind:this={container} onkeydown={(e) => trapFocus(container ?? null, e)}>
   <button>First</button>
@@ -210,7 +210,7 @@
 		language="svelte"
 		code={`<script lang="ts">
   import { portal } from 'glow';
-</script>
+<\/script>
 
 <div use:portal>I live on document.body now</div>
 

@@ -17,7 +17,7 @@
 	let current = $state(0);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -74,7 +74,7 @@
 		code={`<script>
   import { Media } from 'glow-ui';
   let src = $state('https://example.com/photo.jpg');
-</script>
+<\/script>
 
 <!-- Basic usage -->
 <Media {src} />

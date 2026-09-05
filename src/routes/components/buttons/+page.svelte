@@ -32,7 +32,7 @@
 	}
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -212,7 +212,7 @@
 		language="svelte"
 		code={`<script>
   import { Button } from 'glow-ui';
-</script>
+<\/script>
 
 <Button label="Click me" variant="primary" />
 <Button icon="Heart" label="Like" variant="secondary" />
@@ -227,7 +227,7 @@
     await fetch('/api/save');
     alert('Saved!');
   }
-</script>
+<\/script>
 
 <Button label="Save" onclick={handleClick} />`}
 	/>
@@ -237,7 +237,7 @@
 		language="svelte"
 		code={`<script>
   import { ButtonGroup, Button } from 'glow-ui';
-</script>
+<\/script>
 
 <ButtonGroup>
   <Button label="First" />

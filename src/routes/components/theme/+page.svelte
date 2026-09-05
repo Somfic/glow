@@ -38,7 +38,7 @@
 	];
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -224,7 +224,7 @@
   import { ThemeProvider, type ThemeMode } from 'glow';
 
   let theme = $state<ThemeMode>('dark');
-</script>
+<\/script>
 
 <!-- Whole-app theming -->
 <ThemeProvider {theme}>

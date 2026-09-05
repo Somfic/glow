@@ -25,7 +25,7 @@
 	const active = $derived(supported && !reduced);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 

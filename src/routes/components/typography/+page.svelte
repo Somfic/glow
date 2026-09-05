@@ -31,7 +31,7 @@ const blocks = parseBlocks(source);
 That's it.`;
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -230,7 +230,7 @@ That's it.`;
   import { Section } from 'glow-ui';
 
   let open = $state(true);
-</script>
+<\/script>
 
 <Section title="Members" subtitle="Who can access this" icon="Users" count={3}>
   <MemberList />
@@ -286,7 +286,7 @@ That's it.`;
   import { Markdown } from 'glow-ui';
 
   let { comment } = $props();
-</script>
+<\/script>
 
 <Markdown source={comment.body} />`}
 		/>
@@ -312,7 +312,7 @@ That's it.`;
 			language="svelte"
 			code={`<script>
   import { Heading } from 'glow-ui';
-</script>
+<\/script>
 
 <Heading level={1}>Main Title</Heading>
 <Heading level={2}>Section Title</Heading>
@@ -327,7 +327,7 @@ That's it.`;
 			language="svelte"
 			code={`<script>
   import { Text } from 'glow-ui';
-</script>
+<\/script>
 
 <!-- Size variants -->
 <Text size="xl">Extra large text</Text>

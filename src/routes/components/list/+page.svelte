@@ -26,7 +26,7 @@
 	let selected = $state(0);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -131,7 +131,7 @@
   import { ListItem, Avatar, Text } from 'glow';
 
   let selected = $state(0);
-</script>
+<\/script>
 
 {#each people as person, i}
   <ListItem

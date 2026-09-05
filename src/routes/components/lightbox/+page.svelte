@@ -67,7 +67,7 @@
 	let simpleOpen = $state(false);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -160,7 +160,7 @@
       onClick: () => (index = i)
     }))
   );
-</script>
+<\/script>
 
 <button onclick={() => (open = true)}>Open</button>
 

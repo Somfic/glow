@@ -50,7 +50,7 @@
 	}
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -196,7 +196,7 @@
   let total = $state(0);
 
   const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
-</script>
+<\/script>
 
 <!-- counts to whatever you set it to, from wherever it currently is -->
 <AnimatedNumber value={total} />

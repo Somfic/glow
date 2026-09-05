@@ -10,7 +10,7 @@
 	import Field from '$lib/settings/Field.svelte';
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -583,7 +583,7 @@
 			language="svelte"
 			code={`<script>
   import { Input } from 'glow-ui';
-</script>
+<\/script>
 
 <Input
   type="text"
@@ -609,7 +609,7 @@
 			code={`<script>
   let agreed = $state(false);
   let enabled = $state(false);
-</script>
+<\/script>
 
 <Input
   type="checkbox"
@@ -629,7 +629,7 @@
 			language="svelte"
 			code={`<script>
   let score = $state(0);
-</script>
+<\/script>
 
 <Input
   type="rating"
@@ -647,7 +647,7 @@
 			language="svelte"
 			code={`<script>
   let code = $state('');
-</script>
+<\/script>
 
 <Input
   type="pin"
@@ -671,7 +671,7 @@
 
   let selected = $state('');
   let multiSelected = $state([]);
-</script>
+<\/script>
 
 <Input
   type="select"

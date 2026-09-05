@@ -7,7 +7,7 @@
 	import Table from '$lib/data/Table.svelte';
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -139,7 +139,7 @@ bun test`}
 					code={`<script>
   import { Button } from 'glow-ui';
   let count = $state(0);
-</script>
+<\/script>
 
 <Button onclick={() => count++}>
   Clicked {count} times
@@ -182,7 +182,7 @@ bun test`}
 			language="svelte"
 			code={`<script>
   import { Code } from 'glow-ui';
-</script>
+<\/script>
 
 <p>Install with <Code>npm install glow-ui</Code></p>`}
 		/>
@@ -192,7 +192,7 @@ bun test`}
 			language="svelte"
 			code={`<script>
   import { CodeBlock } from 'glow-ui';
-</script>
+<\/script>
 
 <!-- With explicit language -->
 <CodeBlock
