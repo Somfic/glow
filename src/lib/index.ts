@@ -169,6 +169,8 @@ export type {
 	DataItem,
 	DataGroup
 } from "./data/types.js";
+export { default as TreeView, type TreeViewProps } from "./tree-view/TreeView.svelte";
+export type { TreeNode, TreeItemContext, TreeSelectionMode } from "./tree-view/types.js";
 export { default as Timeline } from "./timeline/Timeline.svelte";
 export type {
 	TimelineProps,
