@@ -70,6 +70,7 @@
 					{ label: 'Timeline', href: '/components/timeline', icon: 'History' },
 					{ label: 'Diff View', href: '/components/diff-view', icon: 'FileDiff' },
 					{ label: 'Stepper', href: '/components/stepper', icon: 'ListChecks' },
+					{ label: 'Animated List', href: '/components/animated-list', icon: 'ArrowDownUp' },
 					{ label: 'Pagination', href: '/components/pagination', icon: 'ChevronsRight' },
 					{ label: 'Pill', href: '/components/pill', icon: 'Tag' },
 					{ label: 'Avatar', href: '/components/avatar', icon: 'CircleUser' },

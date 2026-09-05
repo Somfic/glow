@@ -192,6 +192,12 @@ export {
 	default as AnimatedText,
 	type AnimatedTextGranularity
 } from "./animated-text/AnimatedText.svelte";
+export { default as AnimatedList } from "./animated-list/AnimatedList.svelte";
+export type {
+	AnimatedListProps,
+	AnimatedListEffect,
+	AnimatedListDirection
+} from "./animated-list/AnimatedList.svelte";
 export { default as TableOfContents } from "./navigation/TableOfContents.svelte";
 export { default as Breadcrumb } from "./breadcrumb/Breadcrumb.svelte";
 export type { BreadcrumbItem, BreadcrumbItemState } from "./breadcrumb/Breadcrumb.svelte";

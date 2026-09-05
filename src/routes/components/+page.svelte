@@ -46,6 +46,7 @@
 				{ name: 'Timeline', href: '/components/timeline', description: 'Activity feeds and event history, with markers and timestamps' },
 				{ name: 'Diff View', href: '/components/diff-view', description: 'A code diff the way a pull request shows one — unified or side by side' },
 				{ name: 'Stepper', href: '/components/stepper', description: 'Where you are in a multi-step flow, horizontal or vertical, with an error state' },
+				{ name: 'Animated List', href: '/components/animated-list', description: 'A list whose rows slide to their new places when it is reordered, filtered or edited' },
 				{ name: 'Pagination', href: '/components/pagination', description: 'Page controls with a range readout and size picker' },
 				{ name: 'Pill', href: '/components/pill', description: 'Tags, labels, and status indicators' },
 				{ name: 'Avatar', href: '/components/avatar', description: 'User avatars with initials and grouping' },

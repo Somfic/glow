@@ -15,6 +15,12 @@ export type {
 export { default as DiffView, type DiffViewProps, type DiffViewMode } from "./diff-view/DiffView.svelte";
 export { diffLines, diffWords, diffSequences, diffStats, toRows, collapse } from "./diff-view/diff.js";
 export type { DiffLine, DiffLineType, DiffSegment, DiffRow, DiffChunk, DiffOp } from "./diff-view/diff.js";
+export { default as AnimatedList } from "./animated-list/AnimatedList.svelte";
+export type {
+	AnimatedListProps,
+	AnimatedListEffect,
+	AnimatedListDirection
+} from "./animated-list/AnimatedList.svelte";
 export { default as Sparkline, type SparklineProps, type SparklineTone } from "./charts/Sparkline.svelte";
 export { default as LineChart, type LineChartProps, type LineChartTable, type LineSeries } from "./charts/LineChart.svelte";
 export type { ChartDatum, ChartPoint } from "./charts/chart.js";
