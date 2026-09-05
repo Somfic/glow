@@ -302,8 +302,10 @@ const label = 'A single line that runs well past the width of this card, by desi
 <Card title="Accessibility" id="accessibility">
 	<Flex gap="sm">
 		<Text size="sm">
-			Colour is never the only signal: every changed line carries a <Code>+</Code> or
-			<Code>−</Code> in the gutter, and that column stays pinned while a long line scrolls.
+			Colour is never the only signal. Every changed line carries a <Code>+</Code> or
+			<Code>-</Code> in the gutter, and the stripe distinguishes by texture as well as by hue — solid
+			for an addition, hatched for a deletion. In unified mode the stripe, both gutters and the sign
+			column are sticky, so those signals are the last thing to scroll away rather than the first.
 		</Text>
 		<Text size="sm">
 			Each row is announced as "Added line 12:", "Removed line 9:" or "Unchanged line 8:" from
