@@ -4,6 +4,9 @@
 	import Heading from './Heading.svelte';
 	import Text from './Text.svelte';
 	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	let {
 		title,
@@ -78,7 +81,7 @@
 	</svelte:element>
 
 	{#if children && (!collapsible || open)}
-		<div class="section-body" transition:slide={{ duration: 180 }}>
+		<div class="section-body" transition:slide={{ duration: motion.ms(180) }}>
 			{@render children()}
 		</div>
 	{/if}

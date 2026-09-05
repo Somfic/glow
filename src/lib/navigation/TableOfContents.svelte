@@ -1,5 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
+
+	// Chrome does not collapse a smooth scroll under prefers-reduced-motion the
+	// way it collapses a CSS transition, so the behaviour has to be picked here.
+	let scrollBehavior: ScrollBehavior = $derived(motion.current ? 'auto' : 'smooth');
 
 	interface Heading {
 		id: string;
@@ -41,7 +48,7 @@
 
 				tocContainer.scrollBy({
 					top: scrollOffset,
-					behavior: 'smooth'
+					behavior: scrollBehavior
 				});
 			}
 		}
@@ -141,13 +148,13 @@
 				const delta = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
 				scroller.scrollTo({
 					top: scroller.scrollTop + delta - scroller.clientHeight / 6,
-					behavior: 'smooth'
+					behavior: scrollBehavior
 				});
 			} else {
 				const elementPosition = el.getBoundingClientRect().top + window.scrollY;
 				window.scrollTo({
 					top: elementPosition - window.innerHeight / 6,
-					behavior: 'smooth'
+					behavior: scrollBehavior
 				});
 			}
 

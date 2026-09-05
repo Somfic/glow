@@ -5,6 +5,9 @@
 	import 'cropperjs/dist/cropper.css';
 	import { Button, ButtonGroup } from '../index.js';
 	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	let {
 		src,
@@ -97,7 +100,7 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<div class="cropper-overlay" role="dialog" aria-modal="true" transition:fade={{ duration: 150 }}>
+<div class="cropper-overlay" role="dialog" aria-modal="true" transition:fade={{ duration: motion.ms(150) }}>
 	<div class="cropper-container">
 		<div class="cropper-header">
 			<span class="cropper-title">Crop Image</span>

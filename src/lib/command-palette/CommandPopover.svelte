@@ -4,6 +4,9 @@
 	import { commands as defaultRegistry, CommandRegistry } from './registry.svelte.js';
 	import { useCommandList, CLOSE_MATCH_KEY, type ScoredCommand } from './useCommandList.svelte.js';
 	import CommandRow from './CommandRow.svelte';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	export type AnchorPoint = { x: number; y: number; lineHeight?: number };
 	export type Anchor = HTMLElement | AnchorPoint;
@@ -165,7 +168,7 @@
 		style:--cpp-max-height="{maxHeight}px"
 		role="listbox"
 		aria-label="Suggestions"
-		transition:fly={{ y: resolvedPlacement === 'bottom-start' ? -4 : 4, duration: 120 }}
+		transition:fly={{ y: resolvedPlacement === 'bottom-start' ? -4 : 4, duration: motion.ms(120) }}
 	>
 		<div class="cpp-list">
 			{#if engine.empty}

@@ -86,11 +86,10 @@ try {
 		// Escape has to close it, or the page is a trap for a keyboard user.
 		//
 		// Waited for rather than polled once: these overlays leave on a Svelte
-		// `transition:`, whose duration is a number in the component and so is
-		// not one of the `--glow-dur-*` tokens that `prefers-reduced-motion`
-		// collapses. The surface is still painted for a few hundred ms after the
-		// keypress even with motion "off", and checking immediately reads that
-		// as a stuck overlay.
+		// `transition:`, and even with that suppressed the node survives the
+		// keypress by a frame or two. Checking immediately reads that as a stuck
+		// overlay. (`motion-js.test.mjs` is where the suppression itself is
+		// asserted.)
 		await page.keyboard.press("Escape");
 		const closed = await el
 			.first()

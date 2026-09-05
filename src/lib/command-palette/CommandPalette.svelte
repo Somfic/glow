@@ -12,6 +12,13 @@
 	import { useCommandList, CLOSE_MATCH_KEY, type ScoredCommand } from './useCommandList.svelte.js';
 	import CommandRow from './CommandRow.svelte';
 	import type { Command, CommandContext } from './types.js';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
+
+	// Chrome does not collapse a smooth scroll under prefers-reduced-motion the
+	// way it collapses a CSS transition, so the behaviour has to be picked here.
+	let scrollBehavior: ScrollBehavior = $derived(motion.current ? 'auto' : 'smooth');
 
 	type Props = {
 		open?: boolean;
@@ -278,7 +285,7 @@
 	// Scroll results to top on every query change so the new top result is in view.
 	$effect(() => {
 		void query;
-		if (resultsEl) resultsEl.scrollTo({ top: 0, behavior: 'smooth' });
+		if (resultsEl) resultsEl.scrollTo({ top: 0, behavior: scrollBehavior });
 	});
 
 	$effect(() => {
@@ -314,11 +321,11 @@
 			const idx = engine.activeIndex;
 			const len = engine.flat.length;
 			if (idx === 0) {
-				resultsEl.scrollTo({ top: 0, behavior: 'smooth' });
+				resultsEl.scrollTo({ top: 0, behavior: scrollBehavior });
 				return;
 			}
 			if (idx === len - 1) {
-				resultsEl.scrollTo({ top: resultsEl.scrollHeight, behavior: 'smooth' });
+				resultsEl.scrollTo({ top: resultsEl.scrollHeight, behavior: scrollBehavior });
 				return;
 			}
 			const activeEl = resultsEl.querySelector<HTMLElement>(`[data-cp-index="${idx}"]`);
@@ -329,9 +336,9 @@
 			const overflowTop = wrapRect.top + buffer - itemRect.top;
 			const overflowBottom = itemRect.bottom + buffer - wrapRect.bottom;
 			if (overflowTop > 0) {
-				resultsEl.scrollBy({ top: -overflowTop, behavior: 'smooth' });
+				resultsEl.scrollBy({ top: -overflowTop, behavior: scrollBehavior });
 			} else if (overflowBottom > 0) {
-				resultsEl.scrollBy({ top: overflowBottom, behavior: 'smooth' });
+				resultsEl.scrollBy({ top: overflowBottom, behavior: scrollBehavior });
 			}
 		});
 	}
@@ -406,13 +413,13 @@
 		aria-label="Command palette"
 		tabindex="-1"
 		onclick={onBackdropClick}
-		transition:fade={{ duration: 120 }}
+		transition:fade={{ duration: motion.ms(120) }}
 	>
 		<div
 			bind:this={listEl}
 			class="cp-panel"
 			class:has-preview={!!engine.flat[engine.activeIndex]?.preview}
-			transition:fly={{ y: -8, duration: 160 }}
+			transition:fly={{ y: -8, duration: motion.ms(160) }}
 			onkeydown={onKeydown}
 		>
 			<div class="cp-main">
@@ -562,8 +569,18 @@
 						class="cp-level"
 						bind:this={levelEl}
 						bind:offsetHeight={levelHeight}
-						in:fly={{ x: direction * (panelWidth || 320), duration: 220, opacity: 1, easing: quartOut }}
-						out:fly={{ x: -direction * (panelWidth || 320), duration: 220, opacity: 1, easing: quartOut }}
+						in:fly={{
+							x: direction * (panelWidth || 320),
+							duration: motion.ms(220),
+							opacity: 1,
+							easing: quartOut
+						}}
+						out:fly={{
+							x: -direction * (panelWidth || 320),
+							duration: motion.ms(220),
+							opacity: 1,
+							easing: quartOut
+						}}
 					>
 				{#if engine.loadingChildren}
 					{#each Array(4) as _, i (i)}
@@ -614,7 +631,7 @@
 				{@const previewSnippet = activeCmd.preview!}
 				<div
 					class="cp-preview"
-					transition:fly={{ x: 24, duration: 220, opacity: 0, easing: quartOut }}
+					transition:fly={{ x: 24, duration: motion.ms(220), opacity: 0, easing: quartOut }}
 				>
 					<Card
 						title={activeCmd.label}
@@ -623,7 +640,7 @@
 						footer={activeCmd.description ? previewFooter : undefined}
 					>
 						{#key activeCmd._keyId}
-							<div class="cp-preview-content" in:fade={{ duration: 120 }}>
+							<div class="cp-preview-content" in:fade={{ duration: motion.ms(120) }}>
 								{@render previewSnippet(activeCmd)}
 							</div>
 						{/key}

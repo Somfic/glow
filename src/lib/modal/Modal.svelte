@@ -8,6 +8,9 @@
 	import { trapFocus } from '../util/focusTrap.js';
 	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
 	import { portal } from '../util/portal.js';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	let {
 		open: isOpen = $bindable(false),
@@ -125,7 +128,7 @@
 		role="dialog"
 		aria-modal="true"
 		tabindex="0"
-		transition:fade={{ duration: 200 }}
+		transition:fade={{ duration: motion.ms(200) }}
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
@@ -134,7 +137,7 @@
 			role="document"
 			tabindex="-1"
 			onkeydown={handleContentKeydown}
-			transition:scale={{ duration: 200, start: 0.95, opacity: 0 }}
+			transition:scale={{ duration: motion.ms(200), start: 0.95, opacity: 0 }}
 		>
 			<Card
 				{title}

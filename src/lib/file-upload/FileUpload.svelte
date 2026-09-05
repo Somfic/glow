@@ -4,6 +4,9 @@
 	import { quartOut } from 'svelte/easing';
 	import Icon, { type IconProp, type IconName, resolveIcon } from '../icon/Icon.svelte';
 	import ImageCropper from '../input/ImageCropper.svelte';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	type Props = {
 		/** Currently picked files. Bindable so the host can read or reset. */
@@ -286,12 +289,12 @@
 	</div>
 
 	{#if showPreviews && files.length > 0}
-		<div class="fu-list" transition:slide={{ duration: 200, easing: quartOut }}>
+		<div class="fu-list" transition:slide={{ duration: motion.ms(200), easing: quartOut }}>
 			{#each files as f, i (f.name + i)}
 				<div
 					class="fu-item"
-					in:fly={{ y: -4, duration: 180, easing: quartOut }}
-					out:slide={{ duration: 160, easing: quartOut }}
+					in:fly={{ y: -4, duration: motion.ms(180), easing: quartOut }}
+					out:slide={{ duration: motion.ms(160), easing: quartOut }}
 				>
 					<div class="fu-thumb">
 						{#if f.type.startsWith('image/') && previewUrls[i]}

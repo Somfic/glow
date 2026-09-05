@@ -5,6 +5,9 @@
 	import Hls from 'hls.js';
 	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
 	import { onEscape } from '../util/escapeKey.js';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	export type RelatedMedia = {
 		src: string;
@@ -206,7 +209,7 @@
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
-		transition:fade={{ duration: 200 }}
+		transition:fade={{ duration: motion.ms(200) }}
 	>
 		<div class="lightbox-close">
 			<Button icon="X" onclick={onClose} variant="ghost" />
