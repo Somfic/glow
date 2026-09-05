@@ -15,6 +15,12 @@ export type {
 export { default as Sparkline, type SparklineProps, type SparklineTone } from "./charts/Sparkline.svelte";
 export { default as LineChart, type LineChartProps, type LineChartTable, type LineSeries } from "./charts/LineChart.svelte";
 export type { ChartDatum, ChartPoint } from "./charts/chart.js";
+export {
+	default as AnimatedNumber,
+	type AnimatedNumberMode,
+	type AnimatedNumberFormat,
+	type AnimatedNumberAlign
+} from "./animated-number/AnimatedNumber.svelte";
 export type {
 	TableProps,
 	TableColumn,
