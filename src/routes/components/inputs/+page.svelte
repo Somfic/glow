@@ -7,6 +7,7 @@
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
 	import Code from '$lib/code/Code.svelte';
+	import Field from '$lib/settings/Field.svelte';
 </script>
 
 {#snippet codeCell(value)}
@@ -495,6 +496,85 @@
 			<Input type="pin" label="Read-only" value="551204" readonly={true} />
 			<Input type="pin" label="Disabled" value="4400" length={4} disabled={true} />
 		</div>
+	</Card>
+
+	<Card title="Error states" id="error-states">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Every framed type in one place, each with an <Code>error</Code> set. The frame
+			is repainted in <Code>--glow-color-danger</Code> because the wrapper hands the
+			border tokens down, so a control inherits the error colour from its own
+			<Code>border</Code> declaration without <Code>Input</Code> knowing it exists.
+			<Code>toggle</Code>, <Code>range</Code> and <Code>rating</Code> draw no frame at
+			all, so for those the message below the control carries the whole error state.
+		</Text>
+		<div
+			style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem;"
+		>
+			<Input type="text" label="text" value="" placeholder="Text" error="Required" />
+			<Input type="password" label="password" value="" placeholder="Password" error="Too short" />
+			<Input type="number" label="number" placeholder="0" error="Out of range" />
+			<Input type="textarea" label="textarea" placeholder="Notes" rows={2} error="Required" />
+			<Input
+				type="select"
+				label="select"
+				placeholder="Pick one"
+				error="Pick an option"
+				options={[
+					{ label: 'Apple', value: 'apple' },
+					{ label: 'Banana', value: 'banana' }
+				]}
+			/>
+			<Input
+				type="multiselect"
+				label="multiselect"
+				placeholder="Pick some"
+				error="Pick at least one"
+				options={[
+					{ label: 'Red', value: 'red' },
+					{ label: 'Green', value: 'green' }
+				]}
+			/>
+			<Input
+				type="radio"
+				label="radio"
+				error="Choose a cadence"
+				options={[
+					{ label: 'Daily', value: 'daily' },
+					{ label: 'Weekly', value: 'weekly' }
+				]}
+			/>
+			<Input type="checkbox" label="checkbox" checkboxLabel="Accept terms" error="Required" />
+			<Input type="date" label="date" placeholder="Pick a date" error="Date is in the past" />
+			<Input type="time" label="time" placeholder="Pick a time" error="Outside opening hours" />
+			<Input type="color" label="color" value="#4f8ef7" error="Fails contrast" />
+			<Input type="pin" label="pin" value="9082" length={4} error="That code has expired." />
+			<Input type="toggle" label="toggle" toggleLabel="Notify me" error="Turn this on" />
+			<Input type="range" label="range" value={20} error="Below the minimum" />
+			<Input type="rating" label="rating" value={2} error="Rate at least three" />
+			<Input type="text" label="valid, for comparison" value="Fine" />
+			<Input type="text" label="disabled with an error" value="Fine" disabled error="Required" />
+		</div>
+	</Card>
+
+	<Card title="Errors inside a Field" id="error-in-field">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			Inside a <Code>Field</Code>, the <Code>error</Code> is inherited from the field
+			and the message is rendered by <Code>Field</Code> rather than by
+			<Code>Input</Code> — but the control's frame still has to carry it.
+		</Text>
+		<Field label="Endpoint" error="Must be an https:// URL." layout="vertical">
+			<Input type="text" value="http://localhost" />
+		</Field>
+		<Field label="Region" error="Pick a region." layout="vertical">
+			<Input
+				type="select"
+				placeholder="Pick one"
+				options={[
+					{ label: 'eu-west', value: 'eu-west' },
+					{ label: 'us-east', value: 'us-east' }
+				]}
+			/>
+		</Field>
 	</Card>
 
 	<Card title="Usage" id="usage">

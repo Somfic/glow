@@ -536,17 +536,25 @@
 			gap: 0;
 		}
 
-		// Invalid state — bleeds into the inner control's border via :global.
-		// Each specialized input renders its own border, so we target by the
-		// shared selectors most use.
+		// Invalid state — retint the border tokens rather than name the controls.
+		//
+		// This used to be a hand-written list of `:global()` selectors, one per
+		// control that happened to render a frame. It went stale twice over:
+		// eight of the twelve framed types matched nothing (silently, since a
+		// missing border looks like a valid field), and `.popover-trigger` had
+		// not existed since PopoverMenu renamed it. Every control frame in the
+		// library is built from `$border`/`$border-strong`, i.e. from these two
+		// tokens, and custom properties inherit — so overriding them here reaches
+		// whatever is rendered below without this file knowing its name, and a
+		// new input type opts in by doing nothing.
+		//
+		// Two things this deliberately does not reach, both correct: a `disabled`
+		// control, because `disabled-control` declares `border-color` outright and
+		// a declaration beats an inherited token; and popover/menu panels, because
+		// they portal to <body> and so inherit from the document, not from here.
 		&.invalid {
-			:global(input),
-			:global(textarea),
-			:global(.text-input),
-			:global(.number-input),
-			:global(.popover-trigger) {
-				border-color: var(--glow-color-danger, #ef4444);
-			}
+			--glow-border-color: var(--glow-color-danger);
+			--glow-border-strong: var(--glow-color-danger);
 		}
 	}
 
@@ -555,7 +563,7 @@
 		align-items: center;
 		gap: $space-xs;
 		font-size: $text-xs;
-		color: var(--glow-color-danger, #ef4444);
+		color: var(--glow-color-danger);
 		line-height: 1.35;
 	}
 
