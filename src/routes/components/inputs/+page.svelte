@@ -242,6 +242,130 @@
 		/>
 	</Card>
 
+	<Card title="Radio Input Sizes" id="radio-input-sizes">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			<Code>size</Code> is <Code>sm</Code>, <Code>md</Code> (the default) or <Code>lg</Code>. Only
+			the font size changes — the height, padding and icons are in <Code>em</Code>, so they follow.
+		</Text>
+		<div class="radio-stack">
+			<Input
+				type="radio"
+				label="Range, small"
+				size="sm"
+				value="week"
+				options={[
+					{ label: 'Day', value: 'day' },
+					{ label: 'Week', value: 'week' },
+					{ label: 'Month', value: 'month' },
+					{ label: 'All time', value: 'all' }
+				]}
+			/>
+			<Input
+				type="radio"
+				label="Range, medium"
+				value="week"
+				options={[
+					{ label: 'Day', value: 'day' },
+					{ label: 'Week', value: 'week' },
+					{ label: 'Month', value: 'month' },
+					{ label: 'All time', value: 'all' }
+				]}
+			/>
+			<Input
+				type="radio"
+				label="Range, large"
+				size="lg"
+				value="week"
+				options={[
+					{ label: 'Day', value: 'day' },
+					{ label: 'Week', value: 'week' },
+					{ label: 'Month', value: 'month' },
+					{ label: 'All time', value: 'all' }
+				]}
+			/>
+		</div>
+	</Card>
+
+	<Card title="Radio Input Full Width" id="radio-input-full-width">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			<Code>fullWidth</Code> stretches the control and gives every option an equal share. The
+			indicator re-measures on resize, so it stays on its option as the container changes width.
+		</Text>
+		<Input
+			type="radio"
+			label="Period"
+			fullWidth={true}
+			value="month"
+			options={[
+				{ label: 'Day', value: 'day' },
+				{ label: 'Week', value: 'week' },
+				{ label: 'Month', value: 'month' }
+			]}
+		/>
+	</Card>
+
+	<Card title="Radio Input Disabled" id="radio-input-disabled">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			A single option, or the whole group. A disabled option is skipped by the arrow keys rather
+			than focused and refused, and a disabled group drops the accent fill — the brightest thing
+			on the page should not be a control nobody can use.
+		</Text>
+		<div class="radio-stack">
+			<Input
+				type="radio"
+				label="Billing period"
+				value="monthly"
+				options={[
+					{ label: 'Monthly', value: 'monthly' },
+					{ label: 'Yearly', value: 'yearly' },
+					{ label: 'Lifetime', value: 'lifetime', disabled: true }
+				]}
+			/>
+			<Input
+				type="radio"
+				label="Range (disabled)"
+				disabled={true}
+				value="week"
+				options={[
+					{ label: 'Day', value: 'day' },
+					{ label: 'Week', value: 'week' },
+					{ label: 'Month', value: 'month' },
+					{ label: 'All time', value: 'all' }
+				]}
+			/>
+		</div>
+	</Card>
+
+	<Card title="Radio Input Keyboard" id="radio-input-keyboard">
+		<Text variant="secondary" size="sm">
+			The group is a <Code>radiogroup</Code> of <Code>radio</Code> buttons and a single tab stop —
+			the selected option holds it, the rest are <Code>tabindex="-1"</Code>. <Code>←</Code> and
+			<Code>→</Code> move the selection with the focus, wrapping and skipping disabled options;
+			<Code>Home</Code> and <Code>End</Code> jump to the ends. Up and down are deliberately left
+			alone: the group is horizontal, and it is rendered inside
+			<Link href="/components/popover-menu">PopoverMenu</Link>, which uses those keys for the menu
+			itself.
+		</Text>
+		<Text variant="secondary" size="sm" style="margin-top: 0.75rem;">
+			With <Code>clearable</Code> nothing may be selected at all. From that state
+			<Code>→</Code> takes the option that already has focus and <Code>←</Code> the last, so one
+			keypress always lands somewhere; arrowing onto the selected option never clears it, since
+			only a click means clear.
+		</Text>
+		<div class="radio-stack" style="margin-top: 1rem;">
+			<Input
+				type="radio"
+				label="Clearable — click the selected option to clear it"
+				clearable={true}
+				options={[
+					{ label: 'Low', value: 'low' },
+					{ label: 'Medium', value: 'medium' },
+					{ label: 'High', value: 'high' }
+				]}
+			/>
+		</div>
+	</Card>
+
 	<Card title="Select Input" id="select-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Searchable dropdown select with filtering. Options accept icons and descriptions
@@ -523,3 +647,14 @@
 			<li><Text>♿ Fully accessible with proper labels and ARIA</Text></li>
 		</ul>
 	</Card>
+
+<style>
+	/* The radio examples stack, and each control is inline-flex — without
+	   align-items the disabled/sizes rows would stretch to the card width. */
+	.radio-stack {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 1rem;
+	}
+</style>

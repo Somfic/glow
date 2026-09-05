@@ -103,6 +103,10 @@
 		clearable?: boolean;
 		/** Render only each option's icon (label becomes its tooltip). */
 		iconOnly?: boolean;
+		/** Font size of the control; its height and icons follow. */
+		size?: 'sm' | 'md' | 'lg';
+		/** Fill the available width, every option sharing it equally. */
+		fullWidth?: boolean;
 		onChange?: (value: string) => void;
 	};
 
@@ -364,6 +368,9 @@
 		/>
 	{:else if props.type === 'radio'}
 		{@const p = props as RadioProps}
+		<!-- `label` goes through as well as being rendered: a field label cannot be
+		     associated with a radiogroup by `for`/`id`, so without this the group
+		     has no accessible name. -->
 		<RadioInput
 			id={inputId}
 			options={p.options}
@@ -371,6 +378,9 @@
 			disabled={p.disabled}
 			clearable={p.clearable}
 			iconOnly={p.iconOnly}
+			size={p.size}
+			fullWidth={p.fullWidth}
+			label={p.label}
 			onChange={(v) => p.onChange?.(v ?? '')}
 		/>
 	{:else if props.type === 'select'}
