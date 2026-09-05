@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Icon from '../icon/Icon.svelte';
+	import EmptyState from '../empty-state/EmptyState.svelte';
 	import Pill from '../pill/Pill.svelte';
 	import Popover from '../popover/Popover.svelte';
 	import type { SelectOption } from './types.js';
@@ -222,7 +223,7 @@
 				</button>
 			{/each}
 		{:else}
-			<div class="no-results">No results found</div>
+			<EmptyState size="compact" title="No results found" />
 		{/if}
 	</div>
 </Popover>
@@ -398,10 +399,4 @@
 		}
 	}
 
-	.no-results {
-		padding: 1em;
-		text-align: center;
-		color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
-		font-size: 0.875rem;
-	}
 </style>

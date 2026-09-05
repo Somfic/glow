@@ -6,6 +6,7 @@
 	import Spinner from '../spinner/Spinner.svelte';
 	import Skeleton from '../skeleton/Skeleton.svelte';
 	import Card from '../card/Card.svelte';
+	import EmptyState from '../empty-state/EmptyState.svelte';
 	import { portal } from '../util/portal.js';
 	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
 	import { commands as defaultRegistry, CommandRegistry } from './registry.svelte.js';
@@ -592,7 +593,7 @@
 						</div>
 					{/each}
 				{:else if engine.flat.length === 0}
-					<div class="cp-empty">{emptyText}</div>
+					<EmptyState size="compact" title={emptyText} />
 				{:else}
 					{#each engine.sections as section (section.name)}
 						{#if section.name !== CLOSE_MATCH_KEY && (engine.sections.length > 1 || section.name !== 'Other')}
@@ -886,13 +887,6 @@
 		&.ready {
 			opacity: 1;
 		}
-	}
-
-	.cp-empty {
-		padding: $space-lg;
-		text-align: center;
-		color: color-mix(in oklab, var(--glow-fg) 55%, transparent);
-		font-size: 0.875rem;
 	}
 
 	.cp-section-label {
