@@ -12,7 +12,8 @@
 		type CalendarValue,
 		type DateRange
 	} from '$lib/calendar/Calendar.svelte';
-	import DatePicker from '$lib/calendar/DatePicker.svelte';
+	import Input from '$lib/input/Input.svelte';
+	import Link from '$lib/typography/Link.svelte';
 
 	// A fixed month everywhere below, so the docs (and the screenshots taken of
 	// them) show the same calendar regardless of when they're opened.
@@ -23,9 +24,11 @@
 	let range = $state<CalendarValue>({ start: '2026-03-09', end: '2026-03-20' });
 	let bounded = $state<CalendarValue>('2026-03-18');
 	let decorated = $state<CalendarValue>('2026-03-11');
-	let picked = $state<CalendarValue>('2026-03-12');
-	let pickedRange = $state<CalendarValue>({ start: '2026-03-09', end: '2026-03-14' });
-	let pickedMany = $state<CalendarValue>([]);
+	// The field's value never goes null — an empty single date is '' — so these are
+	// typed without it, which is what `<Input type="date">` accepts.
+	let picked = $state<string | string[] | DateRange>('2026-03-12');
+	let pickedRange = $state<string | string[] | DateRange>({ start: '2026-03-09', end: '2026-03-14' });
+	let pickedMany = $state<string | string[] | DateRange>([]);
 
 	// Weekends are unavailable in the "bounds" demo.
 	const noWeekends = (d: Date) => d.getDay() === 0 || d.getDay() === 6;
@@ -59,9 +62,10 @@
 
 <Heading level={1}>Calendar</Heading>
 <Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
-	A themeable month grid and the picker built on it. <Code>DateInput</Code> wraps the native
-	<Code>&lt;input type="date"&gt;</Code>, which the OS draws — it can't be themed, can't show a
-	range, and can't mark a day as unavailable. This can.
+	A themeable month grid: one day, a set of days, or a range. Use it inline, as below — and when
+	you want it as a form control, it is what <Link href="/components/inputs#date-input"
+		><Code>Input type="date"</Code></Link
+	> opens, so there is one grid in the library rather than one per field.
 </Text>
 
 <Card title="Single date" id="single">
@@ -142,22 +146,41 @@
 	<Calendar bind:value={decorated} month={demoMonth} decoration={dots} />
 </Card>
 
-<Card title="Picker" id="picker">
+<Card title="As a form control" id="form-control">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-		<Code>DatePicker</Code> puts the same calendar in a <Code>Popover</Code>, so it works as a form
-		control. Opening it moves focus into the grid. It closes on a complete answer — one day, or
-		both ends of a range — and never in <Code>multiple</Code> mode, where there is no way to know
-		the user is finished.
+		<Code>{'<Input type="date">'}</Code> is this calendar in a <Code>Popover</Code>. It takes the
+		same <Code>mode</Code>, <Code>min</Code>/<Code>max</Code>, <Code>isDateDisabled</Code>,
+		<Code>weekStart</Code>, <Code>locale</Code> and <Code>decoration</Code> props. Focus moves into
+		the grid when it opens and back to the field when it closes; it closes on a complete answer —
+		one day, or both ends of a range — and never in <Code>multiple</Code> mode, where there is no
+		way to know the user is finished.
 	</Text>
 	<Flex direction="horizontal" gap="md" wrap>
-		<div class="control"><DatePicker bind:value={picked} clearable /></div>
+		<div class="control"><Input type="date" value={picked} onChange={(v) => (picked = v)} clearable /></div>
 		<div class="control wide">
-			<DatePicker mode="range" bind:value={pickedRange} placeholder="Select range" clearable />
+			<Input
+				type="date"
+				mode="range"
+				value={pickedRange}
+				onChange={(v) => (pickedRange = v)}
+				placeholder="Select range"
+				clearable
+			/>
 		</div>
 		<div class="control">
-			<DatePicker mode="multiple" bind:value={pickedMany} placeholder="Select days" clearable />
+			<Input
+				type="date"
+				mode="multiple"
+				value={pickedMany}
+				onChange={(v) => (pickedMany = v)}
+				placeholder="Select days"
+				clearable
+			/>
 		</div>
 	</Flex>
+	<Text size="sm" variant="secondary" style="margin-top: 0.75rem;">
+		Full props for the field live on the <Link href="/components/inputs#date-input">Input</Link> page.
+	</Text>
 </Card>
 
 <Card title="Keyboard" id="keyboard">
@@ -192,7 +215,7 @@
 	<CodeBlock
 		language="svelte"
 		code={`<script lang="ts">
-  import { Calendar, DatePicker, type DateRange } from 'glow';
+  import { Calendar, Input, type DateRange } from 'glow';
 
   let day = $state<string | null>(null);
   let stay = $state<DateRange>({ start: null, end: null });
@@ -204,7 +227,8 @@
 <Calendar bind:value={day} min="2026-01-01" max="2026-12-31" />
 
 <!-- As a form control, a range, en-US weeks -->
-<DatePicker
+<Input
+  type="date"
   mode="range"
   bind:value={stay}
   weekStart={0}
@@ -224,10 +248,10 @@
 
 <Card title="Props" id="props">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-		<Code>Calendar</Code>. <Code>DatePicker</Code> takes all of these except
-		<Code>month</Code>, <Code>fixedWeeks</Code> and <Code>yearNav</Code>, plus
-		<Code>open</Code>, <Code>placeholder</Code>, <Code>disabled</Code>, <Code>clearable</Code>,
-		<Code>align</Code> and <Code>format</Code>.
+		<Code>Calendar</Code>. <Code>{'<Input type="date">'}</Code> forwards all of these except
+		<Code>month</Code>, <Code>fixedWeeks</Code> and <Code>yearNav</Code>, and adds the field's own
+		<Code>placeholder</Code>, <Code>disabled</Code>, <Code>clearable</Code> and
+		<Code>format</Code>.
 	</Text>
 	<Table
 		variant="simple"

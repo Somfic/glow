@@ -1,11 +1,22 @@
 <script lang="ts">
+	import { tick, type Snippet } from 'svelte';
 	import Icon from '../icon/Icon.svelte';
 	import Popover from '../popover/Popover.svelte';
+	import Calendar, {
+		type CalendarDay,
+		type CalendarMode,
+		type CalendarValue,
+		type DateRange
+	} from '../calendar/Calendar.svelte';
+	import { parseISO } from '../calendar/date.js';
 
 	interface Props {
 		id?: string;
-		/** ISO date string (YYYY-MM-DD). Bindable. */
-		value?: string;
+		/**
+		 * ISO date string (YYYY-MM-DD). Bindable. In `multiple` mode it is an array
+		 * of them, and in `range` mode a `{ start, end }` pair — both still ISO.
+		 */
+		value?: string | string[] | DateRange;
 		placeholder?: string;
 		disabled?: boolean;
 		clearable?: boolean;
@@ -15,9 +26,28 @@
 		max?: string;
 		/** Locale used for formatting in the trigger and the calendar header. Defaults to the browser's default. */
 		locale?: string;
-		/** Override the trigger's date display. Receives a Date or null when no value is selected. */
+		/** Override the trigger's date display. Receives a Date or null when no value is selected; in multiple/range mode it formats each date in turn. */
 		format?: (date: Date | null) => string;
-		onChange?: (value: string) => void;
+		/** One day, a set of days, or a span. */
+		mode?: CalendarMode;
+		/** Called per day; return true to make it unselectable (weekends, holidays, a booked-out day). */
+		isDateDisabled?: (date: Date) => boolean;
+		/** First column of the calendar. 0 = Sunday, 1 = Monday (default). */
+		weekStart?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+		/** Show the ISO-8601 week number as a leading column. */
+		showWeekNumbers?: boolean;
+		/** Extra content inside a day cell, under the number — an event dot, a price, a badge. */
+		decoration?: Snippet<[CalendarDay]>;
+		/** Which edge of the trigger the calendar anchors to. */
+		align?: 'left' | 'right' | 'stretch';
+		/** Bindable open state of the calendar popover. */
+		open?: boolean;
+		/**
+		 * `any` rather than the value union: existing callers pass
+		 * `(value: string) => void`, and under `strictFunctionTypes` a widened
+		 * parameter would make every one of them a type error for no benefit.
+		 */
+		onChange?: (value: any) => void;
 	}
 
 	let {
@@ -30,160 +60,121 @@
 		max,
 		locale,
 		format,
+		mode = 'single',
+		isDateDisabled,
+		weekStart = 1,
+		showWeekNumbers = false,
+		decoration,
+		align = 'left',
+		open = $bindable(false),
 		onChange
 	}: Props = $props();
 
-	let isOpen = $state(false);
+	let triggerElement = $state<HTMLButtonElement>();
+	let panel = $state<HTMLDivElement>();
 
-	// Parse YYYY-MM-DD into a local Date (avoiding TZ shifts that `new Date(iso)` can introduce).
-	function parseISO(iso: string | undefined): Date | null {
-		if (!iso) return null;
-		const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-		if (!m) return null;
-		const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-		return isNaN(d.getTime()) ? null : d;
-	}
-
-	function toISO(d: Date): string {
-		const yyyy = d.getFullYear();
-		const mm = String(d.getMonth() + 1).padStart(2, '0');
-		const dd = String(d.getDate()).padStart(2, '0');
-		return `${yyyy}-${mm}-${dd}`;
-	}
-
-	// Same calendar day, ignoring time.
-	function isSameDay(a: Date, b: Date): boolean {
-		return (
-			a.getFullYear() === b.getFullYear() &&
-			a.getMonth() === b.getMonth() &&
-			a.getDate() === b.getDate()
-		);
-	}
-
-	const selected = $derived(parseISO(value));
-	const minDate = $derived(parseISO(min));
-	const maxDate = $derived(parseISO(max));
-
-	// The month currently being displayed in the calendar (independent of `value`
-	// so users can browse without having a selection yet).
-	let viewYear = $state(new Date().getFullYear());
-	let viewMonth = $state(new Date().getMonth());
-
-	// When the popover opens, jump the calendar to the selected month (or today).
-	$effect(() => {
-		if (!isOpen) return;
-		const anchor = selected ?? new Date();
-		viewYear = anchor.getFullYear();
-		viewMonth = anchor.getMonth();
+	// The grid, the keyboard model and the date arithmetic all live in <Calendar>.
+	// This component is the field: a trigger, a popover, and the formatting of
+	// whatever was picked.
+	const asCalendarValue = $derived.by((): CalendarValue => {
+		if (mode === 'range') {
+			const r = value as DateRange | undefined;
+			return r && typeof r === 'object' && !Array.isArray(r) ? r : { start: null, end: null };
+		}
+		if (mode === 'multiple') return Array.isArray(value) ? value : [];
+		return typeof value === 'string' && value ? value : null;
 	});
 
-	const today = new Date();
-
-	const monthLabel = $derived(
-		new Date(viewYear, viewMonth, 1).toLocaleDateString(locale, {
-			month: 'long',
-			year: 'numeric'
-		})
+	const dayFormat = $derived(
+		new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'short', day: 'numeric' })
 	);
 
-	const weekdayLabels = $derived.by(() => {
-		const fmt = new Intl.DateTimeFormat(locale, { weekday: 'short' });
-		// Anchor on a known Sunday so each weekday name is in the right slot.
-		const sunday = new Date(2024, 0, 7);
-		const labels: string[] = [];
-		for (let i = 0; i < 7; i++) {
-			const d = new Date(sunday);
-			d.setDate(sunday.getDate() + i);
-			labels.push(fmt.format(d));
-		}
-		return labels;
-	});
-
-	type Cell = { date: Date; inMonth: boolean; disabled: boolean };
-
-	const cells = $derived.by((): Cell[] => {
-		const first = new Date(viewYear, viewMonth, 1);
-		const startWeekday = first.getDay(); // 0 = Sunday
-		const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
-		const out: Cell[] = [];
-
-		// Leading days from the previous month.
-		for (let i = startWeekday - 1; i >= 0; i--) {
-			const d = new Date(viewYear, viewMonth, -i);
-			out.push({ date: d, inMonth: false, disabled: outOfRange(d) });
-		}
-		// Days in the current month.
-		for (let day = 1; day <= daysInMonth; day++) {
-			const d = new Date(viewYear, viewMonth, day);
-			out.push({ date: d, inMonth: true, disabled: outOfRange(d) });
-		}
-		// Trailing days to fill the final week (always render 6 rows of 7).
-		while (out.length < 42) {
-			const last = out[out.length - 1].date;
-			const next = new Date(last);
-			next.setDate(last.getDate() + 1);
-			out.push({ date: next, inMonth: false, disabled: outOfRange(next) });
-		}
-		return out;
-	});
-
-	function outOfRange(d: Date): boolean {
-		if (minDate && d < minDate) return true;
-		if (maxDate && d > maxDate) return true;
-		return false;
+	function label(iso: string | null): string {
+		const d = parseISO(iso);
+		if (format) return format(d);
+		return d ? dayFormat.format(d) : '';
 	}
 
-	function pick(d: Date) {
-		if (outOfRange(d)) return;
-		value = toISO(d);
+	const empty = $derived.by(() => {
+		if (mode === 'range') return !(asCalendarValue as DateRange).start;
+		if (mode === 'multiple') return (asCalendarValue as string[]).length === 0;
+		return !asCalendarValue;
+	});
+
+	const triggerText = $derived.by(() => {
+		if (mode === 'range') {
+			const r = asCalendarValue as DateRange;
+			if (!r.start) return placeholder;
+			// A half-made range still shows its start, with the end left as an
+			// ellipsis — the trigger should never go blank mid-selection.
+			return `${label(r.start)} – ${r.end ? label(r.end) : '…'}`;
+		}
+		if (mode === 'multiple') {
+			const list = asCalendarValue as string[];
+			if (list.length === 0) return placeholder;
+			return list.length === 1 ? label(list[0]) : `${list.length} dates`;
+		}
+		// Single mode keeps its original contract: `format` owns the whole string,
+		// including what an empty value looks like.
+		if (format) return format(parseISO(asCalendarValue as string | null));
+		return empty ? placeholder : label(asCalendarValue as string);
+	});
+
+	function handleChange(next: CalendarValue) {
+		value = (next ?? '') as typeof value;
 		onChange?.(value);
-		isOpen = false;
-	}
-
-	function shiftMonth(delta: number) {
-		const m = viewMonth + delta;
-		viewYear = viewYear + Math.floor(m / 12);
-		viewMonth = ((m % 12) + 12) % 12;
-	}
-
-	function jumpToToday() {
-		viewYear = today.getFullYear();
-		viewMonth = today.getMonth();
+		// Close on a complete answer only: one day, or both ends of a range.
+		// `multiple` never auto-closes — there is no way to know the user is done.
+		if (mode === 'single') open = false;
+		else if (mode === 'range' && (next as DateRange)?.end) open = false;
 	}
 
 	function clear(e: MouseEvent) {
+		// The clear affordance sits inside the trigger, so its click would otherwise
+		// bubble up and open the popover we just emptied.
 		e.stopPropagation();
-		value = '';
-		onChange?.('');
+		const blank = mode === 'range' ? { start: null, end: null } : mode === 'multiple' ? [] : '';
+		value = blank as typeof value;
+		onChange?.(value);
 	}
 
-	const triggerText = $derived.by(() => {
-		if (format) return format(selected);
-		if (!selected) return placeholder;
-		return selected.toLocaleDateString(locale, {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric'
-		});
+	// Opening moves focus into the grid, and closing hands it back to the trigger:
+	// the panel is portalled to <body>, so it is not a DOM sibling of the trigger
+	// and Tab alone would never reach it or come back.
+	let wasOpen = false;
+	$effect(() => {
+		if (open) {
+			wasOpen = true;
+			tick().then(() => panel?.querySelector<HTMLElement>('.day[tabindex="0"]')?.focus());
+			return;
+		}
+		// Only after an open we closed — without this, the effect's first run on a
+		// page full of date fields would race them all to steal the initial focus.
+		if (!wasOpen) return;
+		wasOpen = false;
+		const active = document.activeElement;
+		if (!active || active === document.body || panel?.contains(active)) triggerElement?.focus();
 	});
 </script>
 
-<Popover bind:open={isOpen} {disabled} align="left">
+<Popover bind:open {disabled} {align}>
 	{#snippet trigger()}
 		<button
+			bind:this={triggerElement}
 			{id}
 			type="button"
 			class="date-trigger"
-			class:open={isOpen}
-			class:placeholder={!selected}
+			class:open
+			class:placeholder={empty}
 			{disabled}
+			aria-haspopup="dialog"
+			aria-expanded={open}
 		>
-			<Icon name="Calendar" size={16} />
+			<Icon name={mode === 'range' ? 'CalendarRange' : 'Calendar'} size={16} />
 			<span class="value-text">{triggerText}</span>
-			{#if clearable && selected && !disabled}
+			{#if clearable && !empty && !disabled}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<!-- svelte-ignore a11y_consider_explicit_label -->
-				<span class="clear" role="button" tabindex="-1" onclick={clear}>
+				<span class="clear" role="button" tabindex="-1" aria-label="Clear date" onclick={clear}>
 					<Icon name="X" size={14} />
 				</span>
 			{/if}
@@ -191,41 +182,26 @@
 		</button>
 	{/snippet}
 
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="date-popover" onmousedown={(e) => e.stopPropagation()}>
-		<div class="header">
-			<button type="button" class="nav-btn" onclick={() => shiftMonth(-1)} aria-label="Previous month">
-				<Icon name="ChevronLeft" size={16} />
-			</button>
-			<button type="button" class="month-label" onclick={jumpToToday} title="Jump to today">
-				{monthLabel}
-			</button>
-			<button type="button" class="nav-btn" onclick={() => shiftMonth(1)} aria-label="Next month">
-				<Icon name="ChevronRight" size={16} />
-			</button>
-		</div>
-
-		<div class="grid weekdays" role="row">
-			{#each weekdayLabels as wd}
-				<span class="weekday">{wd}</span>
-			{/each}
-		</div>
-
-		<div class="grid days" role="grid">
-			{#each cells as cell}
-				<button
-					type="button"
-					class="day"
-					class:in-month={cell.inMonth}
-					class:today={isSameDay(cell.date, today)}
-					class:selected={selected && isSameDay(cell.date, selected)}
-					disabled={cell.disabled}
-					onclick={() => pick(cell.date)}
-				>
-					{cell.date.getDate()}
-				</button>
-			{/each}
-		</div>
+	<!-- The trigger advertises aria-haspopup="dialog", so the panel has to be one. -->
+	<div
+		class="date-popover"
+		bind:this={panel}
+		role="dialog"
+		aria-label="Choose a date"
+		aria-modal="false"
+	>
+		<Calendar
+			{mode}
+			value={asCalendarValue}
+			{min}
+			{max}
+			{isDateDisabled}
+			{weekStart}
+			{locale}
+			{showWeekNumbers}
+			{decoration}
+			onChange={handleChange}
+		/>
 	</div>
 </Popover>
 
@@ -243,15 +219,18 @@
 		font: inherit;
 		cursor: pointer;
 		text-align: left;
-		transition: border-color 0.15s ease, box-shadow 0.15s ease;
+		transition: border-color var(--glow-dur-fast) var(--glow-ease-out),
+			box-shadow var(--glow-dur-fast) var(--glow-ease-out);
 
-		&.open {
+		&.open,
+		&:focus-visible {
+			outline: none;
 			border-color: var(--glow-primary);
 			box-shadow: $focus-ring;
 		}
 
 		&:hover:not(:disabled) {
-			background-color: color-mix(in oklab, var(--glow-fg) 5%, transparent);
+			background-color: var(--glow-state-hover);
 		}
 
 		&:disabled {
@@ -259,7 +238,7 @@
 		}
 
 		&.placeholder .value-text {
-			color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
+			color: var(--glow-text-muted);
 		}
 
 		.value-text {
@@ -275,122 +254,18 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		color: color-mix(in oklab, var(--glow-fg) 60%, transparent);
+		color: var(--glow-text-secondary);
 		cursor: pointer;
 		border-radius: 999px;
 		padding: 2px;
 
 		&:hover {
-			color: var(--glow-fg);
-			background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
+			color: var(--glow-text-primary);
+			background: $tertiary-hover;
 		}
 	}
 
 	.date-popover {
-		padding: 0.75rem;
-		min-width: 280px;
-	}
-
-	.header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.5rem;
-		margin-bottom: 0.5rem;
-	}
-
-	.month-label {
-		flex: 1;
-		text-align: center;
-		font-weight: $weight-bold;
-		font-size: $text-sm;
-		color: var(--glow-fg);
-		background: transparent;
-		border: 0;
-		padding: 0.25rem 0.5rem;
-		border-radius: $radius * 0.4;
-		cursor: pointer;
-
-		&:hover {
-			background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
-		}
-	}
-
-	.nav-btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 1.75rem;
-		height: 1.75rem;
-		border-radius: 999px;
-		background: transparent;
-		border: 0;
-		color: var(--glow-text-secondary);
-		cursor: pointer;
-
-		&:hover {
-			background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
-			color: var(--glow-fg);
-		}
-	}
-
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);
-		gap: 2px;
-	}
-
-	.weekdays {
-		margin-bottom: 0.25rem;
-
-		.weekday {
-			font-size: $text-xs;
-			color: var(--glow-text-muted);
-			text-align: center;
-			text-transform: uppercase;
-			letter-spacing: 0.05em;
-			padding: 0.25rem 0;
-		}
-	}
-
-	.day {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		height: 2rem;
-		font: inherit;
-		font-size: $text-sm;
-		color: color-mix(in oklab, var(--glow-fg) 45%, transparent);
-		background: transparent;
-		border: 0;
-		border-radius: $radius * 0.5;
-		cursor: pointer;
-		transition: background-color 0.1s ease, color 0.1s ease;
-
-		&.in-month {
-			color: var(--glow-fg);
-		}
-
-		&:hover:not(:disabled) {
-			background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
-		}
-
-		&.today {
-			outline: 2px solid color-mix(in oklab, var(--glow-primary) 45%, transparent);
-		}
-
-		&.selected {
-			background: var(--glow-primary);
-			@include contrast-color(var(--glow-primary), $fallback: white);
-
-			&:hover {
-				background: var(--glow-primary);
-			}
-		}
-
-		&:disabled {
-			@include disabled-content;
-			background: none;
-		}
+		padding: $space-sm;
 	}
 </style>

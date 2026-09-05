@@ -53,8 +53,9 @@ try {
 		(await p.locator("#range").innerText()).includes("2026-03-02 → 2026-03-04")
 	);
 
-	// ── Picker: portalled, on top, focused ──
-	await p.locator("#picker button.date-picker-trigger").first().click();
+	// ── The field: <Input type="date"> is the picker ──
+	const field = p.locator("#form-control .control .date-trigger").first();
+	await field.click();
 	await p.waitForSelector(".popover-content .calendar");
 	t.ok(
 		"the panel is painted above the page",
@@ -65,13 +66,33 @@ try {
 		})
 	);
 	t.ok("opening moves focus into the grid", await p.evaluate(() => document.activeElement?.classList.contains("day")));
+	t.ok(
+		"there is exactly one grid implementation in the field",
+		(await p.locator(".popover-content .calendar table[role='grid']").count()) === 1
+	);
 	await p.keyboard.press("ArrowRight");
 	await p.keyboard.press("Enter");
 	// The popover leaves on a Svelte `transition:` whose duration is a number,
 	// which `prefers-reduced-motion` does not collapse — wait for it to go
 	// rather than sampling the DOM once.
 	await p.waitForSelector(".popover-content", { state: "detached" });
-	t.ok("a complete answer closes the picker", (await p.locator(".popover-content").count()) === 0);
+	t.ok("a complete answer closes the field", (await p.locator(".popover-content").count()) === 0);
+	t.ok(
+		"closing hands focus back to the trigger",
+		await p.evaluate(() => document.activeElement?.classList.contains("date-trigger"))
+	);
+	t.ok("the field shows what was picked", (await field.innerText()).includes("13"));
+
+	// A range field stays open until both ends are in.
+	const rangeField = p.locator("#form-control .control.wide .date-trigger");
+	await rangeField.click();
+	await p.waitForSelector(".popover-content .calendar");
+	await p.locator('.popover-content .day[data-iso="2026-03-04"]').click();
+	t.ok("a half-made range keeps the field open", (await p.locator(".popover-content").count()) === 1);
+	t.ok("…and shows its open end as an ellipsis", (await rangeField.innerText()).includes("…"));
+	await p.locator('.popover-content .day[data-iso="2026-03-06"]').click();
+	await p.waitForSelector(".popover-content", { state: "detached" });
+	t.ok("closing the range closes the field", (await p.locator(".popover-content").count()) === 0);
 } finally {
 	await app.close();
 }

@@ -23,7 +23,6 @@ export { default as TimeInput } from "./input/TimeInput.svelte";
 export { default as ImageUpload } from "./input/ImageUpload.svelte";
 export { default as ImageCropper } from "./input/ImageCropper.svelte";
 export { default as Calendar, type CalendarMode, type CalendarValue, type CalendarDay, type ISODate, type DateRange } from "./calendar/Calendar.svelte";
-export { default as DatePicker } from "./calendar/DatePicker.svelte";
 export type {
 	SelectOption,
 	MultiSelectOption,
