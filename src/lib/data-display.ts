@@ -5,6 +5,8 @@ export { default as Table } from "./data/Table.svelte";
 export { default as VirtualList } from "./data/VirtualList.svelte";
 export { default as Data } from "./data/Data.svelte";
 export { default as EmptyState, type EmptyStateProps, type EmptyStateSize } from "./empty-state/EmptyState.svelte";
+export { default as TreeView, type TreeViewProps } from "./tree-view/TreeView.svelte";
+export type { TreeNode, TreeItemContext, TreeSelectionMode } from "./tree-view/types.js";
 export { default as Timeline } from "./timeline/Timeline.svelte";
 export type {
 	TimelineProps,
