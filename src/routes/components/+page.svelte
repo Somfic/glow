@@ -44,6 +44,7 @@
 				{ name: 'Animated Text', href: '/components/animated-text', description: 'Text that reveals progressively, the way streamed output arrives' },
 				{ name: 'List Item', href: '/components/list', description: 'One list row: title, subtitle, leading and trailing slots' },
 				{ name: 'Timeline', href: '/components/timeline', description: 'Activity feeds and event history, with markers and timestamps' },
+				{ name: 'Diff View', href: '/components/diff-view', description: 'A code diff the way a pull request shows one — unified or side by side' },
 				{ name: 'Pagination', href: '/components/pagination', description: 'Page controls with a range readout and size picker' },
 				{ name: 'Pill', href: '/components/pill', description: 'Tags, labels, and status indicators' },
 				{ name: 'Avatar', href: '/components/avatar', description: 'User avatars with initials and grouping' },

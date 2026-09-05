@@ -68,6 +68,7 @@
 					{ label: 'Animated Text', href: '/components/animated-text', icon: 'TypeOutline' },
 					{ label: 'List Item', href: '/components/list', icon: 'Rows2' },
 					{ label: 'Timeline', href: '/components/timeline', icon: 'History' },
+					{ label: 'Diff View', href: '/components/diff-view', icon: 'FileDiff' },
 					{ label: 'Pagination', href: '/components/pagination', icon: 'ChevronsRight' },
 					{ label: 'Pill', href: '/components/pill', icon: 'Tag' },
 					{ label: 'Avatar', href: '/components/avatar', icon: 'CircleUser' },
