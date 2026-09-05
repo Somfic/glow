@@ -25,6 +25,7 @@
 	import type { Snippet } from 'svelte';
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import { tooltip } from '../tooltip/tooltip.svelte.js';
+	import Button from '../button/Button.svelte';
 	import { theme } from '../style/theme.svelte.js';
 
 	type Props = {
@@ -135,18 +136,17 @@
 	<div class="sidebar-header">
 		<span class="sidebar-logo" aria-hidden="true">✦</span>
 		<span class="sidebar-title">{title}</span>
-		<button
+		<Button
 			class="collapse-toggle"
+			size="sm"
+			icon={collapsed ? 'ChevronsRight' : 'ChevronsLeft'}
 			onclick={toggleCollapse}
-			aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-			use:tooltip={{
+			ariaLabel={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+			tooltip={{
 				content: collapsed ? 'Expand sidebar' : 'Collapse sidebar',
-				position: collapsed ? 'right' : 'bottom',
-				useCursor: false
+				position: collapsed ? 'right' : 'bottom'
 			}}
-		>
-			<Icon name={collapsed ? 'ChevronsRight' : 'ChevronsLeft'} size={16} />
-		</button>
+		/>
 	</div>
 	<nav class="sidebar-nav">
 		{#each topItems as item}
@@ -260,9 +260,10 @@
 
 		.collapsed & {
 			// Symmetric horizontal padding so the toggle (the only visible
-			// thing left) lands in the centre of the 56px-wide rail.
-			// (56 - 28 toggle) / 2 = 14px = 0.875rem.
-			padding-left: 0.875rem;
+			// thing left) lands in the centre of the 56px-wide rail, which is
+			// also where the nav icons below it centre.
+			// (56 - 30 toggle) / 2 = 13px = 0.8125rem.
+			padding-left: 0.8125rem;
 			// Collapse the inter-item gap too — otherwise the residual gap
 			// between the (zero-width) title and the toggle pushes the toggle
 			// off-centre.
@@ -315,23 +316,18 @@
 		}
 	}
 
-	.collapse-toggle {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
+	// Box, radius and hover fill come from `<Button size="sm">` now. What is
+	// left is the part the button can't know: this is chrome, so it rests
+	// dimmer than the nav items and only comes up to full strength on hover.
+	// `:global` because the class is handed to a component, so Svelte's scoper
+	// never sees it on an element of this file's template.
+	.sidebar-header :global(.collapse-toggle) {
 		flex-shrink: 0;
-		width: 28px;
-		height: 28px;
-		background: none;
-		border: 0;
-		border-radius: $radius-sm;
 		color: var(--glow-text-muted);
-		cursor: pointer;
-		transition: color 0.15s, background-color 0.15s;
+		transition: color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
 			color: var(--glow-fg);
-			background: var(--glow-fg-soft);
 		}
 
 		@media (max-width: 768px) {

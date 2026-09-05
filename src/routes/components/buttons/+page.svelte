@@ -53,6 +53,26 @@
 	</div>
 </Card>
 
+<Card title="Sizes" id="button-sizes">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		Three steps. <Code>sm</Code> is for chrome — a toolbar, a panel header, anything sitting beside
+		text rather than in the page's main flow.
+	</Text>
+	<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+		<Button label="Small" size="sm" />
+		<Button label="Medium" size="md" />
+		<Button label="Large" size="lg" />
+	</div>
+	<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-top: 0.75rem;">
+		<Button icon="Settings" label="Small" size="sm" variant="outlined" />
+		<Button icon="Settings" size="sm" variant="ghost" tooltip="Settings" />
+		<Button icon="Settings" size="sm" shape="circle" variant="secondary" tooltip="Settings" />
+		<Button label="Save" size="sm" shortcut="s" />
+		<Button label="Inbox" size="sm" variant="secondary" count={12} />
+		<Button label="Upload" size="sm" onclick={simulateUpload} progress={uploadProgress} />
+	</div>
+</Card>
+
 <Card title="Buttons with Icons" id="buttons-with-icons">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Add icons to buttons for better visual recognition
@@ -198,6 +218,18 @@
 				description: 'Visual style variant'
 			},
 			{
+				prop: 'size',
+				type: "'sm' | 'md' | 'lg'",
+				default: "'md'",
+				description: 'Control size. sm is the compact step for toolbars and panel chrome'
+			},
+			{
+				prop: 'shape',
+				type: "'default' | 'circle'",
+				default: "'default'",
+				description: 'Circle drops the label and renders a round icon button'
+			},
+			{
 				prop: 'onclick',
 				type: '() => void | Promise&lt;void&gt;',
 				default: '-',
@@ -223,9 +255,15 @@
 			},
 			{
 				prop: 'tooltip',
+				type: 'string | TooltipOptions',
+				default: '-',
+				description: 'Tooltip text, or the options object the tooltip action takes (position, delay)'
+			},
+			{
+				prop: 'ariaLabel',
 				type: 'string',
 				default: '-',
-				description: 'Tooltip text shown on hover'
+				description: 'Accessible name — needed on an icon-only button, where there is no label'
 			}
 		]}
 	/>
