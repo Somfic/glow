@@ -116,7 +116,10 @@
 			},
 			{
 				label: 'Utilities',
-				items: [{ label: 'Actions & Helpers', href: '/components/utilities', icon: 'Wrench' }]
+				items: [
+					{ label: 'Actions & Helpers', href: '/components/utilities', icon: 'Wrench' },
+					{ label: 'Roving Focus', href: '/components/roving-focus', icon: 'Move' }
+				]
 			},
 			{
 				label: 'Examples',

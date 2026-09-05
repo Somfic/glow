@@ -97,7 +97,8 @@
 		{
 			category: 'Utilities',
 			items: [
-				{ name: 'Actions & Helpers', href: '/components/utilities', description: 'useModal, registerShortcut, trapFocus, portal' }
+				{ name: 'Actions & Helpers', href: '/components/utilities', description: 'useModal, registerShortcut, trapFocus, portal' },
+				{ name: 'Roving Focus', href: '/components/roving-focus', description: 'One tab stop, arrow keys inside — the roving tabindex action' }
 			]
 		}
 	];
