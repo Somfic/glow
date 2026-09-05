@@ -55,6 +55,16 @@
 	let contentElement = $state<HTMLDivElement>(undefined!);
 	let placement: 'below' | 'above' = $state('below');
 	let popoverStyle = $state('');
+	// Painting the panel before it has been measured puts it somewhere it will
+	// immediately jump away from — one visible frame of it, now that reduced
+	// motion collapses the transition that used to cover the jump. So it stays
+	// hidden until a position computed from the panel's own box.
+	let positioned = $state(false);
+	// A trigger scrolled entirely out of view gets no panel: the clamps below
+	// would otherwise pin it to the window edge, detached from anything. Hidden
+	// rather than closed — a popover that closes itself because you scrolled is
+	// a worse bug than the one this avoids — so it comes back on scrolling back.
+	let triggerInView = $state(true);
 
 	function updatePosition() {
 		if (!containerElement) return;
@@ -106,6 +116,10 @@
 		}
 
 		popoverStyle = style;
+		// `isConnected` because a close leaves the outgoing node bound until its
+		// transition ends: measuring a detached panel is the same guess as
+		// measuring none.
+		if (contentElement?.isConnected) positioned = true;
 	}
 
 	$effect(() => {
@@ -127,7 +141,24 @@
 		// through scrolling, layout shifts, drag, or animation — not just window
 		// scroll/resize. We only re-layout when the trigger rect or content size
 		// actually changed, so the loop is cheap when nothing is moving.
+		positioned = false;
+		triggerInView = true;
 		updatePosition();
+
+		// Failsafe: never stay hidden past the frame the panel mounts on. If the
+		// measurement never lands (the trigger went away, a layout read threw) a
+		// slightly mispositioned panel still beats an invisible one.
+		const reveal = requestAnimationFrame(() => (positioned = true));
+
+		// The trigger can be clipped by a scrolling ancestor as well as by the
+		// window, and a rect inside the viewport can still be scrolled out of an
+		// overflow container — which is why this asks IntersectionObserver
+		// instead of comparing the rect the loop below already has.
+		const observer = new IntersectionObserver(
+			([entry]) => (triggerInView = entry.isIntersecting),
+			{ threshold: 0 }
+		);
+		observer.observe(containerElement);
 
 		let frame = 0;
 		let lastKey = '';
@@ -156,6 +187,8 @@
 
 		return () => {
 			cancelAnimationFrame(frame);
+			cancelAnimationFrame(reveal);
+			observer.disconnect();
 			window.removeEventListener('resize', updatePosition);
 			cleanupEscape();
 			cleanupClickOutside();
@@ -195,7 +228,7 @@
 		<div
 			bind:this={contentElement}
 			class="popover-content"
-			style={popoverStyle}
+			style="{popoverStyle} visibility: {positioned && triggerInView ? 'visible' : 'hidden'};"
 			use:portal
 			transition:fly={{ duration: motion.ms(150), y: placement === 'below' ? -8 : 8 }}
 		>
@@ -219,6 +252,11 @@
 	}
 
 	:global(.popover-content) {
+		// Out of flow from the first frame, not only once the inline style lands.
+		// Measured in normal flow the panel reports the portal parent's full
+		// width, and the horizontal clamp then throws it against the left edge
+		// for the frame before it is positioned.
+		position: fixed;
 		background-color: var(--glow-bg-surface-element);
 		border: $border;
 		border-radius: $radius;
