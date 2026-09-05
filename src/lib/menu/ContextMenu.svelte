@@ -10,6 +10,7 @@
 	import MenuItem from './MenuItem.svelte';
 	import { portal } from '../util/portal.js';
 	import { onEscape } from '../util/escapeKey.js';
+	import { createSubmenuIntent } from './submenuIntent.js';
 	import { fly, fade } from 'svelte/transition';
 	import { reducedMotion } from '../util/reducedMotion.svelte.js';
 
@@ -69,6 +70,11 @@
 	let submenuY = $state(0);
 	let submenuPanel = $state<HTMLDivElement | null>(null);
 	let submenuPositioned = $state(false);
+
+	// The submenu panel is a DOM sibling of the parent menu (both portalled) and
+	// sits a diagonal away from its trigger row, so hover alone can't decide when
+	// to close it — see submenuIntent.ts.
+	const intent = createSubmenuIntent();
 
 	function handleContextMenu(e: MouseEvent) {
 		if (disabled) return;
@@ -213,6 +219,20 @@
 		}
 	});
 
+	// The intent guard owns closing the submenu on pointer movement. Nothing else
+	// should: a `mouseleave` fires the moment the diagonal path crosses out of
+	// the trigger row, which is precisely the journey we're protecting.
+	$effect(() => {
+		if (!openSubmenuKey) return;
+		return intent.watch({
+			panel: () => submenuPanel,
+			safe: () => [submenuTrigger],
+			close: () => {
+				openSubmenuKey = null;
+			}
+		});
+	});
+
 	function handleItemClick(item: PopoverMenuItem) {
 		if (item.disabled) return;
 		open = false;
@@ -311,17 +331,10 @@
 		class="context-menu"
 		style="position: fixed; left: {renderX}px; top: {renderY}px; z-index: 10000; visibility: {positioned ? 'visible' : 'hidden'};"
 		role="menu"
+		tabindex="-1"
 		use:portal
 		in:fly={{ duration: motion.ms(80), y: -4 }}
 		out:fade={{ duration: motion.ms(100) }}
-		onmouseleave={(e) => {
-			// Don't collapse the submenu when the mouse moves into its
-			// portal'd panel — they're visually one menu even though they're
-			// DOM siblings.
-			const next = e.relatedTarget as HTMLElement | null;
-			if (next?.closest('.submenu-panel')) return;
-			openSubmenuKey = null;
-		}}
 	>
 		{#if common && common.length > 0}
 			<div class="common-section" role="group">
@@ -364,8 +377,11 @@
 					active={i === activeIndex}
 					role="menuitem"
 					onclick={() => handleItemClick(entry)}
-					onmouseenter={() => {
+					onmouseenter={(e) => {
 						activeIndex = -1;
+						// A row crossed on the way to the open submenu is not a
+						// row the user is choosing.
+						if (intent.heading(e.clientX, e.clientY)) return;
 						openSubmenuKey = null;
 					}}
 				/>
@@ -376,6 +392,11 @@
 					class:open={openSubmenuKey === key}
 					onmouseenter={(e) => {
 						activeIndex = -1;
+						// Same guard: a *different* submenu row crossed en route
+						// mustn't steal the open one. Entering it while *not* on
+						// the way still switches, so adjacent submenus swap the
+						// moment you mean them to.
+						if (openSubmenuKey !== key && intent.heading(e.clientX, e.clientY)) return;
 						openSubmenuKey = key;
 						submenuTrigger = e.currentTarget as HTMLElement;
 					}}
@@ -404,17 +425,10 @@
 			class="submenu-panel"
 			style="position: fixed; left: {submenuX}px; top: {submenuY}px; z-index: 10001; visibility: {submenuPositioned ? 'visible' : 'hidden'};"
 			role="menu"
+			tabindex="-1"
 			use:portal
 			in:fly={{ duration: motion.ms(80), x: -6 }}
 			out:fade={{ duration: motion.ms(100) }}
-			onmouseleave={(e) => {
-				// Don't close the submenu when the mouse moves back into the
-				// parent menu — only close when it leaves the menu cluster
-				// entirely.
-				const next = e.relatedTarget as HTMLElement | null;
-				if (next?.closest('.context-menu')) return;
-				openSubmenuKey = null;
-			}}
 		>
 			{#each activeSubmenu.items ?? [] as subEntry, j (j)}
 				{#if subEntry === 'divider'}

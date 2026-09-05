@@ -117,6 +117,13 @@ export type {
 	PopoverMenuHeader,
 	PopoverMenuCommonItem
 } from "./menu/PopoverMenu.svelte";
+export { createSubmenuIntent } from "./menu/submenuIntent.js";
+export type {
+	SubmenuIntent,
+	SubmenuIntentOptions,
+	ConeRect,
+	ConeSide
+} from "./menu/submenuIntent.js";
 
 // Settings / config primitives
 export { default as Field } from "./settings/Field.svelte";
