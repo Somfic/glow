@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { VirtualListProps } from './types.js';
+	import EmptyState from '../empty-state/EmptyState.svelte';
 	import { onMount } from 'svelte';
 
 	let {
@@ -137,8 +138,8 @@
 				{@render emptyState()}
 			</div>
 		{:else}
-			<div class="virtual-list-state empty">
-				<p>No items to display</p>
+			<div class="virtual-list-state empty built-in">
+				<EmptyState title="No items to display" />
 			</div>
 		{/if}
 	{:else}
@@ -204,6 +205,14 @@
 
 		&.empty {
 			min-height: 200px;
+		}
+
+		// EmptyState's `default` size already carries this padding and the same
+		// 200px floor, so the wrapper stops adding a second set of both — a
+		// custom `emptyState` snippet still gets the frame it was written for.
+		&.built-in {
+			padding: 0;
+			min-height: 0;
 		}
 
 		&.loading {

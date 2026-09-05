@@ -2,6 +2,7 @@
 	import type { TableProps, TableColumn, SortDirection } from './types.js';
 	import VirtualList from './VirtualList.svelte';
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
+	import EmptyState from '../empty-state/EmptyState.svelte';
 	import Input from '../input/Input.svelte';
 	import Pagination from '../pagination/Pagination.svelte';
 	import { fade } from 'svelte/transition';
@@ -41,6 +42,14 @@
 	const effectiveSelectable = $derived(isSimple ? false : selectable);
 	const effectiveHoverable = $derived(isSimple ? false : hoverable);
 	const effectiveRowActions = $derived(isSimple ? [] : rowActions);
+
+	// The loading, empty and virtual rows span the whole table, so they have to
+	// count the columns the header actually rendered — off `effective*`, not off
+	// the raw props, or a `simple` table with `selectable` set spans one column
+	// more than it has.
+	const bodyColSpan = $derived(
+		columns.length + (effectiveSelectable ? 1 : 0) + (effectiveRowActions.length > 0 ? 1 : 0)
+	);
 
 	let selectAllChecked = $state(false);
 	let selectAllIndeterminate = $state(false);
@@ -198,7 +207,7 @@
 		{#if loading}
 			<tbody>
 				<tr>
-					<td colspan={columns.length + (selectable ? 1 : 0) + (rowActions.length > 0 ? 1 : 0)} class="table-loading">
+					<td colspan={bodyColSpan} class="table-loading">
 						<div class="spinner"></div>
 						<span>Loading...</span>
 					</td>
@@ -207,11 +216,11 @@
 		{:else if displayData.length === 0}
 			<tbody>
 				<tr>
-					<td colspan={columns.length + (selectable ? 1 : 0) + (rowActions.length > 0 ? 1 : 0)} class="table-empty">
+					<td colspan={bodyColSpan} class="table-empty" class:built-in={!emptyState}>
 						{#if emptyState}
 							{@render emptyState()}
 						{:else}
-							<p>No data available</p>
+							<EmptyState size="compact" title="No data available" />
 						{/if}
 					</td>
 				</tr>
@@ -220,7 +229,7 @@
 			<!-- Virtual scrolling for large datasets -->
 			<tbody>
 				<tr>
-					<td colspan={columns.length + (selectable ? 1 : 0) + (rowActions.length > 0 ? 1 : 0)} style="padding: 0;">
+					<td colspan={bodyColSpan} style="padding: 0;">
 						<VirtualList
 							items={displayData}
 							itemHeight={variant === 'simple' ? 40 : 52}
@@ -556,6 +565,13 @@
 		padding: 3rem;
 		text-align: center;
 		color: var(--glow-text-muted);
+	}
+
+	// EmptyState brings its own padding, so the cell gives up the 3rem it only
+	// has for a custom `emptyState` snippet. Without this the empty row is half
+	// again as tall as it used to be.
+	.table-empty.built-in {
+		padding: 0;
 	}
 
 	.table-loading {

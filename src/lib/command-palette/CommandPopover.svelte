@@ -4,6 +4,7 @@
 	import { commands as defaultRegistry, CommandRegistry } from './registry.svelte.js';
 	import { useCommandList, CLOSE_MATCH_KEY, type ScoredCommand } from './useCommandList.svelte.js';
 	import CommandRow from './CommandRow.svelte';
+	import EmptyState from '../empty-state/EmptyState.svelte';
 	import { reducedMotion } from '../util/reducedMotion.svelte.js';
 
 	const motion = reducedMotion();
@@ -172,7 +173,10 @@
 	>
 		<div class="cpp-list">
 			{#if engine.empty}
-				<div class="cpp-empty">{emptyText}</div>
+				<!-- `live={false}`: this list is the popover's `role="listbox"`, and a
+				     `role="status"` child of a listbox is not a valid option. The host
+				     input the user is typing in is what carries the announcement. -->
+				<EmptyState size="compact" title={emptyText} live={false} />
 			{:else}
 				{#each engine.sections as section (section.name)}
 					{#if section.name !== CLOSE_MATCH_KEY && (engine.sections.length > 1 || section.name !== 'Other')}
@@ -221,13 +225,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1px;
-	}
-
-	.cpp-empty {
-		padding: 0.75rem;
-		text-align: center;
-		color: color-mix(in oklab, var(--glow-fg) 55%, transparent);
-		font-size: 0.8rem;
 	}
 
 	.cpp-section-label {

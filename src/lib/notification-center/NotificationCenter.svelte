@@ -2,6 +2,7 @@
 	import { fly, slide } from 'svelte/transition';
 	import { quartOut } from 'svelte/easing';
 	import Drawer from '../drawer/Drawer.svelte';
+	import EmptyState from '../empty-state/EmptyState.svelte';
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import Button from '../button/Button.svelte';
 	import {
@@ -183,13 +184,13 @@
 	actions={headerActions}
 >
 	{#if registry.visible.length === 0}
-		<div class="nc-empty" in:fly={{ y: 8, duration: motion.ms(220), easing: quartOut }}>
-			<div class="nc-empty-mark" aria-hidden="true">
-				<span></span><span></span><span></span>
-			</div>
-			<p class="nc-empty-headline">{emptyText}</p>
-			<p class="nc-empty-sub">Anything new will appear right here.</p>
-		</div>
+		<!-- No `in:fly` wrapper: EmptyState fades and lifts itself in, off the
+		     same tokens, so a second transition would only fight it. -->
+		<EmptyState
+			title={emptyText}
+			description="Anything new will appear right here."
+			illustration={emptyMark}
+		/>
 	{:else}
 		<div bind:this={listEl} class="nc-list">
 			{#each sections as section, sIdx (section.name || sIdx)}
@@ -277,25 +278,22 @@
 	{/if}
 </Drawer>
 
+{#snippet emptyMark()}
+	<div class="nc-empty-mark" aria-hidden="true">
+		<span></span><span></span><span></span>
+	</div>
+{/snippet}
+
 <style lang="scss">
 	@use '../style/theme.scss' as *;
 
 	/* ----- Empty state ------------------------------------------------- */
 
-	.nc-empty {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 0.65rem;
-		padding: 4.5rem 1rem 3.5rem;
-		text-align: center;
-	}
-
+	// The layout, the headline and the sub-line are EmptyState's now; what is
+	// left here is the mark it renders as the illustration.
 	.nc-empty-mark {
 		display: inline-flex;
 		gap: 6px;
-		margin-bottom: 0.85rem;
 		opacity: 0.6;
 
 		span {
@@ -334,20 +332,6 @@
 			animation: none;
 			opacity: 1;
 		}
-	}
-
-	.nc-empty-headline {
-		margin: 0;
-		font-size: 1.05rem;
-		font-weight: $weight-semibold;
-		letter-spacing: -0.01em;
-		color: var(--glow-fg);
-	}
-
-	.nc-empty-sub {
-		margin: 0;
-		font-size: 0.825rem;
-		color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 	}
 
 	/* ----- List + sections -------------------------------------------- */
