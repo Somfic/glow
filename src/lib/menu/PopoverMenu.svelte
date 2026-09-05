@@ -97,6 +97,8 @@
 	import { tooltip } from '../tooltip/tooltip.svelte.js';
 	import Self from './PopoverMenu.svelte';
 	import MenuItem from './MenuItem.svelte';
+	import { createSubmenuIntent } from './submenuIntent.js';
+	import { portal } from '../util/portal.js';
 	import type { ComboboxEntry, ComboboxOption, ComboboxGroup } from '../input/types.js';
 	import { fuzzyFilter } from '../input/search-utils.js';
 
@@ -242,6 +244,76 @@
 	);
 
 	let openSubmenuIndex = $state<string | null>(null);
+	let submenuRow = $state<HTMLElement | null>(null);
+	let submenuPanel = $state<HTMLElement | null>(null);
+	let submenuX = $state(0);
+	let submenuY = $state(0);
+	// Hidden until the first measure, so the panel never flashes at 0,0.
+	let submenuPositioned = $state(false);
+
+	/**
+	 * Place the portalled submenu panel beside its row: right of it by default,
+	 * left when the viewport says there's no room, clamped vertically. Mirrors
+	 * <ContextMenu>'s positionSubmenu; the two differ only in that this one
+	 * keeps a visible gap rather than sitting flush.
+	 */
+	function positionSubmenu() {
+		if (!submenuRow || !submenuPanel) return;
+		const margin = 8;
+		const gap = 4;
+		const vw = window.innerWidth;
+		const vh = window.innerHeight;
+		const trigger = submenuRow.getBoundingClientRect();
+		const panel = submenuPanel.getBoundingClientRect();
+
+		let nx = trigger.right + gap;
+		let ny = trigger.top - 4;
+
+		if (nx + panel.width > vw - margin) {
+			const flipped = trigger.left - gap - panel.width;
+			nx = flipped >= margin ? flipped : Math.max(margin, vw - margin - panel.width);
+		}
+		if (nx < margin) nx = margin;
+
+		if (ny + panel.height > vh - margin) {
+			const flipped = trigger.bottom + 4 - panel.height;
+			ny = flipped >= margin ? flipped : Math.max(margin, vh - margin - panel.height);
+		}
+		if (ny < margin) ny = margin;
+
+		submenuX = nx;
+		submenuY = ny;
+		submenuPositioned = true;
+	}
+
+	$effect(() => {
+		if (openSubmenuIndex && submenuRow && submenuPanel) {
+			submenuPositioned = false;
+			positionSubmenu();
+			// Second pass once the panel's own contents have laid out — the first
+			// measure of a just-mounted panel can still be the wrong size.
+			const id = requestAnimationFrame(positionSubmenu);
+			return () => cancelAnimationFrame(id);
+		}
+	});
+
+	// Submenus open on hover as well as click, so they need the same intent
+	// guard as ContextMenu — see submenuIntent.ts. One instance per menu, and
+	// since a submenu is another <PopoverMenu> (via `Self`), each level of a
+	// deep menu brings its own: the pointer being inside a level-3 panel is
+	// "inside the panel" for levels 2 and 1 too, so the chain holds open.
+	const intent = createSubmenuIntent();
+
+	$effect(() => {
+		if (!openSubmenuIndex) return;
+		return intent.watch({
+			panel: () => submenuPanel,
+			safe: () => [submenuRow],
+			close: () => {
+				openSubmenuIndex = null;
+			}
+		});
+	});
 
 	function handleItemClick(item: PopoverMenuItem) {
 		if (item.disabled) return;
@@ -430,8 +502,12 @@
 			role="menuitemradio"
 			ariaChecked={entry.selected ?? false}
 			onclick={() => handleItemClick(entry)}
-			onmouseenter={() => {
+			onmouseenter={(e) => {
 				if (isOptionEntry) activeOptionIndex = optIndex;
+				// A row crossed on the way to the open submenu is not a row the
+				// user is choosing, so it must not collapse it.
+				if (intent.heading(e.clientX, e.clientY)) return;
+				openSubmenuIndex = null;
 			}}
 		/>
 	{:else if entry.kind === 'toggle'}
@@ -465,18 +541,48 @@
 			/>
 		</div>
 	{:else if entry.kind === 'submenu'}
-		<div class="submenu-row" class:open={openSubmenuIndex === key}>
+		<div
+			class="submenu-row"
+			class:open={openSubmenuIndex === key}
+			role="presentation"
+			onmouseenter={(e) => {
+				// Hover opens, click still toggles. Bail while the pointer is
+				// crossing this row on its way to a *different* open submenu —
+				// but only while it really is on its way, so entering the row
+				// deliberately still switches.
+				if (openSubmenuIndex !== key && intent.heading(e.clientX, e.clientY)) return;
+				submenuRow = e.currentTarget as HTMLElement;
+				openSubmenuIndex = key;
+			}}
+		>
 			<MenuItem
 				label={entry.label}
 				description={entry.description}
 				icon={entry.icon}
 				shortcut={entry.shortcut}
 				active={openSubmenuIndex === key}
-				onclick={() => handleSubmenuClick(key)}
+				onclick={(e) => {
+					submenuRow = (e.currentTarget as HTMLElement).closest('.submenu-row');
+					handleSubmenuClick(key);
+				}}
 				trailing={submenuArrow}
 			/>
 			{#if openSubmenuIndex === key}
-				<div class="submenu-panel">
+				<!--
+					Portalled to <body>, not absolutely positioned in the row: the
+					Popover this menu lives in sets `overflow-y: auto` so a long
+					menu scrolls, which also clipped every submenu panel out of
+					existence. z-index clears the Popover's 10000, and a deeper
+					level portals later so it lands on top of its parent.
+				-->
+				<div
+					bind:this={submenuPanel}
+					class="submenu-panel"
+					style="left: {submenuX}px; top: {submenuY}px; visibility: {submenuPositioned
+						? 'visible'
+						: 'hidden'};"
+					use:portal
+				>
 					<Self
 						items={entry.items}
 						options={entry.options}
@@ -733,13 +839,14 @@
 	}
 
 	.submenu-panel {
-		position: absolute;
-		top: -4px;
-		left: calc(100% + 4px);
+		position: fixed;
 		background: var(--glow-bg-surface-element);
 		border: 1px solid var(--glow-border-color);
 		border-radius: $radius * 0.75;
 		box-shadow: $shadow-lg;
-		z-index: 1;
+		max-height: calc(100vh - 16px);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		z-index: 10001;
 	}
 </style>
