@@ -46,6 +46,7 @@
 				items: [
 					{ label: 'Button', href: '/components/buttons', icon: 'MousePointerClick' },
 					{ label: 'Input', href: '/components/inputs', icon: 'TextCursorInput' },
+					{ label: 'Calendar', href: '/components/calendar', icon: 'CalendarDays' },
 					{ label: 'Settings & Fields', href: '/components/settings', icon: 'SlidersHorizontal' },
 					{ label: 'File Upload', href: '/components/file-upload', icon: 'CloudUpload' },
 					{ label: 'Image Upload', href: '/components/image-upload', icon: 'ImagePlus' }
