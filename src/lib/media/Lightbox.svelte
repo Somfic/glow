@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { fade, scale } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 	import { Button } from '../index.js';
 	import Hls from 'hls.js';
 	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
@@ -258,6 +258,8 @@
 {/if}
 
 <style lang="scss">
+	@use '../style/theme.scss' as *;
+
 	.lightbox-overlay {
 		position: fixed;
 		inset: 0;
@@ -268,13 +270,13 @@
 		align-items: center;
 		justify-content: center;
 		flex-direction: column;
-		padding: 2rem;
+		padding: $space-xl;
 	}
 
 	.lightbox-close {
 		position: absolute;
-		top: 1rem;
-		right: 1rem;
+		top: $space-md;
+		right: $space-md;
 		z-index: 10;
 	}
 
@@ -293,7 +295,7 @@
 		max-height: 85vh;
 		width: auto;
 		height: auto;
-		border-radius: 12px;
+		border-radius: $radius;
 		object-fit: contain;
 	}
 
@@ -309,7 +311,7 @@
 		max-height: 85vh;
 		width: auto;
 		height: auto;
-		border-radius: 12px;
+		border-radius: $radius;
 		object-fit: contain;
 		z-index: 10;
 		position: relative;
@@ -317,7 +319,7 @@
 
 	.lightbox-info {
 		position: absolute;
-		bottom: 1.5rem;
+		bottom: $space-lg;
 		left: 50%;
 		transform: translateX(-50%);
 		color: white;
@@ -330,15 +332,15 @@
 
 	.lightbox-related {
 		position: absolute;
-		bottom: 1rem;
-		left: 1rem;
+		bottom: $space-md;
+		left: $space-md;
 		display: flex;
-		gap: 0.5rem;
-		max-width: calc(100vw - 2rem);
+		gap: $space-sm;
+		max-width: calc(100vw - #{$space-xl});
 		overflow-x: auto;
-		padding: 0.5rem;
+		padding: $space-sm;
 		background: rgba(0, 0, 0, 0.5);
-		border-radius: 8px;
+		border-radius: $radius-md;
 		backdrop-filter: blur(10px);
 	}
 
@@ -347,7 +349,7 @@
 		width: 80px;
 		height: 80px;
 		border: 2px solid transparent;
-		border-radius: 6px;
+		border-radius: $radius-sm;
 		overflow: hidden;
 		cursor: pointer;
 		padding: 0;

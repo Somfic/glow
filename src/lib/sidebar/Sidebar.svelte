@@ -26,6 +26,7 @@
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import { tooltip } from '../tooltip/tooltip.svelte.js';
 	import Button from '../button/Button.svelte';
+	import ScrollArea from '../scroll-area/ScrollArea.svelte';
 	import { theme } from '../style/theme.svelte.js';
 
 	type Props = {
@@ -148,29 +149,42 @@
 			}}
 		/>
 	</div>
-	<nav class="sidebar-nav">
-		{#each topItems as item}
-			<a href={item.href} class="sidebar-item" class:is-active={isActive(item.href)} onclick={() => handleItemClick(item.href)} use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}>
-				{#if item.icon}<Icon {...resolveIcon(item.icon)} size={resolveIcon(item.icon).size ?? 16} />{/if}
-				<span class="sidebar-item-label">{item.label}</span>
-			</a>
-		{/each}
+	<!-- The scroller is the nav alone: the header with its collapse toggle,
+	     the children slot and the footer all have to stay outside it, or a
+	     nav taller than the viewport scrolls them away with it. `none` +
+	     `fade` rather than a visible scrollbar because a scrollbar in a
+	     56px rail reserves a gutter, and that gutter is what would push
+	     the icon column off the rail's centre line. -->
+	<ScrollArea
+		class="sidebar-scroll"
+		scrollbar="none"
+		fadeSize="1.5rem"
+		label={title ? `${title} navigation` : 'Navigation'}
+	>
+		<nav class="sidebar-nav">
+			{#each topItems as item}
+				<a href={item.href} class="sidebar-item" class:is-active={isActive(item.href)} onclick={() => handleItemClick(item.href)} use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}>
+					{#if item.icon}<Icon {...resolveIcon(item.icon)} size={resolveIcon(item.icon).size ?? 16} />{/if}
+					<span class="sidebar-item-label">{item.label}</span>
+				</a>
+			{/each}
 
-		{#each groups as group}
-			<div class="sidebar-group">
-				<!-- The label and divider both render; CSS swaps which is visible
-				     based on collapsed state, so neither has a layout-shift jump. -->
-				<span class="sidebar-group-label">{group.label}</span>
-				<div class="sidebar-group-divider"></div>
-				{#each group.items as item}
-					<a href={item.href} class="sidebar-item" class:is-active={isActive(item.href)} onclick={() => handleItemClick(item.href)} use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}>
-						{#if item.icon}<Icon {...resolveIcon(item.icon)} size={resolveIcon(item.icon).size ?? 16} />{/if}
-						<span class="sidebar-item-label">{item.label}</span>
-					</a>
-				{/each}
-			</div>
-		{/each}
-	</nav>
+			{#each groups as group}
+				<div class="sidebar-group">
+					<!-- The label and divider both render; CSS swaps which is visible
+					     based on collapsed state, so neither has a layout-shift jump. -->
+					<span class="sidebar-group-label">{group.label}</span>
+					<div class="sidebar-group-divider"></div>
+					{#each group.items as item}
+						<a href={item.href} class="sidebar-item" class:is-active={isActive(item.href)} onclick={() => handleItemClick(item.href)} use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}>
+							{#if item.icon}<Icon {...resolveIcon(item.icon)} size={resolveIcon(item.icon).size ?? 16} />{/if}
+							<span class="sidebar-item-label">{item.label}</span>
+						</a>
+					{/each}
+				</div>
+			{/each}
+		</nav>
+	</ScrollArea>
 	{#if children}<div class="sidebar-children">{@render children()}</div>{/if}
 	{#if themeToggle}
 		{@const next = theme.isDark ? 'light' : 'dark'}
@@ -223,17 +237,10 @@
 		display: flex;
 		flex-direction: column;
 		z-index: 100;
-		overflow-x: hidden;
-		overflow-y: auto;
+		// The rail is no longer the scroller — `.sidebar-scroll` inside it is.
+		// Scrolling here would carry the header and footer away with the nav.
+		overflow: hidden;
 		transition: width $transition;
-
-		// Hide the scrollbar — scrolling still works via wheel/trackpad/touch.
-		// Visible scrollbars in a narrow rail look noisy and reserve width
-		// that breaks the icon-column alignment.
-		scrollbar-width: none;
-		&::-webkit-scrollbar {
-			display: none;
-		}
 
 		&.collapsed {
 			width: $collapsed-width;
@@ -335,8 +342,18 @@
 		}
 	}
 
-	.sidebar-nav {
+	// `flex: 1` belongs to the scroller rather than the nav: it is what absorbs
+	// the leftover height, which is what keeps the footer pinned to the bottom.
+	// `min-height: 0` because a flex item's default `min-height: auto` sizes it
+	// to its content, and a box that always fits its content never scrolls.
+	// `:global` because the class is handed to a component, so Svelte's scoper
+	// never sees it on an element of this file's template.
+	.sidebar :global(.sidebar-scroll) {
 		flex: 1;
+		min-height: 0;
+	}
+
+	.sidebar-nav {
 		padding-bottom: $space-md;
 	}
 
