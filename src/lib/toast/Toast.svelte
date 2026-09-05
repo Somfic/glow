@@ -103,7 +103,7 @@
 		background: none;
 		color: var(--glow-text-muted);
 		cursor: pointer;
-		transition: background 0.15s, color 0.15s;
+		transition: background var(--glow-dur-fast) var(--glow-ease-out), color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
 			background: color-mix(in oklab, var(--glow-fg) 8%, transparent);

@@ -304,14 +304,14 @@
 			height: 6px;
 			border-radius: 50%;
 			background: color-mix(in oklab, var(--glow-fg) 35%, transparent);
-			animation: nc-pulse 1.6s ease-in-out infinite;
+			animation: nc-pulse calc(var(--glow-dur-glacial) * 3.2) var(--glow-ease-in-out) infinite;
 
 			&:nth-child(2) {
-				animation-delay: 0.2s;
+				animation-delay: calc(var(--glow-dur-glacial) * 0.4);
 			}
 
 			&:nth-child(3) {
-				animation-delay: 0.4s;
+				animation-delay: calc(var(--glow-dur-glacial) * 0.8);
 			}
 		}
 	}
@@ -324,6 +324,15 @@
 		50% {
 			opacity: 1;
 			transform: scale(1.1);
+		}
+	}
+
+	// A 1ms collapse would strobe the three dots rather than stop them. The
+	// mark is decorative, so it settles at the animation's mid-point instead.
+	@media (prefers-reduced-motion: reduce) {
+		.nc-empty-mark span {
+			animation: none;
+			opacity: 1;
 		}
 	}
 

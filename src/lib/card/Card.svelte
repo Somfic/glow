@@ -611,7 +611,7 @@
 		--card-radius: #{$radius};
 		border-radius: var(--card-radius);
 		text-decoration: none;
-		transition: border-color $dur-fast $ease-out, background $dur-fast $ease-out, box-shadow $dur-fast $ease-out;
+		transition: border-color var(--glow-dur-fast) var(--glow-ease-out), background var(--glow-dur-fast) var(--glow-ease-out), box-shadow var(--glow-dur-fast) var(--glow-ease-out);
 		height: 100%;
 		// Allow overlay positioning of corner snippets, loading overlay, etc.
 		position: relative;
@@ -803,7 +803,7 @@
 		color: var(--glow-text-primary);
 		cursor: pointer;
 		text-align: left;
-		transition: color 0.12s ease, background 0.12s ease, border-color 0.2s ease;
+		transition: color var(--glow-dur-instant) var(--glow-ease-out), background var(--glow-dur-instant) var(--glow-ease-out), border-color var(--glow-dur-base) var(--glow-ease-out);
 
 		&:hover:not(:disabled) {
 			background: var(--glow-fg-soft);
@@ -823,7 +823,7 @@
 	.chevron {
 		display: inline-flex;
 		opacity: 0.7;
-		transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: transform var(--glow-dur-base) var(--glow-ease-out);
 
 		.collapsible.open & {
 			transform: rotate(90deg);
@@ -844,7 +844,7 @@
 	// Animates between 0 and the body's intrinsic height.
 	.collapsible-wrap {
 		overflow: hidden;
-		transition: height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: height var(--glow-dur-slow) var(--glow-ease-out);
 	}
 
 	.card-body {
@@ -916,7 +916,7 @@
 		// Shadow goes on the card itself — a pseudo-element inside would be
 		// clipped by `overflow: hidden`. `color-mix` fades the saturated
 		// sampled colours so the halo reads as subtle ambient spill.
-		transition: box-shadow $dur-base $ease-out;
+		transition: box-shadow var(--glow-dur-base) var(--glow-ease-out);
 		box-shadow:
 			0 -10px 22px -8px color-mix(in srgb, var(--card-glow-top, transparent) 22%, transparent),
 			10px 0 22px -8px color-mix(in srgb, var(--card-glow-right, transparent) 22%, transparent),
@@ -1005,7 +1005,7 @@
 		// After the slide-out completes we flip to `visibility: hidden` so the
 		// browser can skip painting the frosted children entirely.
 		visibility: hidden;
-		transition: transform $dur-base $ease-out, visibility 0s linear $dur-base;
+		transition: transform var(--glow-dur-base) var(--glow-ease-out), visibility 0s linear var(--glow-dur-base);
 
 		&.top-left  { top: 0.5rem; left: 0.5rem;
 			transform: translateY(calc(-100% - 0.5rem));
@@ -1025,7 +1025,7 @@
 		.card.overlay.persistent-slots & {
 			transform: translateY(0);
 			visibility: visible;
-			transition: transform $dur-base $ease-out, visibility 0s linear 0s;
+			transition: transform var(--glow-dur-base) var(--glow-ease-out), visibility 0s linear 0s;
 		}
 	}
 
@@ -1040,7 +1040,7 @@
 		z-index: 2;
 		pointer-events: none;
 		visibility: hidden;
-		transition: transform $dur-base $ease-out, visibility 0s linear $dur-base;
+		transition: transform var(--glow-dur-base) var(--glow-ease-out), visibility 0s linear var(--glow-dur-base);
 
 		&.top {
 			top: 0;
@@ -1058,7 +1058,7 @@
 		.card.overlay.persistent-slots & {
 			transform: translateY(0);
 			visibility: visible;
-			transition: transform $dur-base $ease-out, visibility 0s linear 0s;
+			transition: transform var(--glow-dur-base) var(--glow-ease-out), visibility 0s linear 0s;
 		}
 	}
 
@@ -1077,7 +1077,7 @@
 		// `--media-progress-color` lets a consumer tint the bar (e.g. to the
 		// sampled accent of the poster); defaults to the theme primary.
 		background: var(--media-progress-color, var(--glow-primary));
-		transition: width $dur-base $ease-out, background $dur-base $ease-out;
+		transition: width var(--glow-dur-base) var(--glow-ease-out), background var(--glow-dur-base) var(--glow-ease-out);
 	}
 
 	// ── Loading overlay ──────────────────────────────────────────────────────
@@ -1098,10 +1098,18 @@
 		border: 3px solid rgba(255, 255, 255, 0.3);
 		border-top-color: white;
 		border-radius: 50%;
-		animation: card-spin 0.8s linear infinite;
+		animation: card-spin calc(var(--glow-dur-glacial) * 1.6) linear infinite;
 	}
 
 	@keyframes card-spin {
 		to { transform: rotate(360deg); }
+	}
+
+	// A 1ms collapse would strobe the loop rather than stop it, so the ring
+	// freezes instead.
+	@media (prefers-reduced-motion: reduce) {
+		.card-loading-spinner {
+			animation: none;
+		}
 	}
 </style>

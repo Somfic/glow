@@ -472,7 +472,7 @@
 		height: 100%;
 		display: block;
 		opacity: 0;
-		transition: opacity 0.4s ease;
+		transition: opacity var(--glow-dur-slow) var(--glow-ease-out);
 		z-index: 1;
 
 		&.active {

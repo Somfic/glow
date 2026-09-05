@@ -106,13 +106,13 @@
 		border: $border;
 		border-radius: $radius-xs;
 		background-color: var(--glow-bg-surface-element);
-		transition: all 0.15s ease;
+		transition: all var(--glow-dur-fast) var(--glow-ease-out);
 		color: white;
 
 		:global(svg) {
 			opacity: 0;
 			transform: scale(0.8);
-			transition: all 0.15s ease;
+			transition: all var(--glow-dur-fast) var(--glow-ease-out);
 		}
 	}
 

@@ -454,7 +454,7 @@
 
 	.table-row {
 		border-bottom: 1px solid color-mix(in oklab, var(--glow-border-color) 50%, transparent);
-		transition: background-color 0.15s;
+		transition: background-color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&.selected {
 			background: color-mix(in oklab, var(--glow-primary) 10%, transparent);
@@ -471,7 +471,7 @@
 		width: 100%;
 		height: 100%;
 		border-bottom: 1px solid color-mix(in oklab, var(--glow-border-color) 50%, transparent);
-		transition: background-color 0.15s;
+		transition: background-color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&.hoverable:hover {
 			background: color-mix(in oklab, var(--glow-fg) 5%, transparent);
@@ -516,7 +516,7 @@
 		display: flex;
 		gap: $space-xs;
 		opacity: 0;
-		transition: opacity 0.15s;
+		transition: opacity var(--glow-dur-fast) var(--glow-ease-out);
 
 		tr:hover & {
 			opacity: 1;
@@ -534,7 +534,7 @@
 		border-radius: $radius;
 		cursor: pointer;
 		color: var(--glow-text-secondary);
-		transition: all 0.15s;
+		transition: all var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
 			background: color-mix(in oklab, var(--glow-fg) 10%, transparent);
@@ -571,12 +571,20 @@
 		border: 2px solid color-mix(in oklab, var(--glow-primary) 30%, transparent);
 		border-top-color: var(--glow-primary);
 		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
+		animation: spin calc(var(--glow-dur-glacial) * 1.6) linear infinite;
 	}
 
 	@keyframes spin {
 		to {
 			transform: rotate(360deg);
+		}
+	}
+
+	// A 1ms collapse would strobe the loop rather than stop it, so the ring
+	// freezes instead.
+	@media (prefers-reduced-motion: reduce) {
+		.spinner {
+			animation: none;
 		}
 	}
 

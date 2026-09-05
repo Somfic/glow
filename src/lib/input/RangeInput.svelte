@@ -125,7 +125,7 @@
 	.range-fill {
 		right: auto;
 		background: var(--glow-primary);
-		transition: width 0.12s ease;
+		transition: width var(--glow-dur-instant) var(--glow-ease-out);
 	}
 
 	.range-thumb {
@@ -138,9 +138,9 @@
 		transform: translate(-50%, -50%);
 		pointer-events: none;
 		transition:
-			left 0.12s ease,
-			opacity 0.15s ease,
-			transform 0.15s ease;
+			left var(--glow-dur-instant) var(--glow-ease-out),
+			opacity var(--glow-dur-fast) var(--glow-ease-out),
+			transform var(--glow-dur-fast) var(--glow-ease-out);
 	}
 
 	// Disable smooth transitions while the user is actively dragging so the

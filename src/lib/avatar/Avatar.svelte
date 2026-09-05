@@ -116,7 +116,7 @@
 		font-weight: $weight-semibold;
 		user-select: none;
 
-		transition: transform 0.15s ease;
+		transition: transform var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
 			transform: scale(1.15);

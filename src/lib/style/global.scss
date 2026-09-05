@@ -105,6 +105,7 @@
 	--glow-ease-in-out: #{$ease-in-out};
 	--glow-ease-in:     #{$ease-in};
 	--glow-ease-spring: #{$ease-spring};
+	--glow-ease-out-quint: #{$ease-out-quint};
 	--glow-dur-instant: #{$dur-instant};
 	--glow-dur-fast:    #{$dur-fast};
 	--glow-dur-base:    #{$dur-base};
@@ -245,7 +246,7 @@ article > .card + .card {
 a {
     color: var(--glow-primary);
     text-decoration: none;
-    transition: color 0.15s;
+    transition: color var(--glow-dur-fast) var(--glow-ease-out);
 
     &:hover {
         color: var(--glow-primary-hover);
@@ -293,7 +294,7 @@ small {
 ::-webkit-scrollbar-thumb {
     background: transparent;
     border-radius: 3px;
-    transition: background 0.2s;
+    transition: background var(--glow-dur-fast) var(--glow-ease-out);
 }
 
 *:hover::-webkit-scrollbar-thumb {

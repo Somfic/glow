@@ -211,7 +211,7 @@
 	// Icon column starts here from the sidebar's left edge. Stays constant
 	// across both states so icons never shift horizontally.
 	$icon-x: 1.25rem;
-	$transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+	$transition: var(--glow-dur-base) var(--glow-ease-out);
 
 	.sidebar {
 		position: fixed;
@@ -436,7 +436,7 @@
 		text-decoration: none;
 		white-space: nowrap;
 		overflow: hidden;
-		transition: background-color 0.15s, color 0.15s;
+		transition: background-color var(--glow-dur-fast) var(--glow-ease-out), color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
 			background: $tertiary-hover;

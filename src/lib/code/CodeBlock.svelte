@@ -149,7 +149,7 @@
 		top: 0.75rem;
 		right: 0.75rem;
 		opacity: 0;
-		transition: opacity 0.2s;
+		transition: opacity var(--glow-dur-fast) var(--glow-ease-out);
 		z-index: 10;
 
 		.code-block:hover & {
@@ -205,7 +205,7 @@
 		margin-bottom: $space-xs;
 		padding: $space-xs 0;
 		position: relative;
-		transition: background 0.15s;
+		transition: background var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:last-child {
 			margin-bottom: 0;
@@ -252,8 +252,8 @@
 		justify-content: center;
 		opacity: 0;
 		transition:
-			opacity 0.15s,
-			color 0.15s;
+			opacity var(--glow-dur-fast) var(--glow-ease-out),
+			color var(--glow-dur-fast) var(--glow-ease-out);
 		flex-shrink: 0;
 
 		&:hover {

@@ -229,7 +229,7 @@
 	.toc-item {
 		margin: 0;
 		border-left: 2px solid color-mix(in oklab, var(--glow-border-color) 50%, transparent);
-		transition: border-color 0.15s;
+		transition: border-color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&.active {
 			border-left-color: var(--glow-primary);
@@ -247,7 +247,7 @@
 		text-decoration: none;
 		font-size: $text-sm;
 		line-height: 1.4;
-		transition: all 0.15s;
+		transition: all var(--glow-dur-fast) var(--glow-ease-out);
 
 		.toc-item.active & {
 			color: var(--glow-primary);

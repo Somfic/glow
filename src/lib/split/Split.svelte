@@ -247,7 +247,7 @@
 		min-height: 0;
 		overflow: hidden;
 		// While dragging, suppress per-pane transitions to avoid lag.
-		transition: flex-basis var(--glow-dur-fast) cubic-bezier(0.22, 1, 0.36, 1);
+		transition: flex-basis var(--glow-dur-fast) var(--glow-ease-out-quint);
 	}
 
 	.split.dragging .split-pane {

@@ -374,7 +374,7 @@
 		background-color: var(--glow-bg-surface-element);
 		color: var(--glow-fg);
 		cursor: pointer;
-		transition: all 0.15s ease;
+		transition: all var(--glow-dur-fast) var(--glow-ease-out);
 
 		&.open {
 			border-color: var(--glow-primary);
@@ -536,8 +536,8 @@
 			border-radius: 50%;
 			cursor: pointer;
 			transition:
-				transform 0.15s ease,
-				box-shadow 0.15s ease;
+				transform var(--glow-dur-fast) var(--glow-ease-out),
+				box-shadow var(--glow-dur-fast) var(--glow-ease-out);
 			box-shadow: $shadow-xs;
 			margin-top: -6px;
 
@@ -548,7 +548,7 @@
 
 			&:active {
 				transform: scale(1.05);
-				transition: transform 0.05s ease;
+				transition: transform var(--glow-dur-instant) var(--glow-ease-out);
 			}
 		}
 
@@ -560,8 +560,8 @@
 			border-radius: 50%;
 			cursor: pointer;
 			transition:
-				transform 0.15s ease,
-				box-shadow 0.15s ease;
+				transform var(--glow-dur-fast) var(--glow-ease-out),
+				box-shadow var(--glow-dur-fast) var(--glow-ease-out);
 			box-shadow: $shadow-xs;
 
 			&:hover {
@@ -571,7 +571,7 @@
 
 			&:active {
 				transform: scale(1.05);
-				transition: transform 0.05s ease;
+				transition: transform var(--glow-dur-instant) var(--glow-ease-out);
 			}
 		}
 	}

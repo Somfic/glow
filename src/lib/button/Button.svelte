@@ -237,7 +237,7 @@
 		gap: 0.4em;
 		font-weight: $weight-bold;
 		cursor: pointer;
-		transition: background-color 150ms ease;
+		transition: background-color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&.size-lg {
 			font-size: 1.125rem;
@@ -518,7 +518,7 @@
 			display: block;
 			height: 100%;
 			background: currentColor;
-			transition: width 200ms ease;
+			transition: width var(--glow-dur-base) var(--glow-ease-out);
 		}
 
 		.spinner {
@@ -527,7 +527,7 @@
 			border: 2px solid currentColor;
 			border-top-color: transparent;
 			border-radius: 50%;
-			animation: spin 0.8s linear infinite;
+			animation: spin calc(var(--glow-dur-glacial) * 1.6) linear infinite;
 			opacity: 0.8;
 		}
 	}
@@ -535,6 +535,14 @@
 	@keyframes spin {
 		to {
 			transform: rotate(360deg);
+		}
+	}
+
+	// A 1ms collapse would strobe the loop rather than stop it, so the ring
+	// freezes instead.
+	@media (prefers-reduced-motion: reduce) {
+		.spinner {
+			animation: none;
 		}
 	}
 </style>

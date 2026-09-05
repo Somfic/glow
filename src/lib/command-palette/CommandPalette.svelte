@@ -676,7 +676,7 @@
 		display: flex;
 		flex-direction: row;
 		gap: 0.75rem;
-		transition: max-width var(--glow-dur-base) cubic-bezier(0.22, 1, 0.36, 1);
+		transition: max-width var(--glow-dur-base) var(--glow-ease-out-quint);
 
 		&.has-preview {
 			max-width: 1056px; // 640 + 0.75rem gap + 400 preview
@@ -810,7 +810,7 @@
 		width: 1.5px;
 		background: var(--glow-fg);
 		pointer-events: none;
-		animation: cp-caret-blink 1s steps(1) infinite;
+		animation: cp-caret-blink calc(var(--glow-dur-glacial) * 2) steps(1) infinite;
 		will-change: transform;
 
 		&.busy {
@@ -826,6 +826,15 @@
 	@keyframes cp-caret-blink {
 		50% {
 			opacity: 0;
+		}
+	}
+
+	// A 1ms collapse would strobe the blink rather than stop it, so the caret
+	// is held solid — the same resolution PinInput's caret uses.
+	@media (prefers-reduced-motion: reduce) {
+		.cp-input-caret {
+			animation: none;
+			opacity: 1;
 		}
 	}
 
@@ -870,9 +879,9 @@
 		z-index: 0;
 		pointer-events: none;
 		opacity: 0;
-		transition: top var(--glow-dur-instant) cubic-bezier(0.22, 1, 0.36, 1),
-			height var(--glow-dur-instant) cubic-bezier(0.22, 1, 0.36, 1),
-			opacity var(--glow-dur-instant) cubic-bezier(0.22, 1, 0.36, 1);
+		transition: top var(--glow-dur-instant) var(--glow-ease-out-quint),
+			height var(--glow-dur-instant) var(--glow-ease-out-quint),
+			opacity var(--glow-dur-instant) var(--glow-ease-out-quint);
 
 		&.ready {
 			opacity: 1;
