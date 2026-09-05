@@ -170,6 +170,9 @@ export type {
 	TimelineVariant,
 	TimelineDensity
 } from "./timeline/Timeline.svelte";
+export { default as Sparkline, type SparklineProps, type SparklineTone } from "./charts/Sparkline.svelte";
+export { default as LineChart, type LineChartProps, type LineChartTable, type LineSeries } from "./charts/LineChart.svelte";
+export type { ChartDatum, ChartPoint } from "./charts/chart.js";
 export { default as TableOfContents } from "./navigation/TableOfContents.svelte";
 export { default as Breadcrumb } from "./breadcrumb/Breadcrumb.svelte";
 export type { BreadcrumbItem, BreadcrumbItemState } from "./breadcrumb/Breadcrumb.svelte";

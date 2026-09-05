@@ -57,6 +57,7 @@
 					{ label: 'Table', href: '/components/table', icon: 'Table' },
 					{ label: 'Data', href: '/components/data', icon: 'ClipboardList' },
 					{ label: 'Virtual List', href: '/components/virtual-list', icon: 'List' },
+					{ label: 'Charts', href: '/components/charts', icon: 'ChartLine' },
 					{ label: 'Empty State', href: '/components/empty-state', icon: 'Inbox' },
 					{ label: 'List Item', href: '/components/list', icon: 'Rows2' },
 					{ label: 'Timeline', href: '/components/timeline', icon: 'History' },
