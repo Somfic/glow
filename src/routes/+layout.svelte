@@ -3,7 +3,6 @@
 	import { afterNavigate, beforeNavigate, onNavigate } from '$app/navigation';
 	import { viewTransition } from '$lib/util/viewTransition.js';
 	import { scrollMemory } from '$lib/util/scrollMemory.js';
-	import './view-transitions.scss';
 	import Root from '$lib/root/Root.svelte';
 	import Page from '$lib/page/Page.svelte';
 	import type { SidebarItem, SidebarGroup, SidebarTheme } from '$lib/sidebar/Sidebar.svelte';
@@ -11,10 +10,10 @@
 
 	let { children }: { children?: Snippet } = $props();
 
-	// Crossfade the content panel between docs pages. The helper hands back
-	// `undefined` — i.e. navigate normally — where the API is missing or the
-	// user asked for reduced motion, and `onNavigate` registers via `onMount`,
-	// so none of this runs while prerendering.
+	// The naming, the animation and the on/off switch all live in the library
+	// now (Root's `transitions`, on by default). The one thing it cannot own is
+	// the router, so this line stays: `onNavigate` registers via `onMount`, so
+	// none of it runs while prerendering.
 	onNavigate(viewTransition);
 
 	// Beside a sidebar the content panel scrolls, not the document, so

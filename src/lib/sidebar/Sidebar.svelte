@@ -50,6 +50,19 @@
 		 * muted text and hover washes that a flipped surface also needs.
 		 */
 		theme?: SidebarTheme;
+		/**
+		 * `view-transition-name` for the rail, so a page transition lifts it out
+		 * of the crossfade and leaves it still instead of fading it into a copy
+		 * of itself. `Page` sets this; you only need it when mounting `Sidebar`
+		 * yourself.
+		 *
+		 * A name has to be unique in the document — two elements sharing one
+		 * makes the browser abandon the transition outright, and it does so
+		 * silently: the navigation still works and nothing animates. That is why
+		 * this is a prop rather than a rule in the stylesheet, and why `Page`
+		 * gives it to only one instance.
+		 */
+		viewTransitionName?: string | null;
 		onclose?: () => void;
 		oncollapse?: (collapsed: boolean) => void;
 	};
@@ -65,6 +78,7 @@
 		// Renamed on the way in: `theme` is already the shared store in this
 		// module's scope.
 		theme: surface = 'auto',
+		viewTransitionName = null,
 		onclose,
 		oncollapse
 	}: Props = $props();
@@ -127,7 +141,13 @@
 <!-- `undefined` rather than `auto` on purpose: an attribute that is present at
      all would shadow an ancestor's theme, pinning the rail to whatever it
      names. Absent, the rail inherits. -->
-<aside class="sidebar" class:open class:collapsed data-theme={surface === 'auto' ? undefined : surface}>
+<aside
+	class="sidebar"
+	class:open
+	class:collapsed
+	data-theme={surface === 'auto' ? undefined : surface}
+	style:view-transition-name={viewTransitionName ?? undefined}
+>
 	<!--
 		Layout principle: icon columns stay pinned. Item padding-left, margin,
 		and the header logo all sit at the same x in both states. Only the

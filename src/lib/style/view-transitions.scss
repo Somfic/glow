@@ -1,0 +1,48 @@
+// What a page transition looks like. `viewTransition()`
+// (src/lib/util/viewTransition.ts) decides *whether* one runs.
+//
+// This lives in the stylesheet rather than in a component's <style> block
+// because the ::view-transition-* pseudo-elements are on the document, outside
+// every component, where Svelte's scoping has nothing useful to say about them.
+//
+// Unnamed rules are inert unless something starts a transition, so shipping
+// them costs nothing for an app that never does.
+
+// Persistent chrome. Anything carrying a `view-transition-name` is lifted out
+// of the `root` snapshot into a group of its own, which is how the rail avoids
+// being crossfaded into a near-identical copy of itself. `Page` puts the name
+// on its sidebar — and on only one of them, because a name has to be unique in
+// the document.
+//
+// Show the new snapshot immediately: it is the same element on both sides of
+// the navigation, so there is nothing to animate, and holding the old image
+// over it would only make it flicker.
+::view-transition-old(glow-sidebar) {
+	display: none;
+}
+
+::view-transition-group(glow-sidebar),
+::view-transition-new(glow-sidebar) {
+	animation: none;
+}
+
+// Nothing else is named, and that is deliberate. In particular `.page-surround`
+// — the full-viewport ground behind the content panel — is left in `root`. It
+// sits at `z-index: -1` in the page, but inside the view-transition tree the
+// snapshots paint in name order and z-index no longer applies, so naming it put
+// an opaque backdrop *over* the crossfading content and the whole panel went
+// blank mid-navigation. It is identical on both sides anyway.
+
+// What is left in `root` is the content panel, which gets the crossfade.
+//
+// The UA drives these from its own default stylesheet at a bare 0.25s. That is
+// not a --glow-dur-* token, so it would not collapse under reduced motion on
+// its own. Custom properties inherit from the document root into the
+// view-transition pseudo-tree, so re-declaring the duration from the token puts
+// the crossfade back under the same media query as the rest of the library — a
+// second line of defence behind `viewTransition()` refusing to start one.
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: var(--glow-dur-base);
+	animation-timing-function: var(--glow-ease-out);
+}

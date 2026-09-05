@@ -38,6 +38,11 @@ function prefersReducedMotion(): boolean {
  *   - `document.startViewTransition` is missing (Firefox, older Safari). No
  *     polyfill: a page-level crossfade is decoration, and the navigation has
  *     to be untouched where the API is not there.
+ *   - `<Root transitions={false}>`. Root stamps that on `<html>`, because this
+ *     runs from the router's navigation hook — outside any component, where
+ *     Svelte context cannot reach it. Without the shared flag an app could turn
+ *     transitions off on Root and still get a crossfade of an unnamed sidebar,
+ *     which is worse than either setting on its own.
  *   - The user asked for reduced motion. A crossfade of the whole viewport is
  *     exactly the motion that preference exists to suppress, and skipping the
  *     transition is a truer answer than running a 1ms one — the UA drives
@@ -61,6 +66,7 @@ export function viewTransition<T extends ViewTransitionNavigation>(
 	const start = (document as Document & { startViewTransition?: StartViewTransition })
 		.startViewTransition;
 	if (!start) return;
+	if (document.documentElement.dataset.glowTransitions === 'off') return;
 	if (prefersReducedMotion()) return;
 	if (typeof skip === 'function' ? skip(navigation) : skip) return;
 

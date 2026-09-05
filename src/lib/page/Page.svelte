@@ -1,4 +1,23 @@
+<script lang="ts" module>
+	// A `view-transition-name` has to be unique in the document, and two
+	// elements sharing one makes the browser abandon the transition outright —
+	// silently, so the navigation still works and nothing animates. A docs site
+	// or component gallery renders extra `Page`s inside cards, so the shell is
+	// whichever sidebar `Page` mounts first; the rest go unnamed.
+	let claimant: object | null = null;
+
+	function claimShell(token: object): boolean {
+		if (claimant === null) claimant = token;
+		return claimant === token;
+	}
+
+	function releaseShell(token: object) {
+		if (claimant === token) claimant = null;
+	}
+</script>
+
 <script lang="ts">
+	import { getContext, onMount } from 'svelte';
 	import type { NavItem } from './Navigation.svelte';
 	import type { SidebarItem, SidebarGroup, SidebarTheme } from '../sidebar/Sidebar.svelte';
 	import Navigation from './Navigation.svelte';
@@ -31,6 +50,16 @@
 		 * get the document's scroll behaviour back.
 		 */
 		scroller?: HTMLElement;
+		/**
+		 * Keep the sidebar still while the content crossfades during a page
+		 * transition. Inherited from `<Root transitions>` — which is on by
+		 * default — so set this only to override for one shell.
+		 *
+		 * This controls the naming, not whether a transition happens: the router
+		 * still has to call `viewTransition` from its navigation hook, since the
+		 * library owns no router.
+		 */
+		transitions?: boolean;
 		children?: () => any;
 	};
 
@@ -41,8 +70,24 @@
 		size,
 		sidebarConfig,
 		scroller = $bindable(),
+		transitions,
 		children
 	}: Props = $props();
+
+	// Root publishes a getter rather than a value, so an app that flips
+	// `transitions` at runtime is followed rather than snapshotted at init.
+	const inherited = getContext<(() => boolean) | undefined>('glow:transitions');
+	const transitionsOn = $derived(transitions ?? inherited?.() ?? true);
+
+	// Claimed on mount rather than during init: this is a module-level
+	// singleton, and on the server that module is shared by every request, so
+	// claiming there would leak one render's shell into the next.
+	const token = {};
+	let isShell = $state(false);
+	onMount(() => {
+		isShell = claimShell(token);
+		return () => releaseShell(token);
+	});
 
 	const effectiveLayout: Layout = $derived(
 		layout ?? (size === 'full' ? 'full' : 'contained')
@@ -75,6 +120,7 @@
 		groups={sidebarConfig.groups}
 		themeToggle={sidebarConfig.themeToggle}
 		theme={sidebarConfig.theme}
+		viewTransitionName={transitionsOn && isShell ? 'glow-sidebar' : null}
 		open={sidebarOpen}
 		bind:collapsed={sidebarCollapsed}
 		onclose={() => (sidebarOpen = false)}
