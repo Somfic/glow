@@ -20,6 +20,10 @@
 
 	const fillDemo = ['Star', 'Heart', 'Bookmark', 'Bell'] as const;
 
+	// Cast, because this is the case the type system cannot see: a name that
+	// arrives as a `string` from data rather than as a literal.
+	const missingName = 'FileJson' as IconName;
+
 	let query = $state('');
 
 	const matches = $derived(
@@ -118,6 +122,27 @@
 			</Flex>
 		{/each}
 	</Flex>
+</Card>
+
+<Card title="Unknown names" id="unknown-name">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		A name that isn't in <Code>IconName</Code> renders a red warning triangle in exactly the box the
+		real icon would have occupied, and logs once per name in dev. Lucide's deprecated aliases are the
+		usual way to get here — <Code>FileJson</Code> is an alias this build doesn't carry; the canonical
+		name is <Code>FileBraces</Code>.
+	</Text>
+	<Flex direction="horizontal" gap="lg" align="center">
+		{#each [12, 16, 20, 24, 32, 48] as size}
+			<Flex gap="xs" align="center">
+				<Icon name={missingName} {size} />
+				<Text size="sm" variant="secondary">{size}</Text>
+			</Flex>
+		{/each}
+	</Flex>
+	<Text style="margin-top: 1.5rem;">
+		<Icon name="FileBraces" size={24} /> next to <Icon name={missingName} size={24} /> — same box, so
+		nothing around it reflows.
+	</Text>
 </Card>
 
 <Card title="The IconProp shorthand" id="icon-prop">
