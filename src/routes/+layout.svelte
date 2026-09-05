@@ -61,6 +61,7 @@
 					{ label: 'Charts', href: '/components/charts', icon: 'ChartLine' },
 					{ label: 'Empty State', href: '/components/empty-state', icon: 'Inbox' },
 					{ label: 'Animated Number', href: '/components/animated-number', icon: 'TrendingUp' },
+					{ label: 'Animated Text', href: '/components/animated-text', icon: 'TypeOutline' },
 					{ label: 'List Item', href: '/components/list', icon: 'Rows2' },
 					{ label: 'Timeline', href: '/components/timeline', icon: 'History' },
 					{ label: 'Pagination', href: '/components/pagination', icon: 'ChevronsRight' },

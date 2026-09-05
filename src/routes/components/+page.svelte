@@ -41,6 +41,7 @@
 				{ name: 'Charts', href: '/components/charts', description: 'Sparkline and LineChart — hand-rolled SVG, no charting dependency' },
 				{ name: 'Empty State', href: '/components/empty-state', description: 'The placeholder for a list with nothing in it yet, and the nudge to fill it' },
 				{ name: 'Animated Number', href: '/components/animated-number', description: 'A number that tweens or rolls to its new value' },
+				{ name: 'Animated Text', href: '/components/animated-text', description: 'Text that reveals progressively, the way streamed output arrives' },
 				{ name: 'List Item', href: '/components/list', description: 'One list row: title, subtitle, leading and trailing slots' },
 				{ name: 'Timeline', href: '/components/timeline', description: 'Activity feeds and event history, with markers and timestamps' },
 				{ name: 'Pagination', href: '/components/pagination', description: 'Page controls with a range readout and size picker' },
