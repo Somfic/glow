@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { onNavigate } from '$app/navigation';
+	import { afterNavigate, beforeNavigate, onNavigate } from '$app/navigation';
 	import { viewTransition } from '$lib/util/viewTransition.js';
+	import { scrollMemory } from '$lib/util/scrollMemory.js';
 	import './view-transitions.scss';
 	import Root from '$lib/root/Root.svelte';
 	import Page from '$lib/page/Page.svelte';
@@ -15,6 +16,16 @@
 	// user asked for reduced motion, and `onNavigate` registers via `onMount`,
 	// so none of this runs while prerendering.
 	onNavigate(viewTransition);
+
+	// Beside a sidebar the content panel scrolls, not the document, so
+	// SvelteKit's own scroll handling reaches nothing — without this, page two
+	// opens at page one's offset. `scrollMemory` puts back what the document
+	// would have done: top on a new page, restore on back/forward, anchor on a
+	// hash.
+	let scroller = $state<HTMLElement>();
+	const scroll = scrollMemory(() => scroller);
+	beforeNavigate(scroll.before);
+	afterNavigate(scroll.after);
 
 	// Examples that render their own full-bleed shell — they want viewport
 	// lock + no sidebar. Other examples (e.g. /examples/github) reuse the
@@ -167,7 +178,7 @@
 			{@render children?.()}
 		</Page>
 	{:else}
-		<Page title="Glow UI" {sidebarConfig}>
+		<Page title="Glow UI" {sidebarConfig} bind:scroller>
 			{@render children?.()}
 		</Page>
 	{/if}
