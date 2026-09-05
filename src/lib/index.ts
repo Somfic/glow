@@ -180,6 +180,10 @@ export {
 	type AnimatedNumberFormat,
 	type AnimatedNumberAlign
 } from "./animated-number/AnimatedNumber.svelte";
+export {
+	default as AnimatedText,
+	type AnimatedTextGranularity
+} from "./animated-text/AnimatedText.svelte";
 export { default as TableOfContents } from "./navigation/TableOfContents.svelte";
 export { default as Breadcrumb } from "./breadcrumb/Breadcrumb.svelte";
 export type { BreadcrumbItem, BreadcrumbItemState } from "./breadcrumb/Breadcrumb.svelte";

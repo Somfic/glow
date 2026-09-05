@@ -21,6 +21,10 @@ export {
 	type AnimatedNumberFormat,
 	type AnimatedNumberAlign
 } from "./animated-number/AnimatedNumber.svelte";
+export {
+	default as AnimatedText,
+	type AnimatedTextGranularity
+} from "./animated-text/AnimatedText.svelte";
 export type {
 	TableProps,
 	TableColumn,
