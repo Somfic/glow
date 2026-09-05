@@ -293,7 +293,7 @@
 			// currentColor, not white — on a light button the text is black and a
 			// white-alpha badge would wash out into the background.
 			background: color-mix(in srgb, currentColor 12%, transparent);
-			border-radius: 999px;
+			border-radius: $radius-full;
 			margin-left: 0.15em;
 		}
 

@@ -104,7 +104,7 @@
 		width: 100%;
 		padding: 8px 12px;
 		border: none;
-		border-radius: 8px;
+		border-radius: $radius-md;
 		background: none;
 		color: var(--glow-fg);
 		font-size: $text-sm;

@@ -714,7 +714,7 @@
 	.cp-search {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: $space-sm;
 		padding: 0.75rem 0.85rem;
 		min-height: 3rem;
 		box-sizing: border-box;
@@ -771,7 +771,7 @@
 		align-items: center;
 		gap: 0.3rem;
 		padding: 0.15rem 0.55rem;
-		border-radius: 999px;
+		border-radius: $radius-full;
 		background: var(--glow-primary-soft);
 		color: var(--glow-primary);
 		font-size: 0.8rem;
@@ -849,7 +849,7 @@
 		left: 0.4rem;
 		right: 0.4rem;
 		background: var(--glow-primary-soft);
-		border-radius: 6px;
+		border-radius: $radius-sm;
 		z-index: 0;
 		pointer-events: none;
 		opacity: 0;
@@ -863,7 +863,7 @@
 	}
 
 	.cp-empty {
-		padding: 1.5rem;
+		padding: $space-lg;
 		text-align: center;
 		color: color-mix(in oklab, var(--glow-fg) 55%, transparent);
 		font-size: 0.875rem;
@@ -886,7 +886,7 @@
 		gap: 0.65rem;
 		width: 100%;
 		padding: 0.55rem 0.65rem;
-		border-radius: 6px;
+		border-radius: $radius-sm;
 	}
 
 	.cp-item-skeleton {
@@ -913,7 +913,7 @@
 	.cp-crumbs {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: $space-xs;
 		flex: 0 0 auto;
 		max-width: 50%;
 		overflow: hidden;
@@ -922,11 +922,11 @@
 	.cp-crumb {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: $space-xs;
 		background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
 		color: color-mix(in oklab, var(--glow-fg) 70%, transparent);
 		border: none;
-		border-radius: 4px;
+		border-radius: $radius-xs;
 		padding: 0.15rem 0.4rem;
 		font: inherit;
 		font-size: 0.75rem;

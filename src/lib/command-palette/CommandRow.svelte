@@ -118,13 +118,13 @@
 		color: inherit;
 		font: inherit;
 		text-align: left;
-		border-radius: 6px;
+		border-radius: $radius-sm;
 		cursor: pointer;
 		transition: color var(--glow-dur-instant) $ease-out,
 			background var(--glow-dur-instant) $ease-out;
 
 		&.compact {
-			gap: 0.5rem;
+			gap: $space-sm;
 			padding: 0.35rem 0.55rem;
 			border-radius: 5px;
 			.cp-row-label {
@@ -211,10 +211,10 @@
 	.cp-row-crumb {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: $space-xs;
 		font-size: 0.75rem;
 		padding: 0.05rem 0.4rem;
-		border-radius: 4px;
+		border-radius: $radius-xs;
 		background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
 		color: color-mix(in oklab, var(--glow-fg) 65%, transparent);
 		font-weight: $weight-medium;

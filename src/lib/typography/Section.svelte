@@ -114,7 +114,7 @@
 	.title-row {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: $space-sm;
 		min-width: 0;
 		flex: 1 1 auto;
 	}
@@ -123,7 +123,7 @@
 		flex: 0 0 auto;
 		display: flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: $space-xs;
 	}
 
 	.chevron {
@@ -146,7 +146,7 @@
 		min-width: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: $space-sm;
 	}
 
 	:global(.section-title) {

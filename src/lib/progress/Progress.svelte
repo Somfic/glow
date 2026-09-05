@@ -182,7 +182,7 @@
 		position: relative;
 		width: 100%;
 		background: color-mix(in oklab, var(--glow-fg) 12%, transparent);
-		border-radius: 999px;
+		border-radius: $radius-full;
 		overflow: hidden;
 	}
 

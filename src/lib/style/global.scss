@@ -183,15 +183,15 @@ h6 {
     color: $text-primary;
 
     &:not(:first-child) {
-        margin-top: 2rem;
+        margin-top: $space-xl;
     }
 }
 
 h1 {
     font-size: $h1;
     border-bottom: $border;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
+    padding-bottom: $space-sm;
+    margin-bottom: $space-md;
 }
 
 h2 {
@@ -206,23 +206,23 @@ h3 {
 
 h4 {
     font-size: $h4;
-    margin-bottom: 0.5rem;
+    margin-bottom: $space-sm;
 }
 
 h5 {
     font-size: $h5;
-    margin-bottom: 0.5rem;
+    margin-bottom: $space-sm;
 }
 
 h6 {
     font-size: $h6;
-    margin-bottom: 0.5rem;
+    margin-bottom: $space-sm;
     color: var(--glow-text-secondary);
 }
 
 // Paragraphs and text
 p {
-    margin: 0 0 1rem 0;
+    margin: 0 0 $space-md 0;
     line-height: 1.6;
     color: $text-primary;
 

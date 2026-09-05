@@ -70,8 +70,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 1rem;
-		padding: 0.5rem 1rem;
+		gap: $space-md;
+		padding: $space-sm $space-md;
 		font-size: $text-xs;
 		color: var(--glow-text-muted);
 	}
@@ -89,7 +89,7 @@
 		width: 28px;
 		height: 28px;
 		border: none;
-		border-radius: 6px;
+		border-radius: $radius-sm;
 		background: none;
 		color: var(--glow-text-secondary);
 		cursor: pointer;
@@ -112,9 +112,9 @@
 	}
 
 	.pagination-size {
-		padding: 0.25rem 0.5rem;
+		padding: $space-xs $space-sm;
 		border: $border;
-		border-radius: 6px;
+		border-radius: $radius-sm;
 		background: transparent;
 		color: var(--glow-text-secondary);
 		font-size: $text-xs;

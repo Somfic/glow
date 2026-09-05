@@ -163,7 +163,7 @@
 	}
 
 	.code-loading {
-		padding: 1rem;
+		padding: $space-md;
 		color: var(--glow-text-muted);
 		font-size: $text-sm;
 		font-style: italic;
@@ -192,7 +192,7 @@
 	}
 
 	.shell-content {
-		padding: 1rem;
+		padding: $space-md;
 		font-family: inherit;
 		font-size: $text-sm;
 		line-height: 1.8;
@@ -202,8 +202,8 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		margin-bottom: 0.25rem;
-		padding: 0.25rem 0;
+		margin-bottom: $space-xs;
+		padding: $space-xs 0;
 		position: relative;
 		transition: background 0.15s;
 
@@ -215,9 +215,9 @@
 			background: color-mix(in oklab, var(--glow-fg) 5%, transparent);
 			margin-left: -0.5rem;
 			margin-right: -0.5rem;
-			padding-left: 0.5rem;
-			padding-right: 0.5rem;
-			border-radius: 4px;
+			padding-left: $space-sm;
+			padding-right: $space-sm;
+			border-radius: $radius-xs;
 
 			.shell-copy {
 				opacity: 1;
@@ -246,7 +246,7 @@
 		border: none;
 		color: var(--glow-text-muted);
 		cursor: pointer;
-		padding: 0.25rem;
+		padding: $space-xs;
 		display: flex;
 		align-items: center;
 		justify-content: center;

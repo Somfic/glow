@@ -252,7 +252,7 @@
 	.sidebar-header {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: $space-sm;
 		// Padding-left aligns the logo with the item icons below.
 		padding: 1.25rem 0.875rem 1.25rem $icon-x;
 		min-height: 56px;
@@ -324,7 +324,7 @@
 		height: 28px;
 		background: none;
 		border: 0;
-		border-radius: 6px;
+		border-radius: $radius-sm;
 		color: var(--glow-text-muted);
 		cursor: pointer;
 		transition: color 0.15s, background-color 0.15s;
@@ -341,16 +341,16 @@
 
 	.sidebar-nav {
 		flex: 1;
-		padding-bottom: 1rem;
+		padding-bottom: $space-md;
 	}
 
 	// Pinned to the bottom: `.sidebar-nav` is `flex: 1`, so anything after it
 	// is pushed down without needing `margin-top: auto`.
 	.sidebar-footer {
 		flex: 0 0 auto;
-		padding-bottom: 0.5rem;
+		padding-bottom: $space-sm;
 		border-top: 1px solid var(--glow-border-color);
-		padding-top: 0.5rem;
+		padding-top: $space-sm;
 	}
 
 	// Inherits .sidebar-item, so it lines up on the same icon column and picks
@@ -365,7 +365,7 @@
 	}
 
 	.sidebar-children {
-		padding: 0 1rem 1rem;
+		padding: 0 $space-md $space-md;
 		opacity: 1;
 		transition: opacity $transition;
 
@@ -417,20 +417,20 @@
 			opacity: 1;
 			max-height: 1px;
 			margin-top: 0.75rem;
-			margin-bottom: 0.5rem;
+			margin-bottom: $space-sm;
 		}
 	}
 
 	.sidebar-item {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: $space-sm;
 		// Margin + padding split so the icon's absolute x is the same as
 		// `$icon-x` (margin 0.5rem + padding 0.75rem = 1.25rem) while the
 		// hover/active pill sits inset from the sidebar edges.
 		padding: 0.5rem 0.75rem;
-		margin: 0 0.5rem;
-		border-radius: 8px;
+		margin: 0 $space-sm;
+		border-radius: $radius-md;
 		font-size: $text-sm;
 		color: var(--glow-text-secondary);
 		text-decoration: none;

@@ -110,12 +110,12 @@
 
 	.property-group {
 		& + .property-group {
-			margin-top: 1rem;
+			margin-top: $space-md;
 		}
 	}
 
 	.divided .property-group + .property-group {
-		padding-top: 1rem;
+		padding-top: $space-md;
 		border-top: 1px solid color-mix(in oklab, var(--glow-border-color) 50%, transparent);
 		margin-left: calc(-1 * var(--pl-padding));
 		margin-right: calc(-1 * var(--pl-padding));
@@ -126,19 +126,19 @@
 	.group-header {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: $space-sm;
 		font-size: $text-xs;
 		font-weight: $weight-bold;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		color: var(--glow-text-secondary);
-		padding: 0.5rem 0;
+		padding: $space-sm 0;
 	}
 
 	.label-link {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: $space-sm;
 		font-size: $text-sm;
 		color: var(--glow-text-secondary);
 		font-weight: $weight-semibold;

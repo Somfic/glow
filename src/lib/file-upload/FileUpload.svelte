@@ -370,7 +370,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 2rem 1.5rem;
+		padding: $space-xl $space-lg;
 		border-radius: $radius;
 		// A real dashed border so it follows `border-radius` cleanly at the
 		// corners. Background tints separately so the dash + fill animate
@@ -421,7 +421,7 @@
 		width: 44px;
 		height: 44px;
 		margin-bottom: 0.4rem;
-		border-radius: 12px;
+		border-radius: $radius;
 		background: var(--glow-bg-surface);
 		color: var(--glow-fg);
 		transition: transform var(--glow-dur-base) $ease-out, color var(--glow-dur-fast) $ease-out;
@@ -513,7 +513,7 @@
 		align-items: center;
 		gap: 0.65rem;
 		padding: 0.45rem 0.6rem 0.45rem 0.45rem;
-		border-radius: 8px;
+		border-radius: $radius-md;
 		background: var(--glow-bg-surface-element);
 		border: 1px solid color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		transition: border-color var(--glow-dur-fast) $ease-out, background var(--glow-dur-fast) $ease-out;
@@ -527,7 +527,7 @@
 		position: relative;
 		width: 40px;
 		height: 40px;
-		border-radius: 6px;
+		border-radius: $radius-sm;
 		overflow: hidden;
 		background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		display: inline-flex;
@@ -555,7 +555,7 @@
 		justify-content: center;
 		width: 16px;
 		height: 16px;
-		border-radius: 4px;
+		border-radius: $radius-xs;
 		background: rgba(0, 0, 0, 0.55);
 		color: #fff;
 	}
@@ -585,7 +585,7 @@
 	.fu-row-actions {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: $space-xs;
 	}
 
 	.fu-row-btn {
@@ -594,7 +594,7 @@
 		justify-content: center;
 		width: 24px;
 		height: 24px;
-		border-radius: 6px;
+		border-radius: $radius-sm;
 		background: transparent;
 		color: color-mix(in oklab, var(--glow-fg) 55%, transparent);
 		border: none;

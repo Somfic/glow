@@ -28,7 +28,7 @@
 		font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 		background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
 		border: 1px solid color-mix(in oklab, var(--glow-fg) 15%, transparent);
-		border-radius: 4px;
+		border-radius: $radius-xs;
 		color: color-mix(in oklab, var(--glow-fg) 70%, transparent);
 		line-height: 1;
 		font-weight: $weight-medium;

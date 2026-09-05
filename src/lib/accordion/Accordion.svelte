@@ -175,7 +175,7 @@
 	}
 
 	.variant-separated {
-		gap: 0.5rem;
+		gap: $space-sm;
 	}
 
 	.disabled {

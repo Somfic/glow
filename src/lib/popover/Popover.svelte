@@ -253,7 +253,7 @@
 		// sitting flush against them.
 		margin: 0 0.75rem 0.75rem;
 		background: var(--glow-bg-surface-element);
-		border-radius: 18px;
+		border-radius: $radius-lg;
 		box-shadow: $shadow-xl;
 		padding-bottom: env(safe-area-inset-bottom);
 	}
@@ -263,7 +263,7 @@
 		height: 4px;
 		flex-shrink: 0;
 		margin: 10px auto 6px;
-		border-radius: 999px;
+		border-radius: $radius-full;
 		background: var(--glow-text-muted);
 		opacity: 0.4;
 	}

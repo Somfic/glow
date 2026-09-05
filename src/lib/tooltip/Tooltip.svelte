@@ -54,7 +54,7 @@
 		background: rgba(0, 0, 0, 0.9);
 		color: white;
 		padding: 0.5rem 0.75rem;
-		border-radius: 6px;
+		border-radius: $radius-sm;
 		font-size: 0.875rem;
 		line-height: 1.4;
 		max-width: 250px;

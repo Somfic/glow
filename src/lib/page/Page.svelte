@@ -183,7 +183,7 @@
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			padding: 0.5rem 1.5rem;
+			padding: $space-sm $space-lg;
 
 			.navigation {
 				display: flex;
@@ -191,7 +191,7 @@
 				justify-content: space-between;
 				background-color: var(--glow-bg-surface);
 				border-radius: 100px;
-				padding: 0.5rem 1.5rem;
+				padding: $space-sm $space-lg;
 				width: 100%;
 				max-width: 1200px;
 				margin: 1rem auto;
@@ -258,7 +258,7 @@
 		color: var(--glow-fg);
 		width: 40px;
 		height: 40px;
-		border-radius: 8px;
+		border-radius: $radius-md;
 		font-size: 1.25rem;
 		cursor: pointer;
 		align-items: center;

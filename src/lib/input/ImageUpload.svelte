@@ -189,7 +189,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 0.25rem;
+		gap: $space-xs;
 		background: var(--glow-bg-surface);
 		border: 2px dashed var(--glow-border-color);
 		border-radius: $radius;
@@ -225,7 +225,7 @@
 		top: 0.25rem;
 		right: 0.25rem;
 		display: flex;
-		gap: 0.25rem;
+		gap: $space-xs;
 		opacity: 0;
 		transition: opacity 150ms ease;
 	}
@@ -240,7 +240,7 @@
 		background: rgba(0, 0, 0, 0.6);
 		color: white;
 		border: none;
-		border-radius: 0.25rem;
+		border-radius: $radius-xs;
 		cursor: pointer;
 		display: flex;
 		align-items: center;

@@ -594,7 +594,7 @@
 
 	.card {
 		display: block;
-		padding: 1.5rem;
+		padding: $space-lg;
 		// Both indirected through custom properties so the depth rules below can
 		// retarget them without restating `background`/`box-shadow`, and so the
 		// variant overrides further down (has-accent, hover, overlay) still win
@@ -725,7 +725,7 @@
 	.card-footer {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: $space-sm;
 		padding: 0.75rem 1rem;
 		background: color-mix(in oklab, var(--glow-fg) 2%, transparent);
 	}
@@ -775,7 +775,7 @@
 	.header-actions {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: $space-xs;
 	}
 
 	.card-footer {
@@ -792,7 +792,7 @@
 	.card-header.collapsible {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: $space-sm;
 		width: 100%;
 		border-top: 0;
 		border-left: 0;
@@ -855,10 +855,10 @@
 			padding: 0.75rem;
 		}
 		&.padding-md {
-			padding: 1.5rem;
+			padding: $space-lg;
 		}
 		&.padding-lg {
-			padding: 2rem;
+			padding: $space-xl;
 		}
 	}
 
@@ -868,7 +868,7 @@
 	}
 
 	.body-icon {
-		margin-bottom: 0.5rem;
+		margin-bottom: $space-sm;
 		display: flex;
 		color: var(--glow-fg);
 	}

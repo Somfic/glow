@@ -135,8 +135,8 @@
 		.variant-secondary.expanded &,
 		.variant-ghost.expanded &,
 		.variant-danger.expanded & {
-			padding-left: 1.5rem;
-			padding-right: 1.5rem;
+			padding-left: $space-lg;
+			padding-right: $space-lg;
 		}
 
 		// Default: small dot
@@ -163,7 +163,7 @@
 			height: auto;
 			min-height: 32px;
 			padding: 0.5rem 0.75rem;
-			border-radius: 12px;
+			border-radius: $radius;
 		}
 
 		// Scale down when pressed

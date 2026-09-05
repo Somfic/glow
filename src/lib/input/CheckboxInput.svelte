@@ -104,7 +104,7 @@
 		width: 20px;
 		height: 20px;
 		border: $border;
-		border-radius: 4px;
+		border-radius: $radius-xs;
 		background-color: var(--glow-bg-surface-element);
 		transition: all 0.15s ease;
 		color: white;

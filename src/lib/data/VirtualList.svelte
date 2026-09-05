@@ -198,7 +198,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 2rem;
+		padding: $space-xl;
 		color: var(--glow-text-muted);
 		font-size: $text-sm;
 
@@ -207,11 +207,11 @@
 		}
 
 		&.loading {
-			padding: 1rem;
+			padding: $space-md;
 		}
 
 		&.end {
-			padding: 1rem;
+			padding: $space-md;
 		}
 	}
 

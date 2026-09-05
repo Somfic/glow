@@ -303,7 +303,7 @@
 		justify-content: center;
 		color: color-mix(in oklab, var(--glow-fg) 60%, transparent);
 		cursor: pointer;
-		border-radius: 999px;
+		border-radius: $radius-full;
 		padding: 2px;
 
 		&:hover {
@@ -313,12 +313,12 @@
 	}
 
 	.time-popover {
-		padding: 0.5rem;
+		padding: $space-sm;
 	}
 
 	.columns {
 		display: flex;
-		gap: 0.5rem;
+		gap: $space-sm;
 		max-height: 220px;
 	}
 
@@ -328,7 +328,7 @@
 		gap: 2px;
 		min-width: 3.5rem;
 		overflow-y: auto;
-		padding: 0.25rem;
+		padding: $space-xs;
 		scrollbar-width: thin;
 
 		&::-webkit-scrollbar {
@@ -351,7 +351,7 @@
 		align-items: center;
 		justify-content: center;
 		height: 2rem;
-		padding: 0 0.5rem;
+		padding: 0 $space-sm;
 		font: inherit;
 		font-variant-numeric: tabular-nums;
 		font-size: $text-sm;
