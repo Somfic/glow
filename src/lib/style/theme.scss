@@ -206,6 +206,11 @@ $text-muted: var(--glow-text-muted);
 	// Border tiers, as a percentage of fg mixed into the backdrop.
 	$border-subtle-mix: 21%,
 	$border-strong-mix: 45%,
+	// Diff tints: how much of the semantic colour is mixed into the surface for
+	// an added/removed line, and for the word runs inside one. Light takes a
+	// lighter hand — a saturated wash composites heavier over white.
+	$diff-tint: 16%,
+	$diff-emphasis: 34%,
 	// Disabled tiers. Material 3 uses 38% content over a 12% container; doing
 	// it with tokens rather than `opacity` on the whole control keeps the
 	// border and any accent from fading in lockstep, and avoids compounding
@@ -273,6 +278,16 @@ $text-muted: var(--glow-text-muted);
 	--glow-color-success-hover: color-mix(in oklab, var(--glow-color-success), var(--glow-fg) 14%);
 	--glow-color-warning-hover: color-mix(in oklab, var(--glow-color-warning), var(--glow-fg) 14%);
 	--glow-color-info-hover: color-mix(in oklab, var(--glow-color-info), var(--glow-fg) 14%);
+
+	// Diff. The line tint carries the meaning that the +/- gutter states in
+	// text; the emphasis tier is for the word runs *within* a changed line, so
+	// it has to stay distinguishable from the line tint in both themes.
+	--glow-diff-add-bg: color-mix(in oklab, var(--glow-color-success) #{$diff-tint}, var(--glow-bg-surface));
+	--glow-diff-add-emphasis: color-mix(in oklab, var(--glow-color-success) #{$diff-emphasis}, var(--glow-bg-surface));
+	--glow-diff-add-fg: color-mix(in oklab, var(--glow-color-success), var(--glow-fg) 20%);
+	--glow-diff-remove-bg: color-mix(in oklab, var(--glow-color-danger) #{$diff-tint}, var(--glow-bg-surface));
+	--glow-diff-remove-emphasis: color-mix(in oklab, var(--glow-color-danger) #{$diff-emphasis}, var(--glow-bg-surface));
+	--glow-diff-remove-fg: color-mix(in oklab, var(--glow-color-danger), var(--glow-fg) 20%);
 }
 
 // ============================================================================
