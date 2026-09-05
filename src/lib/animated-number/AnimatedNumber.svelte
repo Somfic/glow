@@ -184,9 +184,18 @@
 		return Math.floor(Math.abs(n) / place + 1e-9) % 10;
 	}
 
-	/** Per-cell wheel position, in digit heights: `2.5` is halfway between the
-	 *  2 and the 3. Kept fractional so the strip can sit between two glyphs. */
-	let rolls = $derived(
+	/** How far a wheel still is from its target, in digit heights, signed: `0`
+	 *  is arrived, `2.5` is two and a half digits short of it.
+	 *
+	 *  Measuring the distance *to* the target rather than the absolute position
+	 *  on a 0-9 strip is what keeps the settled number on one baseline. A line
+	 *  box of `1.2em` is a fractional number of device pixels at most font
+	 *  sizes, so a strip translated by its own digit parks every wheel on a
+	 *  different subpixel offset — five digits, five baselines, re-scrambled on
+	 *  every value change. Here the target glyph is the strip's own in-flow
+	 *  cell, so at rest the transform is exactly `translateY(0)` whatever the
+	 *  font size, zoom or device pixel ratio. */
+	let distances = $derived(
 		cells.map((cell) => {
 			if (cell.kind !== 'digit') return 0;
 			const from = anchorOffsets.get(cell.place) ?? digitAt(anchorValue, cell.place);
@@ -196,22 +205,25 @@
 			// through 8, 7, 6.
 			if (value > anchorValue && to < from) to += 10;
 			else if (value < anchorValue && to > from) to -= 10;
-			// The strip repeats its first glyph at the end, so a position of
-			// 9.99 and one of 0 land on an identical-looking cell: taking this
-			// modulo is invisible rather than a jump.
-			return (from + (to - from) * progress + 20) % 10;
+			return (from - to) * (1 - progress);
 		})
 	);
 
 	$effect(() => {
 		const offsets = new Map<number, number>();
 		cells.forEach((cell, i) => {
-			if (cell.kind === 'digit') offsets.set(cell.place, rolls[i]);
+			// The mirror keeps absolute wheel positions, 0-10, because that is
+			// what an interrupted run has to measure its next distance from.
+			if (cell.kind === 'digit') offsets.set(cell.place, (cell.digit + distances[i] + 20) % 10);
 		});
 		painted = { text: targetText, offsets };
 	});
 
-	const strip = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+	// The neighbours of the in-flow target glyph, hung above and below it. The
+	// carry above bounds a wheel's travel at ten digits, and ±10 is exactly
+	// that, so the strip always has a real cell under the window — including at
+	// both ends, where the target glyph repeats and a wrap is invisible.
+	const neighbours = Array.from({ length: 21 }, (_, i) => i - 10).filter((k) => k !== 0);
 </script>
 
 <span
@@ -223,9 +235,13 @@
 			{#each cells as cell, i (i)}
 				{#if cell.kind === 'digit'}
 					<span class="digit">
-						<span class="strip" style="--roll: {rolls[i]}">
-							{#each strip as d, j (j)}<span class="glyph">{d}</span>{/each}
-						</span>
+						<span class="strip" style="--distance: {distances[i]}"
+							><span class="glyph">{cell.digit}</span
+							>{#each neighbours as k (k)}<span
+									class="glyph neighbour"
+									style="--k: {k}">{(cell.digit + k + 10) % 10}</span
+								>{/each}</span
+						>
 					</span>
 				{:else}
 					<span class="literal">{cell.text}</span>
@@ -310,7 +326,16 @@
 
 	.strip {
 		display: block;
-		transform: translateY(calc(var(--roll) * var(--an-line) * -1));
+		position: relative;
+		// `--distance` is zero once the wheel arrives, so a settled number is
+		// untransformed and every digit lands on the same device pixel row.
+		transform: translateY(calc(var(--distance) * var(--an-line) * -1));
+	}
+
+	.neighbour {
+		position: absolute;
+		inset-inline: 0;
+		top: calc(var(--k) * var(--an-line));
 	}
 
 	.glyph,

@@ -46,37 +46,64 @@ try {
 	const settled = (await box.boundingBox()).width;
 	t.ok(`width holds while counting (${during} / ${settled})`, Math.abs(during - settled) < 0.6);
 
-	// A wheel's transform just before and just after an interruption: a
-	// retarget that restarted from the previous value would jump here.
 	const odo = page.locator("#odometer");
-	const wheel = odo.locator(".animated-number .strip").first();
-	const y = () => wheel.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m42);
+	const value = odo.locator(".animated-number .value").first();
+
+	// What a wheel is actually showing, measured rather than inferred: the
+	// glyph whose box sits in the window, and how far into the window it has
+	// travelled. The strips carry all ten digits and are re-anchored to each
+	// new target, so neither the text nor the transform alone says this.
+	const wheels = () =>
+		value.evaluate((el) => {
+			let digits = "";
+			let shift = null;
+			for (const child of el.children) {
+				if (!child.classList.contains("digit")) {
+					digits += child.textContent;
+					continue;
+				}
+				const window = child.getBoundingClientRect();
+				let best = null;
+				for (const glyph of child.firstElementChild.children) {
+					const box = glyph.getBoundingClientRect();
+					const delta = box.top - window.top;
+					if (!best || Math.abs(delta) < Math.abs(best.delta)) best = { delta, glyph };
+				}
+				digits += best.glyph.textContent;
+				shift ??= best.delta;
+			}
+			return { digits, shift };
+		});
+
+	// Just before and just after an interruption: a retarget that restarted
+	// from the previous value would jump the painted glyph here.
 	await odo.getByRole("button").click();
 	await page.waitForTimeout(200);
-	const y0 = await y();
+	const priorFrame = await wheels();
 	await odo.getByRole("button").click();
 	await page.waitForTimeout(30);
-	const y1 = await y();
-	t.ok(`interrupting retargets from the screen (${y0} → ${y1})`, Math.abs(y0 - y1) < 6);
+	const nextFrame = await wheels();
+	t.ok(
+		`interrupting retargets from the screen (${priorFrame.shift} → ${nextFrame.shift})`,
+		Math.abs(priorFrame.shift - nextFrame.shift) < 6
+	);
 
 	await page.waitForTimeout(1200);
 	const sr = await odo.locator(".animated-number .sr-only").first().innerText();
-	// What the wheels actually show, read off their transforms rather than
-	// their text: every column carries all ten glyphs.
-	const painted = await odo
-		.locator(".animated-number .value")
-		.first()
-		.evaluate((el) => {
-			let out = "";
-			for (const child of el.children) {
-				if (child.classList.contains("digit")) {
-					const m = new DOMMatrix(getComputedStyle(child.firstElementChild).transform);
-					out += String(Math.round(-m.m42 / child.getBoundingClientRect().height) % 10);
-				} else out += child.textContent;
-			}
-			return out;
-		});
+	const painted = (await wheels()).digits;
 	t.ok(`wheels settle on the announced value (${sr} / ${painted})`, sr === painted);
+	// The invariant behind the shared baseline: a line box of `1.2em` is a
+	// fractional number of device pixels, so any wheel parked on a non-zero
+	// translate sits on its own subpixel offset and the digits go ragged. A
+	// settled wheel must therefore be untransformed, not merely close to it.
+	const offsets = await page
+		.locator("#odometer .animated-number .strip")
+		.evaluateAll((els) => els.map((el) => new DOMMatrix(getComputedStyle(el).transform).m42));
+	t.ok(
+		`settled wheels are untransformed (${offsets.join(", ")})`,
+		offsets.length > 0 && offsets.every((y) => y === 0)
+	);
+
 	t.ok(
 		"the digits are hidden from assistive tech",
 		(await odo.locator(".animated-number .value").first().getAttribute("aria-hidden")) === "true"
