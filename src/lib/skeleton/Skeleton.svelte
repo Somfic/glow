@@ -72,7 +72,7 @@
 	.skeleton-group {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: $space-sm;
 	}
 
 	@keyframes skeleton-shimmer {

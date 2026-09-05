@@ -140,7 +140,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 1rem;
+		padding: $space-md;
 	}
 
 	.cropper-container {
@@ -191,7 +191,7 @@
 		justify-content: space-between;
 		padding: 0.75rem 1rem;
 		border-top: $border;
-		gap: 1rem;
+		gap: $space-md;
 	}
 
 	/* Override cropperjs styles to match glow theme */

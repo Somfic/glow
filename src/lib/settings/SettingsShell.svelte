@@ -83,7 +83,7 @@
 	.shell-header {
 		display: flex;
 		align-items: flex-start;
-		gap: 1rem;
+		gap: $space-md;
 		padding-bottom: 0.75rem;
 		border-bottom: 1px solid color-mix(in oklab, var(--glow-fg) 6%, transparent);
 	}
@@ -93,7 +93,7 @@
 		min-width: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
+		gap: $space-xs;
 	}
 
 	.shell-title {
@@ -114,7 +114,7 @@
 	.header-trailing {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: $space-sm;
 	}
 
 	.shell-body {

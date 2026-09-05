@@ -251,7 +251,7 @@
 		justify-content: center;
 		width: 0.625rem;
 		height: 0.625rem;
-		border-radius: 999px;
+		border-radius: $radius-full;
 		background: var(--timeline-accent);
 		transition: background var(--glow-dur-fast) var(--glow-ease-out);
 	}

@@ -114,7 +114,7 @@
 		height: 6px;
 		top: 50%;
 		transform: translateY(-50%);
-		border-radius: 999px;
+		border-radius: $radius-full;
 		pointer-events: none;
 	}
 
@@ -225,6 +225,6 @@ input[type='range'] {
 		line-height: 1;
 		background: var(--glow-secondary);
 		padding: 0.4em 0.6em;
-		border-radius: 999px;
+		border-radius: $radius-full;
 	}
 </style>

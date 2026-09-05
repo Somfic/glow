@@ -393,7 +393,7 @@
 	.color-swatch {
 		width: 24px;
 		height: 24px;
-		border-radius: 4px;
+		border-radius: $radius-xs;
 		border: $border;
 		box-shadow: $shadow-xs;
 		flex-shrink: 0;

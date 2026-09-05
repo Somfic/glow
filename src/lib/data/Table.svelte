@@ -436,7 +436,7 @@
 	.table-header-content {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: $space-sm;
 	}
 
 	.sort-icon {
@@ -492,7 +492,7 @@
 	.table-select-cell.table-select-cell {
 		width: 0;
 		text-align: center;
-		padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+		padding: $space-xs $space-sm $space-xs $space-xs;
 		cursor: pointer;
 
 		:global(.input) {
@@ -506,12 +506,12 @@
 
 	.table-actions-cell {
 		width: auto;
-		padding-right: 0.5rem;
+		padding-right: $space-sm;
 	}
 
 	.table-actions {
 		display: flex;
-		gap: 0.25rem;
+		gap: $space-xs;
 		opacity: 0;
 		transition: opacity 0.15s;
 
@@ -559,7 +559,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 1rem;
+		gap: $space-md;
 	}
 
 	.spinner {

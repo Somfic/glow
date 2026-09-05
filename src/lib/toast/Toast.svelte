@@ -99,7 +99,7 @@
 		width: 24px;
 		height: 24px;
 		border: none;
-		border-radius: 6px;
+		border-radius: $radius-sm;
 		background: none;
 		color: var(--glow-text-muted);
 		cursor: pointer;

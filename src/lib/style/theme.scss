@@ -58,8 +58,20 @@ $border: $border-width solid $border-color;
 // outlined buttons, segmented controls.
 $border-strong: $border-width solid var(--glow-border-strong);
 
-$radius: 12px;
-$radius-small: 18px;
+// Radius scale. `$radius` is the base — anything that frames content on the
+// page: cards, inputs, buttons, popovers. The smaller steps are for *nested*
+// corners, not for "smaller things": an element inside a rounded container
+// wants a radius smaller than its parent by roughly the padding between them,
+// so a row inside a 12px panel reads right at 8px and a chip inside that row at
+// 4px. Using one token at both levels is what makes a nested corner look wrong.
+// Audited from what the library already did — 4/6/8/12 were the four values in
+// use, in that nesting relationship.
+$radius-xs: 4px;     // two levels in: inline code, kbd, swatches, chips
+$radius-sm: 6px;     // rows and small controls inside a panel
+$radius-md: 8px;     // menu items, list rows, a panel inside a card
+$radius: 12px;       // the base
+$radius-lg: 18px;    // large floating surfaces (popover panel)
+$radius-full: 999px; // pills and capsules — larger than anything it clips
 
 // Spacing scale — same vocabulary as the runtime `Flex.gap` / `Stack.gap`
 // values so build-time and runtime spacing share one source of truth. Use

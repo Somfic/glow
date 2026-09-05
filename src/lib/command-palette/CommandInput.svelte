@@ -370,7 +370,7 @@
 		font: inherit;
 		letter-spacing: 0;
 		text-indent: 0;
-		padding: 0.25rem 0;
+		padding: $space-xs 0;
 		outline: none;
 	}
 
@@ -390,7 +390,7 @@
 		font-family: inherit;
 		font-size: inherit;
 		white-space: pre;
-		padding: 0.25rem 0;
+		padding: $space-xs 0;
 		box-sizing: border-box;
 		overflow: hidden;
 		min-width: 0;
@@ -406,7 +406,7 @@
 		align-items: center;
 		gap: 0.3rem;
 		padding: 0.05rem 0.45rem 0.05rem 0.4rem;
-		border-radius: 999px;
+		border-radius: $radius-full;
 		background: var(--glow-primary-soft);
 		color: var(--glow-primary);
 		font-size: 0.85em;
@@ -435,7 +435,7 @@
 		align-items: center;
 		gap: 0.3rem;
 		padding: 0.05rem 0.45rem 0.05rem 0.4rem;
-		border-radius: 999px;
+		border-radius: $radius-full;
 		border: 1px dashed var(--glow-border-color);
 		color: var(--glow-fg);
 		opacity: 0.45;

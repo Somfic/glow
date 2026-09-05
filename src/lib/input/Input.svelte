@@ -543,7 +543,7 @@
 	.input-error {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: $space-xs;
 		font-size: $text-xs;
 		color: var(--glow-color-danger, #ef4444);
 		line-height: 1.35;
@@ -563,7 +563,7 @@
 			display: inline-flex;
 			align-items: center;
 			color: var(--glow-primary);
-			margin-left: 0.25rem;
+			margin-left: $space-xs;
 		}
 	}
 </style>

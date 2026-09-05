@@ -18,7 +18,7 @@
 		padding: 0.125rem 0.375rem;
 		background: color-mix(in oklab, var(--glow-primary) 15%, transparent);
 		color: var(--glow-primary);
-		border-radius: 4px;
+		border-radius: $radius-xs;
 		border: 1px solid color-mix(in oklab, var(--glow-primary) 30%, transparent);
 		white-space: nowrap;
 	}

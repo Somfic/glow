@@ -284,7 +284,7 @@
 		justify-content: space-between;
 		gap: $space-md;
 		padding: $space-xs $space-sm;
-		border-radius: $radius-small;
+		border-radius: $radius-lg;
 		background: var(--glow-state-hover);
 	}
 

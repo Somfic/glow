@@ -256,7 +256,7 @@
 		height: 1.25rem;
 		padding: 0;
 		border: 0;
-		border-radius: 999px;
+		border-radius: $radius-full;
 		background: transparent;
 		color: var(--glow-text-muted);
 		cursor: pointer;
@@ -282,7 +282,7 @@
 	.error {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: $space-xs;
 		font-size: var(--glow-field-hint-size);
 		color: var(--glow-color-danger, #ef4444);
 		line-height: 1.35;

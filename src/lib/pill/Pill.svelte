@@ -148,7 +148,7 @@
 		background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		color: color-mix(in oklab, var(--glow-fg) 85%, transparent);
 		border: 1px solid color-mix(in oklab, var(--glow-fg) 10%, transparent);
-		border-radius: 999px;
+		border-radius: $radius-full;
 		font-weight: $weight-medium;
 		white-space: nowrap;
 		transition: all 0.15s ease;

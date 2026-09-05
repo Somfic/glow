@@ -197,7 +197,7 @@
 		top: 2rem;
 		max-height: calc(100vh - 4rem);
 		overflow-y: auto;
-		padding: 1.5rem;
+		padding: $space-lg;
 		background: var(--glow-bg-surface-element);
 		border: $border;
 		border-radius: $radius;
@@ -208,7 +208,7 @@
 		font-size: $text-sm;
 		font-weight: $weight-semibold;
 		color: var(--glow-text-secondary);
-		margin-bottom: 1rem;
+		margin-bottom: $space-md;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}

@@ -525,7 +525,7 @@
 		height: 1.75rem;
 		flex: none;
 		border: 0;
-		border-radius: 999px;
+		border-radius: $radius-full;
 		background: $tertiary;
 		color: var(--glow-text-secondary);
 		cursor: pointer;

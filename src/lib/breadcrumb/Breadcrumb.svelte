@@ -341,7 +341,7 @@
 		font: inherit;
 		color: var(--glow-text-secondary);
 		cursor: pointer;
-		border-radius: 4px;
+		border-radius: $radius-xs;
 		transition: color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
@@ -372,7 +372,7 @@
 		height: 1.6em;
 		padding: 0 0.25em;
 		border: none;
-		border-radius: 6px;
+		border-radius: $radius-sm;
 		background: none;
 		color: var(--glow-text-muted);
 		cursor: pointer;
@@ -412,7 +412,7 @@
 		align-items: center;
 		gap: 0.6em;
 		padding: 8px 12px;
-		border-radius: 8px;
+		border-radius: $radius-md;
 		color: var(--glow-fg);
 		font-size: $text-sm;
 		text-decoration: none;

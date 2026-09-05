@@ -313,7 +313,7 @@
 		content: '';
 		position: absolute;
 		background: var(--glow-primary);
-		border-radius: 999px;
+		border-radius: $radius-full;
 		opacity: 0;
 		pointer-events: none;
 		transition: opacity var(--glow-dur-fast) $ease-out;

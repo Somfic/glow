@@ -633,7 +633,7 @@
 		flex: 1;
 		padding: 8px;
 		border: none;
-		border-radius: 8px;
+		border-radius: $radius-md;
 		background: none;
 		color: var(--glow-fg);
 		cursor: pointer;

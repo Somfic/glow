@@ -264,7 +264,7 @@
 
 		&::-webkit-scrollbar-track {
 			background: color-mix(in oklab, var(--glow-fg) 7%, transparent);
-			border-radius: 999px;
+			border-radius: $radius-full;
 		}
 
 		&::-webkit-scrollbar-thumb {
@@ -311,7 +311,7 @@
 	}
 
 	.viewport::-webkit-scrollbar-thumb {
-		border-radius: 999px;
+		border-radius: $radius-full;
 		transition: background var(--glow-dur-fast) var(--glow-ease-out);
 	}
 

@@ -104,8 +104,8 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		padding: 0.5rem;
-		border-radius: 6px;
+		padding: $space-sm;
+		border-radius: $radius-sm;
 		background: transparent;
 		border: none;
 		color: inherit;
@@ -156,7 +156,7 @@
 	.subtitle {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: $space-xs;
 		font-size: 0.75rem;
 		color: var(--glow-text-secondary);
 		overflow: hidden;

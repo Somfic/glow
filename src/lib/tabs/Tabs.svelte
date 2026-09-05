@@ -287,7 +287,7 @@
 	.tab {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: $space-sm;
 		padding: 0.625rem 1.25rem;
 		background: transparent;
 		border: none;
@@ -363,7 +363,7 @@
 		top: 0;
 		left: 0;
 		right: 0;
-		padding: 1.5rem;
+		padding: $space-lg;
 		box-sizing: border-box;
 		min-width: 0;
 	}

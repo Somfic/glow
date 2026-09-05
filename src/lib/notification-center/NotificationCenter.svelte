@@ -344,7 +344,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.4rem;
-		padding: 0.25rem 0 0.5rem;
+		padding: $space-xs 0 $space-sm;
 	}
 
 	.nc-section {
@@ -377,7 +377,7 @@
 		font-weight: $weight-semibold;
 		font-variant-numeric: tabular-nums;
 		padding: 0.1rem 0.45rem;
-		border-radius: 999px;
+		border-radius: $radius-full;
 		background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
 		color: color-mix(in oklab, var(--glow-fg) 65%, transparent);
 		min-width: 1.4rem;
@@ -568,7 +568,7 @@
 		justify-content: center;
 		width: 22px;
 		height: 22px;
-		border-radius: 6px;
+		border-radius: $radius-sm;
 		background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
 		color: color-mix(in oklab, var(--glow-fg) 65%, transparent);
 		border: 1px solid color-mix(in oklab, var(--glow-fg) 4%, transparent);

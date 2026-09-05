@@ -198,7 +198,7 @@
 		font-variant-numeric: tabular-nums;
 		color: var(--glow-text-secondary);
 		background: var(--glow-fg-soft);
-		border-radius: 999px;
+		border-radius: $radius-full;
 		padding: 0.125rem 0.5rem;
 	}
 
@@ -237,7 +237,7 @@
 	.panel {
 		// Padding lives here, not on the wrapper, so the measured height already
 		// includes it and the wrapper's explicit height is exactly what shows.
-		padding: 0 1rem 1rem;
+		padding: 0 $space-md $space-md;
 		min-width: 0;
 		color: var(--glow-text-secondary);
 		font-size: $text-sm;

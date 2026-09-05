@@ -189,7 +189,7 @@
 	.markdown {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
+		gap: $space-md;
 		line-height: 1.6;
 
 		:global(p) {
@@ -199,15 +199,15 @@
 		:global(ul),
 		:global(ol) {
 			margin: 0;
-			padding-left: 1.5rem;
+			padding-left: $space-lg;
 			display: flex;
 			flex-direction: column;
-			gap: 0.25rem;
+			gap: $space-xs;
 		}
 
 		:global(blockquote) {
 			margin: 0;
-			padding: 0.5rem 0 0.5rem 1rem;
+			padding: $space-sm 0 $space-sm $space-md;
 			border-left: 3px solid color-mix(in oklab, var(--glow-fg) 20%, transparent);
 			color: var(--glow-text-secondary);
 			font-style: italic;
@@ -222,7 +222,7 @@
 		:global(.md-code) {
 			background: color-mix(in oklab, var(--glow-fg) 8%, transparent);
 			padding: 0.1em 0.4em;
-			border-radius: 4px;
+			border-radius: $radius-xs;
 			font-family: ui-monospace, 'SF Mono', Menlo, monospace;
 			font-size: 0.9em;
 		}

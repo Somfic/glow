@@ -151,7 +151,7 @@
 	.header {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: $space-sm;
 		min-width: 0;
 	}
 
@@ -210,7 +210,7 @@
 		margin-left: auto;
 		display: inline-flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: $space-xs;
 	}
 
 	.description {

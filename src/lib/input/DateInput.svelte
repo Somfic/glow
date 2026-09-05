@@ -256,7 +256,7 @@
 		justify-content: center;
 		color: var(--glow-text-secondary);
 		cursor: pointer;
-		border-radius: 999px;
+		border-radius: $radius-full;
 		padding: 2px;
 
 		&:hover {
