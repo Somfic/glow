@@ -38,6 +38,41 @@
 		{ kind: 'item', label: 'Paste', icon: 'Clipboard', shortcut: '⌘V', onclick: () => {} }
 	];
 
+	const nestedItems: PopoverMenuEntry[] = [
+		{ kind: 'item', label: 'Edit', icon: 'Pencil', onclick: () => {} },
+		{ kind: 'item', label: 'Duplicate', icon: 'Copy', onclick: () => {} },
+		'divider',
+		{
+			kind: 'submenu',
+			label: 'Move to',
+			icon: 'FolderInput',
+			items: [
+				{ kind: 'item', label: 'Inbox', icon: 'Inbox', onclick: () => {} },
+				{ kind: 'item', label: 'Archive', icon: 'Archive', onclick: () => {} },
+				{
+					kind: 'submenu',
+					label: 'Projects',
+					icon: 'Folder',
+					items: [
+						{ kind: 'item', label: 'Glow', icon: 'Sparkles', onclick: () => {} },
+						{ kind: 'item', label: 'Paper', icon: 'FileText', onclick: () => {} }
+					]
+				}
+			]
+		},
+		{
+			kind: 'submenu',
+			label: 'Share',
+			icon: 'Share2',
+			items: [
+				{ kind: 'item', label: 'Copy link', icon: 'Link', onclick: () => {} },
+				{ kind: 'item', label: 'Email', icon: 'Mail', onclick: () => {} }
+			]
+		},
+		'divider',
+		{ kind: 'item', label: 'Delete', icon: 'Trash2', danger: true, onclick: () => {} }
+	];
+
 	const disabledItems: PopoverMenuEntry[] = [
 		{ kind: 'item', label: 'Preview', icon: 'Eye', onclick: () => {} },
 		{ kind: 'item', label: 'Share', icon: 'Share2', disabled: true, onclick: () => {} },
@@ -288,6 +323,23 @@
 			{/snippet}
 		</PopoverMenu>
 	</div>
+</Card>
+
+<Card title="Nested submenus and pointer intent" id="submenu-intent">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		Submenus open on hover (click still toggles) and nest as deep as you like. Aim
+		diagonally from <b>Move to</b> into its panel, then on into <b>Projects</b>: the
+		triangle between the pointer and the panel's near edge counts as inside the
+		submenu, so crossing the rows in between doesn't close it. Move somewhere else
+		and it closes after a short grace period — immediately if you leave fast. The
+		cone follows the panel, so a submenu flipped to the left or stacked above near a
+		viewport edge behaves the same. Keyboard and touch are unaffected.
+	</Text>
+	<PopoverMenu items={nestedItems} fullWidth={false}>
+		{#snippet trigger()}
+			<Button variant="secondary" icon="FolderTree">Nested actions</Button>
+		{/snippet}
+	</PopoverMenu>
 </Card>
 
 <Card title="Entry kinds" id="kinds">
