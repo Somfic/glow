@@ -71,6 +71,7 @@
 				{ name: 'Confirm', href: '/components/confirm', description: 'Promise-returning confirm, alert and prompt dialogs' },
 				{ name: 'Notification Center', href: '/components/notification-center', description: 'Persistent, browsable inbox' },
 				{ name: 'Tooltip', href: '/components/tooltip', description: 'Hover tooltips, including inside the cursor' },
+				{ name: 'Hover Card', href: '/components/hover-card', description: 'Rich hover previews with open/close intent delays' },
 				{ name: 'Banner', href: '/components/banner', description: 'Alert banners' },
 				{ name: 'Spinner', href: '/components/spinner', description: 'Loading spinners' },
 				{ name: 'Skeleton', href: '/components/skeleton', description: 'Shimmering placeholders that hold a layout in place' },

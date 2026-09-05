@@ -91,6 +91,7 @@
 					{ label: 'Confirm', href: '/components/confirm', icon: 'CircleQuestionMark' },
 					{ label: 'Notification Center', href: '/components/notification-center', icon: 'BellRing' },
 					{ label: 'Tooltip', href: '/components/tooltip', icon: 'Info' },
+					{ label: 'Hover Card', href: '/components/hover-card', icon: 'IdCard' },
 					{ label: 'Banner', href: '/components/banner', icon: 'Flag' },
 					{ label: 'Spinner', href: '/components/spinner', icon: 'LoaderCircle' },
 					{ label: 'Skeleton', href: '/components/skeleton', icon: 'Blocks' },
