@@ -5,6 +5,9 @@
 	import { onEscape } from '../util/escapeKey.js';
 	import { onClickOutside } from '../util/clickOutside.js';
 	import { lockScroll, unlockScroll } from '../util/scrollLock.js';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	interface Props {
 		open?: boolean;
@@ -178,10 +181,10 @@
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div
 				class="popover-sheet-backdrop"
-				transition:fade={{ duration: 150 }}
+				transition:fade={{ duration: motion.ms(150) }}
 				onclick={() => (open = false)}
 			></div>
-			<div class="popover-sheet" transition:fly={{ duration: 260, y: 480 }}>
+			<div class="popover-sheet" transition:fly={{ duration: motion.ms(260), y: 480 }}>
 				<div class="popover-sheet-handle" aria-hidden="true"></div>
 				<div class="popover-sheet-scroll">
 					{@render children()}
@@ -194,7 +197,7 @@
 			class="popover-content"
 			style={popoverStyle}
 			use:portal
-			transition:fly={{ duration: 150, y: placement === 'below' ? -8 : 8 }}
+			transition:fly={{ duration: motion.ms(150), y: placement === 'below' ? -8 : 8 }}
 		>
 			{@render children()}
 		</div>

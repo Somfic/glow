@@ -4,6 +4,9 @@
 	import { cubicOut } from 'svelte/easing';
 	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
 	import Pill from '../pill/Pill.svelte';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	interface Tab {
 		id: string;
@@ -125,7 +128,13 @@
 		const tabElements = headerElement?.querySelectorAll('[role="tab"]');
 		const el = tabElements?.[newIndex] as HTMLElement;
 		el?.focus();
-		el?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+		// Chrome does not collapse a smooth scroll under prefers-reduced-motion the
+		// way it collapses a CSS transition, so the behaviour has to be picked here.
+		el?.scrollIntoView({
+			behavior: motion.current ? 'auto' : 'smooth',
+			block: 'nearest',
+			inline: 'nearest'
+		});
 	}
 
 	function scrollToActive(node: HTMLButtonElement) {
@@ -190,8 +199,8 @@
 			<div
 				class="tabs-panel"
 				bind:offsetHeight={panelHeight}
-				in:fly={{ x: direction * contentWidth, duration: 320, opacity: 1, easing: cubicOut }}
-				out:fly={{ x: -direction * contentWidth, duration: 320, opacity: 1, easing: cubicOut }}
+				in:fly={{ x: direction * contentWidth, duration: motion.ms(320), opacity: 1, easing: cubicOut }}
+				out:fly={{ x: -direction * contentWidth, duration: motion.ms(320), opacity: 1, easing: cubicOut }}
 			>
 				{#if activeTabContent}
 					{@render activeTabContent()}

@@ -13,6 +13,9 @@
 	import { flip } from 'svelte/animate';
 	import Toast from './Toast.svelte';
 	import { toasts, dismissToast } from './toast.svelte.js';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	type Props = {
 		position?: ToastPosition;
@@ -25,9 +28,9 @@
 	{#each toasts as t (t.id)}
 		<div
 			class="toast-wrapper"
-			in:fly={{ x: 80, duration: 300, easing: (t) => 1 - Math.pow(1 - t, 3) }}
-			out:fade={{ duration: 150 }}
-			animate:flip={{ duration: 200 }}
+			in:fly={{ x: 80, duration: motion.ms(300), easing: (t) => 1 - Math.pow(1 - t, 3) }}
+			out:fade={{ duration: motion.ms(150) }}
+			animate:flip={{ duration: motion.ms(200) }}
 		>
 			<Toast variant={t.variant} label={t.label} onDismiss={() => dismissToast(t.id)} />
 		</div>

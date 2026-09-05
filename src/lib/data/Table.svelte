@@ -5,6 +5,9 @@
 	import Input from '../input/Input.svelte';
 	import Pagination from '../pagination/Pagination.svelte';
 	import { fade } from 'svelte/transition';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	let {
 		columns,
@@ -229,7 +232,7 @@
 			</tbody>
 		{:else}
 			{#key pageSize ? page : null}
-			<tbody in:fade={{ duration: 150 }}>
+			<tbody in:fade={{ duration: motion.ms(150) }}>
 				{#each displayData as row, index (getRowKey(row, index))}
 					<tr
 						class="table-row"

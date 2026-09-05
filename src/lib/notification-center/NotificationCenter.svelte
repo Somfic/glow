@@ -9,6 +9,9 @@
 		NotificationCenter as Registry
 	} from './notificationCenter.svelte.js';
 	import type { Notification } from './types.js';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	type GroupBy = 'time' | 'source' | 'none';
 
@@ -180,7 +183,7 @@
 	actions={headerActions}
 >
 	{#if registry.visible.length === 0}
-		<div class="nc-empty" in:fly={{ y: 8, duration: 220, easing: quartOut }}>
+		<div class="nc-empty" in:fly={{ y: 8, duration: motion.ms(220), easing: quartOut }}>
 			<div class="nc-empty-mark" aria-hidden="true">
 				<span></span><span></span><span></span>
 			</div>
@@ -203,8 +206,8 @@
 						class:unread={!n.read}
 						data-notif-id={n.id}
 						style:--cat-color={categoryColor(n.category)}
-						in:fly={{ y: -6, duration: 220, delay: i * 22, easing: quartOut }}
-						out:slide={{ duration: 180, easing: quartOut }}
+						in:fly={{ y: -6, duration: motion.ms(220), delay: motion.ms(i * 22), easing: quartOut }}
+						out:slide={{ duration: motion.ms(180), easing: quartOut }}
 					>
 						<div class="nc-leading">
 							<div class="nc-halo">

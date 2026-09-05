@@ -11,6 +11,9 @@
 	import { portal } from '../util/portal.js';
 	import { onEscape } from '../util/escapeKey.js';
 	import { fly, fade } from 'svelte/transition';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	interface Props {
 		items: PopoverMenuEntry[];
@@ -309,8 +312,8 @@
 		style="position: fixed; left: {renderX}px; top: {renderY}px; z-index: 10000; visibility: {positioned ? 'visible' : 'hidden'};"
 		role="menu"
 		use:portal
-		in:fly={{ duration: 80, y: -4 }}
-		out:fade={{ duration: 100 }}
+		in:fly={{ duration: motion.ms(80), y: -4 }}
+		out:fade={{ duration: motion.ms(100) }}
 		onmouseleave={(e) => {
 			// Don't collapse the submenu when the mouse moves into its
 			// portal'd panel — they're visually one menu even though they're
@@ -402,8 +405,8 @@
 			style="position: fixed; left: {submenuX}px; top: {submenuY}px; z-index: 10001; visibility: {submenuPositioned ? 'visible' : 'hidden'};"
 			role="menu"
 			use:portal
-			in:fly={{ duration: 80, x: -6 }}
-			out:fade={{ duration: 100 }}
+			in:fly={{ duration: motion.ms(80), x: -6 }}
+			out:fade={{ duration: motion.ms(100) }}
 			onmouseleave={(e) => {
 				// Don't close the submenu when the mouse moves back into the
 				// parent menu — only close when it leaves the menu cluster

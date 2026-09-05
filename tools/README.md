@@ -9,6 +9,7 @@ node tools/scripts/shots.mjs                     # every route, both themes
 node tools/scripts/demo.mjs <component>          # → .shots/*.gif (needs ffmpeg)
 node tools/scripts/publish-shots.mjs             # upload them, print markdown
 node tools/scripts/layers.test.mjs               # the portalled components
+node tools/scripts/motion-js.test.mjs            # the JS-driven motion
 ```
 
 Add `--no-build` to any of them to use the `build/` already there. Everything
@@ -58,10 +59,13 @@ still, which is what makes two runs of `shots.mjs` comparable. Pass
 `reducedMotion: "no-preference"` (or `shots.mjs --motion`) when the motion *is*
 the subject.
 
-Note the limit: a Svelte `transition:` whose duration is a number in the
-component — `Modal`, `Drawer`, `Tabs` — is not a token and does not collapse.
-Wait for the element, don't poll it once. `layers.test.mjs` has the worked
-example.
+Note where the flag stops on its own: a Svelte `transition:` whose duration is
+a number in the component is not a token and does not collapse. Those ask the
+query themselves, via `src/lib/util/reducedMotion.svelte.ts` — anything new that
+animates from JS has to do the same, and `motion-js.test.mjs` is what checks it.
+An overlay can still be on screen for a few frames after the keypress that
+dismissed it, so wait for the element, don't poll it once. `layers.test.mjs` has
+the worked example.
 
 **Screenshots, not video.** Playwright records video, and its timing is not
 linear — the same script trimmed to "the last four seconds" caught a different

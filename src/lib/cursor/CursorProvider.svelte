@@ -8,6 +8,9 @@
 		setCursorSelecting
 	} from './cursor.svelte.js';
 	import Cursor from './Cursor.svelte';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	let mounted = $state(false);
 	let isMouseDown = $state(false);
@@ -271,7 +274,10 @@
 	// Smooth trailing animation
 	function animateCursor() {
 		// Lerp (linear interpolation) with easing
-		const ease = 0.45; // Lower = more trailing, higher = snappier
+		// 1 means no interpolation at all: the cursor is drawn exactly where the
+		// pointer is. The trail is the whole animation here, and it is the part
+		// reduced motion is asking us to drop — the cursor itself has to stay.
+		const ease = motion.current ? 1 : 0.45; // Lower = more trailing, higher = snappier
 
 		// Check for magnetic snapping
 		const magnetTarget = findNearestInteractive(targetX, targetY);

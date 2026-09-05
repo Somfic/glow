@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 	import type { TooltipPosition } from './tooltip.svelte.js';
+	import { reducedMotion } from '../util/reducedMotion.svelte.js';
+
+	const motion = reducedMotion();
 
 	let {
 		content,
@@ -39,7 +42,7 @@
 	bind:this={el}
 	class="tooltip {position}"
 	style="left: {x}px; top: {y}px;"
-	transition:fade={{ duration: 150 }}
+	transition:fade={{ duration: motion.ms(150) }}
 	role="tooltip"
 >
 	{content}
