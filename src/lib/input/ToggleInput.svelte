@@ -77,7 +77,7 @@
 		border: none;
 		border-radius: 10px;
 		cursor: pointer;
-		transition: background-color 0.2s ease;
+		transition: background-color var(--glow-dur-base) var(--glow-ease-out);
 		padding: 0;
 
 		&.checked {
@@ -101,7 +101,7 @@
 		height: 16px;
 		@include contrast-color(var(--glow-bg-surface), $property: background-color, $fallback: white);
 		border-radius: 50%;
-		transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: transform var(--glow-dur-base) var(--glow-ease-out);
 		box-shadow: $shadow-xs;
 	}
 

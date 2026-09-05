@@ -637,7 +637,7 @@
 		background: none;
 		color: var(--glow-fg);
 		cursor: pointer;
-		transition: background 0.1s;
+		transition: background var(--glow-dur-instant) var(--glow-ease-out);
 
 		&:hover {
 			background: color-mix(in oklab, var(--glow-fg) 6%, transparent);
@@ -673,8 +673,8 @@
 		cursor: pointer;
 		text-align: left;
 		transition:
-			border-color 0.15s ease,
-			box-shadow 0.15s ease;
+			border-color var(--glow-dur-fast) var(--glow-ease-out),
+			box-shadow var(--glow-dur-fast) var(--glow-ease-out);
 
 		&.full-width {
 			width: 100%;
@@ -721,7 +721,7 @@
 		align-items: center;
 		flex-shrink: 0;
 		color: var(--glow-text-muted);
-		transition: transform 0.2s ease;
+		transition: transform var(--glow-dur-base) var(--glow-ease-out);
 
 		.builtin-trigger.open & {
 			transform: rotate(180deg);

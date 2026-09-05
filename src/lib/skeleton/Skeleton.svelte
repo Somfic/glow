@@ -66,7 +66,7 @@
 			color-mix(in oklab, var(--glow-fg) 6%, transparent) 100%
 		);
 		background-size: 200% 100%;
-		animation: skeleton-shimmer 1.4s ease-in-out infinite;
+		animation: skeleton-shimmer calc(var(--glow-dur-glacial) * 2.8) var(--glow-ease-in-out) infinite;
 	}
 
 	.skeleton-group {

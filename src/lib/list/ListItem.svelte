@@ -118,7 +118,7 @@
 
 		&.interactive {
 			cursor: pointer;
-			transition: background 0.12s ease;
+			transition: background var(--glow-dur-instant) var(--glow-ease-out);
 
 			&:hover {
 				background: color-mix(in oklab, var(--glow-fg) 6%, transparent);

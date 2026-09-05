@@ -166,7 +166,7 @@
 		color: var(--glow-text-secondary);
 		font-family: $font-family;
 		cursor: pointer;
-		transition: color 0.12s ease;
+		transition: color var(--glow-dur-instant) var(--glow-ease-out);
 
 		&:hover {
 			color: var(--glow-text-primary);
@@ -199,7 +199,7 @@
 	.chevron {
 		display: inline-flex;
 		opacity: 0.6;
-		transition: opacity 0.12s ease;
+		transition: opacity var(--glow-dur-instant) var(--glow-ease-out);
 	}
 
 	.title-button:hover .chevron {

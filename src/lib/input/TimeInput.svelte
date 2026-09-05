@@ -269,7 +269,7 @@
 		font: inherit;
 		cursor: pointer;
 		text-align: left;
-		transition: border-color 0.15s ease, box-shadow 0.15s ease;
+		transition: border-color var(--glow-dur-fast) var(--glow-ease-out), box-shadow var(--glow-dur-fast) var(--glow-ease-out);
 
 		&.open {
 			border-color: var(--glow-primary);
@@ -360,7 +360,7 @@
 		border: 0;
 		border-radius: $radius * 0.5;
 		cursor: pointer;
-		transition: background-color 0.1s ease, color 0.1s ease;
+		transition: background-color var(--glow-dur-instant) var(--glow-ease-out), color var(--glow-dur-instant) var(--glow-ease-out);
 
 		&:hover:not(:disabled) {
 			background: color-mix(in oklab, var(--glow-fg) 6%, transparent);

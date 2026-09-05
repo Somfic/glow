@@ -91,6 +91,10 @@ $ease-out:    cubic-bezier(0.4, 0, 0.2, 1);    // standard-out: snappy on the wa
 $ease-in-out: cubic-bezier(0.4, 0, 0.6, 1);    // symmetric for in-place flips
 $ease-in:     cubic-bezier(0.4, 0, 1, 1);      // accelerating
 $ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); // playful overshoot
+// Quintic-out: leaves fast and coasts to a long, soft stop. Chosen over
+// $ease-out where a box changes *size* (split panes, the palette widening) —
+// the drawn-out tail hides the reflow that a snappier curve makes obvious.
+$ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
 
 // Durations
 $dur-instant: 100ms;  // micro-feedback (button press, hover colour)

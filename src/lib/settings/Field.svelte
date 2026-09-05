@@ -146,7 +146,7 @@
 		padding: var(--glow-field-padding-y) var(--glow-field-padding-x);
 		border-radius: $radius * 0.6;
 		min-width: 0;
-		transition: background 0.12s ease;
+		transition: background var(--glow-dur-instant) var(--glow-ease-out);
 
 		&:hover {
 			background: color-mix(in oklab, var(--glow-fg) 1%, transparent);
@@ -261,7 +261,7 @@
 		color: var(--glow-text-muted);
 		cursor: pointer;
 		opacity: 0;
-		transition: opacity 0.12s ease, color 0.12s ease, background 0.12s ease;
+		transition: opacity var(--glow-dur-instant) var(--glow-ease-out), color var(--glow-dur-instant) var(--glow-ease-out), background var(--glow-dur-instant) var(--glow-ease-out);
 
 		.field:hover & {
 			opacity: 1;

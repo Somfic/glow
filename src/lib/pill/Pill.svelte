@@ -151,7 +151,7 @@
 		border-radius: $radius-full;
 		font-weight: $weight-medium;
 		white-space: nowrap;
-		transition: all 0.15s ease;
+		transition: all var(--glow-dur-fast) var(--glow-ease-out);
 		letter-spacing: 0.01em;
 
 		&.has-color {
@@ -257,7 +257,7 @@
 		cursor: pointer;
 		padding: 0.1em;
 		margin-right: -0.2em;
-		transition: all 0.15s ease;
+		transition: all var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
 			color: var(--glow-fg);

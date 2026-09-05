@@ -50,7 +50,7 @@
 
 	.avatar-wrapper {
 		margin-left: var(--overlap);
-		transition: margin-left 0.25s ease;
+		transition: margin-left var(--glow-dur-base) var(--glow-ease-out);
 
 		&:first-child {
 			margin-left: 0;
@@ -76,7 +76,7 @@
 		margin-left: var(--overlap);
 		box-shadow: 0 0 0 2px var(--glow-bg-base);
 		flex-shrink: 0;
-		transition: margin-left 0.25s ease;
+		transition: margin-left var(--glow-dur-base) var(--glow-ease-out);
 	}
 
 	.avatar-group:hover .avatar-overflow {

@@ -352,7 +352,7 @@
 		cursor: pointer;
 		padding: 0;
 		background: none;
-		transition: border-color 0.15s ease, transform 0.15s ease;
+		transition: border-color var(--glow-dur-fast) var(--glow-ease-out), transform var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
 			border-color: rgba(255, 255, 255, 0.5);

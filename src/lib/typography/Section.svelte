@@ -134,7 +134,7 @@
 		align-items: center;
 		justify-content: center;
 		opacity: 0.6;
-		transition: transform 150ms ease, opacity 150ms ease;
+		transition: transform var(--glow-dur-fast) var(--glow-ease-out), opacity var(--glow-dur-fast) var(--glow-ease-out);
 	}
 
 	.chevron.closed {

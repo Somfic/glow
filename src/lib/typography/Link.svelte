@@ -52,7 +52,7 @@
 		color: var(--glow-primary);
 		text-decoration: none;
 		cursor: pointer;
-		transition: color 150ms ease;
+		transition: color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&.variant-muted {
 			color: var(--glow-text-secondary);

@@ -280,7 +280,7 @@
 		display: flex;
 		align-items: center;
 		color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
-		transition: transform 0.2s ease;
+		transition: transform var(--glow-dur-base) var(--glow-ease-out);
 		padding: 0.25em;
 		border-radius: $radius;
 		cursor: pointer;
@@ -332,7 +332,7 @@
 		font: inherit;
 		cursor: pointer;
 		text-align: left;
-		transition: background-color 0.15s ease;
+		transition: background-color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
 			background-color: var(--glow-secondary);
@@ -381,12 +381,20 @@
 		border: 2px solid color-mix(in oklab, var(--glow-fg) 20%, transparent);
 		border-top-color: var(--glow-primary);
 		border-radius: 50%;
-		animation: spin 0.6s linear infinite;
+		animation: spin calc(var(--glow-dur-glacial) * 1.2) linear infinite;
 	}
 
 	@keyframes spin {
 		to {
 			transform: rotate(360deg);
+		}
+	}
+
+	// A 1ms collapse would strobe the loop rather than stop it, so the ring
+	// freezes instead.
+	@media (prefers-reduced-motion: reduce) {
+		.loading-spinner {
+			animation: none;
 		}
 	}
 

@@ -32,10 +32,10 @@
 		display: inline-flex;
 		align-items: center;
 		vertical-align: middle;
-		transition: --icon-color 150ms ease, --icon-fill 150ms ease;
+		transition: --icon-color var(--glow-dur-fast) var(--glow-ease-out), --icon-fill var(--glow-dur-fast) var(--glow-ease-out);
 	}
 
 	.icon :global(svg) {
-		transition: stroke 150ms ease, fill 150ms ease;
+		transition: stroke var(--glow-dur-fast) var(--glow-ease-out), fill var(--glow-dur-fast) var(--glow-ease-out);
 	}
 </style>

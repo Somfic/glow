@@ -144,7 +144,7 @@
 			border-radius: $radius;
 			// No drop shadow: the panel is sunk below the shell, not raised
 			// above it, and the fill step plus the hairline carry the edge.
-			transition: margin-left 0.2s ease;
+			transition: margin-left var(--glow-dur-base) var(--glow-ease-out);
 
 			// Pinned to the viewport and scrolled internally, so the scrollbar
 			// lands inside the rounded panel instead of at the viewport edge.

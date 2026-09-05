@@ -172,12 +172,20 @@
 		border: 2px solid color-mix(in oklab, var(--glow-fg) 20%, transparent);
 		border-top-color: var(--glow-primary);
 		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
+		animation: spin calc(var(--glow-dur-glacial) * 1.6) linear infinite;
 		flex-shrink: 0;
 	}
 
 	@keyframes spin {
 		to { transform: rotate(360deg); }
+	}
+
+	// A 1ms collapse would strobe the loop rather than stop it, so the ring
+	// freezes instead.
+	@media (prefers-reduced-motion: reduce) {
+		.spinner {
+			animation: none;
+		}
 	}
 
 	.clear-btn {

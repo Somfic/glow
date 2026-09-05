@@ -111,7 +111,7 @@
 		font-family: $font-family;
 		cursor: pointer;
 		text-align: left;
-		transition: background 0.1s;
+		transition: background var(--glow-dur-instant) var(--glow-ease-out);
 
 		&.has-description {
 			padding-top: 10px;

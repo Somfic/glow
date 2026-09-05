@@ -195,7 +195,7 @@
 		border-radius: $radius;
 		cursor: pointer;
 		overflow: hidden;
-		transition: border-color 150ms ease;
+		transition: border-color var(--glow-dur-fast) var(--glow-ease-out);
 		color: color-mix(in oklab, var(--glow-fg) 50%, transparent);
 
 		&:hover:not(.disabled) {
@@ -227,7 +227,7 @@
 		display: flex;
 		gap: $space-xs;
 		opacity: 0;
-		transition: opacity 150ms ease;
+		transition: opacity var(--glow-dur-fast) var(--glow-ease-out);
 	}
 
 	.upload-btn:hover .image-actions {
@@ -245,7 +245,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		transition: background-color 150ms ease;
+		transition: background-color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
 			background: var(--glow-primary);
@@ -262,12 +262,20 @@
 		border: 2px solid var(--glow-border-color);
 		border-top-color: var(--glow-primary);
 		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
+		animation: spin calc(var(--glow-dur-glacial) * 1.6) linear infinite;
 	}
 
 	@keyframes spin {
 		to {
 			transform: rotate(360deg);
+		}
+	}
+
+	// A 1ms collapse would strobe the loop rather than stop it, so the ring
+	// freezes instead.
+	@media (prefers-reduced-motion: reduce) {
+		.spinner {
+			animation: none;
 		}
 	}
 </style>

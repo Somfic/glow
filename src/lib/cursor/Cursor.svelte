@@ -82,7 +82,7 @@
 		pointer-events: none;
 		z-index: 10001;
 		will-change: left, top, transform;
-		transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1);
+		transition: opacity var(--glow-dur-slow) var(--glow-ease-in);
 
 		&:not(.visible) {
 			opacity: 0;
@@ -106,12 +106,12 @@
 			0 0 0 1px color-mix(in oklab, var(--glow-fg) 10%, transparent);
 		transform: translate(-50%, -50%);
 		transition:
-			width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-			height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-			border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-			padding 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-			transform 0.1s cubic-bezier(0.4, 0, 0.2, 1),
-			background-color 0.2s ease;
+			width var(--glow-dur-slow) var(--glow-ease-spring),
+			height var(--glow-dur-slow) var(--glow-ease-spring),
+			border-radius var(--glow-dur-slow) var(--glow-ease-spring),
+			padding var(--glow-dur-slow) var(--glow-ease-spring),
+			transform var(--glow-dur-instant) var(--glow-ease-out),
+			background-color var(--glow-dur-fast) var(--glow-ease-out);
 
 		// Button variant styling - outline style with colored text
 		.variant-primary &,
@@ -122,12 +122,12 @@
 			border: 2px solid color-mix(in oklab, var(--glow-fg) 90%, transparent); // Outline in the page's foreground
 			// Override with smoother transitions (no bounce)
 			transition:
-				width 0.25s ease-out,
-				height 0.25s ease-out,
-				border-radius 0.25s ease-out,
-				padding 0.25s ease-out,
-				transform 0.1s cubic-bezier(0.4, 0, 0.2, 1),
-				background-color 0.2s ease;
+				width var(--glow-dur-base) var(--glow-ease-out),
+				height var(--glow-dur-base) var(--glow-ease-out),
+				border-radius var(--glow-dur-base) var(--glow-ease-out),
+				padding var(--glow-dur-base) var(--glow-ease-out),
+				transform var(--glow-dur-instant) var(--glow-ease-out),
+				background-color var(--glow-dur-fast) var(--glow-ease-out);
 		}
 
 		// Add padding for button variants with text content
@@ -202,8 +202,8 @@
 		justify-content: center;
 		@include contrast-color(var(--glow-fg), $fallback: #1e1f29);
 		opacity: 0;
-		animation: fadeIn 0.2s ease forwards;
-		transition: color 0.2s ease;
+		animation: fadeIn var(--glow-dur-base) var(--glow-ease-out) forwards;
+		transition: color var(--glow-dur-fast) var(--glow-ease-out);
 
 		// Button variants and links - hide content but keep for sizing
 		.variant-primary &,
@@ -225,16 +225,16 @@
 		font-weight: $weight-semibold;
 		white-space: nowrap;
 		opacity: 0;
-		animation: fadeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s forwards;
+		animation: fadeIn var(--glow-dur-slow) var(--glow-ease-spring) var(--glow-dur-fast) forwards;
 		line-height: 1.2;
-		transition: color 0.2s ease;
+		transition: color var(--glow-dur-fast) var(--glow-ease-out);
 
 		// Less bounce for button variants
 		.variant-primary &,
 		.variant-secondary &,
 		.variant-ghost &,
 		.variant-danger & {
-			animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards; // Smoother, less bounce
+			animation: fadeIn var(--glow-dur-base) var(--glow-ease-out) forwards; // Smoother, less bounce
 		}
 
 		// Button variants and links - hide content but keep for sizing
@@ -254,7 +254,7 @@
 		border: 2px solid currentColor;
 		border-top-color: transparent;
 		border-radius: 50%;
-		animation: spin 0.6s linear infinite;
+		animation: spin calc(var(--glow-dur-glacial) * 1.2) linear infinite;
 	}
 
 	@keyframes fadeIn {
@@ -281,6 +281,16 @@
 		.cursor-content {
 			transition: none !important;
 			animation: none !important;
+			// Both rest at opacity 0 and are revealed by `fadeIn ... forwards`.
+			// Killing the animation without this leaves them invisible; the
+			// per-variant `opacity: 0 !important` still wins where it applies.
+			opacity: 1;
+		}
+
+		// Not covered above, and a 1ms collapse would strobe it rather than
+		// stop it.
+		.cursor-spinner {
+			animation: none;
 		}
 	}
 </style>

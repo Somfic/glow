@@ -285,12 +285,12 @@
 	// Only enable the indicator slide and panel-height animation once mounted,
 	// so the initial layout snaps in rather than transitioning on first paint.
 	.mounted .tab-indicator {
-		transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-			width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: left var(--glow-dur-base) var(--glow-ease-out),
+			width var(--glow-dur-base) var(--glow-ease-out);
 	}
 
 	.mounted .tabs-content {
-		transition: border-radius 0.2s ease, height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: border-radius var(--glow-dur-base) var(--glow-ease-out), height var(--glow-dur-slow) var(--glow-ease-out);
 	}
 
 	.tab {
@@ -306,7 +306,7 @@
 		font-weight: $weight-medium;
 		font-family: $font-family;
 		cursor: pointer;
-		transition: color 0.15s, background 0.15s;
+		transition: color var(--glow-dur-fast) var(--glow-ease-out), background var(--glow-dur-fast) var(--glow-ease-out);
 		white-space: nowrap;
 		flex-shrink: 0;
 		position: relative;
