@@ -776,7 +776,7 @@ describe('subject', () =&gt; {'{'}
 	through a fuzzy-searched, keyboard-driven palette.
 </Text>
 
-<Card title="Try it">
+<Card title="Try it" id="try-it">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Press <Kbd size="sm">Space</Kbd> (or <Kbd size="sm">⌘</Kbd>
 		<Kbd size="sm">K</Kbd>) anywhere on this page, or click the button below. Use
@@ -807,7 +807,7 @@ describe('subject', () =&gt; {'{'}
 </Card>
 
 <div style="margin-top: 1.5rem;"></div>
-<Card title="Registering commands">
+<Card title="Registering commands" id="registering">
 	<Text size="sm" variant="secondary" style="margin-bottom: 0.75rem;">
 		Anywhere in your app, import the singleton registry and register commands inside an
 		<Code>$effect</Code> — the returned thunk unregisters on teardown.
@@ -835,7 +835,7 @@ $effect(() =>
 </Card>
 
 <div style="margin-top: 1.5rem;"></div>
-<Card title="Mounting the palette">
+<Card title="Mounting the palette" id="mounting">
 	<Text size="sm" variant="secondary" style="margin-bottom: 0.75rem;">
 		Mount once at the app root. Spacebar toggles by default; pass <Code>hotkey={'{false}'}</Code> to
 		disable.

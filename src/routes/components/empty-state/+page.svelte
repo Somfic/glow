@@ -278,15 +278,26 @@
 			height: 6px;
 			border-radius: 50%;
 			background: color-mix(in oklab, var(--glow-fg) 35%, transparent);
-			animation: pulse-mark 1.6s $ease-in-out infinite;
+			animation: pulse-mark calc(var(--glow-dur-glacial) * 3.2) var(--glow-ease-in-out) infinite;
 
 			&:nth-child(2) {
-				animation-delay: 0.2s;
+				animation-delay: calc(var(--glow-dur-glacial) * 0.4);
 			}
 
 			&:nth-child(3) {
-				animation-delay: 0.4s;
+				animation-delay: calc(var(--glow-dur-glacial) * 0.8);
 			}
+		}
+	}
+
+	// The duration tokens collapse to 1ms under reduced motion, which would turn
+	// this loop into a strobe rather than stopping it. So the preference is
+	// honoured the only way a loop can be: the animation is dropped and the
+	// mark holds a static mid-pulse look instead.
+	@media (prefers-reduced-motion: reduce) {
+		.pulse-mark span {
+			animation: none;
+			opacity: 0.7;
 		}
 	}
 

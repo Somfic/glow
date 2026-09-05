@@ -317,7 +317,7 @@ bun run dev`}
 		color: var(--glow-text-primary);
 		cursor: pointer;
 		font-size: 0.875rem;
-		transition: background 0.15s;
+		transition: background var(--glow-dur-fast) var(--glow-ease-out);
 	}
 
 	.demo-btn:hover {

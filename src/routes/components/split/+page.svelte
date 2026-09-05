@@ -19,7 +19,7 @@
 	can be nested for any rectangular layout.
 </Text>
 
-<Card title="Two-pane horizontal">
+<Card title="Two-pane horizontal" id="two-pane">
 	<Text variant="secondary" size="sm" style="margin-bottom: 0.75rem;">
 		Drag the divider. Hold <Code>Shift</Code> while pressing arrow keys for bigger nudges.
 		Double-click the handle to collapse the sidebar to its <Code>minSize</Code>.
@@ -55,7 +55,7 @@
 
 <div style="margin-top: 1.5rem;"></div>
 
-<Card title="Nested — sidebar with stacked main">
+<Card title="Nested — sidebar with stacked main" id="nested">
 	<Text variant="secondary" size="sm" style="margin-bottom: 0.75rem;">
 		The right pane is itself a vertical Split. Each handle has its own keyboard focus.
 	</Text>
@@ -72,7 +72,7 @@
 
 <div style="margin-top: 1.5rem;"></div>
 
-<Card title="Three-pane horizontal — IDE layout">
+<Card title="Three-pane horizontal — IDE layout" id="three-pane">
 	<div style="height: 360px; border-radius: 10px; overflow: hidden; border: 1px solid rgba(238,238,238,0.08);">
 		<Split
 			direction="horizontal"
@@ -87,7 +87,7 @@
 
 <div style="margin-top: 1.5rem;"></div>
 
-<Card title="API">
+<Card title="API" id="api">
 	<CodeBlock
 		language="svelte"
 		code={`<Split
@@ -171,7 +171,7 @@
 			<div>$ npm run dev</div>
 			<div style="opacity: 0.6;">VITE v7.3.2 ready in 547 ms</div>
 			<div style="opacity: 0.6;">➜ Local: http://localhost:5174/</div>
-			<div>$ <span style="display: inline-block; width: 6px; height: 0.9rem; background: currentColor; vertical-align: middle; animation: blink 1s steps(1) infinite;"></span></div>
+			<div>$ <span class="term-caret"></span></div>
 		</div>
 	</div>
 {/snippet}
@@ -296,6 +296,26 @@
 		font-size: 0.8rem;
 		color: var(--glow-primary);
 	}
+	// A class rather than the inline style it used to be: an inline
+	// `animation` cannot be overridden by the reduced-motion block below.
+	.term-caret {
+		display: inline-block;
+		width: 6px;
+		height: 0.9rem;
+		background: currentColor;
+		vertical-align: middle;
+		animation: blink calc(var(--glow-dur-glacial) * 2) steps(1) infinite;
+	}
+
+	// The duration tokens collapse to 1ms under reduced motion, which would turn
+	// the caret into a strobe rather than stopping it. So the blink is dropped
+	// and the caret stays solid, which is what a caret at rest looks like anyway.
+	@media (prefers-reduced-motion: reduce) {
+		.term-caret {
+			animation: none;
+		}
+	}
+
 	@keyframes blink {
 		50% {
 			opacity: 0;

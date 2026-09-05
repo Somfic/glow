@@ -603,7 +603,7 @@
 		border-radius: 0.4rem;
 		color: var(--glow-text-muted);
 		cursor: pointer;
-		transition: all 0.12s ease;
+		transition: all var(--glow-dur-instant) var(--glow-ease-out);
 
 		&:hover {
 			color: var(--glow-text-primary);
@@ -673,7 +673,7 @@
 		border-radius: 0.4rem;
 		color: var(--glow-text-secondary);
 		cursor: pointer;
-		transition: all 0.12s ease;
+		transition: all var(--glow-dur-instant) var(--glow-ease-out);
 
 		&:hover {
 			color: var(--glow-text-primary);
