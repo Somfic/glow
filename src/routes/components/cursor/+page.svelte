@@ -44,7 +44,7 @@
   import { CursorProvider, Page } from 'glow';
 
   let { children } = $props();
-</script>
+<\/script>
 
 <CursorProvider />
 
@@ -206,7 +206,7 @@ bun run dev`}
 			language="svelte"
 			code={`<script>
   import { cursor } from 'glow-ui';
-</script>
+<\/script>
 
 <!-- Set custom cursor state -->
 <div use:cursor={{ state: 'copy', content: 'Copy this!' }}>
@@ -236,7 +236,7 @@ bun run dev`}
 		/>
 	</Card>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 

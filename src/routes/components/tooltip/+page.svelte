@@ -9,7 +9,7 @@
 	import ThemeProvider from '$lib/style/ThemeProvider.svelte';
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -118,7 +118,7 @@
 			language="svelte"
 			code={`<script>
   import { tooltip } from 'glow-ui';
-</script>
+<\/script>
 
 <button use:tooltip={'Simple tooltip text'}>
   Hover me

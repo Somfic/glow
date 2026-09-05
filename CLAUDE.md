@@ -6,7 +6,7 @@ demonstrated. Published to npm as `glow`; the docs deploy as a static site.
 
 ```sh
 bun run dev      # the docs site
-bun run check    # svelte-check; ~734 pre-existing errors, don't add more
+bun run check    # svelte-check; ~125 pre-existing errors, don't add more
 bun run build    # vite build (docs → build/) + svelte-package (library → dist/)
 ```
 

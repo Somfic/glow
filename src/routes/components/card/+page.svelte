@@ -21,7 +21,7 @@
 	}
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -334,7 +334,7 @@
 <!-- Externally controlled -->
 <script>
   let open = $state(false);
-</script>
+<\/script>
 <Card collapsible title="Controlled" bind:open>
   …
 </Card>`}

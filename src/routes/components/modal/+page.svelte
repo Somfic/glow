@@ -16,7 +16,7 @@
 	let smallModal: any;
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -119,7 +119,7 @@
   import { Modal, Button } from 'glow-ui';
 
   let modal;
-</script>
+<\/script>
 
 <Button label="Open Modal" onclick={() => modal.open()} />
 
@@ -147,7 +147,7 @@
     alert('Deleted!');
     confirmModal.close();
   }
-</script>
+<\/script>
 
 <Modal
   bind:this={confirmModal}

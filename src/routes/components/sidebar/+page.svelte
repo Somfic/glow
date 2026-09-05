@@ -38,7 +38,7 @@
 	let darkCollapsed = $state(false);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -143,7 +143,7 @@
 
   let collapsed = $state(false);
   let open = $state(false); // mobile drawer
-</script>
+<\/script>
 
 <Sidebar
   title="Acme"

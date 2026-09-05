@@ -21,7 +21,7 @@
 	];
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -132,7 +132,7 @@
   import { Skeleton, Avatar, Text } from 'glow';
 
   let user = $state(null);
-</script>
+<\/script>
 
 {#if user}
   <Avatar name={user.name} size="md" />

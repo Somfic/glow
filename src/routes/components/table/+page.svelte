@@ -79,7 +79,7 @@
 	let tableSort = $state<{ column: string; direction: 'asc' | 'desc' } | undefined>(undefined);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -149,7 +149,7 @@
     { key: 'name', label: 'Name', sortable: true },
     { key: 'status', label: 'Status', render: statusCell }
   ];
-</script>`}
+<\/script>`}
 		/>
 	</Card>
 
@@ -179,7 +179,7 @@
     { id: 1, name: 'Alice', email: 'alice@example.com' },
     { id: 2, name: 'Bob', email: 'bob@example.com' }
   ];
-</script>
+<\/script>
 
 <Table
   {columns}

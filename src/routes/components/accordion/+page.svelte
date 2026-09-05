@@ -18,7 +18,7 @@
 	let openTopics = $state(['install', 'tokens']);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -181,7 +181,7 @@
   import { Accordion, AccordionItem } from 'glow';
 
   let open = $state(['install']);
-</script>
+<\/script>
 
 <Accordion type="multiple" bind:value={open}>
   <AccordionItem value="install" title="Installation" icon="Download">

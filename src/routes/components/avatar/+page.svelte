@@ -19,7 +19,7 @@
 	];
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -85,7 +85,7 @@
 			language="svelte"
 			code={`<script>
   import { Avatar, AvatarGroup } from 'glow-ui';
-</script>
+<\/script>
 
 <!-- Basic avatar -->
 <Avatar name="Alice Chen" src="/avatar.jpg" />

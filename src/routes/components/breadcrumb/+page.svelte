@@ -36,7 +36,7 @@
 	]);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -153,7 +153,7 @@
     { label: 'Issues', href: '/issues' },
     { label: 'ENG-142' }
   ];
-</script>
+<\/script>
 
 <Breadcrumb {items} />
 

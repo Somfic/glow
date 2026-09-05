@@ -25,7 +25,7 @@
 	let smallSize = $state(10);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -94,7 +94,7 @@
   let pageSize = $state(10);
 
   const visible = $derived(rows.slice((page - 1) * pageSize, page * pageSize));
-</script>
+<\/script>
 
 {#each visible as row (row.id)}
   <Row {row} />
@@ -133,7 +133,7 @@
         total = res.total;
       });
   });
-</script>
+<\/script>
 
 <Pagination {total} bind:page bind:pageSize />`}
 	/>

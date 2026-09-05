@@ -53,7 +53,7 @@ Nothing below this moves while they land.`;
 	let done = $state(false);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -191,7 +191,7 @@ Nothing below this moves while they land.`;
 
   let reply = $state('');
   let text;
-</script>
+<\/script>
 
 <!-- a word at a time, with a caret; the default -->
 <AnimatedText text={reply} />

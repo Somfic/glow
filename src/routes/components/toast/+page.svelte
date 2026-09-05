@@ -9,7 +9,7 @@
 	import { toast } from '$lib/toast/toast.svelte.js';
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -68,7 +68,7 @@
   // Dismiss programmatically
   const id = toast.info('Persistent', 0);
   toast.dismiss(id);
-</script>`}
+<\/script>`}
 	/>
 </Card>
 
@@ -80,7 +80,7 @@
 		language="svelte"
 		code={`<script>
   import { ToastContainer } from 'glow-ui';
-</script>
+<\/script>
 
 <!-- Position options: top-right, top-left, bottom-right, bottom-left, top-center, bottom-center -->
 <ToastContainer position="top-right" />`}

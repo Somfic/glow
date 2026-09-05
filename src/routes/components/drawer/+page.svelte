@@ -18,7 +18,7 @@
 	let formDrawer: Drawer;
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -76,7 +76,7 @@
   import { Drawer, Button } from 'glow-ui';
 
   let drawer;
-</script>
+<\/script>
 
 <Button label="Open" onclick={() => drawer.open()} />
 

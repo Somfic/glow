@@ -54,7 +54,7 @@
 	let empty = $state<Row[]>([]);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -205,7 +205,7 @@
     hasMore = next.length > 0;
     loading = false;
   }
-</script>
+<\/script>
 
 {#snippet row(item)}
   <ListItem title={item.name} subtitle={item.email} />

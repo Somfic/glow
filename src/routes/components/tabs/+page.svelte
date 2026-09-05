@@ -10,7 +10,7 @@
 	let activeTab = $state('profile');
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -163,7 +163,7 @@
   import { Tabs } from 'glow-ui';
 
   let activeTab = $state('profile');
-</script>
+<\/script>
 
 <Tabs
   bind:activeTab

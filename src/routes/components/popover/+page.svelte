@@ -22,7 +22,7 @@
 	);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -188,7 +188,7 @@
   import { Popover, Button } from 'glow';
 
   let open = $state(false);
-</script>
+<\/script>
 
 <Popover bind:open align="right">
   {#snippet trigger()}

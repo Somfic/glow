@@ -8,7 +8,7 @@
 	import Code from '$lib/code/Code.svelte';
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -57,7 +57,7 @@
 			language="svelte"
 			code={`<script>
   import { Banner } from 'glow-ui';
-</script>
+<\/script>
 
 <Banner variant="info" label="Informational message" />
 <Banner variant="success" label="Success message" />

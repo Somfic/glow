@@ -21,7 +21,7 @@
 	}
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -187,7 +187,7 @@
 		language="svelte"
 		code={`<script>
   import { EmptyState, Button, Table } from 'glow';
-</script>
+<\/script>
 
 <!-- The common case: one icon, one line, one button -->
 <EmptyState

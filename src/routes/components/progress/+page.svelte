@@ -27,7 +27,7 @@
 	}
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -182,7 +182,7 @@
   import { Progress } from 'glow';
 
   let done = $state(0);
-</script>
+<\/script>
 
 <!-- determinate -->
 <Progress value={done} label="Uploading" showValue />

@@ -45,7 +45,7 @@
 	}
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -200,7 +200,7 @@
     const res = await fetch('/api/avatar', { method: 'POST', body });
     avatar = (await res.json()).url;
   }
-</script>
+<\/script>
 
 <ImageUpload
   size="profile"

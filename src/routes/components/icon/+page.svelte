@@ -39,7 +39,7 @@
 	}
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -167,7 +167,7 @@
   import { Icon, resolveIcon, type IconProp } from 'glow';
 
   let { icon }: { icon: IconProp } = $props();
-</script>
+<\/script>
 
 <!-- Accept either form, with your own size default -->
 <Icon {...resolveIcon(icon)} size={resolveIcon(icon).size ?? 16} />`}
@@ -182,7 +182,7 @@
 
   // Typed, so a misspelled name fails at build time
   const status: IconName = 'CircleCheck';
-</script>
+<\/script>
 
 <Icon name="Search" />
 <Icon name="Search" size={20} />

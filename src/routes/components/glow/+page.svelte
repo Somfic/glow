@@ -20,7 +20,7 @@
 	let morph = $state(0);
 </script>
 
-{#snippet codeCell(value)}
+{#snippet codeCell(value: string)}
 	<Code>{value}</Code>
 {/snippet}
 
@@ -123,7 +123,7 @@
 		language="svelte"
 		code={`<script>
   import { Glow } from 'glow-ui';
-</script>
+<\/script>
 
 <Glow
   pattern="aurora"
