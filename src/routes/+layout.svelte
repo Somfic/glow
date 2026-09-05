@@ -1,11 +1,20 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { onNavigate } from '$app/navigation';
+	import { viewTransition } from '$lib/util/viewTransition.js';
+	import './view-transitions.scss';
 	import Root from '$lib/root/Root.svelte';
 	import Page from '$lib/page/Page.svelte';
 	import type { SidebarItem, SidebarGroup, SidebarTheme } from '$lib/sidebar/Sidebar.svelte';
 	import type { Snippet } from 'svelte';
 
 	let { children }: { children?: Snippet } = $props();
+
+	// Crossfade the content panel between docs pages. The helper hands back
+	// `undefined` — i.e. navigate normally — where the API is missing or the
+	// user asked for reduced motion, and `onNavigate` registers via `onMount`,
+	// so none of this runs while prerendering.
+	onNavigate(viewTransition);
 
 	// Examples that render their own full-bleed shell — they want viewport
 	// lock + no sidebar. Other examples (e.g. /examples/github) reuse the
@@ -88,7 +97,8 @@
 					{ label: 'Breadcrumb', href: '/components/breadcrumb', icon: 'ChevronRight' },
 					{ label: 'Popover', href: '/components/popover', icon: 'SquareArrowOutUpRight' },
 					{ label: 'Popover Menu', href: '/components/popover-menu', icon: 'ChevronDown' },
-					{ label: 'Context Menu', href: '/components/context-menu', icon: 'MousePointer' }
+					{ label: 'Context Menu', href: '/components/context-menu', icon: 'MousePointer' },
+					{ label: 'View Transitions', href: '/components/view-transitions', icon: 'Repeat' }
 				]
 			},
 			{

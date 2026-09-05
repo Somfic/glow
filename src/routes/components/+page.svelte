@@ -64,7 +64,8 @@
 				{ name: 'Breadcrumb', href: '/components/breadcrumb', description: 'The trail to the current page, collapsing to a menu when it runs out of room' },
 				{ name: 'Popover', href: '/components/popover', description: 'The anchoring primitive — flips, clamps, and portals' },
 				{ name: 'Popover Menu', href: '/components/popover-menu', description: 'Rich menus: items, toggles, submenus, custom snippets' },
-				{ name: 'Context Menu', href: '/components/context-menu', description: 'The same menu entries, opened by right-click' }
+				{ name: 'Context Menu', href: '/components/context-menu', description: 'The same menu entries, opened by right-click' },
+				{ name: 'View Transitions', href: '/components/view-transitions', description: 'Crossfade between routes, skipped where the API or the appetite for motion is missing' }
 			]
 		},
 		{
