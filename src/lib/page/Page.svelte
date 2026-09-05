@@ -24,10 +24,25 @@
 		/** @deprecated Use `layout` instead. 'normal' maps to 'contained'. */
 		size?: 'normal' | 'full';
 		sidebarConfig?: SidebarConfig;
+		/**
+		 * The content panel, once it has rendered. Beside a sidebar the panel is
+		 * the scroller rather than the document, which puts its scroll position
+		 * out of a router's reach — bind this and hand it to `scrollMemory` to
+		 * get the document's scroll behaviour back.
+		 */
+		scroller?: HTMLElement;
 		children?: () => any;
 	};
 
-	let { title, navItems, layout, size, sidebarConfig, children }: Props = $props();
+	let {
+		title,
+		navItems,
+		layout,
+		size,
+		sidebarConfig,
+		scroller = $bindable(),
+		children
+	}: Props = $props();
 
 	const effectiveLayout: Layout = $derived(
 		layout ?? (size === 'full' ? 'full' : 'contained')
@@ -64,7 +79,11 @@
 		bind:collapsed={sidebarCollapsed}
 		onclose={() => (sidebarOpen = false)}
 	/>
-	<div class="page sidebar-mode {effectiveLayout}" class:sidebar-collapsed={sidebarCollapsed}>
+	<div
+		bind:this={scroller}
+		class="page sidebar-mode {effectiveLayout}"
+		class:sidebar-collapsed={sidebarCollapsed}
+	>
 		<button class="mobile-menu-toggle" onclick={() => (sidebarOpen = !sidebarOpen)}>
 			☰
 		</button>

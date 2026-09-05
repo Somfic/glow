@@ -278,6 +278,40 @@
 	/>
 </Card>
 
+<Card title="Scroll position across navigations" id="scroll">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		Beside a sidebar the content panel is the scroller, not the document — that is what keeps the
+		scrollbar inside the rounded panel. The cost is that a router's scroll handling no longer
+		applies to anything: SvelteKit resets <Code>window.scrollY</Code>, which on this layout is
+		always <Code>0</Code>, so without the two lines below page two opens at page one's offset.
+		Bind <Code>scroller</Code> and hand it to <Code>scrollMemory</Code> to get the document's
+		behaviour back — top on a new page, restore on back and forward, anchor on a hash.
+	</Text>
+	<CodeBlock
+		language="svelte"
+		code={`<script lang="ts">
+  import { afterNavigate, beforeNavigate } from '$app/navigation';
+  import { Page, scrollMemory } from 'glow';
+
+  let { children } = $props();
+
+  let scroller = $state<HTMLElement>();
+  const scroll = scrollMemory(() => scroller);
+  beforeNavigate(scroll.before);
+  afterNavigate(scroll.after);
+</script>
+
+<Page title="My App" {sidebarConfig} bind:scroller>
+  {@render children?.()}
+</Page>`}
+	/>
+	<Text variant="secondary" size="sm" style="margin-top: 1rem;">
+		It takes a getter rather than the element because the element is bound after the first render,
+		and the hooks are registered before it. Nothing is needed for <Code>layout="bare"</Code> or a
+		page with no sidebar: those scroll the document, so the router already handles them.
+	</Text>
+</Card>
+
 <Card title="Props" id="props">
 	<Table
 		variant="simple"
@@ -293,6 +327,7 @@
 			{ prop: 'navItems', type: 'NavItem[]', default: '—', description: 'Renders the top pill navigation. Ignored when sidebarConfig is set.' },
 			{ prop: 'sidebarConfig', type: 'SidebarConfig', default: '—', description: 'Renders a persistent Sidebar and offsets the content for it.' },
 			{ prop: 'size', type: "'normal' | 'full'", default: '—', description: 'Deprecated. Use layout instead — normal maps to contained.' },
+			{ prop: 'scroller', type: 'HTMLElement', default: '—', description: 'Bindable. The content panel, which is the scroller beside a sidebar. Pass it to scrollMemory so navigation resets the scroll position.' },
 			{ prop: 'children', type: 'Snippet', default: '—', description: 'Page content, wrapped in a padded <article>.' }
 		]}
 	/>

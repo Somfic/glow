@@ -150,6 +150,8 @@ export { trapFocus } from "./util/focusTrap.js";
 export { registerShortcut } from "./util/shortcut.svelte.js";
 export { portal } from "./util/portal.js";
 export { viewTransition } from "./util/viewTransition.js";
+export { scrollMemory } from "./util/scrollMemory.js";
+export type { ScrollMemory, ScrollNavigation, ScrollTarget } from "./util/scrollMemory.js";
 export type { ViewTransitionOptions, ViewTransitionNavigation } from "./util/viewTransition.js";
 export { sortable, type SortableOptions } from "./sortable/sortable.js";
 export {
