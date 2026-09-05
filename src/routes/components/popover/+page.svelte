@@ -85,6 +85,9 @@
 		or content size actually changes — so it follows its trigger through scrolling, animation, and
 		layout shifts. Scroll this page until the trigger nears the bottom of the window and open it: it
 		flips above rather than running off-screen. Taller-than-available content scrolls inside the panel.
+		A panel near an edge is nudged back into view, but a trigger scrolled <em>entirely</em> out of view
+		hides its panel rather than leaving it stranded against the window edge — it comes back, still
+		open, when the trigger does.
 	</Text>
 	<Popover>
 		{#snippet trigger()}
