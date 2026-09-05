@@ -56,6 +56,20 @@ const label = 'A single line that runs well past the width of this card, by desi
 }`;
 	const rewritten = `const total = (items) => items.reduce((sum, item) => sum + item.price, 0);`;
 
+	// A three-line addition run and a two-line deletion run: the stripe beside
+	// each has to be one bar, not one per line.
+	const stripeBefore = `function open(path) {
+	const file = read(path);
+	return parse(file);
+}`;
+	const stripeAfter = `function open(path, options = {}) {
+	if (!exists(path)) {
+		throw new Error(\`no such file: \${path}\`);
+	}
+	const file = read(path, options.encoding);
+	return parse(file, options);
+}`;
+
 	let mode = $state<DiffViewMode>('unified');
 	let wrap = $state(false);
 </script>
@@ -69,9 +83,10 @@ const label = 'A single line that runs well past the width of this card, by desi
 <Heading level={1}>Diff View</Heading>
 <Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 	A code diff, the way a pull request shows one: line numbers on both sides, a <Code>+</Code>/<Code
-		>−</Code
-	> gutter, word-level highlighting inside a changed line, and the unchanged middle folded away. The
-	diff itself is a Myers implementation in the library — no dependency, and no syntax highlighter.
+		>-</Code
+	> gutter, a change stripe down the left edge, syntax highlighting, word-level runs inside a changed line, and the unchanged middle
+	folded away. The diff itself is a Myers implementation in the library — no dependency for that;
+	the colours come from the same Shiki setup <Link href="/components/code">Code Block</Link> uses.
 </Text>
 
 <Card title="Unified" id="unified">
@@ -81,6 +96,36 @@ const label = 'A single line that runs well past the width of this card, by desi
 		gutters are sticky, so they hold their place when a long line scrolls.
 	</Text>
 	<DiffView oldText={before} newText={after} filename="src/greet.ts" />
+</Card>
+
+<Card title="The change stripe" id="stripe">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		The bar down the left edge marks what changed at a glance, before any colour is read: a solid bar
+		for an addition, a diagonal hatch for a deletion, so the two differ by texture as well as by hue.
+		A run of consecutive lines gets <em>one</em> bar, not one per line — the six added lines below
+		share a single unbroken stripe, and the three deleted ones a single hatch.
+	</Text>
+	<DiffView oldText={stripeBefore} newText={stripeAfter} filename="src/open.ts" />
+</Card>
+
+<Card title="Syntax highlighting" id="highlighting">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		On by default when the <Code>filename</Code> gives away a language, or when you pass
+		<Code>language</Code> yourself. It is asynchronous, and nothing waits on it: the diff renders its
+		own structure immediately and gains colour when Shiki resolves, so there is no unstyled flash and
+		no reflow. Turn it off with <Code>highlight={false}</Code>, or replace it entirely with the
+		<Code>line</Code> snippet.
+	</Text>
+	<Flex gap="md">
+		<DiffView oldText={before} newText={after} filename="highlighted.ts" collapsible={false} />
+		<DiffView
+			oldText={before}
+			newText={after}
+			filename="plain.ts"
+			highlight={false}
+			collapsible={false}
+		/>
+	</Flex>
 </Card>
 
 <Card title="Split" id="split">
@@ -257,8 +302,10 @@ const label = 'A single line that runs well past the width of this card, by desi
 <Card title="Accessibility" id="accessibility">
 	<Flex gap="sm">
 		<Text size="sm">
-			Colour is never the only signal: every changed line carries a <Code>+</Code> or
-			<Code>−</Code> in the gutter, and that column stays pinned while a long line scrolls.
+			Colour is never the only signal. Every changed line carries a <Code>+</Code> or
+			<Code>-</Code> in the gutter, and the stripe distinguishes by texture as well as by hue — solid
+			for an addition, hatched for a deletion. In unified mode the stripe, both gutters and the sign
+			column are sticky, so those signals are the last thing to scroll away rather than the first.
 		</Text>
 		<Text size="sm">
 			Each row is announced as "Added line 12:", "Removed line 9:" or "Unchanged line 8:" from

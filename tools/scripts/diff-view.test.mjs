@@ -18,10 +18,12 @@ try {
 	// The invariant, not a screenshot: within a row every cell starts at the
 	// same y and is the same height, so a line number can never ride above or
 	// below the code it numbers.
+	// The change stripe is excluded on purpose: it is the one cell that *should*
+	// be taller than its row, because one bar spans a whole run of changed lines.
 	const unified = await page.evaluate(() => {
 		const view = document.querySelector("#unified .diff-view");
 		return [...view.querySelectorAll("tr.line")].map((tr) => {
-			const cells = [...tr.children].map((td) => {
+			const cells = [...tr.children].filter((td) => !td.classList.contains("stripe")).map((td) => {
 				const r = td.getBoundingClientRect();
 				const cs = getComputedStyle(td);
 				return { top: r.top, height: r.height, size: cs.fontSize, lh: cs.lineHeight, family: cs.fontFamily };
@@ -56,7 +58,8 @@ try {
 	const split = await page.evaluate(() => {
 		const view = document.querySelector("#split .diff-view");
 		return [...view.querySelectorAll("tr.line")].map((tr) => {
-			const [oldNum, oldCode, newNum, newCode] = [...tr.children].map((td) => td.getBoundingClientRect());
+			const [oldNum, newNum] = [...tr.querySelectorAll("td.num")].map((td) => td.getBoundingClientRect());
+			const [oldCode, newCode] = [...tr.querySelectorAll("td.code")].map((td) => td.getBoundingClientRect());
 			return { oldNum: oldNum.top, oldCode: oldCode.top, newNum: newNum.top, newCode: newCode.top, h: oldCode.height, h2: newCode.height };
 		});
 	});
@@ -122,7 +125,7 @@ try {
 		};
 	});
 	t.ok("an added line carries a + in the gutter", signals.addGlyph === "+");
-	t.ok("a removed line carries a − in the gutter", signals.removeGlyph === "−");
+	t.ok("a removed line carries a - in the gutter", signals.removeGlyph === "-");
 	t.ok("a screen reader is told a line was added", /^Added line \d+:$/.test(signals.addText));
 	t.ok("a screen reader is told a line was removed", /^Removed line \d+:$/.test(signals.removeText));
 	t.ok("an unchanged line says so too", /^Unchanged line \d+:$/.test(signals.contextText));
@@ -185,6 +188,107 @@ try {
 		return gap ? gap.getBoundingClientRect().height - line.getBoundingClientRect().height : 0;
 	});
 	t.ok("a fold is exactly one line tall", Math.abs(expanderHeight) < 1.01);
+
+	// --- the change stripe --------------------------------------------------
+	// One cell per run, not one per line: the `#stripe` example is a run of
+	// three deletions followed by a run of six additions.
+	const stripe = await page.evaluate(() => {
+		const view = document.querySelector("#stripe .diff-view");
+		const cells = (type) => [...view.querySelectorAll(`td.stripe[data-type='${type}']`)];
+		const style = (el) => getComputedStyle(el);
+		const add = cells("add");
+		const remove = cells("remove");
+		return {
+			rows: view.querySelectorAll("tr.line").length,
+			addCells: add.length,
+			removeCells: remove.length,
+			addSpan: add[0]?.getAttribute("rowspan"),
+			removeSpan: remove[0]?.getAttribute("rowspan"),
+			addHeight: add[0]?.getBoundingClientRect().height,
+			rowHeight: view.querySelector("tr.line").getBoundingClientRect().height,
+			addFill: style(add[0]).backgroundImage,
+			addColour: style(add[0]).backgroundColor,
+			removeFill: style(remove[0]).backgroundImage,
+			width: add[0]?.getBoundingClientRect().width,
+			left: Math.round(add[0]?.getBoundingClientRect().left - view.getBoundingClientRect().left)
+		};
+	});
+	t.ok("six added lines share one stripe element", stripe.addCells === 1 && stripe.addSpan === "6");
+	t.ok("three removed lines share one hatch element", stripe.removeCells === 1 && stripe.removeSpan === "3");
+	t.ok(
+		"the one stripe spans the whole run",
+		Math.abs(stripe.addHeight - 6 * stripe.rowHeight) < 0.5
+	);
+	t.ok("an addition is a solid bar", stripe.addFill === "none" && !/rgba\(0, 0, 0, 0\)/.test(stripe.addColour));
+	t.ok("a deletion is a hatch, not a fill", /repeating-linear-gradient/.test(stripe.removeFill));
+	t.ok("the stripe is a hairline against the card edge", stripe.width > 2 && stripe.width < 6 && stripe.left <= 1);
+
+	// --- the header ---------------------------------------------------------
+	const head = await page.evaluate(() => {
+		const view = document.querySelector("#unified .diff-view");
+		const text = (sel) => view.querySelector(sel)?.textContent.trim();
+		const head = view.querySelector(".head");
+		const body = view.querySelector(".scroller");
+		return {
+			glyph: text(".head-glyph"),
+			filename: text(".filename"),
+			added: text(".tally .added"),
+			removed: text(".tally .removed"),
+			// The header sits on its own surface, and the tally is hard right.
+			surface: getComputedStyle(head).backgroundColor !== getComputedStyle(body).backgroundColor,
+			flush:
+				Math.round(view.querySelector(".tally").getBoundingClientRect().right) <=
+				Math.round(head.getBoundingClientRect().right)
+		};
+	});
+	t.ok("the header carries a code glyph", head.glyph === "</>");
+	t.ok("the header carries the file path", head.filename === "src/greet.ts");
+	t.ok("the tally counts what the diff counted", head.added === "+4" && head.removed === "-4");
+	t.ok("the header is a different surface from the body", head.surface);
+	t.ok("the tally is right-aligned", head.flush);
+
+	// --- syntax highlighting ------------------------------------------------
+	// Shiki resolves after the first paint by design, so wait for the colour
+	// rather than for a timeout.
+	await page.locator("#unified .diff-view td.code span[style*='color']").first().waitFor();
+	const coloured = await page.evaluate(() => {
+		const view = document.querySelector("#unified .diff-view");
+		const plain = [...document.querySelectorAll("#highlighting .diff-view")].find(
+			(v) => v.querySelector(".filename").textContent.includes("plain")
+		);
+		return {
+			colours: new Set(
+				[...view.querySelectorAll("td.code span[style*='color']")].map((s) => s.style.color)
+			).size,
+			// Word runs have to survive being rebuilt inside the coloured markup.
+			runs: view.querySelectorAll("td.code .seg.changed").length,
+			runsColoured: [...view.querySelectorAll("td.code .seg.changed")].every(
+				(s) => getComputedStyle(s).backgroundColor !== "rgba(0, 0, 0, 0)"
+			),
+			plainColours: plain.querySelectorAll("td.code span[style*='color']").length,
+			// The text is intact: colouring must not eat or duplicate characters.
+			firstLine: view.querySelector("tr.line td.code .text").textContent
+		};
+	});
+	t.ok("the code is highlighted in more than one colour", coloured.colours > 3);
+	t.ok("word runs survive the highlighting", coloured.runs > 0 && coloured.runsColoured);
+	t.ok("highlight={false} stays plain", coloured.plainColours === 0);
+	t.ok("the line still reads as the file did", coloured.firstLine === "export function greet(name) {");
+	t.ok(
+		"highlighting does not disturb the row alignment",
+		await page.evaluate(() => {
+			const view = document.querySelector("#unified .diff-view");
+			return [...view.querySelectorAll("tr.line")].every((tr) => {
+				const cells = [...tr.children].filter((td) => !td.classList.contains("stripe"));
+				const tops = cells.map((td) => td.getBoundingClientRect().top);
+				const heights = cells.map((td) => td.getBoundingClientRect().height);
+				return (
+					tops.every((y) => Math.abs(y - tops[0]) < 0.01) &&
+					heights.every((h) => Math.abs(h - heights[0]) < 0.01)
+				);
+			});
+		})
+	);
 
 	// --- switching modes keeps the alignment --------------------------------
 	await page.locator("#modes button", { hasText: "Split" }).click();
