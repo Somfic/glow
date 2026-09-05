@@ -22,28 +22,16 @@ const build = !process.argv.includes("--no-build");
 /**
  * The known exceptions, each one a literal that this sweep really does find.
  *
- * All but the first live in `src/routes` — demo-only CSS written on a docs page
- * rather than in a component, and so outside the library audit. They are real
- * and this list is the record of them; it should only ever shrink. `route: "*"`
- * matches anywhere, for the parts of the docs shell that are on every page.
+ * These live in `src/routes` — demo-only CSS written on a docs page rather than
+ * in a component. They are real and this list is the record of them; it should
+ * only ever shrink. `route: "*"` matches anywhere, for the parts of the docs
+ * shell that are on every page.
  */
 const KNOWN = [
-	// The sidebar's collapse control is a hand-rolled ghost icon button, and
-	// `feat/button-small` is deleting the whole rule block in favour of the
-	// real <Button>. Fixing the duration here would only conflict with that.
-	{ route: "*", cls: /\bcollapse-toggle\b/ },
-	{ route: "/components/cursor", cls: /\bdemo-btn\b/ },
+	// Owned by other branches: `feat/icon-*` and `feat/tooltip-*` have these two
+	// docs pages open. Their literals are real and this list should only shrink.
 	{ route: "/components/icon", cls: /\bcell\b/ },
 	{ route: "/components/tooltip", cls: /\bdemo-btn\b|\bdemo-text\b|\bdemo-box\b/ },
-	{ route: "/components/lightbox", cls: /\bthumb\b/ },
-	{ route: "/components/settings", cls: /\bprompt-tab\b|\baspect-btn\b/ },
-	{ route: "/components/sidebar", cls: /\bframe-content\b/ },
-	{ route: "/components/sortable", cls: /\bsort-row\b|\bsort-tag\b|\bdrag-handle\b/ },
-	{ route: "/components/tierlist", cls: /\btl-reset\b|\btl-card\b/ },
-	// A `pulse-mark 1.6s infinite` and a `blink 1s steps(1) infinite`, both
-	// written on the docs page rather than in a component.
-	{ route: "/components/empty-state", cls: /\bpulse-mark\b|\bsvelte-/ },
-	{ route: "/components/split", cls: /\bsvelte-/ },
 ];
 
 /** Read every element's motion, as the browser resolved it. */

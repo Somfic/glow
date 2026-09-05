@@ -44,7 +44,7 @@
 	settle with a FLIP animation. Supports vertical and horizontal lists.
 </Text>
 
-<Card title="Vertical list reorder">
+<Card title="Vertical list reorder" id="vertical">
 	<Text variant="secondary" size="sm" style="margin-bottom: 0.75rem;">
 		Press and drag a row up or down. A plain click still works — a drag only begins after the
 		pointer moves a few pixels.
@@ -82,7 +82,7 @@
 
 <div style="margin-top: 1.5rem;"></div>
 
-<Card title="Horizontal list reorder">
+<Card title="Horizontal list reorder" id="horizontal">
 	<Text variant="secondary" size="sm" style="margin-bottom: 0.75rem;">
 		Same action, <Code>direction: 'horizontal'</Code> — drag the tags left and right.
 	</Text>
@@ -98,7 +98,7 @@
 
 <div style="margin-top: 1.5rem;"></div>
 
-<Card title="Drag handle only">
+<Card title="Drag handle only" id="handle">
 	<Text variant="secondary" size="sm" style="margin-bottom: 0.75rem;">
 		Pass a CSS selector as <Code>handle</Code> to restrict where a drag can start. Here only the grip
 		<Code>⠿</Code> icon is draggable — the rest of the row stays free for clicks and text selection.
@@ -126,7 +126,7 @@
 
 <div style="margin-top: 1.5rem;"></div>
 
-<Card title="API">
+<Card title="API" id="api">
 	<CodeBlock
 		language="svelte"
 		code={`<script lang="ts">
@@ -175,7 +175,7 @@
 		background: var(--glow-bg-surface-element);
 		border: $border;
 		cursor: grab;
-		transition: background-color $dur-fast ease;
+		transition: background-color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
 			background-color: $tertiary-hover;
@@ -196,8 +196,8 @@
 		border-radius: $radius;
 		padding: $space-xs;
 		transition:
-			color $dur-fast ease,
-			background-color $dur-fast ease;
+			color var(--glow-dur-fast) var(--glow-ease-out),
+			background-color var(--glow-dur-fast) var(--glow-ease-out);
 	}
 	.drag-handle:hover {
 		color: var(--glow-fg);
@@ -219,7 +219,7 @@
 		border: $border;
 		cursor: grab;
 		user-select: none;
-		transition: background-color $dur-fast ease;
+		transition: background-color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
 			background-color: $tertiary-hover;

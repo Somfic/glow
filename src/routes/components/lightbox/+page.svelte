@@ -238,7 +238,9 @@
 		overflow: hidden;
 		background: var(--glow-bg-surface-element);
 		cursor: pointer;
-		transition: border-color 120ms ease, transform 120ms ease;
+		transition:
+			border-color var(--glow-dur-instant) var(--glow-ease-out),
+			transform var(--glow-dur-instant) var(--glow-ease-out);
 
 		&:hover {
 			border-color: var(--glow-primary);

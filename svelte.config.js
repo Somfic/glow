@@ -13,9 +13,17 @@ const config = {
 			strict: true
 		}),
 		prerender: {
-			// Don't fail the build on broken internal links / missing anchors —
-			// surface them as warnings so they remain visible in CI output.
-			handleHttpError: 'warn',
+			// A broken internal link and a page that *failed to render* are not the
+			// same severity, and 'warn' lumped them together. A 404 is worth keeping
+			// visible without failing the build; a 5xx means the route threw, so it
+			// is silently absent from `build/` afterwards — and `bun run build` is
+			// the only gate CI has, so a warning there ships a missing page.
+			handleHttpError: (details) => {
+				if (details.status >= 500) throw new Error(details.message);
+				console.warn(details.message);
+			},
+			// Missing anchors stay a warning: they are content drift, not a
+			// page that failed to exist.
 			handleMissingId: 'warn'
 		}
 	}

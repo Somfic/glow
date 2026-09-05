@@ -92,8 +92,8 @@
 		<Tabs
 			tabs={[
 				{ id: 'code', label: 'Code', icon: 'Code', content: codeTab },
-				{ id: 'issues', label: 'Issues', icon: 'CircleDot', count: 12, content: placeholderTab },
-				{ id: 'pulls', label: 'Pull requests', icon: 'GitPullRequest', count: 4, content: placeholderTab },
+				{ id: 'issues', label: 'Issues', icon: 'CircleDot', badge: 12, content: placeholderTab },
+				{ id: 'pulls', label: 'Pull requests', icon: 'GitPullRequest', badge: 4, content: placeholderTab },
 				{ id: 'agents', label: 'Agents', icon: 'Bot', content: placeholderTab },
 				{ id: 'actions', label: 'Actions', icon: 'Play', content: placeholderTab },
 				{ id: 'projects', label: 'Projects', icon: 'LayoutGrid', content: placeholderTab },

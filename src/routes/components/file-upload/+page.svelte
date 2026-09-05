@@ -35,7 +35,7 @@
 	explicit pattern.
 </Text>
 
-<Card title="Default — any file, multi-file">
+<Card title="Default — any file, multi-file" id="default">
 	<FileUpload
 		bind:files={basicFiles}
 		hint="Any file, any size"
@@ -73,7 +73,7 @@
 
 <div style="margin-top: 1.5rem;"></div>
 
-<Card title="Images & video — capped at 5 files / 10MB · free crop">
+<Card title="Images & video — capped at 5 files / 10MB · free crop" id="images-video">
 	<FileUpload
 		bind:files={imageFiles}
 		accept="image/*,video/*"
@@ -117,7 +117,7 @@
 
 <div style="margin-top: 1.5rem;"></div>
 
-<Card title="Single file — avatar with 1:1 crop">
+<Card title="Single file — avatar with 1:1 crop" id="avatar-crop">
 	<Text size="sm" variant="secondary" style="margin-bottom: 0.75rem;">
 		Pass a number to <Code>crop</Code> to lock the aspect ratio. Click the crop icon on the
 		row to re-crop.
@@ -163,7 +163,7 @@
 
 <div style="margin-top: 1.5rem;"></div>
 
-<Card title="API">
+<Card title="API" id="api">
 	<CodeBlock
 		language="svelte"
 		code={`<script>

@@ -123,7 +123,7 @@
 	actions, snooze, and auto-mark-read on dwell.
 </Text>
 
-<Card title="Try it">
+<Card title="Try it" id="try-it">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Press <Kbd size="sm">⌘</Kbd> <Kbd size="sm">N</Kbd> (or <Kbd size="sm">Ctrl</Kbd>
 		<Kbd size="sm">N</Kbd>) anywhere on this page to open the panel.
@@ -143,7 +143,7 @@
 </Card>
 
 <div style="margin-top: 1.5rem;"></div>
-<Card title="Grouping">
+<Card title="Grouping" id="grouping">
 	<Text variant="secondary" size="sm" style="margin-bottom: 0.75rem;">
 		The panel buckets entries by time (default) or by source.
 	</Text>
@@ -173,7 +173,7 @@
 </Card>
 
 <div style="margin-top: 1.5rem;"></div>
-<Card title="Pushing notifications">
+<Card title="Pushing notifications" id="pushing">
 	<CodeBlock
 		language="ts"
 		code={`import { notifications } from 'glow';
@@ -194,7 +194,7 @@ notifications.push({
 </Card>
 
 <div style="margin-top: 1.5rem;"></div>
-<Card title="Mounting">
+<Card title="Mounting" id="mounting">
 	<CodeBlock
 		language="svelte"
 		code={`<script>

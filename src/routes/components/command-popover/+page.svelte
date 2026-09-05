@@ -302,7 +302,7 @@
 	<Code>onSelect</Code>.
 </Text>
 
-<Card title="Slash commands">
+<Card title="Slash commands" id="slash-commands">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Type <Kbd size="sm">/</Kbd> at the start of a word to open the picker. Use
 		<Kbd size="sm">↑</Kbd><Kbd size="sm">↓</Kbd> to navigate,
@@ -343,7 +343,7 @@
 </Card>
 
 <div style="margin-top: 1.5rem;"></div>
-<Card title="Shell autocomplete">
+<Card title="Shell autocomplete" id="autocomplete">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Always-on completion backed by a tree-shaped registry. Cross-level fuzzy
 		search means typing <Code>github clone abc</Code> surfaces
@@ -366,7 +366,7 @@
 </Card>
 
 <div style="margin-top: 1.5rem;"></div>
-<Card title="Wiring">
+<Card title="Wiring" id="wiring">
 	<Text size="sm" variant="secondary" style="margin-bottom: 0.75rem;">
 		The host owns the input and a slice of its value (the query). Forward keydown
 		events into the popover's <Code>handleKey</Code> — it returns

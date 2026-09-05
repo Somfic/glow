@@ -57,7 +57,7 @@
 	specific.
 </Text>
 
-<Card title="Rank the languages">
+<Card title="Rank the languages" id="rank">
 	<div class="tl-toolbar">
 		<Text variant="secondary" size="sm">
 			Drag cards from the pool into a tier, between tiers, or reorder within one.
@@ -97,7 +97,7 @@
 
 <div style="margin-top: 1.5rem;"></div>
 
-<Card title="How it works">
+<Card title="How it works" id="how-it-works">
 	<Text variant="secondary" size="sm" style="margin-bottom: 0.75rem;">
 		Give every container the same <Code>group</Code> string. Each keeps its own reactive
 		<Code>items</Code> array; the action moves the dragged item from one array to another as the
@@ -152,7 +152,7 @@
 		color: var(--glow-fg);
 		font-size: $text-sm;
 		cursor: pointer;
-		transition: background-color $dur-fast ease;
+		transition: background-color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
 			background-color: $tertiary-hover;
@@ -209,7 +209,7 @@
 		white-space: nowrap;
 		cursor: grab;
 		user-select: none;
-		transition: background-color $dur-fast ease;
+		transition: background-color var(--glow-dur-fast) var(--glow-ease-out);
 
 		&:hover {
 			background-color: $tertiary-hover;

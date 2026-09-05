@@ -237,7 +237,7 @@ type SidebarTheme = 'auto' | 'dark' | 'light';`}
 		overflow: hidden;
 		border: 1px solid var(--glow-border-color);
 		border-radius: 12px;
-		background: var(--glow-bg);
+		background: var(--glow-bg-base);
 
 		// The rail asks for 100vh; inside the frame it should fill the frame.
 		:global(.sidebar) {
@@ -255,7 +255,7 @@ type SidebarTheme = 'auto' | 'dark' | 'light';`}
 	.frame-content {
 		padding: 1.5rem;
 		margin-left: 240px;
-		transition: margin-left 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: margin-left var(--glow-dur-base) var(--glow-ease-out);
 
 		&.collapsed {
 			margin-left: 56px;
