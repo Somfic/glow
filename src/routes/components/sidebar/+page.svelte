@@ -35,6 +35,7 @@
 	];
 
 	let collapsed = $state(false);
+	let darkCollapsed = $state(false);
 </script>
 
 {#snippet codeCell(value)}
@@ -87,6 +88,33 @@
 		<Code>/settings</Code> stays lit while you're on <Code>/settings/billing</Code>. In the frame
 		above, "Sidebar" is highlighted because that's the route you're on.
 	</Text>
+</Card>
+
+<Card title="Inverted rail" id="theme">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		<Code>theme</Code> pins the rail to one palette while the page keeps its own — the dark-navigation
+		/ light-content shell most apps ship. It stamps <Code>data-theme</Code> on the
+		<Code>&lt;aside&gt;</Code>, so the whole token recipe re-runs for the rail: foreground, borders,
+		muted labels and hover washes invert along with the background, which a single dark-background
+		token could not do. Leave it at <Code>auto</Code> and the rail follows the page as before. The
+		frame below is pinned <Code>dark</Code>, so it looks the same whichever theme you're reading this
+		in.
+	</Text>
+	<div class="frame frame-spaced">
+		<Sidebar title="Acme" {topItems} {groups} theme="dark" bind:collapsed={darkCollapsed} />
+		<div class="frame-content" class:collapsed={darkCollapsed}>
+			<Text variant="secondary" size="sm">
+				The content beside it stays on the page's own theme — nothing about the rail leaks past its
+				own subtree.
+			</Text>
+		</div>
+	</div>
+	<CodeBlock language="svelte" code={`<Sidebar title="Acme" {topItems} {groups} theme="dark" />
+
+<!-- via Page, which also carries it onto the shell behind the rail -->
+<Page title="Acme" sidebarConfig={{ title: 'Acme', topItems, groups, theme: 'dark' }}>
+  {@render children?.()}
+</Page>`} />
 </Card>
 
 <Card title="Usage" id="usage">
@@ -172,6 +200,8 @@
 			{ prop: 'groups', type: 'SidebarGroup[]', default: '[]', description: 'Labelled groups of links. The label collapses into a divider in icon-only mode.' },
 			{ prop: 'collapsed', type: 'boolean', default: 'false', description: 'Bindable. Icon-only rail (56px) instead of the full 240px.' },
 			{ prop: 'open', type: 'boolean', default: 'false', description: 'Bindable. Below 768px the rail slides off-screen; this opens it as a drawer with a backdrop.' },
+			{ prop: 'theme', type: "'auto' | 'dark' | 'light'", default: "'auto'", description: 'Pins the rail to one palette regardless of the page theme. Stamps data-theme on the aside, so every derived token inverts with it, not just the background.' },
+			{ prop: 'themeToggle', type: 'boolean', default: 'false', description: "Light/dark switch pinned to the bottom of the rail. Writes to Glow's shared theme store — it still switches the page, not the rail." },
 			{ prop: 'onclose', type: '() => void', default: '—', description: 'Fired when the mobile backdrop is clicked or an item is picked.' },
 			{ prop: 'oncollapse', type: '(collapsed: boolean) => void', default: '—', description: 'Fired when the collapse chevron is used. Handy for persisting the preference.' },
 			{ prop: 'children', type: 'Snippet', default: '—', description: 'Rendered at the bottom of the rail.' }
@@ -191,7 +221,9 @@
 type SidebarGroup = {
   label: string;
   items: SidebarItem[];
-};`}
+};
+
+type SidebarTheme = 'auto' | 'dark' | 'light';`}
 	/>
 </Card>
 
@@ -214,6 +246,10 @@ type SidebarGroup = {
 			// meant for the real chrome.
 			z-index: 1;
 		}
+	}
+
+	.frame-spaced {
+		margin-bottom: 1rem;
 	}
 
 	.frame-content {
