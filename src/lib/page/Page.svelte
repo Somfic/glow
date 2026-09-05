@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { NavItem } from './Navigation.svelte';
-	import type { SidebarItem, SidebarGroup } from '../sidebar/Sidebar.svelte';
+	import type { SidebarItem, SidebarGroup, SidebarTheme } from '../sidebar/Sidebar.svelte';
 	import Navigation from './Navigation.svelte';
 	import Sidebar from '../sidebar/Sidebar.svelte';
 
@@ -10,6 +10,8 @@
 		groups?: SidebarGroup[];
 		/** Show a light/dark switch at the bottom of the rail. */
 		themeToggle?: boolean;
+		/** Pin the rail (and the shell it sits in) to one palette. */
+		theme?: SidebarTheme;
 	};
 
 	type Layout = 'contained' | 'full' | 'bare';
@@ -44,12 +46,20 @@
 		{@render children?.()}
 	</div>
 {:else if sidebarConfig}
-	<div class="page-surround" aria-hidden="true"></div>
+	<!-- The surround is the rail's own colour continued around the content
+	     panel, so it has to carry the rail's theme too — otherwise a dark rail
+	     opens onto a light gutter and the shell reads as two pieces. -->
+	<div
+		class="page-surround"
+		aria-hidden="true"
+		data-theme={sidebarConfig.theme === 'auto' ? undefined : sidebarConfig.theme}
+	></div>
 	<Sidebar
 		title={sidebarConfig.title}
 		topItems={sidebarConfig.topItems}
 		groups={sidebarConfig.groups}
 		themeToggle={sidebarConfig.themeToggle}
+		theme={sidebarConfig.theme}
 		open={sidebarOpen}
 		bind:collapsed={sidebarCollapsed}
 		onclose={() => (sidebarOpen = false)}

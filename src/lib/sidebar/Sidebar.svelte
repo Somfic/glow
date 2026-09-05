@@ -11,6 +11,13 @@
 		label: string;
 		items: SidebarItem[];
 	};
+
+	/**
+	 * Which palette the rail paints itself in. `auto` follows the surrounding
+	 * theme; `dark`/`light` pin it, so an app on a light page can still have a
+	 * dark navigation rail.
+	 */
+	export type SidebarTheme = 'auto' | 'dark' | 'light';
 </script>
 
 <script lang="ts">
@@ -33,6 +40,14 @@
 		 * uncontrolled (i.e. no explicit `theme` prop).
 		 */
 		themeToggle?: boolean;
+		/**
+		 * Pin the rail to one palette regardless of the page's theme — the
+		 * "dark rail, light content" shell most apps ship. Stamps `data-theme`
+		 * on the `<aside>`, which is what re-runs the whole token recipe for
+		 * this subtree: not just the background, but the foreground, borders,
+		 * muted text and hover washes that a flipped surface also needs.
+		 */
+		theme?: SidebarTheme;
 		onclose?: () => void;
 		oncollapse?: (collapsed: boolean) => void;
 	};
@@ -45,6 +60,9 @@
 		open = $bindable(false),
 		collapsed = $bindable(false),
 		themeToggle = false,
+		// Renamed on the way in: `theme` is already the shared store in this
+		// module's scope.
+		theme: surface = 'auto',
 		onclose,
 		oncollapse
 	}: Props = $props();
@@ -104,7 +122,10 @@
 	<div class="sidebar-overlay" onclick={onclose} onkeydown={onclose}></div>
 {/if}
 
-<aside class="sidebar" class:open class:collapsed>
+<!-- `undefined` rather than `auto` on purpose: an attribute that is present at
+     all would shadow an ancestor's theme, pinning the rail to whatever it
+     names. Absent, the rail inherits. -->
+<aside class="sidebar" class:open class:collapsed data-theme={surface === 'auto' ? undefined : surface}>
 	<!--
 		Layout principle: icon columns stay pinned. Item padding-left, margin,
 		and the header logo all sit at the same x in both states. Only the

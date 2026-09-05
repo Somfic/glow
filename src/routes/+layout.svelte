@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import Root from '$lib/root/Root.svelte';
 	import Page from '$lib/page/Page.svelte';
-	import type { SidebarItem, SidebarGroup } from '$lib/sidebar/Sidebar.svelte';
+	import type { SidebarItem, SidebarGroup, SidebarTheme } from '$lib/sidebar/Sidebar.svelte';
 	import type { Snippet } from 'svelte';
 
 	let { children }: { children?: Snippet } = $props();
@@ -20,9 +20,13 @@
 		topItems: SidebarItem[];
 		groups: SidebarGroup[];
 		themeToggle: boolean;
+		theme: SidebarTheme;
 	} = {
 		title: 'Glow UI',
 		themeToggle: true,
+		// The docs shell keeps its dark rail in both themes: it is the shape
+		// most apps ship, and it is the feature being demonstrated.
+		theme: 'dark',
 		topItems: [
 			{ label: 'Home', href: '/', icon: 'House' },
 			{ label: 'Components', href: '/components', icon: 'LayoutGrid' }

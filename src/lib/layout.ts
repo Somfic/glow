@@ -12,4 +12,4 @@ export { default as AccordionItem } from "./accordion/AccordionItem.svelte";
 export type { AccordionType, AccordionVariant } from "./accordion/context.js";
 export type { NavItem } from "./page/Navigation.svelte";
 export type { ScrollAreaOrientation, ScrollAreaScrollbar, ScrollAreaEdges } from "./scroll-area/ScrollArea.svelte";
-export type { SidebarItem, SidebarGroup } from "./sidebar/Sidebar.svelte";
+export type { SidebarItem, SidebarGroup, SidebarTheme } from "./sidebar/Sidebar.svelte";
