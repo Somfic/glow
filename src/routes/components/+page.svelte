@@ -17,6 +17,7 @@
 				{ name: 'Card', href: '/components/card', description: 'Content cards' },
 				{ name: 'Accordion', href: '/components/accordion', description: 'Collapsible sections, single or multiple open at a time' },
 				{ name: 'Split', href: '/components/split', description: 'Resizable pane container' },
+				{ name: 'Scroll Area', href: '/components/scroll-area', description: 'Themed scroll container with live fade masks on the edges that have more content' },
 				{ name: 'Theme', href: '/components/theme', description: 'Light/dark and accent theming via design tokens' }
 			]
 		},

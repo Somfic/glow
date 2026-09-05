@@ -69,6 +69,7 @@ export type {
 export { default as FileUpload } from "./file-upload/FileUpload.svelte";
 export { default as Split } from "./split/Split.svelte";
 export type { SplitDirection, SplitPane } from "./split/types.js";
+export { default as ScrollArea, type ScrollAreaOrientation, type ScrollAreaScrollbar, type ScrollAreaEdges } from "./scroll-area/ScrollArea.svelte";
 export { default as NotificationCenter } from "./notification-center/NotificationCenter.svelte";
 export {
 	notifications,

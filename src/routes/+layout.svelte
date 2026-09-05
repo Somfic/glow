@@ -37,6 +37,7 @@
 					{ label: 'Card', href: '/components/card', icon: 'Square' },
 					{ label: 'Accordion', href: '/components/accordion', icon: 'ChevronsDownUp' },
 					{ label: 'Split', href: '/components/split', icon: 'Columns2' },
+					{ label: 'Scroll Area', href: '/components/scroll-area', icon: 'ScrollText' },
 					{ label: 'Theme', href: '/components/theme', icon: 'Palette' }
 				]
 			},
