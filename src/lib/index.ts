@@ -143,6 +143,11 @@ export { trapFocus } from "./util/focusTrap.js";
 export { registerShortcut } from "./util/shortcut.svelte.js";
 export { portal } from "./util/portal.js";
 export { sortable, type SortableOptions } from "./sortable/sortable.js";
+export {
+	rovingFocus,
+	type RovingFocusOptions,
+	type RovingOrientation
+} from "./roving-focus/rovingFocus.js";
 
 // Theming
 export { default as ThemeProvider, type ThemeMode } from "./style/ThemeProvider.svelte";
