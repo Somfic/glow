@@ -19,6 +19,10 @@
 	// Progress demo: tick a percentage up while the async action runs
 	let uploadProgress = $state(0);
 
+	// The form demo reports what the form actually did, so `type` is visible on
+	// the page rather than only in the DOM.
+	let formEvent = $state('nothing yet');
+
 	async function simulateUpload() {
 		uploadProgress = 0;
 		while (uploadProgress < 100) {
@@ -41,13 +45,14 @@
 
 <Card title="Button Variants" id="button-variants">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-		Five visual variants for different levels of emphasis
+		Six visual variants for different levels of emphasis
 	</Text>
 	<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
 		<Button label="Primary" variant="primary" tooltip="Primary action" />
 		<Button label="Secondary" variant="secondary" tooltip="Secondary action" />
 		<Button label="Ghost" variant="ghost" tooltip="Ghost action" />
 		<Button label="Outlined" variant="outlined" tooltip="Outlined action" />
+		<Button label="Dashed" variant="dashed" tooltip="Dashed action" />
 		<Button icon="Trash" label="Delete" variant="danger" tooltip="Delete action" />
 		<Button icon="Trash" variant="danger" tooltip="Delete action" />
 	</div>
@@ -80,7 +85,7 @@
 	<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
 		<Button label="Regular button" />
 		<Button icon="Heart" label="With icon" variant="secondary" />
-		<Button icon="Heart" label="Filled icon" variant="secondary" iconFilled />
+		<Button icon={{ name: 'Heart', fill: true }} label="Filled icon" variant="secondary" />
 		<Button icon="Trash" label="Delete" variant="danger" />
 	</div>
 </Card>
@@ -93,9 +98,34 @@
 		<Button icon="Info" tooltip="More info" />
 		<Button icon="Volleyball" tooltip="Sport" />
 		<Button icon="Heart" variant="secondary" tooltip="Like" />
-		<Button icon="Heart" variant="secondary" iconFilled tooltip="Liked" />
+		<Button icon={{ name: 'Heart', fill: true }} variant="secondary" tooltip="Liked" />
 		<Button icon="Trash" variant="ghost" tooltip="Delete" />
 		<Button icon="Settings" variant="outlined" tooltip="Settings" />
+	</div>
+</Card>
+
+<Card title="Disabled" id="button-disabled">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		Disabled dims a button. It never hands one a fill or a border it did not already have, so a
+		transparent variant stays transparent.
+	</Text>
+	<div
+		style="display: grid; grid-template-columns: repeat(2, max-content); gap: 0.5rem; align-items: center; justify-items: start;"
+	>
+		<Button label="Primary" />
+		<Button label="Primary" disabled />
+		<Button label="Secondary" variant="secondary" />
+		<Button label="Secondary" variant="secondary" disabled />
+		<Button label="Ghost" variant="ghost" />
+		<Button label="Ghost" variant="ghost" disabled />
+		<Button label="Outlined" variant="outlined" />
+		<Button label="Outlined" variant="outlined" disabled />
+		<Button label="Dashed" variant="dashed" />
+		<Button label="Dashed" variant="dashed" disabled />
+		<Button icon="Trash" label="Danger" variant="danger" />
+		<Button icon="Trash" label="Danger" variant="danger" disabled />
+		<Button icon="Heart" ariaLabel="Like" />
+		<Button icon="Heart" ariaLabel="Like" disabled />
 	</div>
 </Card>
 
@@ -152,6 +182,30 @@
 	</ButtonGroup>
 </Card>
 
+<Card title="Form Actions" id="button-form-actions">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		<Code>type</Code> mirrors the native attribute, and defaults to <Code>button</Code> — a button in
+		a form runs its <Code>onclick</Code> and nothing else. Ask for <Code>submit</Code> or
+		<Code>reset</Code> when the form should respond.
+	</Text>
+	<form
+		id="type-demo"
+		onsubmit={(event) => {
+			event.preventDefault();
+			formEvent = 'submit';
+		}}
+		onreset={() => (formEvent = 'reset')}
+		style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;"
+	>
+		<Button label="Save" type="submit" />
+		<Button label="Clear" type="reset" variant="outlined" />
+		<Button label="Preview" variant="ghost" onclick={() => (formEvent = 'onclick only')} />
+	</form>
+	<Text size="sm" variant="secondary" style="margin-top: 0.75rem;">
+		Last form event: <Code>{formEvent}</Code>
+	</Text>
+</Card>
+
 <Card title="Usage" id="usage">
 	<Heading level={3} id="basic-button">Basic Button</Heading>
 	<CodeBlock
@@ -206,16 +260,11 @@
 			{ prop: 'label', type: 'string', default: '-', description: 'Button text label' },
 			{ prop: 'icon', type: 'IconName', default: '-', description: 'Icon to display' },
 			{
-				prop: 'iconFilled',
-				type: 'boolean',
-				default: 'false',
-				description: 'Fill the icon with the stroke color'
-			},
-			{
 				prop: 'variant',
-				type: "'primary' | 'secondary' | 'ghost' | 'outlined' | 'danger'",
+				type: "'primary' | 'secondary' | 'ghost' | 'outlined' | 'dashed' | 'danger'",
 				default: "'primary'",
-				description: 'Visual style variant'
+				description:
+					'Visual style variant. An icon-only button with no variant renders bare — no fill, no border'
 			},
 			{
 				prop: 'size',
@@ -236,10 +285,22 @@
 				description: 'Click handler (supports async)'
 			},
 			{
+				prop: 'type',
+				type: "'button' | 'submit' | 'reset'",
+				default: "'button'",
+				description: 'Native button type. The default does not submit the form it sits in'
+			},
+			{
 				prop: 'disabled',
 				type: 'boolean',
 				default: 'false',
 				description: 'Disable button interactions'
+			},
+			{
+				prop: 'loading',
+				type: 'boolean',
+				default: 'false',
+				description: 'Force the loading state. An async onclick sets it on its own'
 			},
 			{
 				prop: 'progress',
@@ -260,18 +321,56 @@
 				description: 'Tooltip text, or the options object the tooltip action takes (position, delay)'
 			},
 			{
+				prop: 'count',
+				type: 'number',
+				default: '-',
+				description: 'Badge rendered after the label'
+			},
+			{
+				prop: 'shortcut',
+				type: 'string',
+				default: '-',
+				description: 'Keyboard shortcut, shown as a Kbd and registered globally'
+			},
+			{
+				prop: 'image',
+				type: 'string',
+				default: '-',
+				description: 'Avatar image URL rendered in place of the icon'
+			},
+			{
+				prop: 'selected',
+				type: 'boolean',
+				default: 'false',
+				description: 'Draws a selection ring, and a neutral fill on the flat variants'
+			},
+			{
+				prop: 'fullWidth',
+				type: 'boolean',
+				default: 'false',
+				description: 'Stretch to the width of the container'
+			},
+			{
 				prop: 'ariaLabel',
 				type: 'string',
 				default: '-',
 				description: 'Accessible name — needed on an icon-only button, where there is no label'
-			}
+			},
+			{
+				prop: 'children',
+				type: 'Snippet',
+				default: '-',
+				description: 'Button content, when a plain label is not enough'
+			},
+			{ prop: 'class', type: 'string', default: '-', description: 'Extra classes on the button' },
+			{ prop: 'style', type: 'string', default: '-', description: 'Inline style on the button' }
 		]}
 	/>
 </Card>
 
 <Card title="Features" id="features">
 	<ul style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-		<li><Text>🎨 Five visual variants (primary, secondary, ghost, outlined, danger)</Text></li>
+		<li><Text>🎨 Six visual variants (primary, secondary, ghost, outlined, dashed, danger)</Text></li>
 		<li><Text>🎯 Icon support with automatic cursor mirroring</Text></li>
 		<li><Text>⏳ Automatic loading state for async operations</Text></li>
 		<li><Text>📐 Consistent 32px size across all buttons</Text></li>

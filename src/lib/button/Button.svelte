@@ -34,6 +34,13 @@
 		count?: number;
 		shortcut?: string;
 		onclick?: () => void | Promise<void>;
+		/**
+		 * The native attribute. Defaults to `button` rather than HTML's `submit`,
+		 * because a library button is overwhelmingly an `onclick` — inheriting the
+		 * platform default meant every Button inside a `<form>` submitted it on the
+		 * way to doing whatever it was actually for.
+		 */
+		type?: 'button' | 'submit' | 'reset';
 		disabled?: boolean;
 		loading?: boolean;
 		/** 0-100. While loading, renders a progress bar along the bottom of the button. */
@@ -82,6 +89,7 @@
 		count,
 		shortcut,
 		onclick,
+		type = 'button',
 		disabled = false,
 		loading: manualLoading = false,
 		progress,
@@ -177,6 +185,7 @@
 	class:icon-only={isIconOnly}
 	class:has-progress={showProgress}
 	onclick={handleClick}
+	{type}
 	disabled={disabled || loading}
 	aria-label={ariaLabel}
 	aria-busy={loading}
@@ -488,15 +497,29 @@
 		// tokens that are already translucent, so a disabled ghost button used to
 		// end up at half of an already-8% wash.
 		&:disabled {
-			background-color: var(--glow-bg-disabled);
-			background-image: none;
-			border-color: var(--glow-border-disabled);
 			color: var(--glow-fg-disabled);
 			pointer-events: none;
 
 			.count {
 				background: var(--glow-bg-disabled);
 			}
+		}
+
+		// Only what a variant already paints gets repainted. Filling every
+		// disabled button turned the flat variants — a ghost, a dashed outline, a
+		// bare icon — into the same grey box, which is a louder change than
+		// disabling something should make; the flat ones dim instead.
+		// `background-image: none` is what stops a state layer surviving into it.
+		&:disabled:is(.primary, .secondary, .danger) {
+			background-color: var(--glow-bg-disabled);
+			background-image: none;
+			border-color: var(--glow-border-disabled);
+		}
+
+		// These two rest on a border and no fill, so the border is the only thing
+		// there is to dim. `border-style` is left alone, keeping dashed dashed.
+		&:disabled:is(.outlined, .dashed) {
+			border-color: var(--glow-border-disabled);
 		}
 
 		&.selected {
