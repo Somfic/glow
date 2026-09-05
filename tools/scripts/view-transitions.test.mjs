@@ -79,12 +79,14 @@ try {
 	t.ok(`a sidebar navigation starts a transition — ${JSON.stringify(vt)}`, vt.started === 1);
 	t.ok("and the browser does not abandon it", vt.ready === 1 && vt.failed === 0);
 
-	// Switched off at the root: no names, and the helper declines.
+	// Switched off. `<Root transitions={false}>` drives both halves from one
+	// prop; what is flipped here is the half that survives outside a component
+	// — the `<html>` flag `viewTransition` reads, since it is called from the
+	// router's hook where Svelte context cannot reach. The name stays on the
+	// rail and is inert, because a `view-transition-name` does nothing at all
+	// unless something starts a transition.
 	await page.evaluate(() => (document.documentElement.dataset.glowTransitions = "off"));
 	await settle(page);
-	t.ok("with transitions off, nothing is named",
-		(await page.evaluate(() => [...document.querySelectorAll("aside.sidebar")]
-			.every((el) => getComputedStyle(el).viewTransitionName === "none"))) === true);
 
 	await page.evaluate(() => (window.__vt = { started: 0, ready: 0, failed: 0 }));
 	await page.click('.sidebar a[href="/components/buttons"]');

@@ -33,10 +33,9 @@
 
 <Heading level={1}>View Transitions</Heading>
 <Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
-	<Code>viewTransition</Code> wraps a SvelteKit navigation in the browser's View Transitions API, so moving
-	between routes crossfades instead of cutting. It is a helper for <Code>onNavigate</Code>, not a component:
-	one line of wiring, and it declines to do anything at all where the API is missing or the user has asked
-	for less motion.
+	Moving between routes crossfades instead of cutting, and a <Code>Page</Code>'s sidebar stays still
+	while it happens. <Code>Root</Code> wires this up, so it is on with no code at all — and it declines
+	to do anything where the API is missing or the user has asked for less motion.
 </Text>
 
 <Card title="Try it" id="try-it">
@@ -77,15 +76,43 @@
 	</Text>
 </Card>
 
-<Card title="Usage" id="usage">
+<Card title="Turning it off" id="config">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-		Call it from <Code>onNavigate</Code> in the root layout. It returns a promise that resolves once the
-		old page has been captured, which is the contract SvelteKit wants — the DOM update is held until then
-		— or <Code>undefined</Code>, meaning "just navigate".
+		<Code>Root</Code> registers the navigation hook and turns transitions on. Pass
+		<Code>transitions={false}</Code> to switch them off for the whole app, or on a single
+		<Code>Page</Code> to override the shell it renders.
 	</Text>
 	<!-- The closing tag in this sample is escaped as `<\/script>`: unescaped, the
-	     HTML parser ends the page's own <script> on it and every import above
-	     stops resolving. -->
+	     HTML parser ends the page's own <script> on it, and svelte-check then
+	     parses this whole file as raw TypeScript. -->
+	<CodeBlock
+		language="svelte"
+		code={`<script lang="ts">
+  import { Root, Page } from 'glow';
+<\/script>
+
+<!-- on, and named, with nothing to write -->
+<Root>
+  <Page title="Acme" {sidebarConfig}>{@render children?.()}</Page>
+<\/Root>
+
+<!-- off everywhere -->
+<Root transitions={false}>…<\/Root>
+
+<!-- on, except for this shell -->
+<Root>
+  <Page title="Acme" {sidebarConfig} transitions={false}>…<\/Page>
+<\/Root>`}
+	/>
+</Card>
+
+<Card title="Driving it yourself" id="usage">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		<Code>viewTransition</Code> is still exported for an app that does not mount <Code>Root</Code>, or
+		that wants to decide per navigation. It returns the promise SvelteKit wants — resolving once the old
+		page has been captured, with the DOM update held until then — or <Code>undefined</Code>, meaning
+		"just navigate".
+	</Text>
 	<CodeBlock
 		language="svelte"
 		code={`<script lang="ts">
@@ -108,6 +135,10 @@
   })
 );`}
 	/>
+	<Text size="sm" variant="secondary" style="margin-top: 1rem;">
+		Doing this alongside <Code>Root</Code> would start two transitions for one navigation. Either mount
+		<Code>Root</Code> and leave it alone, or pass <Code>transitions={false}</Code> and drive it here.
+	</Text>
 </Card>
 
 <Card title="Persistent chrome" id="persistent-chrome">
@@ -116,6 +147,11 @@
 		crossfades it. That fades a persistent sidebar into a near-identical copy of itself: a slight blur or
 		flicker on chrome that never actually changed. Give anything that survives the navigation its own
 		<Code>view-transition-name</Code> and it becomes its own group, lifted out of <Code>root</Code>.
+	</Text>
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		<Code>Page</Code> already does this for the rail it renders — the snippet below is what you would
+		write for chrome of your own, and what <Code>Sidebar</Code>'s
+		<Code>viewTransitionName</Code> prop does for a rail you mount yourself.
 	</Text>
 	<CodeBlock
 		language="css"
@@ -132,9 +168,14 @@
 	<Text size="sm" variant="secondary" style="margin-top: 1rem;">
 		A <Code>view-transition-name</Code> must be unique in the document. Two elements sharing one makes
 		the browser abandon the transition — the navigation still works, so the only symptom is that nothing
-		animates. That is why the selector above is a child combinator: this very site renders a second live
-		<Link href="/components/sidebar">Sidebar</Link> inside a card, and a bare <Code>.sidebar</Code> would
-		have matched it too.
+		animates. That is why the selector above is a child combinator, and why a name is a prop rather than
+		a stylesheet rule: this very site renders three live <Link href="/components/sidebar">Sidebar</Link>s
+		on one page, and a bare <Code>.sidebar</Code> would match all of them. <Code>Page</Code> hands the
+		name to the first shell to mount and leaves the rest unnamed.
+	</Text>
+	<Text size="sm" variant="secondary" style="margin-top: 1rem;">
+		Because that failure is invisible, <Code>Sidebar</Code> counts the claims on each name and warns in
+		development if one is taken twice. Nothing is logged in a production build.
 	</Text>
 	<Text size="sm" variant="secondary" style="margin-top: 1rem;">
 		Name only what you have to. Snapshots are painted in the order their names appear, and
@@ -171,6 +212,11 @@
 }`}
 	/>
 	<Text size="sm" variant="secondary" style="margin-top: 1rem;">
+		Glow's stylesheet already carries exactly that, so the crossfade is on the tokens without you doing
+		anything — a second line of defence behind refusing to start a transition in the first place. The
+		snippet is here for pseudo-elements of your own.
+	</Text>
+	<Text size="sm" variant="secondary" style="margin-top: 1rem;">
 		Where <Code>document.startViewTransition</Code> does not exist — Firefox, older Safari — the helper
 		returns <Code>undefined</Code> and SvelteKit navigates as it always has. There is no polyfill and
 		deliberately so: a page crossfade is decoration, and decoration is not worth shipping a second
@@ -179,6 +225,27 @@
 </Card>
 
 <Card title="Props" id="props">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		The component props, first — these are all most apps ever touch.
+	</Text>
+	<Table
+		variant="simple"
+		columns={[
+			{ key: 'prop', label: 'Prop', render: codeCell },
+			{ key: 'on', label: 'On', render: codeCell },
+			{ key: 'type', label: 'Type', render: codeCell },
+			{ key: 'default', label: 'Default' },
+			{ key: 'description', label: 'Description' }
+		]}
+		data={[
+			{ prop: 'transitions', on: 'Root', type: 'boolean', default: 'true', description: 'Register the navigation hook and name the shell. Off disables both halves.' },
+			{ prop: 'transitions', on: 'Page', type: 'boolean', default: 'inherited', description: 'Override Root for this shell. Controls naming only — Root still owns the hook.' },
+			{ prop: 'viewTransitionName', on: 'Sidebar', type: 'string | null', default: 'null', description: 'A CSS custom-ident, so any name is allowed and yours may already be targeted by your own rules. Page sets it; a duplicate warns in development.' }
+		]}
+	/>
+	<Text variant="secondary" size="sm" style="margin: 1rem 0;">
+		And <Code>viewTransition</Code> itself, for the manual route above.
+	</Text>
 	<Table
 		variant="simple"
 		columns={[

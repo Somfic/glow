@@ -28,6 +28,7 @@
 	import Button from '../button/Button.svelte';
 	import ScrollArea from '../scroll-area/ScrollArea.svelte';
 	import { theme } from '../style/theme.svelte.js';
+	import { claimViewTransitionName } from '../util/viewTransitionName.js';
 
 	type Props = {
 		title?: string;
@@ -126,6 +127,11 @@
 	$effect(() => {
 		if (themeToggle) theme.hydrate();
 	});
+
+	// A duplicate name is silent in the browser, so say something while there
+	// is still someone to tell. Re-runs when the name changes, and releases on
+	// unmount, so a rail that comes and goes doesn't leak a claim.
+	$effect(() => claimViewTransitionName(viewTransitionName));
 
 	function toggleCollapse() {
 		collapsed = !collapsed;

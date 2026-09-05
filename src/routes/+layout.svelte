@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { afterNavigate, beforeNavigate, onNavigate } from '$app/navigation';
-	import { viewTransition } from '$lib/util/viewTransition.js';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { scrollMemory } from '$lib/util/scrollMemory.js';
 	import Root from '$lib/root/Root.svelte';
 	import Page from '$lib/page/Page.svelte';
@@ -9,12 +8,6 @@
 	import type { Snippet } from 'svelte';
 
 	let { children }: { children?: Snippet } = $props();
-
-	// The naming, the animation and the on/off switch all live in the library
-	// now (Root's `transitions`, on by default). The one thing it cannot own is
-	// the router, so this line stays: `onNavigate` registers via `onMount`, so
-	// none of it runs while prerendering.
-	onNavigate(viewTransition);
 
 	// Beside a sidebar the content panel scrolls, not the document, so
 	// SvelteKit's own scroll handling reaches nothing — without this, page two

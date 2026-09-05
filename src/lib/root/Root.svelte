@@ -7,6 +7,8 @@
 	// Apps that want the tokens without Root can still import 'glow/styles'
 	// directly; importing both is harmless.
 	import '../style/glow.scss';
+	import { onNavigate } from '$app/navigation';
+	import { viewTransition } from '../util/viewTransition.js';
 	import { setContext } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import ThemeProvider from '../style/ThemeProvider.svelte';
@@ -74,6 +76,8 @@
 	// A getter, not the value: a descendant reading this at init would otherwise
 	// snapshot whatever `transitions` was at mount and never see it change.
 	setContext('glow:transitions', () => transitions);
+
+	onNavigate(viewTransition);
 
 	// Also stamped on <html>, because `viewTransition` is called from the
 	// router's navigation hook — outside any component, where context cannot
