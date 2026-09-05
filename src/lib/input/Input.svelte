@@ -15,6 +15,7 @@
 	import PasswordInput from './PasswordInput.svelte';
 	import ColorInput from './ColorInput.svelte';
 	import DateInput from './DateInput.svelte';
+	import type { CalendarDay, CalendarMode, DateRange } from '../calendar/Calendar.svelte';
 	import TimeInput from './TimeInput.svelte';
 	import RatingInput from './RatingInput.svelte';
 	import PinInput, { type PinType } from './PinInput.svelte';
@@ -166,14 +167,23 @@
 
 	type DateProps = BaseProps & {
 		type: 'date';
-		value?: string; // ISO YYYY-MM-DD
+		/** ISO YYYY-MM-DD; a string[] in multiple mode, a { start, end } in range mode. */
+		value?: string | string[] | DateRange;
 		placeholder?: string;
 		clearable?: boolean;
 		min?: string;
 		max?: string;
 		locale?: string;
 		format?: (date: Date | null) => string;
-		onChange?: (value: string) => void;
+		/** One day, a set of days, or a span. */
+		mode?: CalendarMode;
+		isDateDisabled?: (date: Date) => boolean;
+		/** First column of the calendar. 0 = Sunday, 1 = Monday (default). */
+		weekStart?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+		showWeekNumbers?: boolean;
+		/** Extra content in a day cell, under the number. */
+		decoration?: Snippet<[CalendarDay]>;
+		onChange?: (value: any) => void;
 	};
 
 	type TimeProps = BaseProps & {
@@ -468,6 +478,11 @@
 			max={p.max}
 			locale={p.locale}
 			format={p.format}
+			mode={p.mode}
+			isDateDisabled={p.isDateDisabled}
+			weekStart={p.weekStart}
+			showWeekNumbers={p.showWeekNumbers}
+			decoration={p.decoration}
 			onChange={p.onChange}
 		/>
 	{:else if props.type === 'time'}

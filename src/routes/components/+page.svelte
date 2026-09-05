@@ -26,6 +26,7 @@
 			items: [
 				{ name: 'Button', href: '/components/buttons', description: 'Buttons and button groups' },
 				{ name: 'Input', href: '/components/inputs', description: 'One component, fifteen input types' },
+				{ name: 'Calendar', href: '/components/calendar', description: 'Themeable month grid for single, multiple, and range selection' },
 				{ name: 'Settings & Fields', href: '/components/settings', description: 'Field, FieldRow, SettingsSection, SettingsShell' },
 				{ name: 'File Upload', href: '/components/file-upload', description: 'Drag-drop file picker with previews' },
 				{ name: 'Image Upload', href: '/components/image-upload', description: 'Avatar and thumbnail picker with an optional crop step' }

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
+	import Link from '$lib/typography/Link.svelte';
 	import Card from "$lib/card/Card.svelte";
 	import Input from '$lib/input/Input.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
@@ -134,9 +135,36 @@
 
 	<Card title="Date Input" id="date-input">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-			Calendar popover with month navigation, optional <code>min</code>/<code>max</code> bounds, and <code>clearable</code>.
+			The <Link href="/components/calendar">Calendar</Link> grid in a popover: one tab stop, arrow
+			keys, <code>min</code>/<code>max</code> bounds, an <code>isDateDisabled</code> predicate,
+			<code>weekStart</code>, <code>locale</code>, and <code>clearable</code>. Focus moves into the
+			grid when it opens and returns to the field when it closes.
 		</Text>
-		<Input type="date" label="Date Input" placeholder="Pick a date" clearable />
+		<div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-start;">
+			<div style="width: 240px;">
+				<Input type="date" label="Date" placeholder="Pick a date" clearable />
+			</div>
+			<div style="width: 320px;">
+				<Input
+					type="date"
+					mode="range"
+					label="Range"
+					placeholder="Pick a range"
+					value={{ start: null, end: null }}
+					clearable
+				/>
+			</div>
+			<div style="width: 240px;">
+				<Input
+					type="date"
+					mode="multiple"
+					label="Multiple"
+					placeholder="Pick days"
+					value={[]}
+					clearable
+				/>
+			</div>
+		</div>
 	</Card>
 
 	<Card title="Time Input" id="time-input">
