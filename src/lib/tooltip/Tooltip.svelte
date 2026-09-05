@@ -19,6 +19,23 @@
 
 	let el = $state<HTMLDivElement>();
 
+	// A tooltip is deliberately inverted — it has to read as something floating
+	// above the page rather than as one more surface of it. Rather than inventing
+	// an overlay palette, stamp the *opposite* theme on this element: global.scss
+	// re-runs every token recipe against the inverted seeds for this subtree, so
+	// `--glow-bg-surface` and `--glow-fg` below come out inverted for free and
+	// stay correct if either palette is retuned.
+	//
+	// <html> is the right thing to read, not a parent: the tooltip is mounted
+	// into <body> from an action, so it inherits no subtree's theme, and both
+	// writers of the theme (the store and a controlled <Root>) stamp <html>.
+	// Nothing stamped yet means the :root default, which is dark.
+	const pageTheme =
+		typeof document !== 'undefined' && document.documentElement.dataset.theme === 'light'
+			? 'light'
+			: 'dark';
+	const inverse = pageTheme === 'light' ? 'dark' : 'light';
+
 	// The anchor x/y + CSS transform can place the tooltip past a viewport edge
 	// (e.g. a centered `top` tooltip on a trigger near the right edge). Measure
 	// the rendered box and shift it back on-screen. getBoundingClientRect already
@@ -41,6 +58,7 @@
 <div
 	bind:this={el}
 	class="tooltip {position}"
+	data-theme={inverse}
 	style="left: {x}px; top: {y}px;"
 	transition:fade={{ duration: motion.ms(150) }}
 	role="tooltip"
@@ -54,8 +72,12 @@
 	.tooltip {
 		position: fixed;
 		z-index: 10000;
-		background: rgba(0, 0, 0, 0.9);
-		color: white;
+		background: color-mix(in oklab, var(--glow-bg-surface) 92%, transparent);
+		color: var(--glow-fg);
+		// Over a subtree that stamps the opposite theme for itself — Sidebar's
+		// dark rail in a light app — the inverted fill can land close to what is
+		// behind it. The border is what still separates the two.
+		border: $border-strong;
 		padding: 0.5rem 0.75rem;
 		border-radius: $radius-sm;
 		font-size: 0.875rem;

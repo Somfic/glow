@@ -6,6 +6,7 @@
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
 	import Code from '$lib/code/Code.svelte';
+	import ThemeProvider from '$lib/style/ThemeProvider.svelte';
 </script>
 
 {#snippet codeCell(value)}
@@ -84,6 +85,30 @@
 				Another tooltip
 			</button>
 			<button class="demo-btn" use:tooltip={'✨ Works with emojis too!'}> With emoji </button>
+		</div>
+	</Card>
+
+	<Card title="On an inverted surface" id="inverted-surface">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			The tooltip takes the opposite of the page theme, so it reads as something floating above the
+			page rather than as another surface of it. It is mounted into <Code>&lt;body&gt;</Code>, so it
+			follows the page theme even over a panel that pins its own — the border is what keeps it
+			separate there.
+		</Text>
+		<div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+			<div class="demo-panel">
+				<button class="demo-btn" use:tooltip={'Over the page surface'}>Page theme</button>
+			</div>
+			<ThemeProvider theme="dark">
+				<div class="demo-panel">
+					<button class="demo-btn" use:tooltip={'Over a pinned dark panel'}>Dark panel</button>
+				</div>
+			</ThemeProvider>
+			<ThemeProvider theme="light">
+				<div class="demo-panel">
+					<button class="demo-btn" use:tooltip={'Over a pinned light panel'}>Light panel</button>
+				</div>
+			</ThemeProvider>
 		</div>
 	</Card>
 
@@ -183,6 +208,13 @@
 
 	.demo-btn:hover {
 		background: color-mix(in oklab, var(--glow-bg-surface-element), var(--glow-fg) 8%);
+	}
+
+	.demo-panel {
+		padding: 1.25rem;
+		border: 1px solid var(--glow-border-color);
+		border-radius: 8px;
+		background: var(--glow-bg-surface);
 	}
 
 	.demo-icon {
