@@ -65,7 +65,9 @@
 		src?: string;
 		/** Image URL shown beneath the main layers until `src` finishes loading.
 		 *  Useful for showing a thumbnail while a video buffers. The crossfade
-		 *  to `src` happens automatically once it's ready. */
+		 *  to `src` happens automatically once it's ready. Held behind the same
+		 *  viewport gate as `src` when `lazy`, so a grid of these doesn't fetch
+		 *  a request per tile on mount. */
 		fallback?: string;
 		type?: MediaType;
 		fit?: Fit;
@@ -77,8 +79,9 @@
 		controls?: boolean;
 		playsinline?: boolean;
 		/** Defer loading/playing the heavy `src` (and pause the video) until the
-		 *  element is on (or near) screen. The lightweight `fallback` still
-		 *  renders so the layout stays populated. Default: true. */
+		 *  element is on (or near) screen — `fallback` included. Once seen, the
+		 *  fallback stays put rather than unloading on scroll-away.
+		 *  Default: true. */
 		lazy?: boolean;
 		/** External priority gate. When false the video is paused and nothing
 		 *  loads/plays, regardless of viewport — flip it false to deprioritise
@@ -113,6 +116,17 @@
 	let loadedSrc = $state<string | undefined>(undefined);
 	let prevActiveLayer = 0;
 	const canLoad = $derived(inView && active);
+
+	// The fallback is gated on `inView` alone rather than on `canLoad`: being
+	// deprioritised should drop the *video*, not blank the still that was
+	// standing in for it. Latched, because once it has been seen the bytes are
+	// in cache and unmounting it on scroll-away would only buy a re-decode and
+	// a flash of empty tile on the way back.
+	let fallbackSeen = $state(false);
+	$effect(() => {
+		if (inView) fallbackSeen = true;
+	});
+	const showFallback = $derived(!!fallback && (fallbackSeen || !lazy));
 
 	$effect(() => {
 		const el = rootEl;
@@ -373,16 +387,31 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="media" class:clickable={!!onclick} {onclick} bind:this={rootEl}>
-	{#if !src && !fallback}
+	{#if !src && !showFallback}
 		<div class="fallback" style:background={gradientFor(alt)}></div>
-	{:else if initialLoad && !mediaError && !fallback}
+	{:else if initialLoad && !mediaError && !showFallback}
 		<div class="placeholder">
 			<Spinner size={24} />
 		</div>
 	{/if}
 
-	{#if fallback}
-		<img src={fallback} {alt} class="fallback-layer" style="object-fit: {fit}" />
+	{#if showFallback}
+		<!--
+			`loading="lazy"` is not what defers this — Chromium's threshold is
+			generous enough that a whole grid still sits inside it, which a
+			request count on the docs page shows plainly. The observer above is,
+			and the attribute stays only for the priority hint that comes with
+			it. Every layer here is `position: absolute`, so holding the element
+			back costs nothing in layout.
+		-->
+		<img
+			src={fallback}
+			{alt}
+			class="fallback-layer"
+			style="object-fit: {fit}"
+			loading={lazy ? 'lazy' : 'eager'}
+			decoding="async"
+		/>
 	{/if}
 
 	{#if mediaError}
@@ -399,6 +428,7 @@
 				class="layer"
 				class:active={activeLayer === i && layers[i].loaded}
 				style="object-fit: {fit}"
+				decoding="async"
 			/>
 		{:else if layers[i].type === 'video' && layers[i].src}
 			<video

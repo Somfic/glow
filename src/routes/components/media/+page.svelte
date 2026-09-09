@@ -15,6 +15,14 @@
 	];
 
 	let current = $state(0);
+
+	// Enough tiles to run several screens deep, which is the point of the card:
+	// the ones below the fold should cost nothing until they're scrolled to.
+	const grid = Array.from({ length: 24 }, (_, i) => ({
+		id: i,
+		still: `https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200&sig=${i}`,
+		full: `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&sig=${i}`
+	}));
 </script>
 
 {#snippet codeCell(value: string)}
@@ -68,6 +76,25 @@
 	</div>
 </Card>
 
+<Card title="Lazy grid" id="lazy">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		<Code>lazy</Code> (on by default) holds both <Code>src</Code> and
+		<Code>fallback</Code> until the tile is within 300px of the viewport, so a
+		grid this long costs a screenful of requests rather than
+		{grid.length} of them. Scroll and watch the network panel. Pass
+		<Code>{'lazy={false}'}</Code> for something above the fold that should not
+		wait, and <Code>{'active={false}'}</Code> to deprioritise a whole grid at
+		once — behind an open dialog, say.
+	</Text>
+	<div class="tile-grid">
+		{#each grid as tile (tile.id)}
+			<div class="tile">
+				<Media src={tile.full} fallback={tile.still} fit="cover" alt={`Tile ${tile.id}`} />
+			</div>
+		{/each}
+	</div>
+</Card>
+
 <Card title="Usage" id="usage">
 	<CodeBlock
 		language="svelte"
@@ -97,8 +124,60 @@
 			{ key: 'description', label: 'Description' }
 		]}
 		data={[
-			{ prop: 'src', type: 'string', default: '-', description: 'Image URL' },
-			{ prop: 'fit', type: "'cover' | 'contain'", default: "'contain'", description: 'Object-fit mode' }
+			{ prop: 'src', type: 'string', default: '-', description: 'Image or video URL' },
+			{
+				prop: 'fallback',
+				type: 'string',
+				default: '-',
+				description: 'Still shown beneath src — a poster while a video buffers'
+			},
+			{
+				prop: 'type',
+				type: "'image' | 'video' | 'auto'",
+				default: "'auto'",
+				description: 'Auto sniffs the extension; tell it when the URL hides one'
+			},
+			{ prop: 'fit', type: "'cover' | 'contain'", default: "'contain'", description: 'Object-fit mode' },
+			{
+				prop: 'lazy',
+				type: 'boolean',
+				default: 'true',
+				description: 'Hold src and fallback until within 300px of the viewport'
+			},
+			{
+				prop: 'active',
+				type: 'boolean',
+				default: 'true',
+				description: 'External gate — false pauses the video and loads nothing'
+			},
+			{ prop: 'autoplay', type: 'boolean', default: 'false', description: 'Play once loaded' },
+			{ prop: 'muted', type: 'boolean', default: 'true', description: 'Required for autoplay' },
+			{ prop: 'loop', type: 'boolean', default: 'true', description: 'Restart on end' },
+			{ prop: 'controls', type: 'boolean', default: 'false', description: 'Native video controls' },
+			{
+				prop: 'startTime',
+				type: 'number',
+				default: '0',
+				description: 'Seek to this fraction of the duration on load'
+			}
 		]}
 	/>
 </Card>
+
+<style>
+	.tile-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+		gap: 0.75rem;
+	}
+
+	.tile {
+		aspect-ratio: 4 / 3;
+		overflow: hidden;
+		border-radius: 8px;
+		/* A frame rather than a fill: a tile that hasn't been scrolled to yet is
+		   deliberately empty, and the point of the card is lost if it reads as
+		   nothing being there at all. */
+		border: 1px solid var(--glow-border-color);
+	}
+</style>

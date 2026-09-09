@@ -306,7 +306,12 @@
 	}
 
 	.label {
-		font-size: $text-sm;
+		// Body size, not a smaller UI size: a vertical stepper is often a
+		// numbered procedure sitting in prose, and a 14px label beside 16px
+		// paragraphs reads as a different kind of text rather than a step in
+		// the same document. The marker geometry hangs off `--stepper-line`,
+		// which is a length, so nothing shifts when this changes.
+		font-size: $text-base;
 		// A length, not a ratio: this *is* `--stepper-line`, so the first line box
 		// of the label and the marker's box are the same height and start together.
 		line-height: var(--stepper-line);
@@ -316,7 +321,7 @@
 	}
 
 	.description {
-		font-size: $text-xs;
+		font-size: $text-sm;
 		line-height: 1.5;
 		font-weight: $weight-medium;
 		color: var(--glow-text-muted);

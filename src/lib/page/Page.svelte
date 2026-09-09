@@ -25,7 +25,10 @@
 
 	type SidebarConfig = {
 		title?: string;
+		/** The pinned section under the title — held out of the nav's scroller. */
 		topItems?: SidebarItem[];
+		/** The same, pinned above the theme switch. */
+		bottomItems?: SidebarItem[];
 		groups?: SidebarGroup[];
 		/** Show a light/dark switch at the bottom of the rail. */
 		themeToggle?: boolean;
@@ -117,6 +120,7 @@
 	<Sidebar
 		title={sidebarConfig.title}
 		topItems={sidebarConfig.topItems}
+		bottomItems={sidebarConfig.bottomItems}
 		groups={sidebarConfig.groups}
 		themeToggle={sidebarConfig.themeToggle}
 		theme={sidebarConfig.theme}

@@ -4,6 +4,7 @@
 	import { highlightCode, inferLanguageFromFilename } from './highlighter.js';
 	import { cursor } from '../cursor/cursor.svelte.js';
 	import { tooltip } from '../tooltip/tooltip.svelte.js';
+	import { appliedTheme } from '../util/appliedTheme.svelte.js';
 
 	let {
 		code,
@@ -25,6 +26,16 @@
 
 	let highlightedHtml = $state<string>('');
 	let isHighlighting = $state(true);
+	// Not `$state`: it only guards the loading state below, and reading it in
+	// the effect that writes `highlightedHtml` would make the effect depend on
+	// its own output.
+	let hasHighlighted = false;
+
+	// Shiki writes its colours into inline `style` attributes, so the theme has
+	// to be picked here — the `--glow-*` tokens cannot reach inside them, and a
+	// dark grammar theme on a light surface is unreadable rather than merely off.
+	const surface = appliedTheme();
+	let shikiTheme = $derived(surface.isDark ? 'vitesse-dark' : 'vitesse-light');
 
 	// Infer language from filename if not explicitly provided
 	let inferredLanguage = $derived(
@@ -42,7 +53,7 @@
 	// Get shell commands (split by lines)
 	let shellCommands = $derived(isShellMode ? code.trim().split('\n') : []);
 
-	// Highlight code when component mounts or code/language changes
+	// Highlight code when the code, the language or the theme changes.
 	$effect(() => {
 		if (isShellMode) {
 			// For shell mode, don't highlight - we'll render manually
@@ -50,17 +61,31 @@
 			return;
 		}
 
-		isHighlighting = true;
-		highlightCode(code.trim(), inferredLanguage, 'vitesse-dark')
+		// A theme switch re-highlights an already-painted block. Keeping the old
+		// markup up while that runs matters: falling back to the loading state
+		// would flash unstyled text across every code block on the page.
+		isHighlighting = !hasHighlighted;
+		let stale = false;
+		highlightCode(code.trim(), inferredLanguage, shikiTheme)
 			.then((html) => {
+				if (stale) return;
 				highlightedHtml = html;
+				hasHighlighted = true;
 				isHighlighting = false;
 			})
 			.catch(() => {
+				if (stale) return;
 				// Fallback to plain code
 				highlightedHtml = `<pre><code>${code.trim()}</code></pre>`;
+				hasHighlighted = true;
 				isHighlighting = false;
 			});
+
+		// Two switches in quick succession can resolve out of order, and the
+		// loser must not paint over the winner.
+		return () => {
+			stale = true;
+		};
 	});
 
 	async function copyCode() {

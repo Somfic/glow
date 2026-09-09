@@ -30,6 +30,7 @@
 	const sidebarConfig: {
 		title: string;
 		topItems: SidebarItem[];
+		bottomItems: SidebarItem[];
 		groups: SidebarGroup[];
 		themeToggle: boolean;
 		theme: SidebarTheme;
@@ -43,6 +44,8 @@
 			{ label: 'Home', href: '/', icon: 'House' },
 			{ label: 'Components', href: '/components', icon: 'LayoutGrid' }
 		],
+		// Pinned, and external: the two things `bottomItems` is here to show.
+		bottomItems: [{ label: 'Source', href: 'https://github.com/Somfic/glow', icon: 'Github' }],
 		groups: [
 			{
 				label: 'Layout & Shell',
@@ -148,6 +151,7 @@
 				label: 'Examples',
 				items: [
 					{ label: 'Form', href: '/examples/form', icon: 'ClipboardList' },
+					{ label: 'Documentation', href: '/examples/docs', icon: 'BookOpen' },
 					{ label: 'Sandbox', href: '/examples/sandbox', icon: 'ScanEye' },
 					{ label: 'Linear', href: '/examples/linear', icon: 'CircleDot' },
 					{ label: 'Spotify', href: '/examples/spotify', icon: 'Music' },

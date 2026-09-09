@@ -165,11 +165,9 @@
 		}
 	}
 
-	// Calculate indent based on heading level
-	function getIndent(level: number): number {
-		const minLevel = Math.min(...headings.map((h) => h.level));
-		return (level - minLevel) * 1; // 1rem per level
-	}
+	// The shallowest heading on the page sits flush, whatever its level: a page
+	// whose top heading is an `h2` should not start one indent in.
+	let minLevel = $derived(headings.length ? Math.min(...headings.map((h) => h.level)) : 1);
 </script>
 
 {#if headings.length > 0}
@@ -181,7 +179,7 @@
 					<a
 						href="#{heading.id}"
 						class="toc-link"
-						style:padding-left="{getIndent(heading.level)}rem"
+						style:--toc-indent="{heading.level - minLevel}rem"
 						onclick={(e) => {
 							e.preventDefault();
 							scrollToHeading(heading.id);
@@ -242,7 +240,11 @@
 
 	.toc-link {
 		display: block;
+		// The indent is added to the inline padding rather than replacing it —
+		// setting `padding-left` outright put a top-level item's text hard
+		// against the rail.
 		padding: 0.5rem 0.75rem;
+		padding-left: calc(0.75rem + var(--toc-indent, 0rem));
 		color: var(--glow-text-secondary);
 		text-decoration: none;
 		font-size: $text-sm;

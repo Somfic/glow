@@ -5,6 +5,13 @@
 		label: string;
 		href: string;
 		icon?: IconProp;
+		/**
+		 * Opens in a new tab and gets the outbound arrow. Inferred from the
+		 * `href` when omitted, so a rail that links out to a GitHub repo or a
+		 * status page marks it without being told twice; set it explicitly to
+		 * override that guess either way.
+		 */
+		external?: boolean;
 	};
 
 	export type SidebarGroup = {
@@ -32,7 +39,13 @@
 
 	type Props = {
 		title?: string;
+		/**
+		 * The section under the title. Pinned: it sits outside the scroller, so
+		 * a nav long enough to scroll cannot carry it away.
+		 */
 		topItems?: SidebarItem[];
+		/** The same, pinned above the theme switch at the bottom of the rail. */
+		bottomItems?: SidebarItem[];
 		groups?: SidebarGroup[];
 		children?: Snippet;
 		open?: boolean;
@@ -71,6 +84,7 @@
 	let {
 		title = '',
 		topItems = [],
+		bottomItems = [],
 		groups = [],
 		children,
 		open = $bindable(false),
@@ -115,6 +129,12 @@
 		return activePath === href || activePath.startsWith(href + '/');
 	}
 
+	// A scheme or a protocol-relative `//host` — anything the browser would
+	// leave this origin for. A bare path never matches, which is the common case.
+	function looksExternal(href: string): boolean {
+		return /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href);
+	}
+
 	function handleItemClick(href: string) {
 		// Eagerly update the active path for instant feedback
 		activePath = href;
@@ -138,6 +158,31 @@
 		oncollapse?.(collapsed);
 	}
 </script>
+
+{#snippet navItem(item: SidebarItem)}
+	{@const external = item.external ?? looksExternal(item.href)}
+	<a
+		href={item.href}
+		class="sidebar-item"
+		class:is-active={isActive(item.href)}
+		target={external ? '_blank' : undefined}
+		rel={external ? 'noopener noreferrer' : undefined}
+		onclick={() => {
+			// An outbound link never becomes the active page, and marking it
+			// active would leave the pill stuck on it after the tab opens.
+			if (!external) handleItemClick(item.href);
+		}}
+		use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}
+	>
+		{#if item.icon}<Icon {...resolveIcon(item.icon)} size={resolveIcon(item.icon).size ?? 16} />{/if}
+		<span class="sidebar-item-label">{item.label}</span>
+		{#if external}
+			<!-- Same glyph as `<Link external>`, so "leaves the site" reads the
+			     same in the rail as it does in prose. -->
+			<span class="sidebar-item-external"><Icon name="ExternalLink" size={12} /></span>
+		{/if}
+	</a>
+{/snippet}
 
 {#if open}
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -181,6 +226,13 @@
 	     `fade` rather than a visible scrollbar because a scrollbar in a
 	     56px rail reserves a gutter, and that gutter is what would push
 	     the icon column off the rail's centre line. -->
+	{#if topItems.length}
+		<nav class="sidebar-pinned sidebar-top" aria-label="Primary">
+			{#each topItems as item}
+				{@render navItem(item)}
+			{/each}
+		</nav>
+	{/if}
 	<ScrollArea
 		class="sidebar-scroll"
 		scrollbar="none"
@@ -188,13 +240,6 @@
 		label={title ? `${title} navigation` : 'Navigation'}
 	>
 		<nav class="sidebar-nav">
-			{#each topItems as item}
-				<a href={item.href} class="sidebar-item" class:is-active={isActive(item.href)} onclick={() => handleItemClick(item.href)} use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}>
-					{#if item.icon}<Icon {...resolveIcon(item.icon)} size={resolveIcon(item.icon).size ?? 16} />{/if}
-					<span class="sidebar-item-label">{item.label}</span>
-				</a>
-			{/each}
-
 			{#each groups as group}
 				<div class="sidebar-group">
 					<!-- The label and divider both render; CSS swaps which is visible
@@ -202,16 +247,20 @@
 					<span class="sidebar-group-label">{group.label}</span>
 					<div class="sidebar-group-divider"></div>
 					{#each group.items as item}
-						<a href={item.href} class="sidebar-item" class:is-active={isActive(item.href)} onclick={() => handleItemClick(item.href)} use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}>
-							{#if item.icon}<Icon {...resolveIcon(item.icon)} size={resolveIcon(item.icon).size ?? 16} />{/if}
-							<span class="sidebar-item-label">{item.label}</span>
-						</a>
+						{@render navItem(item)}
 					{/each}
 				</div>
 			{/each}
 		</nav>
 	</ScrollArea>
 	{#if children}<div class="sidebar-children">{@render children()}</div>{/if}
+	{#if bottomItems.length}
+		<nav class="sidebar-pinned sidebar-bottom" aria-label="Secondary">
+			{#each bottomItems as item}
+				{@render navItem(item)}
+			{/each}
+		</nav>
+	{/if}
 	{#if themeToggle}
 		{@const next = theme.isDark ? 'light' : 'dark'}
 		<div class="sidebar-footer">
@@ -380,7 +429,34 @@
 	}
 
 	.sidebar-nav {
-		padding-bottom: $space-md;
+		// Matches the pinned section's `padding-top` on the other side of the
+		// line, so the seam has the same air above it as below.
+		padding-bottom: $space-sm;
+	}
+
+	// The pinned sections are siblings of the scroller rather than content
+	// inside it, which is the whole point: `.sidebar-scroll` is `flex: 1`, so
+	// these two keep their height and the nav between them takes what is left.
+	.sidebar-pinned {
+		flex: 0 0 auto;
+	}
+
+	// The top section draws no line of its own, in either state. Expanded, the
+	// first group's label already separates it; collapsed, that label becomes
+	// the group divider — a border here would double it.
+
+	// Only the edge that faces the line needs padding. The header's own bottom
+	// padding and the nav's `padding-bottom` already hold the two sections off
+	// the scroller, and doubling that up read as a gap rather than a seam.
+	.sidebar-bottom {
+		border-top: 1px solid var(--glow-border-color);
+		padding-top: $space-sm;
+	}
+
+	// Two adjacent pinned strips need one line between them, not two.
+	.sidebar-bottom + .sidebar-footer {
+		border-top: none;
+		padding-top: 0;
 	}
 
 	// Pinned to the bottom: `.sidebar-nav` is `flex: 1`, so anything after it
@@ -447,7 +523,9 @@
 	.sidebar-group-divider {
 		height: 1px;
 		background: var(--glow-border-color);
-		margin: 0 0.75rem;
+		// Full width, like the pinned sections' borders: an inset line reads as
+		// belonging to the item under it, a full one as separating the two.
+		margin: 0;
 		opacity: 0;
 		max-height: 0;
 		transition: opacity $transition, max-height $transition, margin-top $transition, margin-bottom $transition;
@@ -488,6 +566,22 @@
 		&.is-active {
 			color: var(--glow-primary);
 			background: var(--glow-primary-soft);
+		}
+	}
+
+	// Pushed to the trailing edge and dropped with the labels: collapsed, the
+	// rail is an icon column, and a second icon in the row would break it.
+	.sidebar-item-external {
+		display: flex;
+		margin-left: auto;
+		color: var(--glow-text-muted);
+		opacity: 1;
+		transition: opacity $transition;
+
+		.collapsed & {
+			opacity: 0;
+			max-width: 0;
+			overflow: hidden;
 		}
 	}
 

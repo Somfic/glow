@@ -224,10 +224,25 @@ h6 {
 }
 
 // Paragraphs and text
+//
+// The margin is on *both* edges, which reads as a doubled gap only if you
+// forget that adjacent margins in normal flow collapse: two paragraphs still
+// sit $space-md apart. What it buys is the case where the sibling is not a
+// paragraph — a CodeBlock, a Stepper, a Table — since none of those carry an
+// outer margin of their own. With a bottom-only margin those got air above and
+// nothing below, and prose ran straight into the top of the next block.
+//
+// Zeroing the first and last child keeps the margin from escaping the block it
+// belongs to: the outermost margins would otherwise collapse through a padding
+// -less container and push whatever holds the prose.
 p {
-    margin: 0 0 $space-md 0;
+    margin: $space-md 0;
     line-height: 1.6;
     color: $text-primary;
+
+    &:first-child {
+        margin-top: 0;
+    }
 
     &:last-child {
         margin-bottom: 0;

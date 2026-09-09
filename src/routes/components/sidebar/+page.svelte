@@ -34,8 +34,29 @@
 		}
 	];
 
+	const bottomItems: SidebarItem[] = [
+		{ label: 'Support', href: '/components/banner', icon: 'LifeBuoy' },
+		{ label: 'Source', href: 'https://github.com/Somfic/glow', icon: 'Github' }
+	];
+
+	// Deliberately taller than the frame below, so the pinned sections have
+	// something to stay put against.
+	const longGroups: SidebarGroup[] = [
+		...groups,
+		{
+			label: 'Reports',
+			items: [
+				{ label: 'Overview', href: '/components/charts', icon: 'ChartLine' },
+				{ label: 'Usage', href: '/components/progress', icon: 'Gauge' },
+				{ label: 'Audit log', href: '/components/timeline', icon: 'ScrollText' },
+				{ label: 'Exports', href: '/components/file-upload', icon: 'Download' }
+			]
+		}
+	];
+
 	let collapsed = $state(false);
 	let darkCollapsed = $state(false);
+	let pinnedCollapsed = $state(false);
 </script>
 
 {#snippet codeCell(value: string)}
@@ -117,6 +138,46 @@
 </Page>`} />
 </Card>
 
+<Card title="Pinned sections" id="pinned">
+	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+		<Code>topItems</Code> and <Code>bottomItems</Code> sit outside the nav's scroller, so a rail with
+		more links than height keeps them both in view — the groups between them are the only part that
+		scrolls. Scroll the frame's rail to see it. An item whose <Code>href</Code> leaves the site is
+		marked with the same outbound arrow <Code>&lt;Link external&gt;</Code> uses, opens in a new tab,
+		and never takes the active pill; <Code>external</Code> on the item overrides that guess.
+	</Text>
+	<div class="frame frame-spaced">
+		<Sidebar
+			title="Acme"
+			{topItems}
+			{bottomItems}
+			groups={longGroups}
+			themeToggle
+			bind:collapsed={pinnedCollapsed}
+		/>
+		<div class="frame-content" class:collapsed={pinnedCollapsed}>
+			<Text variant="secondary" size="sm">
+				The dividers are full-bleed: they separate the pinned strips from the scrolling nav rather
+				than decorating the rows next to them.
+			</Text>
+		</div>
+	</div>
+	<CodeBlock
+		language="svelte"
+		code={`<Sidebar
+  title="Acme"
+  topItems={[{ label: 'Home', href: '/', icon: 'House' }]}
+  bottomItems={[
+    { label: 'Support', href: '/support', icon: 'LifeBuoy' },
+    // external is inferred from the href; pass it to override
+    { label: 'Source', href: 'https://github.com/Somfic/glow', icon: 'Github' }
+  ]}
+  {groups}
+  themeToggle
+/>`}
+	/>
+</Card>
+
 <Card title="Usage" id="usage">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 		Standalone. Note it's <Code>position: fixed</Code> — offset your own content by the rail width.
@@ -196,7 +257,8 @@
 		]}
 		data={[
 			{ prop: 'title', type: 'string', default: "''", description: 'Shown next to the logo mark in the header. Hidden when collapsed.' },
-			{ prop: 'topItems', type: 'SidebarItem[]', default: '[]', description: 'Ungrouped links rendered above the groups.' },
+			{ prop: 'topItems', type: 'SidebarItem[]', default: '[]', description: 'Ungrouped links above the groups. Pinned: they sit outside the nav\u2019s scroller, so a long nav cannot scroll them away.' },
+			{ prop: 'bottomItems', type: 'SidebarItem[]', default: '[]', description: 'The same, pinned to the bottom of the rail above the theme switch.' },
 			{ prop: 'groups', type: 'SidebarGroup[]', default: '[]', description: 'Labelled groups of links. The label collapses into a divider in icon-only mode.' },
 			{ prop: 'collapsed', type: 'boolean', default: 'false', description: 'Bindable. Icon-only rail (56px) instead of the full 240px.' },
 			{ prop: 'open', type: 'boolean', default: 'false', description: 'Bindable. Below 768px the rail slides off-screen; this opens it as a drawer with a backdrop.' },
@@ -216,6 +278,9 @@
   label: string;
   href: string;
   icon?: IconProp;
+  // Opens in a new tab and gets the outbound arrow.
+  // Inferred from the href when omitted.
+  external?: boolean;
 };
 
 type SidebarGroup = {

@@ -38,7 +38,7 @@
 	{/if}
 	{@render children()}
 	{#if external}
-		<Icon name="ExternalLink" size="0.85em" />
+		<span class="external-mark"><Icon name="ExternalLink" size="0.85em" /></span>
 	{/if}
 </a>
 
@@ -68,6 +68,17 @@
 
 		&.underline-hover:hover {
 			text-decoration: underline;
+		}
+
+		// `align-items: center` centres the arrow on the line box, and the line
+		// box carries the font's descender space below the baseline — so a mark
+		// that is optically centred on the letters ends up sitting low. Lifting
+		// it by a fraction of the em puts it back between the x-height and the
+		// cap, where the eye expects it. A transform rather than a margin: it
+		// must not move the text it follows.
+		.external-mark {
+			display: flex;
+			transform: translateY(-0.08em);
 		}
 
 		&:hover {
