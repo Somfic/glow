@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getContext, onMount, type Snippet } from 'svelte';
 	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
+	import Pill from '../pill/Pill.svelte';
 	import { ACCORDION_CONTEXT_KEY, type AccordionContext } from './context.js';
 
 	interface Props {
@@ -91,7 +92,10 @@
 			{/if}
 			<span class="trigger-spacer"></span>
 			{#if badge != null}
-				<span class="trigger-badge">{badge}</span>
+				<!-- The same <Pill> a Tabs or CommandPalette badge renders, rather
+				     than a capsule of this file's own: they are all the one prop
+				     under different names. -->
+				<span class="trigger-badge"><Pill label={String(badge)} /></span>
 			{/if}
 			<span class="chevron" aria-hidden="true">
 				<Icon name="ChevronRight" size={14} />
@@ -155,6 +159,17 @@
 		&:disabled {
 			@include disabled-content;
 			cursor: default;
+
+			// `disabled-content` only paints `color`, which reaches the icon and
+			// the chevron through currentColor but not the badge: a Pill declares
+			// its own text, fill and border. Retinting the tokens it is built
+			// from reaches it without this file naming any of its classes — the
+			// same move <Input> makes for its invalid state.
+			.trigger-badge {
+				--glow-text-secondary: var(--glow-fg-disabled);
+				--glow-border-color: var(--glow-border-disabled);
+				--glow-bg-surface-element: transparent;
+			}
 		}
 
 		// Inset so the ring isn't clipped by the container's `overflow: hidden`.
@@ -192,14 +207,11 @@
 		flex: 1 1 auto;
 	}
 
+	// The Pill sizes itself; this only keeps it from being squeezed by the
+	// title beside it, which is the flexible one in this row.
 	.trigger-badge {
+		display: flex;
 		flex: 0 0 auto;
-		font-size: $text-xs;
-		font-variant-numeric: tabular-nums;
-		color: var(--glow-text-secondary);
-		background: var(--glow-fg-soft);
-		border-radius: $radius-full;
-		padding: 0.125rem 0.5rem;
 	}
 
 	.chevron {
