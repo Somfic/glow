@@ -6,6 +6,7 @@
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
 	import Table from '$lib/data/Table.svelte';
 	import Code from '$lib/code/Code.svelte';
+	import Input from '$lib/input/Input.svelte';
 </script>
 
 {#snippet codeCell(value: string)}
@@ -27,6 +28,21 @@
 			<Pill label="Design" />
 			<Pill label="Frontend" />
 			<Pill label="Svelte" />
+		</div>
+	</Card>
+
+	<Card title="Sizes" id="sizes">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			<Code>sm</Code> is the default, for pills inline in a table cell or a list row.
+			<Code>md</Code> is exactly as tall as an Input, so a pill can sit in a row with one.
+		</Text>
+		<div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+			<Pill icon="Tag" label="Small" />
+			<Pill icon="Tag" label="Medium" size="md" />
+		</div>
+		<div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem; max-width: 24rem;">
+			<Input type="text" value="" placeholder="Sits flush beside an input" />
+			<Pill icon="Check" label="Saved" size="md" color="#22c55e" />
 		</div>
 	</Card>
 
@@ -72,6 +88,20 @@
 		</div>
 	</Card>
 
+	<Card title="Interactive" id="interactive">
+		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
+			An <Code>onclick</Code> or an <Code>href</Code> makes the pill a button or a link, which
+			hovers and takes focus. <Code>selected</Code> inverts it, for a filter row.
+		</Text>
+		<div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+			<Pill label="All" selected onclick={() => {}} />
+			<Pill label="Design" onclick={() => {}} />
+			<Pill label="Frontend" onclick={() => {}} />
+			<Pill label="Outlined" variant="outlined" onclick={() => {}} />
+			<Pill icon="ExternalLink" label="Docs" href="#interactive" />
+		</div>
+	</Card>
+
 	<Card title="Removable" id="removable">
 		<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
 			Pills with a remove button for dismissible tags
@@ -103,7 +133,10 @@
 <Pill image="/avatar.jpg" label="User" />
 
 <!-- Removable -->
-<Pill label="Dismiss me" onRemove={() => handleRemove()} />`}
+<Pill label="Dismiss me" onRemove={() => handleRemove()} />
+
+<!-- Input-height, to sit in a row with a control -->
+<Pill icon="Check" label="Saved" size="md" />`}
 		/>
 	</Card>
 
@@ -121,6 +154,11 @@
 				{ prop: 'icon', type: 'IconName', default: '-', description: 'Leading icon name' },
 				{ prop: 'image', type: 'string', default: '-', description: 'Image URL (creates avatar-style pill)' },
 				{ prop: 'color', type: 'string', default: '-', description: 'Tint color for background, border, and text' },
+				{ prop: 'size', type: "'sm' | 'md'", default: "'sm'", description: 'Font size of the pill; its height follows. md matches an Input' },
+				{ prop: 'variant', type: "'filled' | 'outlined'", default: "'filled'", description: 'Outlined drops the fill and keeps the border' },
+				{ prop: 'selected', type: 'boolean', default: 'false', description: 'Renders as an inverted (or solid color) pill' },
+				{ prop: 'href', type: 'string', default: '-', description: 'Renders the pill as a link' },
+				{ prop: 'onclick', type: '(e: MouseEvent) => void', default: '-', description: 'Renders the pill as a button' },
 				{ prop: 'onRemove', type: '() => void', default: '-', description: 'Remove callback (shows X button)' }
 			]}
 		/>
