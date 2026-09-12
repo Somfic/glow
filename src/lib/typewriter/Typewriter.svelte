@@ -1,12 +1,12 @@
 <script lang="ts" module>
-	export type AnimatedTextGranularity = 'character' | 'word' | 'line';
+	export type TypewriterGranularity = 'character' | 'word' | 'line';
 
 	/** Units per second, per granularity. A character reveal has to run several
 	 *  times faster than a word reveal to feel like the same speed of writing,
 	 *  so one shared default would be wrong for two of the three modes. These
 	 *  land near the cadence of a model streaming tokens: fast enough not to
 	 *  make anyone wait, slow enough that the reveal is the point. */
-	const DEFAULT_SPEED: Record<AnimatedTextGranularity, number> = {
+	const DEFAULT_SPEED: Record<TypewriterGranularity, number> = {
 		character: 55,
 		word: 13,
 		line: 3.5
@@ -20,7 +20,7 @@
 	/** Split into reveal units. Joining them back is exactly the input, with no
 	 *  separator of any kind — the component renders nothing else between them,
 	 *  and the tests check the rendered fragments still spell the source. */
-	export function splitText(text: string, granularity: AnimatedTextGranularity): string[] {
+	export function splitText(text: string, granularity: TypewriterGranularity): string[] {
 		if (text === '') return [];
 		if (granularity === 'character') {
 			// `Array.from` splits surrogate pairs correctly but still cuts an
@@ -64,7 +64,7 @@
 		/** What counts as one step. `word` by default: a character reveal of a
 		 *  long paragraph is one span per glyph, which is a lot of DOM for a
 		 *  difference most readers will not notice past the first line. */
-		granularity?: AnimatedTextGranularity;
+		granularity?: TypewriterGranularity;
 		/** Units per second. Defaults per granularity — 55 characters, 13 words,
 		 *  3.5 lines. */
 		speed?: number;
@@ -230,7 +230,7 @@
 </script>
 
 <span
-	class={['animated-text', className].filter(Boolean).join(' ')}
+	class={['typewriter', className].filter(Boolean).join(' ')}
 	{style}
 	data-complete={complete}
 >
@@ -256,7 +256,7 @@
 <style lang="scss">
 	@use '../style/theme.scss' as *;
 
-	.animated-text {
+	.typewriter {
 		// Newlines in the source have to survive for `granularity="line"` to
 		// mean anything, and `pre-wrap` still wraps long lines normally.
 		white-space: pre-wrap;

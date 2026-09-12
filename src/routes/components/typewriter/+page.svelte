@@ -2,7 +2,7 @@
 	import Heading from '$lib/typography/Heading.svelte';
 	import Text from '$lib/typography/Text.svelte';
 	import Card from '$lib/card/Card.svelte';
-	import AnimatedText from '$lib/animated-text/AnimatedText.svelte';
+	import Typewriter from '$lib/typewriter/Typewriter.svelte';
 	import Button from '$lib/button/Button.svelte';
 	import Flex from '$lib/layout/Flex.svelte';
 	import CodeBlock from '$lib/code/CodeBlock.svelte';
@@ -13,10 +13,10 @@
 	const answer =
 		'A reveal is not the same thing as a loading state. It says the answer is arriving, which is worth showing when it genuinely is — and worth skipping when the text was already there.';
 
-	let basic: AnimatedText | undefined = $state();
-	let granular: AnimatedText | undefined = $state();
-	let paced: AnimatedText | undefined = $state();
-	let streaming: AnimatedText | undefined = $state();
+	let basic: Typewriter | undefined = $state();
+	let granular: Typewriter | undefined = $state();
+	let paced: Typewriter | undefined = $state();
+	let streaming: Typewriter | undefined = $state();
 
 	let grain = $state<'character' | 'word' | 'line'>('word');
 	const grains = ['character', 'word', 'line'] as const;
@@ -57,9 +57,9 @@ Nothing below this moves while they land.`;
 	<Code>{value}</Code>
 {/snippet}
 
-<svelte:head><title>Animated Text | Glow UI</title></svelte:head>
+<svelte:head><title>Typewriter | Glow UI</title></svelte:head>
 
-<Heading level={1}>Animated Text</Heading>
+<Heading level={1}>Typewriter</Heading>
 <Text size="lg" variant="secondary" style="margin-bottom: 2rem;">
 	Text that arrives rather than appears — the shape of a streamed answer, a terminal writing itself,
 	a hero line that lands as you read it. It is a presentation of text you already have, not a
@@ -75,7 +75,7 @@ Nothing below this moves while they land.`;
 		nothing on the page moves while the words land.
 	</Text>
 	<Text size="lg" style="margin-bottom: 1rem;">
-		<AnimatedText bind:this={basic} text={answer} />
+		<Typewriter bind:this={basic} text={answer} />
 	</Text>
 	<Button variant="secondary" label="Replay" onclick={() => basic?.restart()} />
 </Card>
@@ -101,7 +101,7 @@ Nothing below this moves while they land.`;
 		{/each}
 	</Flex>
 	<Text size="lg">
-		<AnimatedText bind:this={granular} text={poem} granularity={grain} />
+		<Typewriter bind:this={granular} text={poem} granularity={grain} />
 	</Text>
 </Card>
 
@@ -113,9 +113,9 @@ Nothing below this moves while they land.`;
 		outside the component.
 	</Text>
 	<div class="stagger">
-		<AnimatedText bind:this={paced} text="Fast — 30 words a second." speed={30} />
-		<AnimatedText text="Steady — the default 13." delay={400} />
-		<AnimatedText text="Slow — 5, with a longer wait first." speed={5} delay={800} />
+		<Typewriter bind:this={paced} text="Fast — 30 words a second." speed={30} />
+		<Typewriter text="Steady — the default 13." delay={400} />
+		<Typewriter text="Slow — 5, with a longer wait first." speed={5} delay={800} />
 	</div>
 	<Button
 		variant="secondary"
@@ -133,7 +133,7 @@ Nothing below this moves while they land.`;
 		and a replacement rewinds only as far as the two texts differ.
 	</Text>
 	<Text size="lg" style="margin-bottom: 1rem;">
-		<AnimatedText bind:this={streaming} text={streamed} />
+		<Typewriter bind:this={streaming} text={streamed} />
 	</Text>
 	<Button variant="secondary" label="Stream it" onclick={stream} />
 </Card>
@@ -146,7 +146,7 @@ Nothing below this moves while they land.`;
 		replay does not have to blank <Code>text</Code> and put it back.
 	</Text>
 	<Text size="lg" style="margin-bottom: 1rem;">
-		<AnimatedText
+		<Typewriter
 			text="Looping, pausable, and it tells you when it lands."
 			bind:playing
 			loop
@@ -172,8 +172,8 @@ Nothing below this moves while they land.`;
 		reveal is meant to be quiet rather than to look like something typing.
 	</Text>
 	<div class="quiet">
-		<AnimatedText text="No caret, just the words." cursor={false} loop speed={6} />
-		<AnimatedText
+		<Typewriter text="No caret, just the words." cursor={false} loop speed={6} />
+		<Typewriter
 			text="Quieter where several run at once."
 			cursor={false}
 			loop
@@ -187,23 +187,23 @@ Nothing below this moves while they land.`;
 	<CodeBlock
 		language="svelte"
 		code={`<script>
-  import { AnimatedText } from 'glow';
+  import { Typewriter } from 'glow';
 
   let reply = $state('');
   let text;
 <\/script>
 
 <!-- a word at a time, with a caret; the default -->
-<AnimatedText text={reply} />
+<Typewriter text={reply} />
 
 <!-- a character at a time, slower, no caret -->
-<AnimatedText text={reply} granularity="character" speed={30} cursor={false} />
+<Typewriter text={reply} granularity="character" speed={30} cursor={false} />
 
 <!-- looping hero line -->
-<AnimatedText text="Ships on Friday." loop loopDelay={2000} />
+<Typewriter text="Ships on Friday." loop loopDelay={2000} />
 
 <!-- replay on demand -->
-<AnimatedText bind:this={text} text={reply} oncomplete={() => console.log('done')} />
+<Typewriter bind:this={text} text={reply} oncomplete={() => console.log('done')} />
 <button onclick={() => text.restart()}>Again</button>`}
 	/>
 </Card>

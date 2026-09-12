@@ -1,7 +1,7 @@
-// AnimatedText — the half of it a screenshot cannot show.
+// Typewriter — the half of it a screenshot cannot show.
 //
-//   node tools/scripts/animated-text.test.mjs
-//   node tools/scripts/animated-text.test.mjs --no-build
+//   node tools/scripts/typewriter.test.mjs
+//   node tools/scripts/typewriter.test.mjs --no-build
 //
 // A GIF shows that the words arrive. What it cannot show is that the string
 // they arrive as is the string that was handed in: every check here is about
@@ -17,11 +17,11 @@ import { checks } from "../harness/check.mjs";
 import { ROOT, open } from "../glow/docs.mjs";
 
 const build = !process.argv.includes("--no-build");
-const ROUTE = "/components/animated-text";
+const ROUTE = "/components/typewriter";
 
 /** What is painted (the units carrying `.on`) and what was handed in. */
 const readState = (card) =>
-	card.locator(".animated-text").first().evaluate((el) => ({
+	card.locator(".typewriter").first().evaluate((el) => ({
 		painted: [...el.querySelectorAll(".unit.on")].map((u) => u.textContent).join(""),
 		all: el.querySelector(".body").textContent,
 		exposed: el.querySelector(".sr-only").textContent,
@@ -29,7 +29,7 @@ const readState = (card) =>
 		complete: el.dataset.complete === "true"
 	}));
 
-const t = checks("animated text");
+const t = checks("typewriter");
 const app = await launch({ build, cwd: ROOT, reducedMotion: "no-preference" });
 t.watch(app.page);
 const { page } = app;
@@ -55,7 +55,7 @@ try {
 	// two have to report identical extents. An em-guessed height would land
 	// fractions of a device pixel out and only show up when someone zooms.
 	const caretBox = await reveal
-		.locator(".animated-text")
+		.locator(".typewriter")
 		.first()
 		.evaluate((el) => {
 			const caret = el.querySelector(".caret").getBoundingClientRect();
@@ -80,12 +80,12 @@ try {
 	t.ok("the fragments spell the source string", end.all === end.exposed);
 	t.ok(
 		"the fragments are hidden from assistive tech",
-		(await reveal.locator(".animated-text .body").first().getAttribute("aria-hidden")) === "true"
+		(await reveal.locator(".typewriter .body").first().getAttribute("aria-hidden")) === "true"
 	);
 	// The accessible name of the whole thing, as a screen reader would compute
 	// it: one string, not a pile of one-word nodes.
 	const name = await reveal
-		.locator(".animated-text")
+		.locator(".typewriter")
 		.first()
 		.evaluate((el) =>
 			[...el.children]
@@ -100,7 +100,7 @@ try {
 
 	// No reflow: the box is sized against the whole string from the first
 	// frame, so it may not change while the words land.
-	const box = reveal.locator(".animated-text").first();
+	const box = reveal.locator(".typewriter").first();
 	await reveal.getByRole("button").click();
 	await page.waitForTimeout(120);
 	const early = await box.boundingBox();
@@ -200,7 +200,7 @@ try {
 	await app.close();
 }
 
-const t2 = checks("animated text, reduced motion");
+const t2 = checks("typewriter, reduced motion");
 const reduced = await launch({ build: false, cwd: ROOT, reducedMotion: "reduce" });
 t2.watch(reduced.page);
 

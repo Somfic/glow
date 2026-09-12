@@ -193,6 +193,7 @@ export type {
 export { default as DiffView, type DiffViewProps, type DiffViewMode } from "./diff-view/DiffView.svelte";
 export { diffLines, diffWords, diffSequences, diffStats, toRows, collapse } from "./diff-view/diff.js";
 export type { DiffLine, DiffLineType, DiffSegment, DiffRow, DiffChunk, DiffOp } from "./diff-view/diff.js";
+export { default as Stat, type StatProps, type StatSize, type StatVariant, type StatDirection } from "./stat/Stat.svelte";
 export { default as Sparkline, type SparklineProps, type SparklineTone } from "./charts/Sparkline.svelte";
 export { default as LineChart, type LineChartProps, type LineChartTable, type LineSeries } from "./charts/LineChart.svelte";
 export type { ChartDatum, ChartPoint } from "./charts/chart.js";
@@ -202,10 +203,11 @@ export {
 	type AnimatedNumberFormat,
 	type AnimatedNumberAlign
 } from "./animated-number/AnimatedNumber.svelte";
+export { default as AnimatedValue, type AnimatedValueProps } from "./animated-value/AnimatedValue.svelte";
 export {
-	default as AnimatedText,
-	type AnimatedTextGranularity
-} from "./animated-text/AnimatedText.svelte";
+	default as Typewriter,
+	type TypewriterGranularity
+} from "./typewriter/Typewriter.svelte";
 export { default as TableOfContents } from "./navigation/TableOfContents.svelte";
 export { default as Breadcrumb } from "./breadcrumb/Breadcrumb.svelte";
 export type { BreadcrumbItem, BreadcrumbItemState } from "./breadcrumb/Breadcrumb.svelte";

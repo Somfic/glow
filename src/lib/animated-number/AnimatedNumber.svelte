@@ -35,6 +35,21 @@
 		/** Where the number sits in its reserved box, which is as wide as the
 		 *  widest of the last two values. */
 		align?: AnimatedNumberAlign;
+		/**
+		 * Minimum integer digits, zero-padded: `pad={3}` renders 7 as `007`. The
+		 * padding zeros are dimmed, so the number still reads as `7` while the
+		 * box stays three digits wide — which is the point. Without it a counter
+		 * crossing a power of ten (99 → 100) steps its own width mid-run and
+		 * shoves its neighbours along with it; with it, the width is fixed by
+		 * the digit count you declare and the leading wheel simply rolls from a
+		 * dim `0` to a live `1`.
+		 *
+		 * Applies to the default formatter only — a `format` you pass owns its
+		 * own integer digits. Turns group separators off for the duration: a
+		 * padded `0,007` reads as a decimal, and a counter narrow enough to want
+		 * padding is not one that wants separators.
+		 */
+		pad?: number;
 		/** Announce the settled value. Off by default: a number that ticks on a
 		 *  dashboard is not worth interrupting anyone for. */
 		live?: boolean;
@@ -50,6 +65,7 @@
 		mode = 'tween',
 		locale,
 		align = 'start',
+		pad,
 		live = false,
 		class: className,
 		style
@@ -82,11 +98,22 @@
 	// Min and max are the same on purpose: it pins the fraction digit count to
 	// the target's, so tweening 4 → 4.5 doesn't grow a decimal place mid-flight
 	// and 999 → 1000 stays whole all the way.
+	// Intl caps `minimumIntegerDigits` at 21 and rejects 0, and it is the whole
+	// padding implementation: `formatToParts` then reports the zeros as ordinary
+	// integer digits, so the odometer gets real wheels for them for free.
+	let padDigits = $derived(pad ? Math.min(Math.max(Math.trunc(pad), 1), 21) : undefined);
+
 	let fallbackFormat = $derived.by(() => {
 		const digits = decimalsOf(value);
 		return new Intl.NumberFormat(locale, {
 			minimumFractionDigits: digits,
-			maximumFractionDigits: digits
+			maximumFractionDigits: digits,
+			// Grouping off while padding, or the zeros get grouped with the value
+			// and `pad={4}` renders 7 as `0,007` — which reads as a decimal, and
+			// in a locale that groups with `.` reads as one unmistakably. A
+			// number large enough to want separators is not one that needs its
+			// width held open.
+			...(padDigits === undefined ? {} : { minimumIntegerDigits: padDigits, useGrouping: false })
 		});
 	});
 
@@ -129,6 +156,7 @@
 
 	let targetText = $derived(toText(value));
 	let currentText = $derived(toText(tween.current));
+	let currentChars = $derived([...currentText]);
 
 	/** 0 → 1 across the current run; the digit wheels ride this rather than the
 	 *  raw value, so a jump of 1200 spins each wheel once instead of 120 times. */
@@ -139,9 +167,7 @@
 		return t < 0 ? 0 : t > 1 ? 1 : t;
 	});
 
-	type Cell =
-		| { kind: 'digit'; place: number; digit: number }
-		| { kind: 'literal'; text: string };
+	type Cell = { kind: 'digit'; place: number; digit: number } | { kind: 'literal'; text: string };
 
 	// Odometer takes its shape from the *target*, not from the frame: the
 	// separators and decimals of "1,000" are on screen from the first frame of
@@ -177,6 +203,44 @@
 	});
 
 	let odometer = $derived(cells.length > 0);
+
+	/** Integer digits in the number currently painted — not in the target. The
+	 *  dimming has to follow the frame, so the leading zero of `099` lights up
+	 *  at the moment the count reaches 100 rather than when it sets off. */
+	let padCount = $derived.by(() => {
+		if (padDigits === undefined) return 0;
+		const shown = Math.abs(Math.trunc(tween.current));
+		const width = shown === 0 ? 1 : Math.floor(Math.log10(shown)) + 1;
+		return Math.max(0, padDigits - width);
+	});
+
+	/** Leading characters of `text` that are padding: `padCount` zeros, plus any
+	 *  group separator sitting between two of them. A sign is never dimmed — it
+	 *  is part of the value, not of the padding. */
+	let padPrefix = $derived.by(() => {
+		if (padCount === 0) return 0;
+		let i = 0;
+		let seen = 0;
+		if (currentText[i] === '-' || currentText[i] === '\u2212') i++;
+		while (i < currentText.length && seen < padCount) {
+			if (currentText[i] >= '0' && currentText[i] <= '9') seen++;
+			i++;
+		}
+		return i;
+	});
+
+	/** Which odometer cells are padding: the first `padCount` digit wheels, and
+	 *  any separator that falls between them. */
+	let padCells = $derived.by(() => {
+		const flags = cells.map(() => false);
+		if (padCount === 0) return flags;
+		let seen = 0;
+		for (let i = 0; i < cells.length && seen < padCount; i++) {
+			flags[i] = true;
+			if (cells[i].kind === 'digit') seen++;
+		}
+		return flags;
+	});
 
 	function digitAt(n: number, place: number): number {
 		// The epsilon absorbs the float error in 3.14 / 0.01, which lands on
@@ -226,27 +290,31 @@
 	const neighbours = Array.from({ length: 21 }, (_, i) => i - 10).filter((k) => k !== 0);
 </script>
 
-<span
-	class={['animated-number', `align-${align}`, className].filter(Boolean).join(' ')}
-	{style}
->
+<span class={['animated-number', `align-${align}`, className].filter(Boolean).join(' ')} {style}>
 	<span class="value" aria-hidden="true">
 		{#if odometer}
 			{#each cells as cell, i (i)}
 				{#if cell.kind === 'digit'}
-					<span class="digit">
+					<span class="digit" class:pad={padCells[i]}>
 						<span class="strip" style="--distance: {distances[i]}"
-							><span class="glyph">{cell.digit}</span
-							>{#each neighbours as k (k)}<span
+							><span class="glyph">{cell.digit}</span>{#each neighbours as k (k)}<span
 									class="glyph neighbour"
 									style="--k: {k}">{(cell.digit + k + 10) % 10}</span
 								>{/each}</span
 						>
 					</span>
 				{:else}
-					<span class="literal">{cell.text}</span>
+					<span class="literal" class:pad={padCells[i]}>{cell.text}</span>
 				{/if}
 			{/each}
+		{:else if padDigits !== undefined}
+			<!-- One span per character, keyed by position, so the leading cell is
+			     the *same element* before and after the carry: dropping `.pad` off
+			     it then transitions its colour. Slicing the dim prefix into its own
+			     span instead would destroy that element at the moment of the
+			     change, and a removed node cannot transition anything — the zero
+			     would snap from dim to full in a single frame. -->
+			{#each currentChars as ch, i (i)}<span class:pad={i < padPrefix}>{ch}</span>{/each}
 		{:else}
 			{currentText}
 		{/if}
@@ -353,6 +421,23 @@
 		// Same box and line-height as a digit cell, which is what puts a group
 		// separator's baseline on the digits' baseline rather than near it.
 		white-space: pre;
+	}
+
+	// Dimmed rather than hidden: the zeros are holding the width open, and a
+	// reader has to be able to see that they are placeholders and not part of
+	// the number.
+	//
+	// The transition is the point of the `.pad` class going on and off a cell
+	// that outlives the change: crossing 99 → 100 the leading zero lights up to
+	// full ink over the same beat the count takes, rather than flicking to it on
+	// the frame the carry lands. `--glow-dur-*` and not the `duration` prop, so
+	// `prefers-reduced-motion` still collapses it.
+	.pad {
+		color: color-mix(in oklab, currentColor 30%, transparent);
+	}
+
+	.value :global(span) {
+		transition: color var(--glow-dur-slow) var(--glow-ease-out);
 	}
 
 	.sr-only {

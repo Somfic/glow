@@ -1,4 +1,4 @@
-// AnimatedText — a component that is nothing at all in a still.
+// Typewriter — a component that is nothing at all in a still.
 //
 // Two things a screenshot cannot carry: that the words arrive one at a time
 // behind a caret, and that a `text` which grows mid-reveal is picked up rather
@@ -9,7 +9,7 @@
 // what that produces is the finished paragraph, which is a still, and lives in
 // the docs page instead.
 
-export const route = "/components/animated-text";
+export const route = "/components/typewriter";
 
 export default async function demo({ r, at, page }) {
 	const replay = "#reveal button";
