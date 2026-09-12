@@ -217,6 +217,16 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+		// The active tab and the panel are one card with a notch cut for the
+		// inactive tabs, so they are drawn from one surface — named once here
+		// because three separate things paint it: the indicator, both of its
+		// corner flares, and the panel.
+		//
+		// `--glow-surface-2` and not the plain card surface: a Tabs is almost
+		// always inside something, and the ramp's second step is what a card
+		// nested in a card uses. It moves the right way in both themes (lighter
+		// on dark, darker on light), which a fixed colour cannot.
+		--tabs-surface: var(--glow-surface-2);
 	}
 
 	.tabs-header {
@@ -224,8 +234,12 @@
 		overflow-x: auto;
 		scrollbar-width: none;
 		-ms-overflow-style: none;
-		padding: 0 8px 0 0;
+		// Room for the last tab's corner flare, which reaches 9px past its edge.
+		padding: 0 9px 0 0;
 		position: relative;
+		// Above the panel, so the active tab's fill can paint over the panel's
+		// top border and leave the two joined into one outlined shape.
+		z-index: 1;
 
 		&::-webkit-scrollbar {
 			display: none;
@@ -241,7 +255,11 @@
 		position: absolute;
 		bottom: 0;
 		top: 0;
-		background: var(--glow-bg-surface-element);
+		background: var(--tabs-surface);
+		border: $border;
+		// Open at the bottom: the panel is the same shape continued, and the
+		// indicator's last row of fill is what hides the panel's top border.
+		border-bottom: none;
 		border-radius: $radius $radius 0 0;
 		z-index: 0;
 		pointer-events: none;
@@ -254,14 +272,31 @@
 		}
 
 		// Right corner — concave curve down into the content panel.
+		//
+		// Three bands of one gradient, and the geometry is what makes them line
+		// up: the circle is centred on this box's top-right, which sits exactly
+		// 8px out from the tab's outer edge, so the transparent disc ends where
+		// the tab ends. `8px 9px` is then the outline itself, a 1px arc running
+		// from the tab's side border down to the panel's top border, and
+		// everything past 9px is panel fill.
+		//
+		// The box is 9px rather than 8px wide, reaching one pixel back over the
+		// indicator's own side border: that border runs the full height of the
+		// tab, and the bottom 8px of it is inside the curve, where the outline
+		// has already moved outwards.
 		&::after {
 			content: '';
 			position: absolute;
 			bottom: 0;
-			right: -8px;
-			width: 8px;
+			right: -9px;
+			width: 9px;
 			height: 8px;
-			background: radial-gradient(circle at 100% 0, transparent 8px, var(--glow-bg-surface-element) 8px);
+			background: radial-gradient(
+				circle at 100% 0,
+				transparent 8px,
+				var(--glow-border-color) 8px 9px,
+				var(--tabs-surface) 9px
+			);
 		}
 
 		// Left corner — same trick, mirrored. Hidden when the indicator is
@@ -271,10 +306,15 @@
 			content: '';
 			position: absolute;
 			bottom: 0;
-			left: -8px;
-			width: 8px;
+			left: -9px;
+			width: 9px;
 			height: 8px;
-			background: radial-gradient(circle at 0 0, transparent 8px, var(--glow-bg-surface-element) 8px);
+			background: radial-gradient(
+				circle at 0 0,
+				transparent 8px,
+				var(--glow-border-color) 8px 9px,
+				var(--tabs-surface) 9px
+			);
 		}
 
 		&.first::before {
@@ -350,7 +390,12 @@
 	}
 
 	.tabs-content {
-		background: var(--glow-bg-surface-element);
+		background: var(--tabs-surface);
+		border: $border;
+		// Pulled up under the header so the panel's top border and the active
+		// tab's open bottom edge are the same row of pixels — the tab then hides
+		// exactly the span of border it sits on.
+		margin-top: -1px;
 		border-radius: $radius;
 		// Padding lives on the panel (see below) so its measured offsetHeight
 		// includes the gutter, and the wrapper's explicit `height` is exactly
