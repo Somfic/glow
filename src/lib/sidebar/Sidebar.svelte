@@ -179,7 +179,7 @@
 		{#if external}
 			<!-- Same glyph as `<Link external>`, so "leaves the site" reads the
 			     same in the rail as it does in prose. -->
-			<span class="sidebar-item-external"><Icon name="ExternalLink" size={12} /></span>
+			<span class="sidebar-item-external"><Icon name="ExternalLink" size={14} /></span>
 		{/if}
 	</a>
 {/snippet}
@@ -577,6 +577,13 @@
 		color: var(--glow-text-muted);
 		opacity: 1;
 		transition: opacity $transition;
+
+		// Thicker than lucide's default 2: at this size, in the muted tier, and
+		// against a semibold row label, the default stroke reads as a smudge
+		// rather than as the "leaves the site" glyph it is carrying.
+		:global(svg) {
+			stroke-width: 2.4;
+		}
 
 		.collapsed & {
 			opacity: 0;
