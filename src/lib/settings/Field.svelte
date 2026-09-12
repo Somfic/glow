@@ -74,18 +74,84 @@
 	};
 	setContext(FIELD_CONTEXT_KEY, ctx);
 
-	// Non-native controls (select / multiselect / radio) don't focus on label
-	// click via the browser's `for=` association — synthesise a click instead.
-	const NON_NATIVE_LABEL = new Set(['select', 'multiselect', 'radio']);
-	function handleLabelClick(e: MouseEvent) {
-		if (!registeredType || !NON_NATIVE_LABEL.has(registeredType)) return;
-		const el = document.getElementById(controlId);
-		if (el && e.target !== el) el.click();
+	let rootEl = $state<HTMLDivElement | null>(null);
+
+	// Types whose control is a button under the hood — a checkbox, a switch, a
+	// menu trigger. `for=`/`focus()` does nothing useful on those: a <button> is
+	// not a labelable element, so the browser never forwards the label click,
+	// and focusing a menu trigger leaves the menu shut. They want a real click.
+	const ACTIVATE_ON_CLICK = new Set(['select', 'multiselect', 'checkbox', 'toggle']);
+
+	// HTML's labelable elements: the ones a <label for=…> click is forwarded to
+	// by the browser. <button> is on the list, which is what makes a label click
+	// already work for our checkbox/toggle/menu triggers — and what made doing
+	// it again here toggle them straight back.
+	const LABELABLE = new Set(['button', 'input', 'meter', 'output', 'progress', 'select', 'textarea']);
+
+	/**
+	 * The element a click on this row should land on.
+	 *
+	 * `controlId` covers everything that takes an `id`, which is every Input
+	 * type but `select` — that one renders a <PopoverMenu>, which has no id prop
+	 * — hence the fallback query. The fallback also means a Field wrapped around
+	 * something that is not an <Input> at all still behaves, as long as whatever
+	 * is inside is focusable.
+	 */
+	function resolveControl(): HTMLElement | null {
+		// A radiogroup is the one control whose `id` is on a container rather
+		// than on anything focusable: the group keeps a roving tabstop, and that
+		// is the radio a click should land on.
+		if (registeredType === 'radio') {
+			return rootEl?.querySelector('.control [role="radio"][tabindex="0"]') ?? null;
+		}
+		const byId = document.getElementById(controlId);
+		if (byId) return byId as HTMLElement;
+		return (
+			rootEl?.querySelector('.control button, .control input, .control textarea, .control [tabindex]') ??
+			null
+		);
+	}
+
+	function forwardToControl() {
+		const el = resolveControl();
+		if (!el) return;
+		if (registeredType && ACTIVATE_ON_CLICK.has(registeredType)) el.click();
+		else el.focus();
+	}
+
+	/**
+	 * The whole row is the control's hit target, not just its label — a settings
+	 * row reads as one thing, and the dead space between a label and a control
+	 * pinned to the right edge is most of the row.
+	 *
+	 * Three things are deliberately left alone: a click that already landed in
+	 * the control (it handled itself, and re-firing would toggle a checkbox
+	 * back), a click on a label the browser will forward natively (same reason —
+	 * and `for=` reaches a <button role="switch"> just as it reaches an <input>),
+	 * and a click that ends a text selection — dragging across a hint should not
+	 * also flip a switch.
+	 */
+	function handleRowClick(e: MouseEvent) {
+		const target = e.target as HTMLElement | null;
+		if (!target || target.closest('.control, .reset')) return;
+		if (target.closest('.label')) {
+			// Nothing to forward to (a `select` renders a PopoverMenu, which never
+			// takes the id) or not a labelable target (a radiogroup is a div): the
+			// browser will do nothing, so we should.
+			const forTarget = document.getElementById(controlId);
+			if (forTarget && LABELABLE.has(forTarget.tagName.toLowerCase())) return;
+		}
+		if (!(window.getSelection()?.isCollapsed ?? true)) return;
+		forwardToControl();
 	}
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
+	bind:this={rootEl}
 	class="field"
+	onclick={handleRowClick}
 	class:horizontal={layout === 'horizontal'}
 	class:vertical={layout === 'vertical'}
 	class:align-center={align === 'center'}
@@ -101,9 +167,7 @@
 					<Icon {...resolveIcon(leading)} size={resolveIcon(leading).size ?? 14} />
 				</span>
 			{/if}
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-			<label class="label" for={controlId} onclick={handleLabelClick}>
+			<label class="label" for={controlId}>
 				{label}
 				{#if required}
 					<span class="required" aria-label="required">
