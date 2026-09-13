@@ -22,10 +22,13 @@
 	// Examples that render their own full-bleed shell — they want viewport
 	// lock + no sidebar. Other examples (e.g. /examples/github) reuse the
 	// docs shell and just style their content area.
-	const bareRoutes = ['/examples/linear', '/examples/spotify', '/examples/spark', '/examples/steam'];
-	const isBareExample = $derived(
-		bareRoutes.some((r) => page.url.pathname.startsWith(r))
-	);
+	const bareRoutes = [
+		'/examples/linear',
+		'/examples/spotify',
+		'/examples/spark',
+		'/examples/steam'
+	];
+	const isBareExample = $derived(bareRoutes.some((r) => page.url.pathname.startsWith(r)));
 
 	const sidebarConfig: {
 		title: string;
@@ -117,7 +120,11 @@
 					{ label: 'Drawer', href: '/components/drawer', icon: 'PanelRight' },
 					{ label: 'Toast', href: '/components/toast', icon: 'Bell' },
 					{ label: 'Confirm', href: '/components/confirm', icon: 'CircleQuestionMark' },
-					{ label: 'Notification Center', href: '/components/notification-center', icon: 'BellRing' },
+					{
+						label: 'Notification Center',
+						href: '/components/notification-center',
+						icon: 'BellRing'
+					},
 					{ label: 'Tooltip', href: '/components/tooltip', icon: 'Info' },
 					{ label: 'Hover Card', href: '/components/hover-card', icon: 'IdCard' },
 					{ label: 'Banner', href: '/components/banner', icon: 'Flag' },
@@ -156,9 +163,13 @@
 					{ label: 'Sandbox', href: '/examples/sandbox', icon: 'ScanEye' },
 					{ label: 'Linear', href: '/examples/linear', icon: 'CircleDot' },
 					{ label: 'Spotify', href: '/examples/spotify', icon: 'Music' },
+					{ label: 'Spotify (Glow)', href: '/examples/spotify/glow', icon: 'Music' },
 					{ label: 'GitHub', href: '/examples/github', icon: 'Github' },
+					{ label: 'GitHub (Glow)', href: '/examples/github/glow', icon: 'Github' },
 					{ label: 'Steam', href: '/examples/steam', icon: 'Gamepad2' },
-					{ label: 'Spark', href: '/examples/spark', icon: 'Zap' }
+					{ label: 'Steam (Glow)', href: '/examples/steam/glow', icon: 'Gamepad2' },
+					{ label: 'Spark', href: '/examples/spark', icon: 'Zap' },
+					{ label: 'Spark (Glow)', href: '/examples/spark/glow', icon: 'Zap' }
 				]
 			}
 		]
