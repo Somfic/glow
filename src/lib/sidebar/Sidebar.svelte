@@ -3,8 +3,17 @@
 
 	export type SidebarItem = {
 		label: string;
-		href: string;
 		icon?: IconProp;
+		/** Where the item navigates. Give `onclick` instead for one that acts. */
+		href?: string;
+		/**
+		 * Makes the item an action rather than a destination — a cast toggle, a
+		 * downloads panel, a search box. It renders as a `<button>` wearing the
+		 * same class as the links, so a rail can mix the two without one of them
+		 * reading as a control dropped in among the navigation. An action is
+		 * never the active item: there is no page for it to be active on.
+		 */
+		onclick?: () => void;
 		/**
 		 * Opens in a new tab and gets the outbound arrow. Inferred from the
 		 * `href` when omitted, so a rail that links out to a GitHub repo or a
@@ -12,12 +21,40 @@
 		 * override that guess either way.
 		 */
 		external?: boolean;
+		/**
+		 * Drop the item when this is false. Pass a function and it is re-read
+		 * reactively, so an item that depends on state — a cast row that only
+		 * exists while something is casting — can live in a `const` array
+		 * instead of forcing the caller to rebuild the list.
+		 */
+		when?: boolean | (() => boolean);
 	};
 
 	export type SidebarGroup = {
 		label: string;
 		items: SidebarItem[];
+		/** The same predicate, for the whole group. */
+		when?: boolean | (() => boolean);
 	};
+
+	/**
+	 * A group is also dropped once every item in it is, so a rail does not show
+	 * a heading with nothing under it.
+	 */
+	function shown(when: boolean | (() => boolean) | undefined): boolean {
+		return typeof when === 'function' ? when() : (when ?? true);
+	}
+
+	export function visibleItems(items: SidebarItem[]): SidebarItem[] {
+		return items.filter((item) => shown(item.when));
+	}
+
+	export function visibleGroups(groups: SidebarGroup[]): SidebarGroup[] {
+		return groups
+			.filter((group) => shown(group.when))
+			.map((group) => ({ ...group, items: visibleItems(group.items) }))
+			.filter((group) => group.items.length > 0);
+	}
 
 	/**
 	 * Which palette the rail paints itself in. `auto` follows the surrounding
@@ -153,35 +190,60 @@
 	// unmount, so a rail that comes and goes doesn't leak a claim.
 	$effect(() => claimViewTransitionName(viewTransitionName));
 
+	const visibleTop = $derived(visibleItems(topItems));
+	const visibleBottom = $derived(visibleItems(bottomItems));
+
 	function toggleCollapse() {
 		collapsed = !collapsed;
 		oncollapse?.(collapsed);
 	}
 </script>
 
+{#snippet itemBody(item: SidebarItem, external: boolean)}
+	{#if item.icon}<Icon {...resolveIcon(item.icon)} size={resolveIcon(item.icon).size ?? 16} />{/if}
+	<span class="sidebar-item-label">{item.label}</span>
+	{#if external}
+		<!-- Same glyph as `<Link external>`, so "leaves the site" reads the
+		     same in the rail as it does in prose. -->
+		<span class="sidebar-item-external"><Icon name="ExternalLink" size={14} /></span>
+	{/if}
+{/snippet}
+
 {#snippet navItem(item: SidebarItem)}
-	{@const external = item.external ?? looksExternal(item.href)}
-	<a
-		href={item.href}
-		class="sidebar-item"
-		class:is-active={isActive(item.href)}
-		target={external ? '_blank' : undefined}
-		rel={external ? 'noopener noreferrer' : undefined}
-		onclick={() => {
-			// An outbound link never becomes the active page, and marking it
-			// active would leave the pill stuck on it after the tab opens.
-			if (!external) handleItemClick(item.href);
-		}}
-		use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}
-	>
-		{#if item.icon}<Icon {...resolveIcon(item.icon)} size={resolveIcon(item.icon).size ?? 16} />{/if}
-		<span class="sidebar-item-label">{item.label}</span>
-		{#if external}
-			<!-- Same glyph as `<Link external>`, so "leaves the site" reads the
-			     same in the rail as it does in prose. -->
-			<span class="sidebar-item-external"><Icon name="ExternalLink" size={14} /></span>
-		{/if}
-	</a>
+	{@const external = item.href ? (item.external ?? looksExternal(item.href)) : false}
+	{#if item.href}
+		<a
+			href={item.href}
+			class="sidebar-item"
+			class:is-active={isActive(item.href)}
+			target={external ? '_blank' : undefined}
+			rel={external ? 'noopener noreferrer' : undefined}
+			onclick={() => {
+				// An outbound link never becomes the active page, and marking it
+				// active would leave the pill stuck on it after the tab opens.
+				if (!external) handleItemClick(item.href!);
+				item.onclick?.();
+			}}
+			use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}
+		>
+			{@render itemBody(item, external)}
+		</a>
+	{:else}
+		<!-- An action closes the rail the same way a link does: on a phone it is
+		     covering the page, and leaving it open over whatever the action just
+		     did is never what the user meant. -->
+		<button
+			type="button"
+			class="sidebar-item"
+			onclick={() => {
+				item.onclick?.();
+				onclose?.();
+			}}
+			use:tooltip={collapsed ? { content: item.label, position: 'right', useCursor: false } : { content: '' }}
+		>
+			{@render itemBody(item, false)}
+		</button>
+	{/if}
 {/snippet}
 
 {#if open}
@@ -226,9 +288,9 @@
 	     `fade` rather than a visible scrollbar because a scrollbar in a
 	     56px rail reserves a gutter, and that gutter is what would push
 	     the icon column off the rail's centre line. -->
-	{#if topItems.length}
+	{#if visibleTop.length}
 		<nav class="sidebar-pinned sidebar-top" aria-label="Primary">
-			{#each topItems as item}
+			{#each visibleTop as item}
 				{@render navItem(item)}
 			{/each}
 		</nav>
@@ -240,7 +302,7 @@
 		label={title ? `${title} navigation` : 'Navigation'}
 	>
 		<nav class="sidebar-nav">
-			{#each groups as group}
+			{#each visibleGroups(groups) as group}
 				<div class="sidebar-group">
 					<!-- The label and divider both render; CSS swaps which is visible
 					     based on collapsed state, so neither has a layout-shift jump. -->
@@ -254,9 +316,9 @@
 		</nav>
 	</ScrollArea>
 	{#if children}<div class="sidebar-children">{@render children()}</div>{/if}
-	{#if bottomItems.length}
+	{#if visibleBottom.length}
 		<nav class="sidebar-pinned sidebar-bottom" aria-label="Secondary">
-			{#each bottomItems as item}
+			{#each visibleBottom as item}
 				{@render navItem(item)}
 			{/each}
 		</nav>
@@ -470,7 +532,7 @@
 
 	// Inherits .sidebar-item, so it lines up on the same icon column and picks
 	// up the same hover pill. Only the <button> resets are new.
-	.theme-toggle {
+	button.sidebar-item {
 		width: calc(100% - 1rem);
 		background: none;
 		border: none;
