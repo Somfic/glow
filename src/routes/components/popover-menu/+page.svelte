@@ -30,12 +30,12 @@
 	];
 
 	const shortcutItems: PopoverMenuEntry[] = [
-		{ kind: 'item', label: 'Undo', icon: 'RotateCcw', shortcut: '⌘Z', onclick: () => {} },
-		{ kind: 'item', label: 'Redo', icon: 'RotateCw', shortcut: '⌘⇧Z', onclick: () => {} },
+		{ kind: 'item', label: 'Undo', icon: 'RotateCcw', shortcut: 'mod+z', onclick: () => {} },
+		{ kind: 'item', label: 'Redo', icon: 'RotateCw', shortcut: 'mod+shift+z', onclick: () => {} },
 		'divider',
-		{ kind: 'item', label: 'Cut', icon: 'Scissors', shortcut: '⌘X', onclick: () => {} },
-		{ kind: 'item', label: 'Copy', icon: 'Copy', shortcut: '⌘C', onclick: () => {} },
-		{ kind: 'item', label: 'Paste', icon: 'Clipboard', shortcut: '⌘V', onclick: () => {} }
+		{ kind: 'item', label: 'Cut', icon: 'Scissors', shortcut: 'mod+x', onclick: () => {} },
+		{ kind: 'item', label: 'Copy', icon: 'Copy', shortcut: 'mod+c', onclick: () => {} },
+		{ kind: 'item', label: 'Paste', icon: 'Clipboard', shortcut: 'mod+v', onclick: () => {} }
 	];
 
 	const nestedItems: PopoverMenuEntry[] = [
@@ -267,9 +267,12 @@
 
 <Card title="With Shortcuts" id="shortcuts">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-		Menu items can display keyboard shortcuts.
+		A <code>shortcut</code> is written once as a spec — <code>'mod+shift+z'</code> — and rendered
+		the way the platform prints it: <code>⇧⌘Z</code> on a Mac, <code>Ctrl+Shift+Z</code>
+		elsewhere. It is a hint until <code>bindShortcuts</code> is set, at which point the keys
+		fire the items' <code>onclick</code> whether or not the menu is open.
 	</Text>
-	<PopoverMenu items={shortcutItems}>
+	<PopoverMenu items={shortcutItems} bindShortcuts>
 		{#snippet trigger()}
 			<Button variant="secondary" icon="Menu">Edit</Button>
 		{/snippet}
@@ -406,7 +409,8 @@
 			{ prop: 'align',       type: "'left' | 'right' | 'stretch'", default: "'left'", description: 'Menu alignment relative to trigger' },
 			{ prop: 'offset',      type: 'number',                   default: '4',       description: 'Gap between trigger and menu in px' },
 			{ prop: 'disabled',    type: 'boolean',                  default: 'false',   description: 'Disable the menu' },
-			{ prop: 'open',        type: 'boolean',                  default: 'false',   description: 'Bindable open state' }
+			{ prop: 'open',        type: 'boolean',                  default: 'false',   description: 'Bindable open state' },
+			{ prop: 'bindShortcuts', type: 'boolean',                default: 'false',   description: "Register the items' shortcut specs as global accelerators while mounted" }
 		]}
 	/>
 </Card>

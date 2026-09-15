@@ -11,6 +11,7 @@
 	import { portal } from '../util/portal.js';
 	import { onEscape } from '../util/escapeKey.js';
 	import { createSubmenuIntent } from './submenuIntent.js';
+	import { bindMenuShortcuts } from './bindShortcuts.js';
 	import { fly, fade } from 'svelte/transition';
 	import { reducedMotion } from '../util/reducedMotion.svelte.js';
 
@@ -29,6 +30,12 @@
 		open?: boolean;
 		x?: number;
 		y?: number;
+		/**
+		 * Make the items' `shortcut` specs live while this menu is mounted —
+		 * the same keys the rows advertise, without waiting for a right-click.
+		 * Off by default; see PopoverMenu's prop of the same name.
+		 */
+		bindShortcuts?: boolean;
 	}
 
 	let {
@@ -38,8 +45,14 @@
 		disabled = false,
 		open = $bindable(false),
 		x = $bindable(0),
-		y = $bindable(0)
+		y = $bindable(0),
+		bindShortcuts = false
 	}: Props = $props();
+
+	$effect(() => {
+		if (!bindShortcuts) return;
+		return bindMenuShortcuts(items);
+	});
 
 	let menuElement = $state<HTMLDivElement>(undefined!);
 	let activeIndex = $state(-1);

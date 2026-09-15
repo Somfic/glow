@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import Kbd from '../typography/Kbd.svelte';
+	import { formatShortcut } from '../util/shortcut.svelte.js';
 	import Spinner from '../spinner/Spinner.svelte';
 	import Pill from '../pill/Pill.svelte';
 	import type { Command } from './types.js';
@@ -95,7 +96,7 @@
 		</span>
 	{/if}
 	{#if cmd.shortcut && !loading}
-		<span class="cp-row-shortcut"><Kbd size="sm">{cmd.shortcut}</Kbd></span>
+		<span class="cp-row-shortcut"><Kbd size="sm">{formatShortcut(cmd.shortcut)}</Kbd></span>
 	{/if}
 	{#if cmd.children}
 		<span class="cp-row-chevron"><Icon name="ChevronRight" size={compact ? 12 : 14} /></span>

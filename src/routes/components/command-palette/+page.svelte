@@ -68,7 +68,7 @@
 				description: 'Create a blank document in the current folder',
 				group: 'File',
 				icon: 'FilePlus',
-				shortcut: '⌘N',
+				shortcut: 'mod+n',
 				keywords: ['create', 'document', 'blank'],
 				perform: () => toast.info('New file created')
 			},
@@ -91,7 +91,7 @@
 				label: 'Open File',
 				group: 'File',
 				icon: 'FolderOpen',
-				shortcut: '⌘O',
+				shortcut: 'mod+o',
 				perform: () => toast.info('Open file dialog')
 			},
 			{
@@ -127,7 +127,7 @@
 				description: 'Save the current document',
 				group: 'File',
 				icon: 'Save',
-				shortcut: '⌘S',
+				shortcut: 'mod+s',
 				perform: () => toast.success('Saved')
 			},
 			{
@@ -135,7 +135,7 @@
 				label: 'Save As…',
 				group: 'File',
 				icon: 'SaveAll',
-				shortcut: '⇧⌘S',
+				shortcut: 'mod+shift+s',
 				perform: () => toast.info('Save as dialog')
 			},
 			{
@@ -168,7 +168,7 @@
 				label: 'Undo',
 				group: 'Edit',
 				icon: 'Undo',
-				shortcut: '⌘Z',
+				shortcut: 'mod+z',
 				perform: () => toast.info('Undone')
 			},
 			{
@@ -176,7 +176,7 @@
 				label: 'Redo',
 				group: 'Edit',
 				icon: 'Redo',
-				shortcut: '⇧⌘Z',
+				shortcut: 'mod+shift+z',
 				perform: () => toast.info('Redone')
 			},
 			{
@@ -184,7 +184,7 @@
 				label: 'Cut Selection',
 				group: 'Edit',
 				icon: 'Scissors',
-				shortcut: '⌘X',
+				shortcut: 'mod+x',
 				when: () => hasSelection,
 				perform: () => toast.info('Cut')
 			},
@@ -193,7 +193,7 @@
 				label: 'Copy Selection',
 				group: 'Edit',
 				icon: 'Copy',
-				shortcut: '⌘C',
+				shortcut: 'mod+c',
 				when: () => hasSelection,
 				perform: () => toast.info('Copied')
 			},
@@ -202,7 +202,7 @@
 				label: 'Paste',
 				group: 'Edit',
 				icon: 'ClipboardPaste',
-				shortcut: '⌘V',
+				shortcut: 'mod+v',
 				perform: () => toast.info('Pasted')
 			},
 			{
@@ -210,7 +210,7 @@
 				label: 'Find',
 				group: 'Edit',
 				icon: 'Search',
-				shortcut: '⌘F',
+				shortcut: 'mod+f',
 				perform: () => toast.info('Find dialog')
 			},
 			{
@@ -218,7 +218,7 @@
 				label: 'Find and Replace',
 				group: 'Edit',
 				icon: 'Replace',
-				shortcut: '⌥⌘F',
+				shortcut: 'mod+alt+f',
 				perform: () => toast.info('Replace dialog')
 			},
 			{
@@ -227,7 +227,7 @@
 				description: 'Run prettier on the current file',
 				group: 'Edit',
 				icon: 'Wand',
-				shortcut: '⇧⌥F',
+				shortcut: 'alt+shift+f',
 				keywords: ['prettier', 'tidy', 'beautify'],
 				perform: async () => {
 					toast.info('Formatting…');
@@ -337,7 +337,7 @@
 				label: 'Toggle Sidebar',
 				group: 'View',
 				icon: 'PanelLeft',
-				shortcut: '⌘B',
+				shortcut: 'mod+b',
 				perform: () => toast.info('Sidebar toggled')
 			},
 			{
@@ -346,7 +346,7 @@
 				description: 'Hide all chrome',
 				group: 'View',
 				icon: 'Sparkles',
-				shortcut: '⌃⌘Z',
+				shortcut: 'mod+ctrl+z',
 				perform: () => toast.info('Entered zen mode')
 			},
 			{
@@ -354,7 +354,7 @@
 				label: 'Zoom In',
 				group: 'View',
 				icon: 'ZoomIn',
-				shortcut: '⌘+',
+				shortcut: 'mod++',
 				perform: () => toast.info('Zoom +10%')
 			},
 			{
@@ -362,7 +362,7 @@
 				label: 'Zoom Out',
 				group: 'View',
 				icon: 'ZoomOut',
-				shortcut: '⌘-',
+				shortcut: 'mod+-',
 				perform: () => toast.info('Zoom -10%')
 			},
 
@@ -473,7 +473,7 @@
 				label: 'Commit Changes',
 				group: 'Git',
 				icon: 'GitCommitHorizontal',
-				shortcut: '⌘K ⌘C',
+				shortcut: 'mod+k c',
 				perform: () => toast.success('Changes committed')
 			},
 			{
@@ -539,7 +539,7 @@
 				label: 'Split Right',
 				group: 'Window',
 				icon: 'PanelRightOpen',
-				shortcut: '⌘\\',
+				shortcut: 'mod+\\',
 				perform: () => toast.info('Split editor right')
 			},
 			{
@@ -547,7 +547,7 @@
 				label: 'Split Down',
 				group: 'Window',
 				icon: 'PanelBottomOpen',
-				shortcut: '⌘K ⌘\\',
+				shortcut: 'mod+k \\',
 				perform: () => toast.info('Split editor down')
 			},
 			{
@@ -555,7 +555,7 @@
 				label: 'Close Tab',
 				group: 'Window',
 				icon: 'X',
-				shortcut: '⌘W',
+				shortcut: 'mod+w',
 				perform: () => toast.info('Tab closed')
 			},
 			{
@@ -563,7 +563,7 @@
 				label: 'Reopen Closed Tab',
 				group: 'Window',
 				icon: 'RotateCcw',
-				shortcut: '⇧⌘T',
+				shortcut: 'mod+shift+t',
 				perform: () => toast.info('Reopened tab')
 			},
 
@@ -581,7 +581,7 @@
 				label: 'Keyboard Shortcuts Cheatsheet',
 				group: 'Help',
 				icon: 'Keyboard',
-				shortcut: '⌘/',
+				shortcut: 'mod+/',
 				perform: () => toast.info('Shortcuts opened')
 			},
 			{
@@ -608,7 +608,7 @@
 				label: 'Reload Window',
 				group: 'Advanced',
 				icon: 'RefreshCw',
-				shortcut: '⌃⌘R',
+				shortcut: 'mod+ctrl+r',
 				when: () => advancedEnabled,
 				perform: () => toast.info('Reloading…')
 			},
@@ -822,7 +822,7 @@ $effect(() =>
         label: 'Save',
         group: 'File',
         icon: 'Save',
-        shortcut: '⌘S',
+        shortcut: 'mod+s',
         keywords: ['write', 'persist'],
         when: () => hasUnsavedChanges,
         perform: async ({ close }) => {

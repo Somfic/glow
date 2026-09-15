@@ -30,6 +30,7 @@
 <script lang="ts">
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import Kbd from '../typography/Kbd.svelte';
+	import { formatShortcut } from '../util/shortcut.svelte.js';
 
 	let {
 		label,
@@ -80,7 +81,7 @@
 	</span>
 	{#if shortcut}
 		<span class="shortcut">
-			{#each shortcut.split(' ').filter(Boolean) as token}
+			{#each formatShortcut(shortcut).split(' ').filter(Boolean) as token}
 				<Kbd size="sm">{token}</Kbd>
 			{/each}
 		</span>

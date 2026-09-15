@@ -23,7 +23,7 @@
 	import { type Snippet, getContext } from 'svelte';
 	import Icon, { resolveIcon } from '../icon/Icon.svelte';
 	import Kbd from '../typography/Kbd.svelte';
-	import { registerShortcut } from '../util/shortcut.svelte.js';
+	import { registerShortcut, formatShortcut } from '../util/shortcut.svelte.js';
 	import { cursor, setCursorLoading } from '../cursor/cursor.svelte.js';
 	import { tooltip, type TooltipParams } from '../tooltip/tooltip.svelte.js';
 
@@ -32,6 +32,7 @@
 		size?: ButtonSize;
 		shape?: ButtonShape;
 		count?: number;
+		/** Shortcut spec — `'mod+s'`, `'/'`. Rendered per platform and registered globally. */
 		shortcut?: string;
 		onclick?: () => void | Promise<void>;
 		/**
@@ -173,7 +174,7 @@
 {#snippet tail()}
 	{#if label}<span class="label">{label}</span>{:else if children}{@render children()}{/if}
 	{#if count !== undefined}<span class="count">{count}</span>{/if}
-	{#if shortcut}<Kbd size="sm">{shortcut}</Kbd>{/if}
+	{#if shortcut}<Kbd size="sm">{formatShortcut(shortcut)}</Kbd>{/if}
 {/snippet}
 
 <button

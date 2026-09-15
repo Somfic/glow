@@ -9,11 +9,11 @@
 	import type { PopoverMenuEntry, PopoverMenuCommonItem } from '$lib/menu/PopoverMenu.svelte';
 
 	const basicItems: PopoverMenuEntry[] = [
-		{ kind: 'item', label: 'Cut',   icon: 'Scissors',  shortcut: '⌘X', onclick: () => {} },
-		{ kind: 'item', label: 'Copy',  icon: 'Copy',      shortcut: '⌘C', onclick: () => {} },
-		{ kind: 'item', label: 'Paste', icon: 'Clipboard', shortcut: '⌘V', onclick: () => {} },
+		{ kind: 'item', label: 'Cut',   icon: 'Scissors',  shortcut: 'mod+x', onclick: () => {} },
+		{ kind: 'item', label: 'Copy',  icon: 'Copy',      shortcut: 'mod+c', onclick: () => {} },
+		{ kind: 'item', label: 'Paste', icon: 'Clipboard', shortcut: 'mod+v', onclick: () => {} },
 		'divider',
-		{ kind: 'item', label: 'Select All', icon: 'SquareCheck', shortcut: '⌘A', onclick: () => {} },
+		{ kind: 'item', label: 'Select All', icon: 'SquareCheck', shortcut: 'mod+a', onclick: () => {} },
 		'divider',
 		{ kind: 'item', label: 'Delete', icon: 'Trash2', danger: true, onclick: () => {} }
 	];
@@ -121,8 +121,8 @@
   import type { PopoverMenuEntry } from 'glow';
 
   const items: PopoverMenuEntry[] = [
-    { kind: 'item', label: 'Cut',  icon: 'Scissors', shortcut: '⌘X', onclick: () => {} },
-    { kind: 'item', label: 'Copy', icon: 'Copy',     shortcut: '⌘C', onclick: () => {} },
+    { kind: 'item', label: 'Cut',  icon: 'Scissors', shortcut: 'mod+x', onclick: () => {} },
+    { kind: 'item', label: 'Copy', icon: 'Copy',     shortcut: 'mod+c', onclick: () => {} },
     'divider',
     { kind: 'item', label: 'Delete', icon: 'Trash2', danger: true, onclick: () => {} }
   ];
@@ -147,7 +147,8 @@
 			{ prop: 'items',    type: 'PopoverMenuEntry[]',      default: '-',     description: 'Menu items (only item-kind and divider rendered)' },
 			{ prop: 'common',   type: 'PopoverMenuCommonItem[]', default: '-',     description: 'Horizontal icon-only actions at the top' },
 			{ prop: 'children', type: 'Snippet',              default: '-',     description: 'Content area that triggers the context menu' },
-			{ prop: 'disabled', type: 'boolean',              default: 'false', description: 'Disable the context menu' }
+			{ prop: 'disabled', type: 'boolean',              default: 'false', description: 'Disable the context menu' },
+			{ prop: 'bindShortcuts', type: 'boolean',         default: 'false', description: "Register the items' shortcut specs as global accelerators while mounted" }
 		]}
 	/>
 </Card>

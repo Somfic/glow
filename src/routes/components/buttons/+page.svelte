@@ -330,7 +330,7 @@
 				prop: 'shortcut',
 				type: 'string',
 				default: '-',
-				description: 'Keyboard shortcut, shown as a Kbd and registered globally'
+				description: "Shortcut spec ('mod+s', '/'), shown as a Kbd and registered globally"
 			},
 			{
 				prop: 'image',

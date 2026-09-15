@@ -3,7 +3,7 @@
 	import Icon, { type IconProp, resolveIcon } from '../icon/Icon.svelte';
 	import Kbd from '../typography/Kbd.svelte';
 	import { cursor } from '../cursor/cursor.svelte.js';
-	import { registerShortcut } from '../util/shortcut.svelte.js';
+	import { registerShortcut, formatShortcut } from '../util/shortcut.svelte.js';
 
 	interface Props {
 		id?: string;
@@ -16,6 +16,7 @@
 		autocomplete?: AutoFill;
 		prefix?: Snippet;
 		suffix?: Snippet;
+		/** Shortcut spec — `'mod+s'`, `'/'`. Rendered per platform and registered globally. */
 		shortcut?: string;
 		onChange?: (value: string) => void;
 		onFocus?: () => void;
@@ -96,7 +97,7 @@
 	{#if suffix}
 		<span class="affix suffix">{@render suffix()}</span>
 	{:else if shortcut}
-		<span class="affix suffix"><Kbd size="sm">{shortcut}</Kbd></span>
+		<span class="affix suffix"><Kbd size="sm">{formatShortcut(shortcut)}</Kbd></span>
 	{/if}
 	{#if clearable && value}
 		<button type="button" class="clear-btn" onclick={clearValue} tabindex="-1">

@@ -147,7 +147,15 @@ export { default as ListItem } from "./list/ListItem.svelte";
 
 // Utilities — small, dependency-free primitives apps can reach for.
 export { trapFocus } from "./util/focusTrap.js";
-export { registerShortcut } from "./util/shortcut.svelte.js";
+export {
+	registerShortcut,
+	parseShortcut,
+	matchesShortcut,
+	formatShortcut,
+	isApple
+} from "./util/shortcut.svelte.js";
+export type { ParsedShortcut } from "./util/shortcut.svelte.js";
+export { bindMenuShortcuts } from "./menu/bindShortcuts.js";
 export { portal } from "./util/portal.js";
 export { viewTransition } from "./util/viewTransition.js";
 export { scrollMemory } from "./util/scrollMemory.js";

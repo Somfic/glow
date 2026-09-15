@@ -21,7 +21,7 @@ export type Command = {
 	icon?: IconProp;
 	/** Leading image URL — circular avatar slot, takes precedence over `icon`. */
 	image?: string;
-	/** Display-only shortcut hint, e.g. "⌘S". */
+	/** Display-only shortcut hint, as a spec: `'mod+s'` renders ⌘S / Ctrl+S. */
 	shortcut?: string;
 	/** Trailing pill — number / short string, or an icon (with optional label). */
 	badge?: string | number | { icon: IconProp; label?: string };

@@ -8,6 +8,10 @@
 		description?: string;
 		icon?: IconProp;
 		image?: string;
+		/**
+		 * Shortcut spec — `'mod+shift+z'`. Shown on the row as the platform
+		 * spells it, and fired for real when the menu sets `bindShortcuts`.
+		 */
 		shortcut?: string;
 		selected?: boolean;
 		disabled?: boolean;
@@ -35,7 +39,7 @@
 		label: string;
 		description?: string;
 		icon?: IconProp;
-		/** Keyboard shortcut hint shown on the row (rendered as <Kbd> badges). */
+		/** Shortcut spec shown on the row. A submenu opens rather than acting, so this is never bound. */
 		shortcut?: string;
 		/**
 		 * Action / mixed entries inside the submenu. Use when the submenu
@@ -98,6 +102,7 @@
 	import Self from './PopoverMenu.svelte';
 	import MenuItem from './MenuItem.svelte';
 	import { createSubmenuIntent } from './submenuIntent.js';
+	import { bindMenuShortcuts } from './bindShortcuts.js';
 	import { portal } from '../util/portal.js';
 	import type { ComboboxEntry, ComboboxOption, ComboboxGroup } from '../input/types.js';
 	import { fuzzyFilter } from '../input/search-utils.js';
@@ -147,6 +152,13 @@
 		offset?: number;
 		disabled?: boolean;
 		open?: boolean;
+		/**
+		 * Make the items' `shortcut` specs live: each one is registered as a
+		 * global accelerator for as long as this menu is mounted, open or not.
+		 * Off by default — a `shortcut` has always been a hint here, and menus
+		 * that document a binding the app already owns must not double-fire it.
+		 */
+		bindShortcuts?: boolean;
 		/** Internal — used when rendered as a submenu so we don't wrap in another Popover. */
 		_inline?: boolean;
 	}
@@ -167,8 +179,14 @@
 		offset = 4,
 		disabled = false,
 		open = $bindable(false),
+		bindShortcuts = false,
 		_inline = false
 	}: Props = $props();
+
+	$effect(() => {
+		if (!bindShortcuts || !rawItems) return;
+		return bindMenuShortcuts(rawItems);
+	});
 
 	let searchQuery = $state('');
 	let searchInputEl = $state<HTMLInputElement | null>(null);
