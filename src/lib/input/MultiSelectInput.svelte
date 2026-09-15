@@ -37,10 +37,7 @@
 		minSearchLength = 0
 	}: Props = $props();
 
-	$effect(() => registerShortcut(shortcut, () => {
-		if (disabled) return;
-		isOpen = true;
-	}));
+	$effect(() => registerShortcut(shortcut, () => (isOpen = true), { disabled }));
 	let isOpen = $state(false);
 	let searchQuery = $state('');
 	let isLoading = $state(false);

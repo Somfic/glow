@@ -50,7 +50,7 @@
 	}: Props = $props();
 
 	$effect(() => {
-		if (!bindShortcuts) return;
+		if (!bindShortcuts || disabled) return;
 		return bindMenuShortcuts(items);
 	});
 

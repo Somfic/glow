@@ -53,8 +53,7 @@
 	});
 
 	$effect(() => {
-		if (!shortcut || disabled) return;
-		return registerShortcut(shortcut, () => inputElement?.focus());
+		return registerShortcut(shortcut, () => inputElement?.focus(), { disabled });
 	});
 
 	function handleInput(e: Event) {

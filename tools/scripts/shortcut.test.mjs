@@ -49,6 +49,16 @@ try {
 	t.ok("mod+shift+z fires", await fires({ key: "Z", code: "KeyZ", shiftKey: true, ...cmd }));
 	t.ok("a bare z does not", !(await fires({ key: "z", code: "KeyZ" })));
 	t.ok("an unbound mod+q does not", !(await fires({ key: "q", code: "KeyQ", ...cmd })));
+
+	// A disabled row prints its key and binds nothing: the event has to come
+	// back untouched, or the row would be stopping whatever else wanted it.
+	const disabled = page.locator("#disabled");
+	await disabled.getByRole("button", { name: "Options" }).click();
+	const share = page.locator(".menu-item", { hasText: "Share" }).first();
+	await share.waitFor();
+	t.ok("a disabled row still prints its shortcut", (await share.locator(".kbd").count()) === 1);
+	await page.keyboard.press("Escape");
+	t.ok("a disabled row's key is left alone", !(await fires({ key: "u", code: "KeyU", ...cmd })));
 } finally {
 	await app.close();
 }

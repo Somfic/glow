@@ -184,7 +184,7 @@
 	}: Props = $props();
 
 	$effect(() => {
-		if (!bindShortcuts || !rawItems) return;
+		if (!bindShortcuts || !rawItems || disabled) return;
 		return bindMenuShortcuts(rawItems);
 	});
 

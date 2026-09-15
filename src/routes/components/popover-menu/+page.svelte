@@ -75,7 +75,7 @@
 
 	const disabledItems: PopoverMenuEntry[] = [
 		{ kind: 'item', label: 'Preview', icon: 'Eye', onclick: () => {} },
-		{ kind: 'item', label: 'Share', icon: 'Share2', disabled: true, onclick: () => {} },
+		{ kind: 'item', label: 'Share', icon: 'Share2', disabled: true, shortcut: 'mod+u', onclick: () => {} },
 		'divider',
 		{ kind: 'item', label: 'Export', icon: 'Download', onclick: () => {} }
 	];
@@ -270,7 +270,8 @@
 		A <code>shortcut</code> is written once as a spec — <code>'mod+shift+z'</code> — and rendered
 		the way the platform prints it: <code>⇧⌘Z</code> on a Mac, <code>Ctrl+Shift+Z</code>
 		elsewhere. It is a hint until <code>bindShortcuts</code> is set, at which point the keys
-		fire the items' <code>onclick</code> whether or not the menu is open.
+		fire the items' <code>onclick</code> whether or not the menu is open. A disabled row binds
+		nothing and does not swallow its key — see the disabled example below.
 	</Text>
 	<PopoverMenu items={shortcutItems} bindShortcuts>
 		{#snippet trigger()}
@@ -281,9 +282,11 @@
 
 <Card title="Disabled Items" id="disabled">
 	<Text variant="secondary" size="sm" style="margin-bottom: 1rem;">
-		Individual items can be disabled.
+		Individual items can be disabled. A disabled row's <code>shortcut</code> is still printed
+		but never bound, so the key falls through to whatever else would have handled it rather
+		than being swallowed by a row that does nothing.
 	</Text>
-	<PopoverMenu items={disabledItems}>
+	<PopoverMenu items={disabledItems} bindShortcuts>
 		{#snippet trigger()}
 			<Button variant="secondary">Options</Button>
 		{/snippet}

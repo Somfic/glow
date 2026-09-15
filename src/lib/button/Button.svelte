@@ -139,12 +139,9 @@
 		}
 	});
 
-	$effect(() => {
-		if (!shortcut || disabled || loading) return;
-		return registerShortcut(shortcut, () => {
-			handleClick();
-		});
-	});
+	$effect(() =>
+		registerShortcut(shortcut, () => handleClick(), { disabled: disabled || loading })
+	);
 
 	async function handleClick() {
 		if (!onclick || promiseLoading) return;

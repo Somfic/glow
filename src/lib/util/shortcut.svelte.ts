@@ -149,7 +149,7 @@ export function formatShortcut(spec: string): string {
 	const order = isApple
 		? (['ctrl', 'alt', 'shift', 'meta'] as const)
 		: (['ctrl', 'meta', 'alt', 'shift'] as const);
-	const parts = order.filter((m) => parsed[m]).map((m) => names[m]);
+	const parts: string[] = order.filter((m) => parsed[m]).map((m) => names[m]);
 
 	const key =
 		parsed.key === ' '
@@ -164,16 +164,34 @@ export function formatShortcut(spec: string): string {
 	return isApple ? parts.join('') : parts.join('+');
 }
 
+export interface ShortcutOptions {
+	/**
+	 * Don't bind at all. A disabled control's key is not its own: swallowing
+	 * it would stop whatever else — an enclosing app, the browser — would
+	 * otherwise have taken it, while doing nothing itself.
+	 */
+	disabled?: boolean;
+}
+
 /**
  * Register a global shortcut. Fires while the user is not typing — unless the
  * spec carries a real modifier (⌘/Ctrl/⌥), which is what separates an
  * application accelerator like ⌘S, that must still work from inside a text
  * field, from a bare-key affordance like `/` that must not.
  *
+ * A handler that returns `false` has declined: the key is left alone, exactly
+ * as though nothing had bound it. That is the escape hatch for state a
+ * binding cannot see when it is made — a row that was enabled at bind time
+ * and is not by the time it is pressed.
+ *
  * Returns a cleanup function, so it can be returned straight from an `$effect`.
  */
-export function registerShortcut(spec: string | undefined, handler: () => void): () => void {
-	if (!spec || typeof window === 'undefined') return () => {};
+export function registerShortcut(
+	spec: string | undefined,
+	handler: () => unknown,
+	options: ShortcutOptions = {}
+): () => void {
+	if (!spec || options.disabled || typeof window === 'undefined') return () => {};
 
 	const parsed = parseShortcut(spec);
 	if (!parsed) return () => {};
@@ -190,8 +208,10 @@ export function registerShortcut(spec: string | undefined, handler: () => void):
 				return;
 			}
 		}
+		// `preventDefault` after the handler, not before: a decline has to be
+		// able to leave the event untouched, and both run in the same tick.
+		if (handler() === false) return;
 		e.preventDefault();
-		handler();
 	};
 
 	window.addEventListener('keydown', onKey);

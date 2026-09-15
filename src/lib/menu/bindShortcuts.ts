@@ -17,7 +17,12 @@ export function bindMenuShortcuts(entries: PopoverMenuEntry[]): () => void {
 			if (entry === 'divider' || typeof entry === 'string') continue;
 			if (entry.kind === 'item') {
 				if (entry.shortcut && !entry.disabled) {
-					cleanups.push(registerShortcut(entry.shortcut, entry.onclick));
+					// Checked again when the key arrives, and declined rather
+					// than swallowed: `disabled` can flip without the array
+					// identity changing, which is not enough to rebind.
+					cleanups.push(
+						registerShortcut(entry.shortcut, () => (entry.disabled ? false : entry.onclick()))
+					);
 				}
 			} else if (entry.kind === 'submenu') {
 				if (entry.items) walk(entry.items);
