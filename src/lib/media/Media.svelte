@@ -106,6 +106,17 @@
 	]);
 	let hlsInstances: [Hls | null, Hls | null] = [null, null];
 	let preloader: HTMLImageElement | null = null;
+	/**
+	 * Bumped once per load the effect below starts.
+	 *
+	 * A preload is a promise, so it can still be in flight when `src` changes
+	 * again — and its continuation would then commit a `loadedSrc` that no
+	 * longer matches what the layers actually hold. Once `loadedSrc` is wrong,
+	 * the effect's `currentSrc === loadedSrc` shortcut makes every later change
+	 * a no-op: the element is stuck on whatever it happens to be showing, and a
+	 * video stuck that way never gets released and keeps holding a connection.
+	 */
+	let loadSeq = 0;
 
 	// Viewport / priority gating. `inView` is driven by an IntersectionObserver
 	// when `lazy`; otherwise it's pinned true. `canLoad` is the single gate that
@@ -182,12 +193,17 @@
 		return url.includes('.m3u8') || url.includes('playlist');
 	}
 
+	/** Drops any in-flight preload so its promise can never settle. */
+	function cancelPreload() {
+		if (!preloader) return;
+		preloader.onload = null;
+		preloader.onerror = null;
+		preloader.src = '';
+		preloader = null;
+	}
+
 	function preloadImage(url: string): Promise<void> {
-		if (preloader) {
-			preloader.onload = null;
-			preloader.onerror = null;
-			preloader.src = '';
-		}
+		cancelPreload();
 		return new Promise((resolve, reject) => {
 			preloader = new Image();
 			preloader.onload = () => resolve();
@@ -284,6 +300,9 @@
 			if (currentSrc === loadedSrc) return;
 			mediaError = false;
 			const resolvedType = resolveType(currentSrc);
+			const seq = ++loadSeq;
+
+			if (resolvedType === 'video') cancelPreload();
 
 			if (initialLoad) {
 				layers[0] = { src: currentSrc, type: resolvedType, loaded: false };
@@ -294,12 +313,14 @@
 							// Wait for the img element to render in the DOM before activating
 							await tick();
 							await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+							if (seq !== loadSeq) return;
 							layers[0].loaded = true;
 							loadedSrc = currentSrc;
 							initialLoad = false;
 							activeLayer = 0;
 						})
 						.catch(() => {
+							if (seq !== loadSeq) return;
 							mediaError = true;
 						});
 				}
@@ -310,16 +331,19 @@
 				if (resolvedType === 'image') {
 					preloadImage(currentSrc)
 						.then(async () => {
+							if (seq !== loadSeq) return;
 							// Set src first so the element renders at opacity 0
 							layers[next] = { src: currentSrc, type: 'image', loaded: false };
 							// Wait for the DOM to update, then activate to trigger the transition
 							await tick();
 							await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+							if (seq !== loadSeq) return;
 							layers[next].loaded = true;
 							loadedSrc = currentSrc;
 							activeLayer = next;
 						})
 						.catch(() => {
+							if (seq !== loadSeq) return;
 							mediaError = true;
 						});
 				} else {
@@ -375,12 +399,7 @@
 	onDestroy(() => {
 		releaseLayer(0);
 		releaseLayer(1);
-		if (preloader) {
-			preloader.onload = null;
-			preloader.onerror = null;
-			preloader.src = '';
-			preloader = null;
-		}
+		cancelPreload();
 	});
 </script>
 
